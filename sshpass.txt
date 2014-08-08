@@ -1,0 +1,17 @@
+root:root
+root:admin
+admin:admin
+admin:root
+backup:backup
+guest:guest
+root:master
+admin:master
+admin:111111
+admin:1234
+admin:12345
+admin:123456
+root:1234
+root:12345
+root:123456
+admin:pasword
+root:password

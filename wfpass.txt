@@ -1,0 +1,10 @@
+[FAIL]
+admin
+root
+pass
+password
+toor
+123123
+123456
+12345
+qwerty

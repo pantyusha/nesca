@@ -593,7 +593,7 @@
         <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);</string>
        </property>
        <property name="text">
-        <string>$a$a$a$a</string>
+        <string>[09][az][0-]</string>
        </property>
        <property name="maxLength">
         <number>128</number>
@@ -602,7 +602,7 @@
         <set>Qt::AlignCenter</set>
        </property>
        <property name="placeholderText">
-        <string>Mask here ($a$a$a$a)</string>
+        <string>[09][az][0-][09][az][0-]</string>
        </property>
       </widget>
       <widget class="QPushButton" name="startScanButton_4">

@@ -457,7 +457,7 @@ void SetValidators()
 	ui->iptoLine_value_2->setValidator(validator);
 	ui->iptoLine_value_3->setValidator(validator);
 
-	validator = new QRegExpValidator(QRegExp("(\\w|-|\\.|\\$)+"), NULL);
+	validator = new QRegExpValidator(QRegExp("(\\w|-|\\.|\\[|\\])+"), NULL);
 	ui->lineEditStartIPDNS->setValidator(validator);
 
 	validator = new QRegExpValidator(QRegExp("(\\w|-|\\.)+((\\w|-|\\.)+)+"), NULL);
@@ -2925,40 +2925,16 @@ void RestoreSession()
 				}
 				else if(gMode == 1)
 				{
-					dnsVec.clear();
-					FILE *f = fopen("dnsbackup.lst", "r");
-					char curDNS[256] = {0};
-					int counter = 0;
-					if(f != NULL)
-					{
-						stt->doEmitionYellowFoundData("Loading DNS-range...");
-						while(fgets(curDNS, 256, f) != NULL)
-						{
-							if(strcmp(curDNS, "") == 0 || strcmp(curDNS, " ") == 0 || strcmp(curDNS, "\r\n") == 0 || strcmp(curDNS, "\n") == 0) 
-							{
-								ZeroMemory(curDNS, sizeof(curDNS));
-								continue;
-							};
+					ui->lineEditStartIPDNS->setText(QString(lex));
+					lex = strtok(NULL, " ");
+					strcpy(gFirstDom, lex);
 
-							++counter;
-							if(curDNS[strlen(curDNS) - 1] == '\n') curDNS[strlen(curDNS) - 1] = '\0';
-							dnsVec.push_back(std::string(curDNS));
-							ZeroMemory(curDNS, 256);
-						};
-						stt->doEmitionYellowFoundData("DNS-range loaded (" + QString::number(counter) + " domains)");
-
-						ui->lineEditStartIPDNS->setText(QString(lex));
-						lex = strtok(NULL, " ");
-						strcpy(gFirstDom, lex);
-
-						lex = strtok(NULL, " ");
-						gThreads = atoi(lex);
-						ui->lineEditThread->setText(QString(lex));
-						ui->lineILVL->setText(QString(gFirstDom));
-						ui->tabMainWidget->setCurrentIndex(1);
-						ui->startScanButton_4->setText("RESTORE");
-						fclose(f);
-					};
+					lex = strtok(NULL, " ");
+					gThreads = atoi(lex);
+					ui->lineEditThread->setText(QString(lex));
+					ui->lineILVL->setText(QString(gFirstDom));
+					ui->tabMainWidget->setCurrentIndex(1);
+					ui->startScanButton_4->setText("RESTORE");
 				}
 				else if(gMode == -1)
 				{

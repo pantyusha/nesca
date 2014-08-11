@@ -2,44 +2,37 @@
 #include "STh.h"
 #include "resource.h"
 
-int gC = 0;
-static int portArr[65536] = {0};
-char endIP2[128] = {0};
 QJsonArray *jsonArr = new QJsonArray();
+static int portArr[65536] = {0};
+int gC = 0;
 int gTimeOut = 3;
 int PieAnomC1 = 0, PieBA = 0, PieSusp = 0, PieLowl = 0, PieWF = 0, PieSSH = 0;
 int AnomC1 = 0, Filt = 0, Overl = 0, Lowl = 0, Alive = 0, Activity = 0, saved = 0, Susp = 0, WF = 0, offlines = 0, ssh = 0;
-volatile int BA = 0;
 int GlobalWSAErr = 0;
 int GlobalNegativeSize = 0;
-volatile int BrutingThrds = 0;
+int ovrlIPs = 0, ipCounter = 0;
+int mode;
+int found = 0, fillerFlag = 0, indexIP = 1;
+int gMaxSize = 65536;
+int gMode;
+int OnLiner = 0;
+int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSSHPass = 0;
+int ipsstart[4], ipsend[4], ipsstartfl[8192][4], ipsendfl[8192][4], starterIP[8192][4], 
+	startNum, endNum, overallPorts, flCounter, octet[4];
+double ips = 0;
 char top_level_domain[128] = {0};
 char startM[64] = {0}, endM[64] = {0};
+char endIP2[128] = {0};
 char **GlobalNegatives = 0;
 char **loginLst, **passLst;
 char **wfLoginLst, **wfPassLst;
 char **sshlpLst;
-double ips = 0;
-volatile int cons = 0;
-int ovrlIPs = 0, ipCounter = 0;
-int mode;
-volatile int threads = 20;
-unsigned long int gTargets = 0, gTargetsOverall = 1;
-int found = 0, fillerFlag = 0, indexIP = 1;
-int gMaxSize = 65536;
 char des1[64] = {0}, res[32]= {0};
 char saveStartIP[128] = {0};
 char saveEndIP[128] = {0};
-volatile int gThreads;
-int gMode;
 char gRange[128] = {0};
 char gFirstDom[128] = {0};
 char gPorts[65536] = {0};
-int OnLiner = 0;
-int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSSHPass = 0;
-unsigned long int targets;
-int ipsstart[4], ipsend[4], ipsstartfl[8192][4], ipsendfl[8192][4], starterIP[8192][4], 
-	startNum, endNum, overallPorts, flCounter, octet[4];
 char metaIPDNS[256] = {0};
 char metaRange[256] = {0};
 char metaPercent[256] = {0};
@@ -47,8 +40,15 @@ char metaIPS[256] = {0};
 char metaTargets[256] = {0};
 char metaETA[256] = {0};
 char metaOffline[256] = {0};
-volatile bool ConnLocked = false;
 bool ErrLogFirstTime = true;
+volatile bool ConnLocked = false;
+unsigned long long gTargets = 0, gTargetsOverall = 1, targets;
+volatile int gThreads;
+volatile int cons = 0;
+volatile int BA = 0;
+volatile int BrutingThrds = 0;
+volatile int threads = 20;
+
 void SaveErrorLog(char *sender, char *MesSent, char *ReplRecv)
 {
 	FILE *errFile = fopen("./logs/ns-track_errors.html", "r");
@@ -161,29 +161,6 @@ void ConDec()
 	stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
 	#pragma endregion
 };
-
-std::vector<std::string> dnsVec;
-std::string dnsVecBU;
-void _saveDNSMode()
-{
-	if(dnsVecBU.size() != 0)
-	{
-		FILE *dnsFile = fopen("dnsbackup.lst", "w");
-		if(dnsFile != NULL)
-		{
-			for(int i = std::distance(dnsVec.begin(), std::find(dnsVec.begin(), dnsVec.end(), dnsVecBU)); i < dnsVec.size(); ++i)
-			{
-				fputs(dnsVec[i].c_str(), dnsFile);
-				fputc('\n', dnsFile);
-			};
-			fclose(dnsFile);
-		}
-		else
-		{
-			stt->doEmitionRedFoundData("[!!!] Cant save DNS-range.");		
-		};
-	};
-};
 void _SaveBackupToFile()
 {
 	char saveStr[512] = {0};
@@ -194,17 +171,7 @@ void _SaveBackupToFile()
 	{
 		if(gMode == 1) 
 		{
-			_saveDNSMode();
-			if(strstr(endIP2, "RESTORED_SESSION") == NULL)
-			{
-				strcpy(endStr, "[RESTORED_SESSION(");
-				strcat(endStr, endIP2);
-				strcat(endStr, ")]");
-			}
-			else
-			{
-				strcpy(endStr, endIP2);				
-			};
+			strcpy(endStr, endIP2);
 		}
 		else 
 		{
@@ -2012,10 +1979,121 @@ int ParseArgs(int argc, char *argv[])
 
 return 0;
 };
+	
+char charAll[38] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+			'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 
+			'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '_', '-'};
+
+sockstruct *st = NULL;
+char iip[256] = {0};
+int _getPos(char l)
+{
+	for(int i = 0; i < 38; ++i)
+	{
+		if(l == charAll[i]) return i;
+	};
+	return -1;
+};
+int _getChunkCount(char *data)
+{
+	int firstPos = _getPos(data[1]);
+	int secondPos = _getPos(data[2]);
+	return secondPos - firstPos + 1;
+};
+int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
+{
+	if(strstr(mask, "[") != NULL)
+	{
+		char maskEnd[1024] = {0};
+		char maskRes[1024] = {0};
+		char *ptr1 = strstr(mask, "[");
+		char *ptr2 = strstr(ptr1, "]");
+		int sz = ptr2 - ptr1;
+		char chunk[8] = {0};
+		strncpy(chunk, ptr1, sz + 1);
+		int firstPos = _getPos(chunk[1]);
+		int secondPos = _getPos(chunk[2]);
+
+		if(firstPos > secondPos)
+		{
+			stt->doEmitionRedFoundData("Error at mask (Wrong letter sequence)");
+			return -1;
+		};
+
+		char maskStart[1024] = {0};
+		int startPosition = strstr(mask, "[") - mask;
+		strncpy(maskStart, mask, startPosition);
+
+		char maskEntry[1024] = {0};
+		if(saveMaskEnder != NULL) 
+		{
+			int startSavePosition = strstr(saveMaskEnder, "[") - saveMaskEnder;
+			strncpy(maskEntry, saveMaskEnder, startSavePosition);
+		};
+
+		int szMask = strlen(mask);
+		int szOffset = startPosition + 2;
+		if(szMask != szOffset) strcpy(maskEnd, strstr(mask, "]") + 1);
+		else
+		{
+			ZeroMemory(maskEnd, sizeof(maskEnd));
+		};
+		char maskSaver[128] = {0};
+		if(firstPos != -1 && secondPos != -1)
+		{
+			for(int i = firstPos; i <= secondPos; ++i)
+			{
+				if(globalScanFlag == false) break;
+				strcpy(maskSaver, saveMask);
+				strcat(maskSaver, maskEntry);
+				chunk[1] = charAll[i];
+				strcat(maskSaver, chunk);
+				strcpy(maskRes, maskStart);
+				maskRes[startPosition] = charAll[i];
+				strcat(maskRes, maskEnd);
+
+				if(_GetDNSFromMask(maskRes, maskSaver, maskEnd) == -1) return -1;
+				ZeroMemory(maskSaver, sizeof(maskSaver));	
+				ZeroMemory(maskRes, sizeof(maskRes));	
+			};
+		};
+	}
+	else
+	{
+#pragma region DNS-SCAN
+		if(globalScanFlag == false) return 0;
+		strcpy(endIP2, saveMask);
+		st = new sockstruct();
+		ZeroMemory(st->argv, sizeof(st->argv));
+		ZeroMemory(iip, sizeof(iip));
+		while(cons >= gThreads) Sleep(300);
+		strcpy(iip, mask);
+		strcpy(saveStartIP, iip);
+		strcat(iip, top_level_domain);
+
+		++indexIP;
+
+		strcpy(st->argv, iip);
+
+		targetAndIPWriter(--gTargets, st->argv);
+
+		ConInc();
+#if defined(WIN32)
+		if(globalScanFlag) _beginthread( (void(*)(void*))_connect, 0, st );
+#else
+		if(globalScanFlag)
+		{
+			pthread_t thrc;
+			pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st );
+		};
+#endif
+		Sleep(10);
+#pragma endregion
+	};
+};
 
 int startScan(char* args)
 {	
-	dnsVecBU = "";
 	flCounter = 0;
 	PieAnomC1 = 0, PieWF = 0, PieBA = 0, PieSusp = 0, PieLowl = 0, PieSSH = 0;
 	AnomC1 = 0, BA = 0, Filt = 0, Overl = 0, Lowl = 0, Alive = 0, Activity = 0, saved = 0, Susp = 0, WF = 0, offlines = 0;
@@ -2192,171 +2270,71 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		pthread_create(&thrtt, NULL, (void *(*)(void*))&_timer, NULL);
 #endif
 
-	char *charAll[38] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
-			"-", "_", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", 
-			"o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
-	char *charDec[10] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-	char *charChar[26] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", 
-		"o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}; 
-
 
 	char dataEntry[1024] = {0};
 	strcpy(dataEntry, saveEndIP);
-	char dataStart[1024] = {0};
-	char dataEnd[1024] = {0};
-	char dataRes[1024] = {0};
-	if(strstr(dataEntry, "RESTORED") == NULL)
-	{
-		dnsVec.clear();
-		std::vector<std::string> maskVec;
-		maskVec.push_back(dataEntry);
 
-		int index = 0;
 		int sz = strlen(saveEndIP);
-				
-		if(strstr(dataEntry, "$") == NULL)
+		for(int i = 0; i < sz; ++i)
 		{
-			dnsVec.push_back(dataEntry);
-		}
-		else
-		{
-			for(int i = 0; i < sz; ++i)
+			if(dataEntry[i] == '[')
 			{
-				if(dataEntry[i] == '$')
+				for(int j = i + 1; j < i + 3; ++j)
 				{
-					++i;
-					if(dataEntry[i] != 'd' && dataEntry[i] != 'a' && dataEntry[i] != 'c')
+					if((dataEntry[j] < '0' || dataEntry[j] > '9') 
+						&& (dataEntry[j] < 'a' || dataEntry[j] > 'z')
+						&& dataEntry[j] != '_' 
+						&& dataEntry[j] != '-'
+						)
 					{
-						QString errStr = "Error in dns-range at " + QString::number(i-1);
-						errStr += " (";
-						errStr += QString(dataEntry).mid(0, i-1);
+						QString errStr = "Error at mask (" + QString::number(j-1);
+						errStr += ") \"";
+						errStr += QString(dataEntry).mid(0, j-1);
 						errStr += "<u>";
-						errStr += QString(dataEntry).mid(i-1, i+1);
+						errStr += QString(dataEntry).mid(j-1, j+1);
 						errStr += "</u>";
-						errStr += QString(dataEntry).mid(i+1, strlen(dataEntry));
-						errStr += ")";
+						errStr += QString(dataEntry).mid(j+1, strlen(dataEntry));
+						errStr += "\"";
 
 						stt->doEmitionRedFoundData(errStr);
-						stt->doEmitionKillSttThread();
 						return -1;
 					};
 				};
-			};
-
-			stt->doEmitionYellowFoundData("Forming DNS-range, please wait...");
-
-			for(int vecIndex = 0; vecIndex < maskVec.size(); ++vecIndex)
+				i += 3;
+			}
+			else if(dataEntry[i] == ']')
 			{
-				strcpy(dataEntry, maskVec[vecIndex].c_str());
+				QString errStr = "Error at mask (" + QString::number(i-1);
+				errStr += ") \"";
+				errStr += QString(dataEntry).mid(0, i-1);
+				errStr += "<u>";
+				errStr += QString(dataEntry).mid(i-1, i+1);
+				errStr += "</u>";
+				errStr += QString(dataEntry).mid(i+1, strlen(dataEntry));
+				errStr += "\"";
 
-				sz = strlen(dataEntry);
-				index = 0;
-				for(int i = 0; i < sz; ++i)
-				{
-					if(globalScanFlag == false) break;
-					if(dataEntry[i] == '$')
-					{
-						++i;
-						if(dataEntry[i] == 'd')
-						{
-							strncpy(dataEnd, dataEntry + i + 1, sz - i - 1);
+				stt->doEmitionRedFoundData(errStr);
+				return -1;
 
-							for(int j = 0; j < 10; ++j)
-							{
-								strcpy(dataRes, dataStart);
-								strcat(dataRes, charDec[j]);
-								strcat(dataRes, dataEnd);
-
-								maskVec.push_back(dataRes);
-								if(strstr(dataRes, "$") == NULL) dnsVec.push_back(dataRes);
-							};
-							ZeroMemory(dataEntry, sizeof(dataEntry));
-							ZeroMemory(dataRes, sizeof(dataRes));
-							ZeroMemory(dataStart, sizeof(dataStart));
-							ZeroMemory(dataEnd, sizeof(dataEnd));
-							break;
-						}
-						else if(dataEntry[i] == 'a')
-						{
-							strncpy(dataEnd, dataEntry + i + 1, sz - i - 1);
-
-							for(int j = 0; j < 38; ++j)
-							{
-								strcpy(dataRes, dataStart);
-								strcat(dataRes, charAll[j]);
-								strcat(dataRes, dataEnd);
-
-								maskVec.push_back(dataRes);
-								if(strstr(dataRes, "$") == NULL) dnsVec.push_back(dataRes);
-							};
-							ZeroMemory(dataEntry, sizeof(dataEntry));
-							ZeroMemory(dataRes, sizeof(dataRes));
-							ZeroMemory(dataStart, sizeof(dataStart));
-							ZeroMemory(dataEnd, sizeof(dataEnd));
-							break;
-						}
-						else if(dataEntry[i] == 'c')
-						{
-							strncpy(dataEnd, dataEntry + i + 1, sz - i - 1);
-
-							for(int j = 0; j < 26; ++j)
-							{
-								strcpy(dataRes, dataStart);
-								strcat(dataRes, charChar[j]);
-								strcat(dataRes, dataEnd);
-
-								maskVec.push_back(dataRes);
-								if(strstr(dataRes, "$") == NULL) dnsVec.push_back(dataRes);
-							};
-							ZeroMemory(dataEntry, sizeof(dataEntry));
-							ZeroMemory(dataRes, sizeof(dataRes));
-							ZeroMemory(dataStart, sizeof(dataStart));
-							ZeroMemory(dataEnd, sizeof(dataEnd));
-							break;
-						};
-					};
-					dataStart[index++] = dataEntry[i];
-				};
-			};	
-			stt->doEmitionYellowFoundData("DNS-range is ready!");
+			};
 		};
-	};
-	gTargets = dnsVec.size();
-	gTargetsOverall = gTargets;
-	char iip[256] = {0};
 
-	stt->doEmitionChangeStatus("Scanning...");
-	sockstruct *st = NULL;
-	for(int i = 0; i < dnsVec.size(); ++i)
-	{
-		if(globalScanFlag == false) break;
-		st = new sockstruct();
-		ZeroMemory(st->argv, sizeof(st->argv));
-		ZeroMemory(iip, sizeof(iip));
-		while(cons >= gThreads) Sleep(300);
-		strcpy(iip, dnsVec[i].c_str());
-		strcpy(saveStartIP, iip);
-		strcat(iip, top_level_domain);
-
-		++indexIP;
-
-		strcpy(st->argv, iip);
-
-		targetAndIPWriter(--gTargets, st->argv);
-
-		dnsVecBU = dnsVec[i];
-		ConInc();
-#if defined(WIN32)
-		if(globalScanFlag) _beginthread( (void(*)(void*))_connect, 0, st );
-#else
-		if(globalScanFlag)
+		unsigned long long dnsCounter = 1;
+		char *dnsPtr1 = strstr(dataEntry, "[");
+		while(dnsPtr1 != NULL)
 		{
-			pthread_t thrc;
-			pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st );
+			dnsCounter *= _getChunkCount(dnsPtr1);
+			dnsPtr1 = strstr(dnsPtr1 + 1, "[");
 		};
-#endif
-		Sleep(10);
-	};
+		gTargets = dnsCounter;
+		gTargetsOverall = gTargets;
+		stt->doEmitionYellowFoundData("Starting DNS-scan...");
+		stt->doEmitionChangeStatus("Scanning...");
+		
+		if(_GetDNSFromMask(dataEntry, "", dataEntry) == -1) 
+		{
+			stt->doEmitionRedFoundData("DNS-Mode error");
+		};
 	}
 	else if(gMode == -1)
 	{

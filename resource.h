@@ -94,7 +94,6 @@ extern string toLowerStr(const char *str);
 extern QList<int> lstOfLabels;
 extern bool ME2ScanFlag, QoSScanFlag, VoiceScanFlag, PieStatFlag;
 extern int AnomC1, Filt, Overl, Lowl, Alive, Activity, saved, Susp, WF, offlines, ssh;
-extern volatile int BA;
 extern int PieAnomC1, PieSusp, PieBA, PieLowl, PieWF, PieSSH;
 extern bool connectedToIRC;
 extern bool globalScanFlag;
@@ -128,7 +127,6 @@ extern char ircProxyPort[8];
 extern char ircNick[32];
 extern int stopGlobalLog;
 extern int GlobalNegativeSize;
-extern volatile int BrutingThrds;
 extern char* thrds, top_level_domain[128];
 extern char startM[64], endM[64];
 struct workerStruct
@@ -137,23 +135,23 @@ struct workerStruct
 	bool giveMeMore;
 	char argv[MAX_ADDR_LEN];
 };
-
 extern char **GlobalNegatives;
 extern char **loginLst, **passLst, **wfLoginLst, **wfPassLst, **sshlpLst;
 extern int MaxPass, MaxLogin, MaxWFLogin, MaxWFPass, MaxSSHPass;
-
 extern double ips;
 extern int ovrlIPs, ipCounter;
 extern int mode;
-extern volatile int threads;
-extern unsigned long int gTargets, gTargetsOverall, targets;
+extern unsigned long long gTargets, gTargetsOverall, targets;
+extern volatile int BA;
 extern volatile int cons;
+extern volatile int BrutingThrds;
+extern volatile int gThreads;
+extern volatile int threads;
 extern int found, fillerFlag, indexIP;
 extern char timeLeft[64], tempRes[32], des1[64], res[32];
 extern int gMaxSize;
 extern char saveStartIP[128];
 extern char saveEndIP[128];
-extern volatile int gThreads;
 extern int gMode;
 extern char gRange[128];
 extern char gFirstDom[128];
@@ -165,7 +163,7 @@ extern int ipsstart[4], ipsend[4], ipsstartfl[8192][4], ipsendfl[8192][4], start
 	startNum, endNum, overallPorts, flCounter, octet[4];
 
 
-extern std::vector<std::string> dnsVec;
+//extern std::vector<std::string> dnsVec;
 
 typedef struct ST{ 
     char argv[2048];

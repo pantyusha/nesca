@@ -661,9 +661,11 @@ void putInFile(int flag, char *ip, char *port, int recd, char *finalstr, char *h
 	QTextCodec *codec;
 	strcat(msg, "<a href=\"http://");
 	strcat(msg, ip);
+	strcat(msg, ":");
 	strcat(msg, port);
 	strcat(msg, "/\"><span style=\"color: #a1a1a1;\">");
 	strcat(msg, ip);
+	strcat(msg, ":");
 	strcat(msg, port);
 	strcat(msg, "</span></a>");
 
@@ -711,10 +713,15 @@ void putInFile(int flag, char *ip, char *port, int recd, char *finalstr, char *h
 		};
 	}
 	else strcat(log, " ");
-	strcat(log, ":: <font color=MediumSeaGreen>");
+	strcat(log, "<a href=\"http://");
 	strcat(log, ip);
+	strcat(log, ":");
 	strcat(log, port);
-	strcat(log, "</font>; Received: <font color=SteelBlue>");
+	strcat(log, "\"><font color=MediumSeaGreen>");
+	strcat(log, ip);
+	strcat(log, ":");
+	strcat(log, port);
+	strcat(log, "</font></a>; Received: <font color=SteelBlue>");
 	strcat(log, std::to_string((long double)recd).c_str());
 	strcat(log, "</font>");
 	
@@ -1087,26 +1094,29 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 
 	if(inputVec.size() > 0)
 	{
+		char tport[16] = {0};
+		strcpy(tport, itoa(port, b, 10));
 		if(strlen(userVal) != 0 && strlen(passVal) != 0)
 		{
 			Connector con;
 			lopaStr lps = con._WFLobby(cookie, ip, port, methodVal, actionVal, userVal, passVal, formVal);
 
-			char tport[16] = {0};
-			strcpy(tport, itoa(port, b, 10));
 			if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 			{
 				_specFillerWF(hl, ip, tport, title, lps.login, lps.pass, flag);
 		
-				fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, lps.login, lps.pass, comment, cp, "Web Form");
-				
+				fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, lps.login, lps.pass, comment, cp, tclass);
+				putInFile(flag, ip, tport, recd, title, hl, cp);
 			};
 		}
 		else
 		{
 			stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: Cannot find user/pass field.");		
+			fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, "?", "?", "Unknown webform", cp, tclass);
+			putInFile(flag, ip, tport, recd, title, hl, cp);
 		};
 	};
+	OnLiner = 0;
 };
 void _specWEBIPCAMBrute(char *ip, int port, char *hl, char *finalstr, int flag, char *comment, char *tclass, char *cp, int recd, char *SPEC)
 {
@@ -1125,8 +1135,7 @@ void _specWEBIPCAMBrute(char *ip, int port, char *hl, char *finalstr, int flag, 
 	{
 		_specFillerBA(hl, ip, tport, finalstr, lps.login, lps.pass, flag);
 
-		fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");
-		
+		fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");	
 	};
 };
 void _specBrute(char *ip, int port, char *hl, char *finalstr, int flag, char *path, char *comment, char *tclass, char *cp, int recd, char *data)
@@ -1339,8 +1348,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	char cp[32] = {0};
 	strcpy(cp, "utf-8");	
 	char port[32] = {0};
-	strcpy(port, ":");
-	strcat(port, itoa(p, b, 10));
+	strcpy(port, itoa(p, b, 10));
 	int flag = 0;
 
 	flag = ContentFilter(buffcpy, p, ip);

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "ActivityDrawerTh_HorNet.h"
 #include "STh.h"
 
@@ -34,4 +35,42 @@ void ActivityDrawerTh_HorNet::run()
 		Activity = 0;
 		msleep(130);
 	};
+=======
+#include "ActivityDrawerTh_HorNet.h"
+#include "STh.h"
+
+void ActivityDrawerTh_HorNet::doEmitDrawActivityLine(QString data)
+{
+	emit adtHN->sDrawActivityLine(data);
+};
+void ActivityDrawerTh_HorNet::doEmitDrawGrid()
+{
+	emit adtHN->sDrawGrid();
+};
+
+void makeActLine(int val)
+{
+	if(actLst.size() < 50) actLst.push_back(val);
+	else 
+	{
+		actLst.pop_front();
+		actLst.push_back(val);
+	};
+};
+void ActivityDrawerTh_HorNet::run()
+{
+	adtHN->doEmitDrawGrid();
+	int maxAct = Activity + 1;
+	int nm = 0;
+	while(true)
+	{
+		if(maxAct < Activity) maxAct = Activity;
+		if(maxAct > 1000) nm = maxAct-=1000;
+		else if(maxAct > 10) nm = maxAct-=10;
+		makeActLine(((float)Activity/(nm != 0 ? nm : 1)) * 10);
+		adtHN->doEmitDrawActivityLine(QString::number(Activity) + "b");
+		Activity = 0;
+		msleep(130);
+	};
+>>>>>>> 5d30af667b7f24c6e91d2bf1888215f755b4378d
 };

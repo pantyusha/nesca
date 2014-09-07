@@ -4,9 +4,9 @@ void DrawerTh_VoiceScanner::doEmitAddLine()
 {
 	emit vsTh->sAddLine();
 };
-void DrawerTh_VoiceScanner::doEmitDrawGrid()
+void DrawerTh_VoiceScanner::doEmitDrawGrid(int factor)
 {
-	emit vsTh->sDrawGrid();
+	emit vsTh->sDrawGrid(factor);
 };
 void DrawerTh_VoiceScanner::doEmitDrawTextPlacers()
 {
@@ -97,7 +97,7 @@ void makeVoiceLine(int Al, int An, int Bd, int Sp, int Lo, int var, int Ovl, int
 };
 void DrawerTh_VoiceScanner::run()
 {
-	vsTh->doEmitDrawGrid();
+	vsTh->doEmitDrawGrid(150);
 	vsTh->doEmitDrawTextPlacers();
 	while(VoiceScanFlag)
 	{

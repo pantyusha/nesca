@@ -2,12 +2,14 @@
 #include "STh.h"
 #include "resource.h"
 
+bool horLineFlag = false;
 QJsonArray *jsonArr = new QJsonArray();
 static int portArr[65536] = {0};
+int gThreadDelay = 10;
 int gC = 0;
 int gTimeOut = 3;
 int PieAnomC1 = 0, PieBA = 0, PieSusp = 0, PieLowl = 0, PieWF = 0, PieSSH = 0;
-int AnomC1 = 0, Filt = 0, Overl = 0, Lowl = 0, Alive = 0, Activity = 0, saved = 0, Susp = 0, WF = 0, offlines = 0, ssh = 0;
+int AnomC1 = 0, Filt = 0, Overl = 0, Lowl = 0, Alive = 0, saved = 0, Susp = 0, WF = 0, offlines = 0, ssh = 0;
 int GlobalWSAErr = 0;
 int GlobalNegativeSize = 0;
 int ovrlIPs = 0, ipCounter = 0;
@@ -17,8 +19,10 @@ int gMaxSize = 65536;
 int gMode;
 int OnLiner = 0;
 int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSSHPass = 0;
-int ipsstart[4], ipsend[4], ipsstartfl[8192][4], ipsendfl[8192][4], starterIP[8192][4], 
+int ipsstart[4], ipsend[4], 
 	startNum, endNum, overallPorts, flCounter, octet[4];
+unsigned char ipsstartfl[8192][4], ipsendfl[8192][4], starterIP[8192][4];
+int gPingTimeout = 2000;
 double ips = 0;
 char top_level_domain[128] = {0};
 char startM[64] = {0}, endM[64] = {0};
@@ -27,7 +31,7 @@ char **GlobalNegatives = 0;
 char **loginLst, **passLst;
 char **wfLoginLst, **wfPassLst;
 char **sshlpLst;
-char des1[64] = {0}, res[32]= {0};
+//char des1[64] = {0}, res[32]= {0};
 char saveStartIP[128] = {0};
 char saveEndIP[128] = {0};
 char gRange[128] = {0};
@@ -41,8 +45,9 @@ char metaTargets[256] = {0};
 char metaETA[256] = {0};
 char metaOffline[256] = {0};
 bool ErrLogFirstTime = true;
+bool gPingNScan = false;
 volatile bool ConnLocked = false;
-unsigned long long gTargets = 0, gTargetsOverall = 1, targets;
+unsigned long long gTargets = 0, gTargetsOverall = 1, targets, Activity = 0;
 volatile int gThreads;
 volatile int cons = 0;
 volatile int BA = 0;
@@ -315,6 +320,40 @@ void _SaveBackupToFile()
 
 		strcpy(saveStr, "[IRCNICK]:");
 		strcat(saveStr, ircNick);
+		strcat(saveStr, "\n");
+		strcat(saveBuffer, saveStr);
+		ZeroMemory(saveStr, sizeof(saveStr));
+		
+		strcpy(saveStr, "[PING]:");
+		strcat(saveStr, gPingNScan ? "true" : "false");
+		strcat(saveStr, "\n");
+		strcat(saveBuffer, saveStr);
+		ZeroMemory(saveStr, sizeof(saveStr));
+		
+		strcpy(saveStr, "[PING_TO]:");
+		char tb[16] = {0};
+		strcat(saveStr, itoa(gPingTimeout, tb, 10));
+		strcat(saveStr, "\n");
+		strcat(saveBuffer, saveStr);
+		ZeroMemory(saveStr, sizeof(saveStr));
+
+		strcpy(saveStr, "[THREAD_DELAY]:");
+		ZeroMemory(tb, 16);
+		strcat(saveStr, itoa(gThreadDelay, tb, 10));
+		strcat(saveStr, "\n");
+		strcat(saveBuffer, saveStr);
+		ZeroMemory(saveStr, sizeof(saveStr));
+		
+		strcpy(saveStr, "[TIMEOUT]:");
+		ZeroMemory(tb, 16);
+		strcat(saveStr, itoa(gTimeOut, tb, 10));
+		strcat(saveStr, "\n");
+		strcat(saveBuffer, saveStr);
+		ZeroMemory(saveStr, sizeof(saveStr));
+		
+		strcpy(saveStr, "[MAXBTHR]:");
+		ZeroMemory(tb, 16);
+		strcat(saveStr, itoa(gMaxBrutingThreads, tb, 10));
 		strcat(saveStr, "\n");
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
@@ -693,7 +732,10 @@ void *_tracker()
 					if(strstr(rBuffT, "201 Created") != NULL)
 					{
 #pragma region QTGUI_Area
-						stt->doEmitionYellowFoundData("[NS-Track] -OK. Data saved!");
+						if(gDebugMode) stt->doEmitionYellowFoundData("[NS-Track] -OK. Data saved!");
+						stt->doEmitionDataSaved(true);
+						Sleep(1000);
+						stt->doEmitionDataSaved(false);
 #pragma endregion
 					}
 					else if(strstr(rBuffT, "400 Bad Request") != NULL)
@@ -743,33 +785,13 @@ void *_tracker()
 	};
 };
 
-unsigned long int numOfIpsFL()
-{
-	for(int i = 0; i < flCounter; ++i)
-	{
-		gTargets += (ipsendfl[i][3]-ipsstartfl[i][3])*(ipsendfl[i][2]-ipsstartfl[i][2])*(ipsendfl[i][1]-ipsstartfl[i][1])*(ipsendfl[i][0] - ipsstartfl[i][0]);
-		if (gTargets < 0) gTargets *= (-1);
-		gTargets += (ipsendfl[i][3]-ipsstartfl[i][3]) * (ipsendfl[i][2]-ipsstartfl[i][2]) * (ipsendfl[i][1] - ipsstartfl[i][1]);
-		if (gTargets < 0) gTargets *= (-1);
-		gTargets += (ipsendfl[i][3]-ipsstartfl[i][3] + 1) * (ipsendfl[i][2] - ipsstartfl[i][2] + 1);
-		if (gTargets < 0) gTargets *= (-1);
-	};
-	--gTargets;
-	gTargetsOverall = gTargets;
-	return gTargets;
-};
 unsigned long int numOfIps(int ipsstart[], int ipsend[])
 {
 	gTargets += 256*256*256*(ipsend[0] - ipsstart[0]);
-	if (gTargets < 0) gTargets *= (-1);
 	gTargets += 256 * 256 * (ipsend[1] - ipsstart[1]);
-	if (gTargets < 0) gTargets *= (-1);
 	gTargets += 256 * (ipsend[2] - ipsstart[2]);
-	if (gTargets < 0) gTargets *= (-1);
 	gTargets += (ipsend[3] - ipsstart[3]);
-	if (gTargets < 0) gTargets *= (-1);
-
-	gTargetsOverall = gTargets;
+	gTargetsOverall = gTargets - 1;
 	return gTargets;
 };
 //#include <sys/types.h>
@@ -1505,7 +1527,8 @@ int fInit(int InitMode, char *gR)
 		else
 		{
 			int x; 
-			memcpy(res, "\0", sizeof(res));
+			char des1[64] = {0};
+			//memcpy(res, "\0", sizeof(res));
 
 			for(int i = 0; i < 3; i++)																		//Filling the range-starting ip mass.
 			{
@@ -1589,7 +1612,8 @@ int fInit(int InitMode, char *gR)
 	}
 	else if (InitMode == -1)
 	{
-		targets = numOfIpsFL();
+		//targets = numOfIpsFL();
+		///DUMMY///
 	};
 };
 void FileLoader(char *str)
@@ -1616,7 +1640,6 @@ void FileLoader(char *str)
 				ZeroMemory(curIP, sizeof(curIP));
 				continue;
 			};
-
 
 			if(strstr(curIP, "-") != NULL)
 			{
@@ -1677,6 +1700,11 @@ void FileLoader(char *str)
 					stt->doEmitionRedFoundData(QString(tempMsg));
 					#pragma endregion
 				};
+
+				gTargets += 256*256*256*(ipsendfl[flCounter][0] - ipsstartfl[flCounter][0]);
+				gTargets += 256*256*(ipsendfl[flCounter][1] - ipsstartfl[flCounter][1]);
+				gTargets += 256*(ipsendfl[flCounter][2] - ipsstartfl[flCounter][2]);
+				gTargets += (ipsendfl[flCounter][3] - ipsstartfl[flCounter][3]);
 				++flCounter;
 			}
 			else if(strstr(curIP, "/") != NULL)
@@ -1685,93 +1713,82 @@ void FileLoader(char *str)
 				char *str2;
 				char res[8] = {0}; 
 
+				int mask = 0;
+				char *ptr1 = strstr(curIP, "/");
 				GetOctets(curIP);
 
-				if(strstr(curIP, ".") != NULL) 
+				mask = atoi(ptr1 + 1);
+				unsigned char mOctet[4];
+				mOctet[0] = 1;
+				mOctet[1] = 1;
+				mOctet[2] = 1;
+				mOctet[3] = 1;
+
+				if(mask >= 24)
 				{
-					str1 = strstr(curIP, ".");  //1 byte
-					strncpy(res, curIP, (int)((char*)str1 - curIP));
+					mOctet[0] = 255;
+					mOctet[1] = 255;
+					mOctet[2] = 255;
+					for(int i = 0; i < mask - 24 - 1; ++i)
+					{
+						mOctet[3] = mOctet[3] << 1;
+						mOctet[3] |= 1;
+					};
+					mOctet[3] = mOctet[3] << 8 - (mask - 24);
 				}
-				else strcpy(res, curIP);
-
-				if(strstr(res, "/") != NULL)
+				else if(mask >= 16)
 				{
-					CheckMaskBits(res, flCounter);
-					continue;
+					mOctet[0] = 255;
+					mOctet[1] = 255;
+					for(int i = 0; i < mask - 16 - 1; ++i)
+					{
+						mOctet[2] = mOctet[2] << 1;
+						mOctet[2] |= 1;
+					};
+					mOctet[2] = mOctet[2] << 8 - (mask - 16);
+					mOctet[3] = 0;
 				}
-				else
+				else if(mask >= 8)
 				{
-					starterIP[flCounter][0] = atoi(res);
-					ipsstartfl[flCounter][0] = atoi(res);
-					ipsendfl[flCounter][0] = atoi(res);
-				};
-				ZeroMemory(res, sizeof(res));
-
-				if(strstr(str1 + 1, ".") != NULL) 
-				{
-					str2 = strstr(str1 + 1, "."); //2 byte
-					strncpy(res, str1 + 1, (int)((char*)str2 - str1) - 1);
-				}
-				else strcpy(res, str1 + 1);
-
-				if(strstr(res, "/") != NULL)
-				{
-					CheckMaskBits(res, flCounter);
-					continue;
-				}
-				else
-				{
-					starterIP[flCounter][1] = atoi(res);
-					ipsstartfl[flCounter][1] = atoi(res);
-					ipsendfl[flCounter][1] = atoi(res);
-				};
-
-				ZeroMemory(res, sizeof(res));
-
-				if(strstr(str2 + 1, ".") != NULL) 
-				{
-					str1 = strstr(str2 + 1, "."); //3 byte
-					strncpy(res, str2 + 1, (int)((char*)str1 - str2) - 1);
-				}
-				else strcpy(res, str2 + 1);
-
-				if(strstr(res, "/") != NULL)
-				{
-					CheckMaskBits(res, flCounter);
-					continue;
+					mOctet[0] = 255;
+					for(int i = 0; i < mask - 8 - 1; ++i)
+					{
+						mOctet[1] = mOctet[1] << 1;
+						mOctet[1] |= 1;
+					};
+					mOctet[1] = mOctet[1] << 8 - (mask - 8);
+					mOctet[2] = 0;
+					mOctet[3] = 0;
 				}
 				else
 				{
-					starterIP[flCounter][2] = atoi(res);
-					ipsstartfl[flCounter][2] = atoi(res);
-					ipsendfl[flCounter][2] = atoi(res);
+					for(int i = 0; i < mask - 1; ++i)
+					{
+						mOctet[0] = mOctet[0]<< 1;
+						mOctet[0] |= 1;
+					};
+					mOctet[0] = mOctet[0] << 8 - mask;
+					mOctet[1] = 0;
+					mOctet[2] = 0;
+					mOctet[3] = 0;
+				};
+				
+				unsigned char ocRes = 0;
+				for(int i = 0; i < 4; ++i)
+				{
+					ocRes = octet[i]&mOctet[i];
+					starterIP[flCounter][i] = ocRes;
+					ipsstartfl[flCounter][i] = ocRes;
+					if(mOctet[i] == 255) ipsendfl[flCounter][i] = octet[i];
+					else ipsendfl[flCounter][i] = octet[i]|~mOctet[i];
 				};
 
-				ZeroMemory(res, sizeof(res));
-
-				if(strstr(str1 + 1, ".") != NULL) 
-				{
-					str2 = strstr(str1 + 1, "."); //4 byte
-					strncpy(res, str1 + 1, (int)((char*)str2 - str1) - 1);
-				}
-				else strcpy(res, str1 + 1);
-
-				if(strstr(res, "/") != NULL)
-				{
-					CheckMaskBits(res, flCounter);
-				}
-				else
-				{
-					starterIP[flCounter][3] = atoi(res);
-					ipsstartfl[flCounter][3] = atoi(res);
-					ipsendfl[flCounter][3] = atoi(res);
-				};
-				//=====================================
+				gTargets += pow((float)2, (32 - mask)) - 1;
 				++flCounter;
 			}
 			else if(strstr(curIP, "RESTORE_IMPORT_SESSION") != NULL)
 			{
-
+				///DUMMY///
 			}
 			else
 			{
@@ -1780,8 +1797,10 @@ void FileLoader(char *str)
 #pragma endregion
 			};
 		};
+		gTargetsOverall = gTargets;
+		targets = gTargets;
 
-		stt->doEmitionYellowFoundData("Finished. Stopping threads...");
+		stt->doEmitionYellowFoundData("List loader - [OK] (" + QString::number(gTargetsOverall + 1) + " hosts)");
 		fclose(fl);
 	}
 	else
@@ -1797,18 +1816,92 @@ char *GetCIDRRangeStr(char *str)
 	char start[32] = {0};
 	char end[32] = {0};
 	char buff[16] = {0};
+
+	int mask = 0;
+	char *ptr1 = strstr(str, "/");
 	GetOctets(str);
-	CheckMaskBits(str, flCounter);
 
-	strncpy(start, str, strstr(str, "/") - str);
-	strcpy(end, itoa(ipsendfl[0][0], buff, 10));
-	strcat(end, ".");
-	strcat(end, itoa(ipsendfl[0][1], buff, 10));
-	strcat(end, ".");
-	strcat(end, itoa(ipsendfl[0][2], buff, 10));
-	strcat(end, ".");
-	strcat(end, itoa(ipsendfl[0][3], buff, 10));
+	mask = atoi(ptr1 + 1);
+	unsigned char mOctet[4];
+	mOctet[0] = 1;
+	mOctet[1] = 1;
+	mOctet[2] = 1;
+	mOctet[3] = 1;
 
+	if(mask >= 24)
+	{
+		mOctet[0] = 255;
+		mOctet[1] = 255;
+		mOctet[2] = 255;
+		for(int i = 0; i < mask - 24 - 1; ++i)
+		{
+			mOctet[3] = mOctet[3] << 1;
+			mOctet[3] |= 1;
+		};
+		mOctet[3] = mOctet[3] << 8 - (mask - 24);
+	}
+	else if(mask >= 16)
+	{
+		mOctet[0] = 255;
+		mOctet[1] = 255;
+		for(int i = 0; i < mask - 16 - 1; ++i)
+		{
+			mOctet[2] = mOctet[2] << 1;
+			mOctet[2] |= 1;
+		};
+		mOctet[2] = mOctet[2] << 8 - (mask - 16);
+		mOctet[3] = 0;
+	}
+	else if(mask >= 8)
+	{
+		mOctet[0] = 255;
+		for(int i = 0; i < mask - 8 - 1; ++i)
+		{
+			mOctet[1] = mOctet[1] << 1;
+			mOctet[1] |= 1;
+		};
+		mOctet[1] = mOctet[1] << 8 - (mask - 8);
+		mOctet[2] = 0;
+		mOctet[3] = 0;
+	}
+	else
+	{
+		for(int i = 0; i < mask - 1; ++i)
+		{
+			mOctet[0] = mOctet[0]<< 1;
+			mOctet[0] |= 1;
+		};
+		mOctet[0] = mOctet[0] << 8 - mask;
+		mOctet[1] = 0;
+		mOctet[2] = 0;
+		mOctet[3] = 0;
+	};
+
+	strcpy(start, itoa(octet[0]&mOctet[0], buff, 10));
+	strcat(start, ".");
+	strcat(start, itoa(octet[1]&mOctet[1], buff, 10));
+	strcat(start, ".");
+	strcat(start, itoa(octet[2]&mOctet[2], buff, 10));
+	strcat(start, ".");
+	strcat(start, itoa(octet[3]&mOctet[3], buff, 10));
+	
+	unsigned char tempRes = 0;
+	if(mOctet[0] == 255) tempRes = octet[0];
+	else tempRes = octet[0]|~mOctet[0];
+	strcat(end, itoa(tempRes, buff, 10));
+	strcat(end, ".");
+	if(mOctet[1] == 255) tempRes = octet[1];
+	else tempRes = octet[1]|~mOctet[1];
+	strcat(end, itoa(tempRes, buff, 10));
+	strcat(end, ".");
+	if(mOctet[2] == 255) tempRes = octet[2];
+	else tempRes = octet[2]|~mOctet[2];
+	strcat(end, itoa(tempRes, buff, 10));
+	strcat(end, ".");
+	if(mOctet[3] == 255) tempRes = octet[3];
+	else tempRes = octet[3]|~mOctet[3];
+	strcat(end, itoa(tempRes, buff, 10));
+	
 	strcpy(result, start);
 	strcat(result, "-");
 	strcat(result, end);
@@ -1958,17 +2051,20 @@ int ParseArgs(int argc, char *argv[])
 		portArr[2] = 88;
 		portArr[3] = 8080;
 		portArr[4] = 8081;
-		portArr[5] = 60002;
-		portArr[6] = 8008;
-		portArr[7] = 8888;
-		portArr[8] = 441;
-		portArr[9] = 4111;
-		portArr[10] = 6667;
-		portArr[11] = 3536;
-		portArr[12] = 22;
-		portArr[13] = 21;
+		portArr[5] = 60001;
+		portArr[6] = 60002;
+		portArr[7] = 8008;
+		portArr[8] = 8888;
+		portArr[9] = 554;
+		portArr[10] = 9000;
+		portArr[11] = 441;
+		portArr[12] = 4111;
+		portArr[13] = 6667;
+		portArr[14] = 3536;
+		portArr[15] = 22;
+		portArr[16] = 21;
 
-		overallPorts = 13;
+		overallPorts = 16;
 
 		strcpy(gPorts, "--DEFAULT");
 	};
@@ -2087,13 +2183,16 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 			pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st );
 		};
 #endif
-		Sleep(10);
+		Sleep(gThreadDelay);
 #pragma endregion
 	};
 };
 
 int startScan(char* args)
 {	
+	SSL_library_init();
+
+	horLineFlag = false;
 	flCounter = 0;
 	PieAnomC1 = 0, PieWF = 0, PieBA = 0, PieSusp = 0, PieLowl = 0, PieSSH = 0;
 	AnomC1 = 0, BA = 0, Filt = 0, Overl = 0, Lowl = 0, Alive = 0, Activity = 0, saved = 0, Susp = 0, WF = 0, offlines = 0;
@@ -2152,6 +2251,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 	_passLoginFapper();
 	_NegativeFapper();
 	
+	char res[256] = {0};
 	if(gMode == 0)
 	{
 #if defined(WIN32)
@@ -2220,7 +2320,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 								pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
 							};
 #endif
-							Sleep(10);
+							Sleep(gThreadDelay);
 							++ipsstart[3];
 						};
 						ipsstart[3] = 0;
@@ -2272,9 +2372,56 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
 
 	char dataEntry[1024] = {0};
-	strcpy(dataEntry, saveEndIP);
 
-		int sz = strlen(saveEndIP);
+	int innerCounter = 0;
+	int sz = strlen(saveEndIP);
+	for(int i = 0; i < sz; ++i)
+	{
+		if(saveEndIP[i] == '\\')
+		{
+			if(saveEndIP[i + 1] == 'd')
+			{
+				strcat(dataEntry, "[09]");
+				++i;
+				innerCounter += 4;
+				continue;
+			}
+			else if(saveEndIP[i + 1] == 'w')
+			{
+				strcat(dataEntry, "[0z]");
+				++i;
+				innerCounter += 4;
+				continue;
+			}
+			else if(saveEndIP[i + 1] == 'l')
+			{
+				strcat(dataEntry, "[az]");
+				++i;
+				innerCounter += 4;
+				continue;
+			}
+			else
+			{
+				QString errStr = "Error at mask (Position:" + QString::number(i+1);
+				errStr += ") \"";
+				errStr += QString(saveEndIP).mid(0, i == 0 ? 0 : i);
+				errStr += "<u>";
+				errStr += QString(saveEndIP).mid(i, i == 0 ? i+2 : i+1);
+				errStr += "</u>";
+				errStr += QString(saveEndIP).mid(i+2, strlen(saveEndIP));
+				errStr += "\"";
+
+				stt->doEmitionRedFoundData(errStr);
+				return -1;
+			};
+		}
+		else
+		{
+			memset(dataEntry + innerCounter++, saveEndIP[i], 1);
+		};
+	};
+		memset(dataEntry + innerCounter + 1, '\0', 1);
+
 		for(int i = 0; i < sz; ++i)
 		{
 			if(dataEntry[i] == '[')
@@ -2372,9 +2519,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 #endif
 
 		int eor0 = 0, eor1 = 0, eor2 = 0, eor3 = 0;
-		#pragma region QTGUI_Area
 		stt->doEmitionChangeStatus("Scanning...");
-		#pragma endregion
 		sockstruct *st = NULL;
 		for(gC = 0; gC < flCounter; ++gC)
 		{
@@ -2446,19 +2591,23 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 									pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st );
 								};
 #endif
-								Sleep(10);
+								Sleep(gThreadDelay);
+								if(ipsstartfl[gC][3] == 255) break;
 								if(ipsstartfl[gC][3] <= ipsendfl[gC][3]) ++ipsstartfl[gC][3];
 							};
 							ipsstartfl[gC][3] = 0;
+							if(ipsstartfl[gC][2] == 255) break;
 							if(ipsstartfl[gC][2] <= ipsendfl[gC][2]) ++ipsstartfl[gC][2];
 						};
 						ipsstartfl[gC][3] = 0;
 						ipsstartfl[gC][2] = 0;
+						if(ipsstartfl[gC][1] == 255) break;
 						if(ipsstartfl[gC][1] <= ipsendfl[gC][1]) ++ipsstartfl[gC][1];
 					};	
 					ipsstartfl[gC][3] = 0;
 					ipsstartfl[gC][2] = 0;
 					ipsstartfl[gC][1] = 0;
+					if(ipsstartfl[gC][0] == 255) break;
 					if(ipsstartfl[gC][0] <= ipsendfl[gC][0]) ++ipsstartfl[gC][0];
 				};
 				ipsstartfl[gC][3] = 0;

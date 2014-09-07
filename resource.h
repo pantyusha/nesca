@@ -7,6 +7,7 @@
 #include <time.h>
 #include <process.h>
 #include <conio.h>
+#include <openssl/ssl.h>
 #endif
 #if defined(Q_OS_LINUX)
 #pragma once
@@ -50,7 +51,7 @@ typedef int					BOOL;
 #define TITLE_MAX_LENGTH 512
 #define RECV_MAX_LENGTH 350000
 #define SD_BOTH 2
-#define PORTSET "80,81,88,8080,8081,60002,8008,8888,441,4111,6667,3536,22,21"
+#define PORTSET "80,81,88,8080,8081,60001,60002,8008,8888,554,9000,441,4111,6667,3536,22,21"
 #define IRC_CHAN "iskopasi_lab03"
 
 using namespace std;
@@ -69,7 +70,8 @@ extern QVector<int> vSSHLst;
 extern QVector<int> vOvrlLst;
 extern QVector<QPointF> vect;
 extern bool printDelimiter;
-extern QJsonArray *jsonArr; 
+extern QJsonArray *jsonArr;
+extern bool gPingNScan;
 extern bool smBit_1;
 extern bool smBit_2;
 extern bool smBit_3;
@@ -78,6 +80,7 @@ extern bool smBit_5;
 extern bool smBit_6;
 extern bool smBit_7;
 extern bool smBit_8;
+extern bool horLineFlag;
 extern bool gDebugMode;
 extern bool gNegDebugMode;
 extern bool HTMLDebugMode;
@@ -89,12 +92,14 @@ extern int nickFlag;
 extern int offlineFlag;
 extern bool OnlineMsgSentFlag;
 extern int globalPinger;
+extern int gPingTimeout;
 extern bool destroychPThFlag;
 extern string toLowerStr(const char *str);
 extern QList<int> lstOfLabels;
 extern bool ME2ScanFlag, QoSScanFlag, VoiceScanFlag, PieStatFlag;
-extern int AnomC1, Filt, Overl, Lowl, Alive, Activity, saved, Susp, WF, offlines, ssh;
+extern int AnomC1, Filt, Overl, Lowl, Alive, saved, Susp, WF, offlines, ssh;
 extern int PieAnomC1, PieSusp, PieBA, PieLowl, PieWF, PieSSH;
+extern int gThreadDelay;
 extern bool connectedToIRC;
 extern bool globalScanFlag;
 extern float QoSStep;
@@ -141,14 +146,13 @@ extern int MaxPass, MaxLogin, MaxWFLogin, MaxWFPass, MaxSSHPass;
 extern double ips;
 extern int ovrlIPs, ipCounter;
 extern int mode;
-extern unsigned long long gTargets, gTargetsOverall, targets;
+extern unsigned long long gTargets, gTargetsOverall, targets, Activity;
 extern volatile int BA;
 extern volatile int cons;
 extern volatile int BrutingThrds;
 extern volatile int gThreads;
 extern volatile int threads;
 extern int found, fillerFlag, indexIP;
-extern char timeLeft[64], tempRes[32], des1[64], res[32];
 extern int gMaxSize;
 extern char saveStartIP[128];
 extern char saveEndIP[128];
@@ -156,14 +160,12 @@ extern int gMode;
 extern char gRange[128];
 extern char gFirstDom[128];
 extern char gPorts[65536];
-
+extern int gMaxBrutingThreads;
 extern int OnLiner;
 
-extern int ipsstart[4], ipsend[4], ipsstartfl[8192][4], ipsendfl[8192][4], starterIP[8192][4], 
+extern int ipsstart[4], ipsend[4], 
 	startNum, endNum, overallPorts, flCounter, octet[4];
-
-
-//extern std::vector<std::string> dnsVec;
+extern unsigned char ipsstartfl[8192][4], ipsendfl[8192][4], starterIP[8192][4];
 
 typedef struct ST{ 
     char argv[2048];
@@ -185,6 +187,7 @@ struct PathStr{
 	int flag;
 	int port;
 	char ip[2048];
+	char cookie[1024];
 };
 
 struct pl{
@@ -210,7 +213,7 @@ extern QString GetNSErrorDefinition(char *str, char *defin);
 extern void _SaveBackupToFile();
 extern char* __cdecl strstri(char *_Str, const char *_SubStr);
 extern char* _getAttribute(char *str, char *attrib);
-extern char *FindFirstOcc(char *str, char *delim);
+extern char *_findFirstOcc(char *str, char *delim);
 class Lexems
 	{
 	public:
@@ -228,7 +231,7 @@ class Lexems
 		
 		int _header(char *ip, int port, char str[],  Lexems *l, PathStr *ps, std::vector<std::string> *lst, char *rBuff);
 		int _filler(int p, char* buffcpy, char* ipi, int recd, Lexems *lx, char *hl);
-		int globalSearchNeg(const char *buffcpy, char *ip);
+		int globalSearchNeg(const char *buffcpy, char *ip, int port);
 	};
 
 class Connector
@@ -236,8 +239,8 @@ class Connector
 	public:
 		int _Updater();
 		
-		lopaStr _ftpBrute(char *ip, int port, PathStr *ps);
-		lopaStr _BALobby(char *ip, int port, char *path, char *method, char *data);
+		lopaStr _FTPLobby(char *ip, int port, PathStr *ps);
+		lopaStr _BALobby(char *cookie, char *ip, int port, char *path, char *method, char *data);
 		lopaStr _WFLobby(char *cookie, char *ip, int port, char *methodVal, char *actionVal, char *userVal, char *passVal, char *formVal);
 		lopaStr _IPCameraBLobby(char *ip, int port, char *SPEC);
 		

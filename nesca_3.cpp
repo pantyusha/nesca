@@ -456,8 +456,13 @@ void SetValidators()
 	ui->iptoLine_value->setValidator(validator);
 	ui->iptoLine_value_2->setValidator(validator);
 	ui->iptoLine_value_3->setValidator(validator);
+	ui->maxBrutingThrBox->setValidator(validator);
 
-	validator = new QRegExpValidator(QRegExp("(\\w|-|\\.|\\[|\\])+"), NULL);
+	validator = new QRegExpValidator(QRegExp("\\d{1,5}"), NULL);
+	ui->PingTO->setValidator(validator);
+	ui->threadDelayBox->setValidator(validator);
+	
+	validator = new QRegExpValidator(QRegExp("(\\w|-|\\.|\\[|\\]|\\\\)+"), NULL);
 	ui->lineEditStartIPDNS->setValidator(validator);
 
 	validator = new QRegExpValidator(QRegExp("(\\w|-|\\.)+((\\w|-|\\.)+)+"), NULL);
@@ -781,26 +786,44 @@ void nesca_3::slotDrawActivityGrid()
 
 	int gWidth = ui->graphicActivityGrid->width();
 	int gHeight = ui->graphicActivityGrid->height();
-
-	//Horizontal
-	int th = 0;
-	for(int i = 0; i < 16; i+=2)
-	{
-		th = gHeight - i;
-		sceneActivityGrid->addLine(0, th, gWidth, th, penActivity);
-	};
-
+	
 	//Vertical
 	for(int i = 0; i < 100; i+=10)
 	{
 		sceneActivityGrid->addLine(i, 0, i, gHeight, penActivity);
 	};
 };
-void nesca_3::slotDrawVoiceGrid()
+
+void nesca_3::slotDrawActivityLine(QString data)
+{
+	sceneActivity->clear();
+
+	QPen penActivity(QColor(255, 255, 255), 0.3);
+	int as = 0;
+
+	for(int i = 1; i < actLst.size(); ++i)
+	{
+		as += 2;
+		int al1 = actLst[i];
+		int al12 = actLst[i-1];
+		int yy = 16 - actLst[i - 1];
+		int yy2 = 16 - actLst[i];
+
+		sceneActivity->addLine(as - 2, 16 - actLst[i - 1], as, 16 - actLst[i], penActivity);
+	};
+	QFont fnt;
+	fnt.setFamily("Eurostile");
+	fnt.setPixelSize(9);
+	QGraphicsTextItem *titem = sceneActivity->addText(data, fnt);
+	titem->setX(43 - data.length()*2);
+	titem->setY(-5);
+	titem->setDefaultTextColor(QColor(255, 255, 255, 80));
+};
+void nesca_3::slotDrawVoiceGrid(int factor)
 {
 	sceneGrid->clear();
-	QPen penActivity(QColor(170, 170, 170, 150), 0.1);
-	QPen rpenActivity(QColor(255, 0, 0, 150), 0.1);
+	QPen penActivity(QColor(170, 170, 170, factor), 0.1);
+	QPen rpenActivity(QColor(255, 0, 0, factor), 0.1);
 
 	int gWidth = ui->graphicLog->width();
 	int gHeight = ui->graphicLog->height();
@@ -818,18 +841,6 @@ void nesca_3::slotDrawVoiceGrid()
 	for(int i = 0; i < 270; i+=10)
 	{
 		sceneGrid->addLine(i, 0, i, gHeight, penActivity);
-	};
-};
-void nesca_3::slotDrawActivityLine()
-{
-	sceneActivity->clear();
-	QPen penActivity(QColor(255, 255, 255), 0.3);
-	int as = 0;
-
-	for(int i = 1; i < actLst.size(); ++i)
-	{
-		as += 2;
-		sceneActivity->addLine(as - 2, 16 - actLst[i - 1] - 1, as, 16 - actLst[i] - 1, penActivity);
 	};
 };
 void nesca_3::activateME2ScanScene()
@@ -985,6 +996,7 @@ void nesca_3::activateVoiceScanBut()
 void nesca_3::slotUpdatePie()
 {
 	sceneGraph->clear();
+	vsTh->doEmitDrawGrid(70);
 
 	int goods = saved;
 	int nAlive = found - goods;
@@ -1061,15 +1073,27 @@ void nesca_3::slotUpdatePie()
 	titem->setDefaultTextColor(Qt::darkRed);
 
 	int PieX = 155;
-	int PieW = 114;
+	int PieW = 112;
 
 	//Alives
-	QGraphicsEllipseItem* item = new QGraphicsEllipseItem(PieX, 2, PieW, 97);
-	item->setStartAngle(0);
-	item->setSpanAngle(perc0);
-	item->setBrush(QBrush(Qt::white));
-	sceneGraph->addItem(item);
-	
+	QGraphicsEllipseItem* item = NULL;
+	if(perc0 == 0)
+	{
+		item = new QGraphicsEllipseItem(PieX, 2, PieW, 97);
+		item->setStartAngle(0);
+		perc0 = 16*360;
+		item->setSpanAngle(perc0);
+		item->setBrush(QBrush(QColor(255, 255, 255, 10)));		
+		sceneGraph->addItem(item);	
+	}
+	else
+	{
+		item = new QGraphicsEllipseItem(PieX, 2, PieW, 97);
+		item->setStartAngle(0);
+		item->setSpanAngle(perc0);
+		item->setBrush(QBrush(Qt::white));
+		sceneGraph->addItem(item);	
+	};
 	//Anomalies
 	if(perc1 > 0)
 	{
@@ -1573,7 +1597,7 @@ void nesca_3::SaySmthng()
 	if(ui->shoutBox->text().size() > 0)
 	{
 		char temp[2048] = {0};
-
+		globalPinger = 0;
 		PhraseIndex = 0;
 		if(PhraseLog.size() > 50)
 		{
@@ -1742,7 +1766,6 @@ void nesca_3::slotChangeCPModeTo1251()
 	ui->ircText->verticalScrollBar()->setValue(ui->ircText->verticalScrollBar()->maximum());
 	ui->ircRaw->verticalScrollBar()->setValue(ui->ircRaw->verticalScrollBar()->maximum());
 };
-
 void nesca_3::onLinkClicked(QUrl link)
 {
 	QString lnk = link.toString();
@@ -1761,10 +1784,6 @@ void nesca_3::onLinkClicked(QUrl link)
 	{
 		QDesktopServices::openUrl(link);
 	};
-};
-void nesca_3::SetActivityValue(QString val)
-{
-	ui->labelActivity_Value->setText(val);
 };
 void nesca_3::slotRestartIRC()
 {
@@ -1788,7 +1807,6 @@ void nesca_3::slotIRCGetTopic(QString str)
 	globalIRCText += rData + "\n";
 	ui->ircText->append(rData);
 };
-
 //unsigned char jpgHeader[623] = {
 //	0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01, 0x01, 0x01, 0x00, 0x60, 
 //	0x00, 0x60, 0x00, 0x00, 0xFF, 0xDB, 0x00, 0x43, 0x00, 0x02, 0x01, 0x01, 0x02, 0x01, 0x01, 0x02, 
@@ -2133,7 +2151,6 @@ void nesca_3::slotShowNicks()
 		ui->nickList->lower();
 	};
 };
-
 QRegExp _rOutProt(" HTTP/1.\\d+");
 QRegExp _rOutPath(" /(\\w|\\.|,|/|:|-|_|\\?|!|\\@|#|\\$|%|\\^|&|\\*|\\(|\\)|=|\\+|<|>|;|:|\"|'|~|\\[|\\])* ");
 QRegExp _rOutHost("Host: ((\\w|\\d|\\.|:|/)*)\\r\\n");
@@ -2694,7 +2711,6 @@ QGraphicsRectItem* pbItem = NULL;
 QGraphicsRectItem* pbBlackRectItem = NULL;
 QPen pbPen(QColor(227, 227, 227, 150));
 QFont pbPointerFont;
-
 void nesca_3::slotPBUpdate()
 {
 	int val = this->perc;
@@ -2744,6 +2760,11 @@ void nesca_3::slotPBUpdate()
 	pbScene->addLine(4, 77, 6, 77, pbPen);
 	pbScene->addLine(4, 88, 6, 88, pbPen);
 };
+void nesca_3::changeNSTrackLabel(bool status)
+{
+	if(status) ui->NSTrackStatusLabel->setStyleSheet("background-color: green; border: 1px solid white;");
+	else ui->NSTrackStatusLabel->setStyleSheet("background-color: black; border: 1px solid white;");
+};
 #pragma region "Signal assignments"
 void nesca_3::ConnectEvrthng()
 {
@@ -2786,9 +2807,13 @@ void nesca_3::ConnectEvrthng()
 	connect ( ui->startScanButton_3, SIGNAL( clicked() ), this, SLOT( startScanButtonClicked() ) );
 	connect ( ui->startScanButton_4, SIGNAL( clicked() ), this, SLOT( startScanButtonClickedDNS() ) );
 	connect ( ui->trackerOnOff, SIGNAL( toggled(bool) ), this, SLOT( ChangeTrackerOK(bool) ) );
+	connect ( ui->pingingOnOff, SIGNAL( toggled(bool) ), this, SLOT( ChangePingerOK(bool) ) );
 	connect ( ui->debugFileOnOff, SIGNAL( toggled(bool) ), this, SLOT( ChangeDebugFileState(bool) ) );
 	connect ( ui->importThreads, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelThreads_ValueChanged(QString) ) );
 	connect ( ui->threadLine, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelThreads_ValueChanged(QString) ) );
+	connect ( ui->PingTO, SIGNAL( textChanged(QString) ), this, SLOT( PingTO_ChangeValue(QString) ) );
+	connect ( ui->threadDelayBox, SIGNAL( textChanged(QString) ), this, SLOT( ThreadDelay_ChangeValue(QString) ) );
+	connect ( ui->maxBrutingThrBox, SIGNAL( textChanged(QString) ), this, SLOT( MaxBrutingThr_ChangeValue(QString) ) );
 	connect ( ui->lineEditThread, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelThreads_ValueChanged(QString) ) );
 	connect ( ui->iptoLine_value, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelTO_ValueChanged(QString) ) );
 	connect ( ui->iptoLine_value_2, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelTO_ValueChanged(QString) ) );
@@ -2834,7 +2859,7 @@ void nesca_3::ConnectEvrthng()
 	connect ( stt, SIGNAL(changeBAData(QString)), ui->BAText, SLOT(append(QString)));
 	connect ( stt, SIGNAL(changeGreenBAData(QString)), this, SLOT(appendGreenBAData(QString)));
 	connect ( stt, SIGNAL(changeRedBAData(QString)), this, SLOT(appendRedBAData(QString)));
-	connect ( stt, SIGNAL(SetActivityValue(QString)), this, SLOT(SetActivityValue(QString)));
+	connect ( stt, SIGNAL(signalDataSaved(bool)), this, SLOT(changeNSTrackLabel(bool)));
 	connect ( chPTh, SIGNAL(changeGreenIRCData(QString)), this, SLOT(appendGreenIRCText(QString)));
 	connect ( chPTh, SIGNAL(changeRedIRCData(QString)), this, SLOT(appendRedIRCText(QString)));
 	connect ( chPTh, SIGNAL(changeYellowIRCData(QString)), this, SLOT(appendYellowIRCText(QString)));
@@ -2857,7 +2882,7 @@ void nesca_3::ConnectEvrthng()
 	connect ( ircTh, SIGNAL(setNick(QString)), this, SLOT(setNickBox(QString)));
 	connect ( ircTh, SIGNAL(changeIRCDataOut(QString)), this, SLOT(appendDefaultIRCTextOut(QString)));
 	connect ( ircTh, SIGNAL(notifyPlay()), this, SLOT(playFcknSound()));
-	connect ( adtHN, SIGNAL(sDrawActivityLine()), this, SLOT(slotDrawActivityLine()));
+	connect ( adtHN, SIGNAL(sDrawActivityLine(QString)), this, SLOT(slotDrawActivityLine(QString)));
 	connect ( adtHN, SIGNAL(sDrawGrid()), this, SLOT(slotDrawActivityGrid()));
 	connect ( dtHN, SIGNAL(sAddDelimLines()), this, SLOT(slotDrawDelimLines()));
 	connect ( dtHN, SIGNAL(sDrawGrid()), this, SLOT(slotDrawGrid()));
@@ -2868,7 +2893,7 @@ void nesca_3::ConnectEvrthng()
 	connect ( dtGridQoS, SIGNAL(sAddLine()), this, SLOT(slotQoSAddGrid()));
 	connect ( dtGridQoS, SIGNAL(sAddDelimLines()), this, SLOT(slotQoSDrawDelimLines()));
 	connect ( vsTh, SIGNAL(sAddLine()), this, SLOT(slotVoiceAddLine()));
-	connect ( vsTh, SIGNAL(sDrawGrid()), this, SLOT(slotDrawVoiceGrid()));
+	connect ( vsTh, SIGNAL(sDrawGrid(int)), this, SLOT(slotDrawVoiceGrid(int)));
 	connect ( vsTh, SIGNAL(sDrawTextPlacers()), this, SLOT(slotDrawTextPlacers()));
 	connect ( psTh, SIGNAL(sUpdatePie()), this, SLOT(slotUpdatePie()) );
 	connect ( irc_nmb, SIGNAL(sBlinkMessage()), this, SLOT(slotBlinkMessage()) );
@@ -3026,6 +3051,58 @@ void RestoreSession()
 				if(strlen(lex) > 1) 
 				{
 					lex[strlen(lex) - 1] = '\0';
+				};
+			}
+			else if(strstr(resStr, "[PING]:") != NULL)	
+			{
+				lex = strstr(resStr, "[PING]:") + strlen("[PING]:");
+
+				if(strlen(lex) > 1) 
+				{
+					lex[strlen(lex) - 1] = '\0';
+					ui->pingingOnOff->setChecked(strcmp(lex, "true") == 0 ? true : false);
+				};
+			}
+			else if(strstr(resStr, "[PING_TO]:") != NULL)	
+			{
+				lex = strstr(resStr, "[PING_TO]:") + strlen("[PING_TO]:");
+
+				if(strlen(lex) > 1) 
+				{
+					lex[strlen(lex) - 1] = '\0';
+					ui->PingTO->setText(QString(lex));
+				};
+			}
+			else if(strstr(resStr, "[THREAD_DELAY]:") != NULL)	
+			{
+				lex = strstr(resStr, "[THREAD_DELAY]:") + strlen("[THREAD_DELAY]:");
+
+				if(strlen(lex) > 1) 
+				{
+					lex[strlen(lex) - 1] = '\0';
+					ui->threadDelayBox->setText(QString(lex));
+				};
+			}
+			else if(strstr(resStr, "[TIMEOUT]:") != NULL)	
+			{
+				lex = strstr(resStr, "[TIMEOUT]:") + strlen("[TIMEOUT]:");
+
+				if(strlen(lex) > 1) 
+				{
+					lex[strlen(lex) - 1] = '\0';
+					ui->iptoLine_value->setText(QString(lex));
+					ui->iptoLine_value_2->setText(QString(lex));
+					ui->iptoLine_value_3->setText(QString(lex));
+				};
+			}
+			else if(strstr(resStr, "[MAXBTHR]:") != NULL)	
+			{
+				lex = strstr(resStr, "[MAXBTHR]:") + strlen("[MAXBTHR]:");
+
+				if(strlen(lex) > 1) 
+				{
+					lex[strlen(lex) - 1] = '\0';
+					ui->maxBrutingThrBox->setText(QString(lex));
 				};
 			}
 			else if(strstr(resStr, "[PERSKEY]:") != NULL)	
@@ -3243,7 +3320,7 @@ void _startMsgCheck()
 
 	_startVerCheck();
 	_startMsgCheck();
-}
+};
 void nesca_3::playFcknSound()
 {
 	QSound::play("00000036.wav");	
@@ -3294,6 +3371,20 @@ void nesca_3::ChangeTrackerOK(bool val)
 {
 	trackerOK = val;
 };
+void nesca_3::ChangePingerOK(bool val)
+{
+	ui->PingTO->setEnabled(val);
+	gPingNScan = val;
+	if(val == false)
+	{
+		ui->PingTO->setStyleSheet("color: rgb(116, 116, 116);background-color: rgb(56, 56, 56);border:none;");
+	}
+	else
+	{
+		ui->PingTO->setStyleSheet("color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;");
+	};
+};
+
 
 void nesca_3::ChangeDebugFileState(bool val)
 {
@@ -3428,7 +3519,6 @@ void nesca_3::STTTerminate()
 	stt->doEmitionChangeBA("0");
 	BrutingThrds = 0;
 	cons = 0;
-	ui->labelActivity_Value->setText("0");
 	setButtonStyleArea();
 	ui->lineEditStartIPDNS->setText("");
 	ui->startScanButton_3->setText("Start");
@@ -3583,6 +3673,18 @@ void nesca_3::ChangeLabelTO_ValueChanged(QString str)
 void nesca_3::ChangeLabelThreads_ValueChanged(QString str)
 {
 	gThreads = str.toInt();
+};
+void nesca_3::PingTO_ChangeValue(QString str)
+{
+	gPingTimeout = str.toInt();
+};
+void nesca_3::ThreadDelay_ChangeValue(QString str)
+{
+	gThreadDelay = str.toInt();
+};
+void nesca_3::MaxBrutingThr_ChangeValue(QString str)
+{
+	gMaxBrutingThreads = str.toInt();
 };
 void nesca_3::appendRedBAData(QString str)
 {

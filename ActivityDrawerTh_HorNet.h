@@ -8,11 +8,11 @@ class ActivityDrawerTh_HorNet : public QThread
 {
 	Q_OBJECT
 
-public: signals: void sDrawActivityLine();
+public: signals: void sDrawActivityLine(QString);
 public: signals: void sDrawGrid();
 
 public:
-	static void doEmitDrawActivityLine();
+	static void doEmitDrawActivityLine(QString data);
 	static void doEmitDrawGrid();
 protected:
 	void run();

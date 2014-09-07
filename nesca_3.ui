@@ -370,7 +370,7 @@
         <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
        </property>
        <property name="text">
-        <string>80,81,88,8080,8081,60002,8008,8888,441,4111,6667,3536,22,21</string>
+        <string>80,81,88,8080,8081,60001,60002,8008,8888,554,9000,441,4111,6667,3536,22,21</string>
        </property>
        <property name="maxLength">
         <number>4096</number>
@@ -674,7 +674,7 @@
         <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);</string>
        </property>
        <property name="text">
-        <string>80,81,88,8080,8081,60002,8008,8888,441,4111,6667,3536,22,21</string>
+        <string>80,81,88,8080,8081,60001,60002,8008,8888,554,9000,441,4111,6667,3536,22,21</string>
        </property>
        <property name="maxLength">
         <number>4096</number>
@@ -975,7 +975,7 @@ color: rgb(214, 214, 0);</string>
         <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);</string>
        </property>
        <property name="text">
-        <string>80,81,88,8080,8081,60002,8008,8888,441,4111,6667,3536,22,21</string>
+        <string>80,81,88,8080,8081,60001,60002,8008,8888,554,9000,441,4111,6667,3536,22,21</string>
        </property>
        <property name="placeholderText">
         <string>80,81,8080,8888,21,6667,7000</string>
@@ -1173,7 +1173,7 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>250</x>
-         <y>30</y>
+         <y>10</y>
          <width>121</width>
          <height>20</height>
         </rect>
@@ -1203,7 +1203,7 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>30</y>
+         <y>10</y>
          <width>211</width>
          <height>20</height>
         </rect>
@@ -1233,7 +1233,7 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>60</y>
+         <y>35</y>
          <width>341</width>
          <height>20</height>
         </rect>
@@ -1263,7 +1263,7 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>379</x>
-         <y>30</y>
+         <y>10</y>
          <width>62</width>
          <height>20</height>
         </rect>
@@ -1293,7 +1293,7 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>380</x>
-         <y>60</y>
+         <y>35</y>
          <width>61</width>
          <height>23</height>
         </rect>
@@ -1335,6 +1335,200 @@ border-radius: 3px;</string>
        </property>
        <property name="checked">
         <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="pingingOnOff">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>70</y>
+         <width>85</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string>Ping hosts before connection attempts. (For bad internet-providers)</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>Ping hosts</string>
+       </property>
+       <property name="shortcut">
+        <string>Ctrl+S</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="PingTO">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>390</x>
+         <y>70</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(116, 116, 116);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>2000</string>
+       </property>
+       <property name="maxLength">
+        <number>5</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>100</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>71</y>
+         <width>68</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>Ping timeout:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="threadDelayBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>390</x>
+         <y>90</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>10</string>
+       </property>
+       <property name="maxLength">
+        <number>5</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>100</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>90</y>
+         <width>68</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>Thread delay:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="MaxBrutingThrLabel">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>105</y>
+         <width>62</width>
+         <height>26</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>7</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>Max bruting
+ threads:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="maxBrutingThrBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>390</x>
+         <y>110</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>200</string>
+       </property>
+       <property name="maxLength">
+        <number>3</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>100</string>
        </property>
       </widget>
      </widget>
@@ -1611,7 +1805,7 @@ border-radius: 3px;</string>
       <rect>
        <x>20</x>
        <y>445</y>
-       <width>451</width>
+       <width>453</width>
        <height>326</height>
       </rect>
      </property>
@@ -1692,7 +1886,7 @@ p, li { white-space: pre-wrap; }
       <number>1</number>
      </property>
      <property name="text">
-      <string>Saved/Filtered:</string>
+      <string>Saved/Online:</string>
      </property>
      <property name="wordWrap">
       <bool>false</bool>
@@ -2367,7 +2561,7 @@ p, li { white-space: pre-wrap; }
       <rect>
        <x>20</x>
        <y>445</y>
-       <width>451</width>
+       <width>453</width>
        <height>326</height>
       </rect>
      </property>
@@ -2462,12 +2656,12 @@ background-color: #000000;</string>
       <string>:NS-IRC</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelActivity">
+    <widget class="QLabel" name="labelTracker">
      <property name="geometry">
       <rect>
        <x>200</x>
        <y>783</y>
-       <width>41</width>
+       <width>45</width>
        <height>10</height>
       </rect>
      </property>
@@ -2495,31 +2689,10 @@ background-color: #000000;</string>
       <number>1</number>
      </property>
      <property name="text">
-      <string>Activity:</string>
+      <string>NS-Track:</string>
      </property>
      <property name="wordWrap">
       <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelActivity_Value">
-     <property name="geometry">
-      <rect>
-       <x>247</x>
-       <y>783</y>
-       <width>116</width>
-       <height>10</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Eurostile</family>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="text">
-      <string>0b</string>
      </property>
     </widget>
     <widget class="QGraphicsView" name="graphicActivityGrid">
@@ -2646,7 +2819,7 @@ background-color: #000000;</string>
     <widget class="QPushButton" name="clearLogBut">
      <property name="geometry">
       <rect>
-       <x>472</x>
+       <x>475</x>
        <y>445</y>
        <width>16</width>
        <height>21</height>
@@ -2985,6 +3158,25 @@ background-color: #000000;</string>
       <bool>false</bool>
      </property>
     </widget>
+    <widget class="QLabel" name="NSTrackStatusLabel">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>249</x>
+       <y>785</y>
+       <width>8</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: black; border: 1px solid white;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
     <zorder>graphicTextPlacer</zorder>
     <zorder>BAText</zorder>
     <zorder>labelNesca_3</zorder>
@@ -3032,8 +3224,7 @@ background-color: #000000;</string>
     <zorder>labelOffline_Value</zorder>
     <zorder>switcherBut</zorder>
     <zorder>IRCModeBut</zorder>
-    <zorder>labelActivity</zorder>
-    <zorder>labelActivity_Value</zorder>
+    <zorder>labelTracker</zorder>
     <zorder>graphicActivityGrid</zorder>
     <zorder>graphicActivity</zorder>
     <zorder>VoiceScanBut</zorder>
@@ -3054,6 +3245,7 @@ background-color: #000000;</string>
     <zorder>DredLabel</zorder>
     <zorder>labelSSH</zorder>
     <zorder>rVerLabel</zorder>
+    <zorder>NSTrackStatusLabel</zorder>
    </widget>
    <widget class="QWidget" name="widgetIRC" native="true">
     <property name="geometry">

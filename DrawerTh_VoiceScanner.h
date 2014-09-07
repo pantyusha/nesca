@@ -11,11 +11,11 @@ class DrawerTh_VoiceScanner : public QThread
 
 public:
 public: signals: void sAddLine();
-public: signals: void sDrawGrid();
+public: signals: void sDrawGrid(int factor);
 public: signals: void sDrawTextPlacers();
 public:
 	void doEmitAddLine();
-	void doEmitDrawGrid();
+	void doEmitDrawGrid(int factor);
 	void doEmitDrawTextPlacers();
 protected:
 	void run();

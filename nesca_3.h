@@ -52,6 +52,10 @@ protected:
 	QString GetSSLContent(QString str);
 	void SSLConnect(QString str);
 	protected slots:
+		void MaxBrutingThr_ChangeValue(QString str);
+		void ThreadDelay_ChangeValue(QString val);
+		void ChangePingerOK(bool val);
+		void changeNSTrackLabel(bool status);
 		void slotPBUpdate();
 		void DNSLine_ValueChanged(QString str);
 		void slotChangeCPModeToUTF();
@@ -79,7 +83,7 @@ protected:
 		void slotUpdatePie();
 		void slotClearLogs();
 		void slotRestartIRC();
-		void slotDrawVoiceGrid();
+		void slotDrawVoiceGrid(int factor);
 		void slotDrawTextPlacers();
 		void onLinkClicked(QUrl link);
 		void CheckPersKey();
@@ -97,7 +101,8 @@ protected:
 		void slotQoSAddGrid();
 		void slotVoiceAddLine();
 		void slotDrawDelimLines();
-		void slotDrawActivityLine();
+		void slotDrawActivityLine(QString data);
+		void slotDrawActivityGrid();
 		void activateME2ScanScene();
 		void activateQoSScanBut();
 		void activateVoiceScanBut();
@@ -106,7 +111,6 @@ protected:
 		void slotQoSAddLine();
 		void slotAddLine(int x1, int y1, int x2, int y2);
 		void slotDrawGrid();
-		void slotDrawActivityGrid();
 		void exitButtonClicked();
 		void trayButtonClicked();
 		void mouseMoveEvent(QMouseEvent * event);
@@ -116,9 +120,9 @@ protected:
 		void startScanButtonClicked();
 		void startScanButtonClickedDNS();
 		void saveOptions();
-		void SetActivityValue(QString val);
 		void ChangeTrackerOK(bool val);
 		void ChangeLabelThreads_ValueChanged(QString);
+		void PingTO_ChangeValue(QString);
 		void ChangeLabelTO_ValueChanged(QString);
 		void appendErrText(QString str);
 		void appendOKText(QString str);

@@ -11,6 +11,7 @@ class STh : public QThread
 public:
 
 public:
+	static void doEmitionDataSaved(bool status);
 	static void doEmitionStartScanIP();
 	static void doEmitionStartScanDNS();
 	static void doEmitionStartScanImport();
@@ -32,18 +33,16 @@ public:
 	static void doEmitionChangeBA(QString);
 	static void doEmitionOffline(QString);
 	static void doEmitionBAData(QString str);
-	static void doEmitionSetActivityValue(QString);
 	static void doEmitionDebugFoundData(QString);
 	static void doEmitionShowRedVersion();
-signals:
 
-	
+signals:
 public: signals: void showRedVersion();
 public: signals: void startScanIP();
 public: signals: void startScanDNS();
 public: signals: void startScanImport();
 
-public: signals: void SetActivityValue(QString);
+public: signals: void signalDataSaved(bool);
 public: signals: void changeGreenBAData(QString);
 public: signals: void changeRedBAData(QString);
 public: signals: void changeBAData(QString);

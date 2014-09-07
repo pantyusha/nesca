@@ -88,15 +88,14 @@ void STh::doEmitionChangeBA(QString str)
 {
 	emit stt->changeBAValue(str);	
 };
-void STh::doEmitionSetActivityValue(QString str)
-{
-	emit stt->SetActivityValue(str);
-};
 void STh::doEmitionOffline(QString str)
 {
 	emit stt->changeOffline(str);		
 };
-
+void STh::doEmitionDataSaved(bool status)
+{
+	emit stt->signalDataSaved(status);		
+};
 void STh::run() 
 {
 	startScan(inputStr);

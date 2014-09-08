@@ -1475,13 +1475,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	if(flag == -1 || flag == 6 || strstr(finalstr, "[IGNR_ADDR]") != NULL) return -1;
 
 	fillerFlag = 1;
-
-	if(strstri(finalstr, "WebDAV") != NULL)
-	{
-		_specBrute(ps.cookie, ip, p, hl, finalstr, flag, "/auth-digest", "[DIGEST]", "Basic Authorization", cp, recd, buffcpy);		
-	};
-
-
+	
 #pragma region Fillers
 
 	if(flag == 16) 

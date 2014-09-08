@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include "DrawerTh_HorNet.h"
 
 void DrawerTh_HorNet::run()
@@ -40,47 +39,4 @@ void DrawerTh_HorNet::doEmitionAddLine(int x1, int y1, int x2, int y2)
 void DrawerTh_HorNet::doEmitionAddDelimLines()
 {
 	emit dtHN->sAddDelimLines();
-=======
-#include "DrawerTh_HorNet.h"
-
-void DrawerTh_HorNet::run()
-{
-	qsrand (QDateTime::currentMSecsSinceEpoch());
-	int factor = 0;
-
-	int gWidth = ui->graphicLog->width();
-	int gHeight = ui->graphicLog->height();
-
-	dtHN->doEmitionAddDelimLines();
-
-	while(ME2ScanFlag)
-	{
-		if(widgetIsHidden == false && tray->isVisible() == false)
-		{
-			++factor > 9 ? factor = 0 : NULL;
-			dtHN->doEmitionDrawGrid();
-
-			for(int i = 0; i < gHeight; i += 10) 
-			{
-				QApplication::processEvents();
-				dtHN->doEmitionAddLine(0, i + factor, gWidth, i + factor);
-				QApplication::processEvents();
-			};
-		};
-		msleep(200);
-	};
-};
-
-void DrawerTh_HorNet::doEmitionDrawGrid()
-{
-	emit dtHN->sDrawGrid();
-};
-void DrawerTh_HorNet::doEmitionAddLine(int x1, int y1, int x2, int y2)
-{
-	emit dtHN->sAddLine(x1, y1, x2, y2);
-};
-void DrawerTh_HorNet::doEmitionAddDelimLines()
-{
-	emit dtHN->sAddDelimLines();
->>>>>>> 5d30af667b7f24c6e91d2bf1888215f755b4378d
 };

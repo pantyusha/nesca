@@ -274,6 +274,8 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 	if(strstr(buffcpy, "ip surveillance") != NULL && strstr(buffcpy, "customer login") != NULL) return 39; //EagleEye
 	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/admin/index.shtml?") != NULL) return 40; //Network Camera VB-C300
 	if(strstr(buffcpy, "sq-webcam") != NULL && strstr(buffcpy, "liveview.html") != NULL) return 41; //AVIOSYS-camera
+	if(strstr(buffcpy, "nw_camera") != NULL && strstr(buffcpy, "/cgi-bin/getuid") != NULL) return 42; //NW_camera
+	if(strstr(buffcpy, "micros") != NULL && strstr(buffcpy, "/gui/gui_outer_frame.shtml") != NULL) return 43; //NW_camera
 	 
 	if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
 		(strstri(buffcpy, "220 diskStation ftp server ready") != NULL) ||
@@ -284,9 +286,8 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
 		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
 		|| strstr(buffcpy, "network camera server") != NULL
-		|| strstr(buffcpy, "ipcamera") != NULL			|| strstr(buffcpy, "$lock extended") != NULL
+		|| strstr(buffcpy, "$lock extended") != NULL
 		|| strstr(buffcpy, "ip camera") != NULL
-		|| strstr(buffcpy, "ipcam_language") != NULL
 		|| strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
 		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
 		|| strstr(buffcpy, "ipcam") != NULL
@@ -340,6 +341,8 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 	if(strstr(buffcpy, "ip surveillance") != NULL && strstr(buffcpy, "customer login") != NULL) return 39; //EagleEye
 	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/admin/index.shtml?") != NULL) return 40; //Network Camera VB-C300
 	if(strstr(buffcpy, "sq-webcam") != NULL && strstr(buffcpy, "liveview.html") != NULL) return 41; //AVIOSYS-camera
+	if(strstr(buffcpy, "nw_camera") != NULL && strstr(buffcpy, "/cgi-bin/getuid") != NULL) return 42; //NW_camera
+	if(strstr(buffcpy, "micros") != NULL && strstr(buffcpy, "/gui/gui_outer_frame.shtml") != NULL) return 43; //NW_camera
 
 	if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
 		(strstr(buffcpy, "220 diskStation ftp server ready") != NULL) ||
@@ -351,9 +354,8 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
 		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
 		|| strstr(buffcpy, "network camera server") != NULL
-		|| strstr(buffcpy, "ipcamera") != NULL			|| strstr(buffcpy, "$lock extended") != NULL
+		|| strstr(buffcpy, "$lock extended") != NULL
 		|| strstr(buffcpy, "ip camera") != NULL
-		|| strstr(buffcpy, "ipcam_language") != NULL
 		|| strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
 		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
 		|| strstr(buffcpy, "ipcam") != NULL
@@ -372,7 +374,7 @@ int ContentFilter(char *buff, int port, char *ip, char *cp)
 		int sz = strlen(buff);
 		int res = 0;
 		char *lBuff = new char[sz + 1];
-		ZeroMemory(lBuff, sizeof(lBuff));
+		ZeroMemory(lBuff, sz + 1);
 		if(strstr(cp, "1251") != NULL)
 		{
 			strcpy(lBuff, toLowerStr(buff).c_str());
@@ -452,7 +454,7 @@ int __checkFileExistence(int flag)
 	else if(flag == 0 || flag == 15 || flag == -10) strcpy(fileName, "./result_files/strange.html");
 	else if(flag == 3) strcpy(fileName, "./result_files/other.html");
 	else if(flag == 7) strcpy(fileName, "./result_files/low_loads.html");
-	else if(flag == 10) strcpy(fileName, "./result_files/Login_forms.html");
+	else if(flag == 10) strcpy(fileName, "./result_files/LoginForms.html");
 	else if(flag == 16) strcpy(fileName, "./result_files/FTP.html");
 	else if(flag >= 17 || flag == 11 || flag == 12 
 		|| flag == 13 || flag == 14 || flag == 1) strcpy(fileName, "./result_files/Basicauth.html");
@@ -506,7 +508,7 @@ void fputsf(char *ip, char *port, char *text, int flag, char *msg)
 	else if(flag == 10) 
 	{
 		if(ftsLF) ftsLF					= __checkFileExistence(flag);
-		file = fopen("./result_files/Login_forms.html", "a");
+		file = fopen("./result_files/LoginForms.html", "a");
 	}
 	else if(flag == 16) 
 	{
@@ -1377,15 +1379,6 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	char b[16] = {0};
 	
 	if(	strstr(buffcpy, "[IGNR_ADDR]") != NULL ) return -1;
-	if(strstri(buffcpy, "404 file not found") != NULL)	
-	{
-		if(gNegDebugMode)
-		{
-			stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(p) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(p) + "</font></a>" + "] Negative hit: \"" + QString::fromLocal8Bit("404 Not Found").toHtmlEscaped() + "\"");
-		};
-		++Filt;
-		return -1;
-	};
 	if(p == 22)
 	{
 		flag = -22;
@@ -1480,10 +1473,16 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	strcpy(port, itoa(p, b, 10));
 
 	if(strstr(finalstr, ps.headr) == NULL) strcat(finalstr, ps.headr);
-	if(strstr(finalstr, "Error - Bad Address") != NULL) flag = 5;
-	else if(flag == -1 || flag == 6 || strstr(finalstr, "[IGNR_ADDR]") != NULL) return -1;
+	if(flag == -1 || flag == 6 || strstr(finalstr, "[IGNR_ADDR]") != NULL) return -1;
 
 	fillerFlag = 1;
+
+	if(strstri(finalstr, "WebDAV") != NULL)
+	{
+		_specBrute(ps.cookie, ip, p, hl, finalstr, flag, "/auth-digest", "[DIGEST]", "Basic Authorization", cp, recd, buffcpy);		
+	};
+
+
 #pragma region Fillers
 
 	if(flag == 16) 
@@ -1684,6 +1683,14 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	else if(flag == 41) //AVIOSYS-camera
 	{
 		_specWEBIPCAMBrute(ip, p, hl, "[AVIOSYS] IP Camera", flag, "[AVIOSYS] IP Camera", "Basic Authorization", cp, recd, "AVIOSYS");
+	}
+	else if(flag == 42) //NW_camera
+	{
+		_specBrute(ps.cookie, ip, p, hl, "[NW_camera] IP Camera", flag, "/cgi-bin/getuid?FILE=indexnw.html", "[NW_camera] IP Camera", "Basic Authorization", cp, recd, "");
+	}
+	else if(flag == 43) //NW_camera
+	{
+		_specBrute(ps.cookie, ip, p, hl, "[Micros] IP Camera", flag, "/gui/rem_display.shtml", "[Micros] IP Camera", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 20) //AXIS Camera
 	{
@@ -2357,12 +2364,6 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 		strcpy(ps->headr, "[IRC server]"); 
 		strcpy(ps->path, "/");  return 1; 
 	};
-	if(strstri(str, "Error - Bad Address")) 
-	{ strcpy(ps->headr, str); strcpy(ps->path, "/");  return 0; };
-	if(strstri(str, "[OVERFLOW]") != NULL) 
-	{ strcpy(ps->headr, "[OVERFLOW]"); strcpy(ps->path, "/");  return 0; };
-	if(strstri(str, "site introuvable !") != NULL) 
-	{ strcpy(ps->headr, "[Site introuvable !]"); strcpy(ps->path, "/");  return 0; };
 	if(strstri(str, "ip camera") != NULL || strstri(str, "+tm01+") != NULL 
 		|| strstri(str, "camera web server") != NULL	|| strstri(str, "ipcam_language") != NULL
 		|| strstri(str, "/viewer/video.jpg") != NULL	|| strstri(str, "network camera") != NULL
@@ -2413,7 +2414,7 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 				if(tmp != NULL)
 				{
 					strncat(newLoc, temp + 10, res < 128 ? res : 127);			
-					if(strstr(newLoc, "http://") == NULL && strstr(newLoc, "https://") == NULL)
+					if(strstri(newLoc, "http://") == NULL && strstri(newLoc, "https://") == NULL)
 					{
 						if(newLoc[0] != '.')
 						{

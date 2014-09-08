@@ -18,6 +18,7 @@ is still available
 php framework
 BlueBean
 403 forbidden
+404 not found
 504 gateway timeout
 500 internal server error
 500 - internal server error
@@ -81,6 +82,7 @@ application/x-shockwave-flash
 /product.php
 /rpauth.html
 /servlet/wap/login
+site introuvable
 shop
 /buy
 /sell
@@ -277,7 +279,6 @@ domeingeregistreerd
 down for maint
 draytek corp
 dreambox webcontrol
-drug shop
 drupal
 Dreamweaver MX
 due to maintance
@@ -458,8 +459,6 @@ oncell warning
 one time payment
 one web server
 online dating
-online pills
-online shop
 online store
 oracle application server
 our partners
@@ -473,12 +472,11 @@ page=about
 pagerrorimg
 pagos
 parkerad
-Parking.
+parking.
 paradox ip module
 parallels confixx
 parallels operations automation default
 parent.location=
-parking.php
 partners
 paypal
 pharmacy
@@ -548,8 +546,7 @@ samsung digital
 sapphire journal
 sbuilder.ru
 scam_2nd.sis
-search...
-search.html
+search.
 searchnut.com
 searchpage.aspx
 searchremagnified
@@ -563,11 +560,6 @@ server default page
 service client
 servicio
 shared ip
-shop.
-shop online
-shop_id=
-shopcart
-shopping cart
 sign in now
 silverlight
 sistema fenix

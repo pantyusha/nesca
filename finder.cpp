@@ -483,7 +483,6 @@ void fputsf(char *ip, char *port, char *text, int flag, char *msg)
 {
 	FILE *file = NULL;
 	bool firstTimeYeah = false;
-		
 #pragma region FileExistenceCheck
 	if(flag == 0 || flag == 15 || flag == -10) 
 	{

@@ -59,7 +59,6 @@ void SSHConDec()
 	stt->doEmitionChangeBA(QString::number(BrutingThrds));
 #pragma endregion
 };
-
 bool debugWriteWait = false;
 void _DebugWriteHTMLToFile(char *request, char *buff)
 {

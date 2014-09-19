@@ -2,8 +2,7 @@
 #define CHECKKEY_TH_H
 
 #pragma once
-#include "nesca_3.h"
-#include "resource.h"
+#include "STh.h"
 extern int emitIfOK;
 class CheckKey_Th : public QThread
 {

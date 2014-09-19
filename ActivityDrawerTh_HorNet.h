@@ -2,7 +2,7 @@
 #define ACTIVITYDRAWERTH_HORNET_H
 
 #pragma once
-#include "nesca_3.h"
+#include "STh.h"
 
 class ActivityDrawerTh_HorNet : public QThread
 {

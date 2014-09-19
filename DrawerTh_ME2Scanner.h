@@ -2,8 +2,7 @@
 #define DRAWERTH_ME2SCANNER_H
 
 #pragma once
-#include "nesca_3.h"
-#include "resource.h"
+#include "STh.h"
 
 class DrawerTh_ME2Scanner : public QThread
 {

@@ -48,8 +48,10 @@ typedef int					BOOL;
 #endif
 
 #define MAX_ADDR_LEN 128
-#define TITLE_MAX_LENGTH 512
-#define RECV_MAX_LENGTH 350000
+#define TITLE_MAX_SIZE 512
+#define RECV_MAX_SIZE 350000
+#define REQUEST_MAX_SIZE 4096
+#define COOKIE_MAX_SIZE 1024
 #define SD_BOTH 2
 #define PORTSET "80,81,88,8080,8081,60001,60002,8008,8888,554,9000,441,4111,6667,3536,22,21"
 #define IRC_CHAN "iskopasi_lab03"
@@ -134,12 +136,7 @@ extern int stopGlobalLog;
 extern int GlobalNegativeSize;
 extern char* thrds, top_level_domain[128];
 extern char startM[64], endM[64];
-struct workerStruct
-{
-	int id;
-	bool giveMeMore;
-	char argv[MAX_ADDR_LEN];
-};
+
 extern char **GlobalNegatives;
 extern char **loginLst, **passLst, **wfLoginLst, **wfPassLst, **sshlpLst;
 extern int MaxPass, MaxLogin, MaxWFLogin, MaxWFPass, MaxSSHPass;
@@ -162,39 +159,36 @@ extern char gFirstDom[128];
 extern char gPorts[65536];
 extern int gMaxBrutingThreads;
 extern int OnLiner;
-
+extern bool __savingBackUpFile;
+extern unsigned int importFileSize;
 extern int ipsstart[4], ipsend[4], 
 	startNum, endNum, overallPorts, flCounter, octet[4];
-extern unsigned char ipsstartfl[8192][4], ipsendfl[8192][4], starterIP[8192][4];
+//extern unsigned char ipsstartfl[8192][4], ipsendfl[8192][4], starterIP[8192][4];
+extern unsigned char **ipsstartfl, **ipsendfl, **starterIP;
 
 typedef struct ST{ 
-    char argv[2048];
+    char argv[MAX_ADDR_LEN];
 }sockstruct;
-
 struct conSTR{
 	char *lowerBuff;
 	int size;
 };
-
 struct assClSt{
 	const char *argv2;
 };
-
 struct PathStr{
 	char codepage[32];
-	char headr[TITLE_MAX_LENGTH];
+	char headr[TITLE_MAX_SIZE];
 	char path[1024];
 	int flag;
 	int port;
-	char ip[2048];
-	char cookie[1024];
+	char ip[MAX_ADDR_LEN];
+	char cookie[COOKIE_MAX_SIZE];
 };
-
 struct pl{
 	int loginCounter;
 	int passCounter;
 };
-
 struct lopaStr{
 	char login[128];
 	char pass[32];
@@ -214,6 +208,7 @@ extern void _SaveBackupToFile();
 extern char* __cdecl strstri(char *_Str, const char *_SubStr);
 extern char* _getAttribute(char *str, char *attrib);
 extern char *_findFirstOcc(char *str, char *delim);
+extern int _SSHLobby(char *ip, int port, conSTR *CSTR);
 class Lexems
 	{
 	public:

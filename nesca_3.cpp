@@ -110,6 +110,7 @@ QGraphicsScene *sceneActivityGrid;
 QGraphicsScene *sceneTextPlacer;
 QGraphicsScene *sceneVoice;
 QGraphicsScene *pbScene;
+QGraphicsScene *jobRangeVisualScene;
 
 QString importFileName = "";
 	
@@ -194,6 +195,7 @@ void setSceneArea()
 	sceneTextPlacer = new QGraphicsScene();
 	sceneVoice = new QGraphicsScene();
 	pbScene = new QGraphicsScene();
+	jobRangeVisualScene = new QGraphicsScene();
 
 	ui->graphicLog->setScene(sceneGrid);
 	ui->graphicLog_2->setScene(sceneGraph);
@@ -204,7 +206,9 @@ void setSceneArea()
 	ui->graphicTextPlacer->setScene(sceneTextPlacer);
 	ui->graphicsVoice->setScene(sceneVoice);
 	ui->pbgv->setScene(pbScene);
+	ui->jobRangeVisual->setScene(jobRangeVisualScene);
 	
+
 	ui->graphicLog->setSceneRect(0, 0, ui->graphicLog->width(), ui->graphicLog->height());
 	ui->graphicLog_2->setSceneRect(0, 0, ui->graphicLog_2->width(), ui->graphicLog_2->height());
 	ui->graphicDelim->setSceneRect(0, 0, ui->graphicDelim->width(), ui->graphicDelim->height());
@@ -213,9 +217,9 @@ void setSceneArea()
 	ui->graphicActivityGrid->setSceneRect(0, 0, ui->graphicActivityGrid->width(), ui->graphicActivityGrid->height());
 	ui->graphicTextPlacer->setSceneRect(0, 0, ui->graphicTextPlacer->width(), ui->graphicTextPlacer->height());
 	ui->graphicsVoice->setSceneRect(0, 0, ui->graphicsVoice->width(), ui->graphicsVoice->height());
-	ui->pbgv->setSceneRect(0, 0, ui->pbgv->width(), ui->pbgv->height());
+	ui->pbgv->setSceneRect(0, 0, ui->pbgv->width(), ui->pbgv->height());	
+	ui->jobRangeVisual->setSceneRect(0, 0, ui->jobRangeVisual->width(), ui->jobRangeVisual->height());	
 };
-
 void setButtonStyleArea()
 {
 	ui->checkKeyBut->setStyleSheet(
@@ -301,8 +305,8 @@ void setButtonStyleArea()
 		);
 };
 void setSomeStyleArea()
-{qApp->setStyleSheet(
-		
+{
+	qApp->setStyleSheet(
 		"QMenu{"
 		"color:rgb(216, 216, 216);background-color: rgb(26, 26, 26); border: 1px solid white;"
 		"}"		
@@ -343,17 +347,12 @@ void setSomeStyleArea()
 		"width: 13px;"
 		"height: 13px;"
 		"}"
-
+		
 		" #widget {"
 		"border: 1px solid #525252;"
 		"border-radius: 0px;"
 		"}"
-
-		" #widgetIRC {"
-		"border: 1px solid #525252;"
-		"border-radius: 0px;"
-		"}"
-
+		
 		" #exitButton {"
 		"color: #525252;"
 		"border: 0px solid black;"
@@ -1295,10 +1294,13 @@ void nesca_3::ChangeDispalyMode()
 {
 	if(widgetIsHidden == false && tray->isVisible() == false)
 	{
+		ui->IRCModeChangerBut->setVisible(true);
 		blinkFlag = false;
 		widgetIsHidden = true;
 		ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");	
-		ui->IRCModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
+		ui->JobModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
+		ui->IRCModeBut->setStyleSheet("background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(0, 214, 0, 40);color: rgb(0, 214, 0);");
+		ui->widgetJOB->setGeometry(QRect(500, 44, 500, 730));
 		ui->widgetIRC->setGeometry(QRect(1, 44, 498, 730));
 		ui->shoutBox->setFocus();
 		QWidget::activateWindow();
@@ -1306,11 +1308,30 @@ void nesca_3::ChangeDispalyMode()
 	}
 	else
 	{
+		ui->IRCModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
+		ui->IRCModeChangerBut->setVisible(false);
 		disableBlink = false;
 		blinkFlag = true;
 		widgetIsHidden = false;
 		printDelimiter = true;
 		ui->widgetIRC->setGeometry(QRect(500, 44, 500, 730));
+	};
+};
+void nesca_3::switchToJobMode()
+{
+	if(ui->widgetJOB->geometry().x() == 500)
+	{
+		ui->widgetIRC->setGeometry(QRect(500, 44, 500, 730));
+		ui->IRCModeChangerBut->setVisible(false);
+		widgetIsHidden = false;
+		ui->widgetJOB->setGeometry(QRect(1, 44, 498, 730));
+		ui->JobModeBut->setStyleSheet("background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(0, 214, 0, 40);color: rgb(0, 214, 0);");
+		ui->IRCModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
+	}
+	else
+	{
+		ui->widgetJOB->setGeometry(QRect(500, 44, 500, 730));
+		ui->JobModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
 	};
 };
 void nesca_3::CheckProxy()
@@ -2020,6 +2041,7 @@ void nesca_3::slotShowDataflow()
 	if(MapWidgetOpened == false)
 	{
 		MapWidgetOpened = true;
+		ui->DataflowModeBut->setStyleSheet("background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(0, 214, 0, 40);color: rgb(0, 214, 0);");
 		qwm = new QWidget();
 		qwm->setWindowFlags(Qt::FramelessWindowHint|Qt::SubWindow);
 		qwm->setStyleSheet(
@@ -2046,13 +2068,13 @@ void nesca_3::slotShowDataflow()
 	}
 	else
 	{
+		ui->DataflowModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
 		delete []SendData;
 		delete []RecvData;
 		delete []qwm;
 		qwm = NULL;
 		RecvData = NULL;
 		SendData = NULL;
-		
 		MapWidgetOpened = false;
 	};
 };
@@ -2790,11 +2812,10 @@ void nesca_3::ConnectEvrthng()
 	connect ( ui->serverPortBox, SIGNAL( returnPressed() ), this, SLOT( ConnectToIRCServer() ) );
 	connect ( ui->checkKeyBut, SIGNAL( clicked() ), this, SLOT( CheckPersKey() ) );
 	connect ( ui->DataflowModeBut, SIGNAL( clicked() ), this, SLOT( slotShowDataflow() ) );
-	connect ( ui->DataflowModeBut_2, SIGNAL( clicked() ), this, SLOT( slotShowDataflow() ) );
 	connect ( ui->IRCConnectBut, SIGNAL( clicked() ), this, SLOT( ConnectToIRCServer() ) );
 	connect ( ui->IRCModeChangerBut, SIGNAL( clicked() ), this, SLOT( ChangeIRCRawLog() ) );
+	connect ( ui->JobModeBut, SIGNAL( clicked() ), this, SLOT( switchToJobMode() ) );
 	connect ( ui->IRCModeBut, SIGNAL( clicked() ), this, SLOT( ChangeDispalyMode() ) );
-	connect ( ui->IRCModeBut_2, SIGNAL( clicked() ), this, SLOT( ChangeDispalyMode() ) );
 	connect ( ui->clearLogBut, SIGNAL( clicked() ), this, SLOT( slotClearLogs() ) );
 	connect ( ui->IRCUTFMode, SIGNAL( clicked() ), this, SLOT( slotChangeCPModeToUTF() ) );
 	connect ( ui->IRCCP1251Mode, SIGNAL( clicked() ), this, SLOT( slotChangeCPModeTo1251() ) );
@@ -3262,6 +3283,7 @@ void _startMsgCheck()
 	ui->widgetIRC->installEventFilter(this);
 	ui->shoutBox->installEventFilter(this);
 	setSomeStyleArea();
+	ui->IRCModeChangerBut->setVisible(false);
 	ui->dataText->setOpenExternalLinks(true);
 	ui->dataText->setOpenLinks(false);
 	ui->rVerLabel->hide();
@@ -3321,6 +3343,22 @@ void _startMsgCheck()
 
 	_startVerCheck();
 	_startMsgCheck();
+
+	//for(int i = 0; i < 480; ++i+=)
+	float step = 0;
+	QPen iprvPenRegular(QColor(51, 51, 51, 100));
+	QPen iprvPen(QColor(51, 51, 51, 100));
+	while(step < 480)
+	{
+		jobRangeVisualScene->addLine(step, 0, step, 41, iprvPenRegular);
+		step += 30;
+	};
+	QPen iprvPenComplete(QColor(51, 51, 51, 100));
+	while(step < 480)
+	{
+		jobRangeVisualScene->addLine(step, 0, step, 41, iprvPen);
+		step += 30;
+	};
 };
 void nesca_3::playFcknSound()
 {
@@ -3473,7 +3511,7 @@ void nesca_3::STTTerminate()
 	globalScanFlag = false;
 
 	stt->terminate();
-
+	while(__savingBackUpFile) Sleep(100);
 	if(loginLst != NULL)
 	{
 		for(int i = 0; i < MaxLogin; i++) delete []loginLst[i];
@@ -3510,7 +3548,24 @@ void nesca_3::STTTerminate()
 		delete []sshlpLst;
 		sshlpLst = NULL;
 	};
-
+	if(ipsstartfl != NULL)
+	{
+		for(int i = 0; i < importFileSize; ++i) delete []ipsstartfl[i];
+		delete []ipsstartfl;
+		ipsstartfl = NULL;
+	};
+	if(ipsendfl != NULL)
+	{
+		for(int i = 0; i < importFileSize; ++i) delete []ipsendfl[i];
+		delete []ipsendfl;
+		ipsendfl = NULL;
+	};
+	if(starterIP != NULL)
+	{
+		for(int i = 0; i < importFileSize; ++i) delete []starterIP[i];
+		delete []starterIP;
+		starterIP = NULL;
+	};
 	ui->tabMainWidget->setTabEnabled(0, true);
 	ui->tabMainWidget->setTabEnabled(1, true);
 	ui->tabMainWidget->setTabEnabled(2, true);

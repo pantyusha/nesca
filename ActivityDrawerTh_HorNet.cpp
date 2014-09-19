@@ -1,5 +1,4 @@
 #include "ActivityDrawerTh_HorNet.h"
-#include "STh.h"
 
 void ActivityDrawerTh_HorNet::doEmitDrawActivityLine(QString data)
 {

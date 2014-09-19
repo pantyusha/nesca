@@ -28,7 +28,6 @@ char *_findFirstOcc(char *str, char *delim)
 		};
 	};
 
-	//return str;
 	return NULL;
 };
 char *FindLastOcc(char *str, char *delim)
@@ -169,11 +168,6 @@ char *GetCodePage(char *str)
 int Lexems::globalSearchNeg(const char *buffcpy, char *ip, int port)
 {
 	if(strlen(buffcpy) == 0) return -1;
-		
-//	char buffcpy[RECV_MAX_LENGTH] = {0};
-	//std::string rr = toLowerStr(xcode(buffcp, CP_UTF8, CP_ACP).c_str());
-
-	//memcpy((void*)buffcpy, rr.c_str(), rr.size());
 
 	char negWord[256] = {0};
 	for(int i = 0; i < GlobalNegativeSize; i++)
@@ -181,7 +175,7 @@ int Lexems::globalSearchNeg(const char *buffcpy, char *ip, int port)
 		if(globalScanFlag)
 		{
 			strcpy(negWord, GlobalNegatives[i]);
-			if(strstr(buffcpy, negWord) != NULL && (strcmp(negWord, "") != 0 || strlen(negWord) >= 2)) 
+			if(strstr(buffcpy, negWord) != NULL) 
 			{
 				if(gNegDebugMode)
 				{
@@ -237,7 +231,9 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 	if((strstr(buffcpy, "401 authorization") != NULL || strstr(buffcpy, "401 unauthorized") != NULL || (strstr(buffcpy, "www-authenticate") != NULL && strstr(buffcpy, "401 ") != NULL )
 		|| strstr(buffcpy, "401 unauthorized access denied") != NULL || strstr(buffcpy, "401 unauthorised") != NULL || (strstr(buffcpy, "www-authenticate") != NULL && strstr(buffcpy, " 401\r\n") != NULL)
 		)
-		&& strstr(buffcpy, "digest realm") != NULL) return 101;
+		&& strstr(buffcpy, "digest realm") != NULL
+		&& strstr(buffcpy, "basic realm") == NULL
+		) return 101;
 	if(strstr(buffcpy, "401 authorization") != NULL || strstr(buffcpy, "401 unauthorized") != NULL || (strstr(buffcpy, "www-authenticate") != NULL && strstr(buffcpy, "401 ") != NULL )
 		|| strstr(buffcpy, "401 unauthorized access denied") != NULL || strstr(buffcpy, "401 unauthorised") != NULL || (strstr(buffcpy, "www-authenticate") != NULL && strstr(buffcpy, " 401\r\n") != NULL)
 		) return 1;
@@ -265,9 +261,8 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 	if(strstr(buffcpy, "ip camera") != NULL && strstr(buffcpy, "check_user.cgi") != NULL) return 31; //ip cams
 	if(strstr(buffcpy, "ws(\"user\");") != NULL && strstr(buffcpy, "src=\"/tool.js") != NULL && strstr(buffcpy, "<b class=\"xb1\"></b>") != NULL) return 32; //IPC web ip cam
 	if(strstr(buffcpy, "geovision") != NULL && (strstr(buffcpy, "ip camera") != NULL || strstr(buffcpy, "ssi.cgi/login.htm") != NULL)) return 33; //GEO web ip cam
-	if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL && strstr(buffcpy, "dvrdvs-webs") != NULL)
-		|| (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL && strstr(buffcpy, "dologin()") != NULL)) return 34; //hikvision cam
-	if(strstr(buffcpy, "easy cam") != NULL && strstr(buffcpy, "easy life") != NULL) return 35; //EasyCam
+	if((strstr(buffcpy, "easy cam") != NULL && strstr(buffcpy, "easy life") != NULL)
+		|| strstr(buffcpy, "ipcamera") != NULL && strstr(buffcpy, "/tool.js") != NULL) return 35; //EasyCam
 	if(strstr(buffcpy, "/config/cam_portal.cgi") != NULL || strstr(buffcpy, "/config/easy_index.cgi") != NULL) return 36; //Panasonic Cam
 	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/view/getuid.cgi") != NULL) return 37; //Panasonic Cam WJ-HD180
 	if(strstr(buffcpy, "ipcam client") != NULL && strstr(buffcpy, "plugins.xpi") != NULL && strstr(buffcpy, "js/upfile.js") != NULL) return 38; //Foscam
@@ -276,7 +271,13 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 	if(strstr(buffcpy, "sq-webcam") != NULL && strstr(buffcpy, "liveview.html") != NULL) return 41; //AVIOSYS-camera
 	if(strstr(buffcpy, "nw_camera") != NULL && strstr(buffcpy, "/cgi-bin/getuid") != NULL) return 42; //NW_camera
 	if(strstr(buffcpy, "micros") != NULL && strstr(buffcpy, "/gui/gui_outer_frame.shtml") != NULL) return 43; //NW_camera
-	 
+	if(strstr(buffcpy, "lapassword") != NULL 
+		&& strstr(buffcpy, "lausername") != NULL 
+		&& strstr(buffcpy, "g_ologin.dologin()") != NULL
+		) return 44; //hikvision cam 2
+	if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL && strstr(buffcpy, "dvrdvs-webs") != NULL)
+		|| (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL && strstr(buffcpy, "dologin()") != NULL)) return 34; //hikvision cam
+	
 	if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
 		(strstri(buffcpy, "220 diskStation ftp server ready") != NULL) ||
 		(strstri(buffcpy, "220 ftp server ready") != NULL)
@@ -304,7 +305,9 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 	if((strstr(buffcpy, "401 authorization") != NULL || strstr(buffcpy, "401 unauthorized") != NULL || (strstr(buffcpy, "www-authenticate") != NULL && strstr(buffcpy, "401 ") != NULL )
 		|| strstr(buffcpy, "401 unauthorized access denied") != NULL || strstr(buffcpy, "401 unauthorised") != NULL || (strstr(buffcpy, "www-authenticate") != NULL && strstr(buffcpy, " 401\r\n") != NULL)
 		)
-		&& strstr(buffcpy, "digest realm") != NULL) return 101;
+		&& strstr(buffcpy, "digest realm") != NULL
+		&& strstr(buffcpy, "basic realm") == NULL
+		) return 101;
 	if(strstr(buffcpy, "401 authorization") != NULL || strstr(buffcpy, "401 unauthorized") != NULL || (strstr(buffcpy, "www-authenticate") != NULL && strstr(buffcpy, "401 ") != NULL )
 		|| strstr(buffcpy, "401 unauthorized access denied") != NULL || strstr(buffcpy, "401 unauthorised") != NULL || (strstr(buffcpy, "www-authenticate") != NULL && strstr(buffcpy, " 401\r\n") != NULL)
 		) return 1;
@@ -332,9 +335,8 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 	if(strstr(buffcpy, "ip camera") != NULL && strstr(buffcpy, "check_user.cgi") != NULL) return 31; //axis cameras
 	if(strstr(buffcpy, "ws(\"user\");") != NULL && strstr(buffcpy, "src=\"/tool.js") != NULL && strstr(buffcpy, "<b class=\"xb1\"></b>") != NULL) return 32; //web ip cam
 	if(strstr(buffcpy, "geovision") != NULL && (strstr(buffcpy, "ip camera") != NULL || strstr(buffcpy, "ssi.cgi/login.htm") != NULL)) return 33; //GEO web ip cam
-	if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL && strstr(buffcpy, "dvrdvs-webs") != NULL)
-		|| (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL && strstr(buffcpy, "dologin()") != NULL)) return 34; //hikvision cam
-	if(strstr(buffcpy, "easy cam") != NULL && strstr(buffcpy, "easy life") != NULL) return 35; //EasyCam
+	if((strstr(buffcpy, "easy cam") != NULL && strstr(buffcpy, "easy life") != NULL)
+		|| strstr(buffcpy, "ipcamera") != NULL && strstr(buffcpy, "/tool.js") != NULL) return 35; //EasyCam
 	if(strstr(buffcpy, "/config/cam_portal.cgi") != NULL || strstr(buffcpy, "/config/easy_index.cgi") != NULL) return 36; //Panasonic Cam
 	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/view/getuid.cgi") != NULL) return 37; //Panasonic Cam WJ-HD180
 	if(strstr(buffcpy, "ipcam client") != NULL && strstr(buffcpy, "plugins.xpi") != NULL && strstr(buffcpy, "js/upfile.js") != NULL) return 38; //Foscam
@@ -343,7 +345,13 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 	if(strstr(buffcpy, "sq-webcam") != NULL && strstr(buffcpy, "liveview.html") != NULL) return 41; //AVIOSYS-camera
 	if(strstr(buffcpy, "nw_camera") != NULL && strstr(buffcpy, "/cgi-bin/getuid") != NULL) return 42; //NW_camera
 	if(strstr(buffcpy, "micros") != NULL && strstr(buffcpy, "/gui/gui_outer_frame.shtml") != NULL) return 43; //NW_camera
-
+	if(strstr(buffcpy, "lapassword") != NULL 
+		&& strstr(buffcpy, "lausername") != NULL 
+		&& strstr(buffcpy, "g_ologin.dologin()") != NULL
+		) return 44; //hikvision cam 2
+	if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL && strstr(buffcpy, "dvrdvs-webs") != NULL)
+		|| (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL && strstr(buffcpy, "dologin()") != NULL)) return 34; //hikvision cam
+	
 	if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
 		(strstr(buffcpy, "220 diskStation ftp server ready") != NULL) ||
 		(strstr(buffcpy, "220 ftp server ready") != NULL)
@@ -979,7 +987,7 @@ void _getFormVal(char *data, char *result, char *key, char *path = NULL)
 
 static const std::string arrUser[] = {"user", "usr", "username", "login", "lgn", "account", "acc", "param1", "param3", "id", "A1", "uname", "mail", "name"};
 vector<std::string> vecUser (arrUser, arrUser + sizeof(arrUser) / sizeof(arrUser[0]) );
-static const std::string arrPass[] = {"pass", "pw", "password", "code", "param2", "param4", "secret", "login_p", "A2", "admin_pw", "pws"};
+static const std::string arrPass[] = {"pass", "pw", "password", "code", "param2", "param4", "secret", "login_p", "A2", "admin_pw", "pws", "secretkey"};
 vector<std::string> vecPass (arrPass, arrPass + sizeof(arrPass) / sizeof(arrPass[0]) );
 
 char *_getAttribute(char *str, char *attrib)
@@ -1006,19 +1014,19 @@ char *_getAttribute(char *str, char *attrib)
 void _getInputVal(std::vector<std::string> inputVec, char *buff, char *key)
 {
 	char *pos = NULL;
-	char field[128] = {0};
+	char field[256] = {0};
 	if(strcmp(key, "USER") == 0)
 	{
 		for(int i = 0; i < inputVec.size(); ++i)
 		{
-			ZeroMemory(field, 128);
+			ZeroMemory(field, 256);
 			_getFormVal((char*)inputVec[i].data(), field, "name=");
 			for(int j = 0; j < vecUser.size(); ++j)
 			{
 				pos = strstri(field, vecUser[j].data());
 				if(pos != NULL)
 				{
-					strncpy(buff, field, 128);
+					strncpy(buff, field, 256);
 					return;
 				};
 			};
@@ -1028,14 +1036,14 @@ void _getInputVal(std::vector<std::string> inputVec, char *buff, char *key)
 	{
 		for(int i = 0; i < inputVec.size(); ++i)
 		{
-			ZeroMemory(field, 128);
+			ZeroMemory(field, 256);
 			_getFormVal((char*)inputVec[i].data(), field, "name=");
 			for(int j = 0; j < vecPass.size(); ++j)
 			{
 				pos = strstri(field, vecPass[j].data());
 				if(pos != NULL)
 				{
-					strncpy(buff, field, 128);
+					strncpy(buff, field, 256);
 					return;
 				};
 			};
@@ -1103,14 +1111,15 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 		char *inptPtr1 = strstri(frmBlock, "<input ");
 		int insz = 0;
 		char *inptPtrEnd = NULL;
-		char tempInptStr[128] = {0};
+		char tempInptStr[256] = {0};
 		while(inptPtr1 != NULL)
 		{
 			inptPtrEnd = strstr(inptPtr1, ">");
 			if(inptPtrEnd != NULL)
 			{
+				ZeroMemory(tempInptStr, 256);
 				insz = inptPtrEnd - inptPtr1 + 1;
-				strncpy(tempInptStr, inptPtr1, (insz < 128 ? insz : 128));
+				strncpy(tempInptStr, inptPtr1, (insz < 256 ? insz : 256));
 				inputVec.push_back(std::string(tempInptStr));
 				inptPtr1 = strstri(inptPtrEnd, "<input ");
 			}
@@ -1124,9 +1133,9 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 		}
 		else
 		{
-			stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: No text/password fields found.");							
-			fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, "NULL", "NULL", comment, cp, tclass);
-			putInFile(flag, ip, tport, recd, title, hl, cp);
+			if(gNegDebugMode) stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: No text/password fields found.");							
+			///fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, "NULL", "NULL", comment, cp, tclass);
+			///putInFile(flag, ip, tport, recd, title, hl, cp);
 		};
 	}
 	else
@@ -1206,9 +1215,9 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 		}
 		else
 		{
-			stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: Cannot find user/pass field.");		
-			fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, "", "", "UnknownWebform", cp, tclass);
-			putInFile(flag, ip, tport, recd, title, hl, cp);
+			if(gNegDebugMode) stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: Cannot find user/pass field.");		
+			///fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, "", "", "UnknownWebform", cp, tclass);
+			///putInFile(flag, ip, tport, recd, title, hl, cp);
 		};
 	};
 	OnLiner = 0;
@@ -1257,7 +1266,7 @@ void _specBrute(char *cookie, char *ip, int port, char *hl, char *finalstr, int 
 		fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");
 	};
 
-	ZeroMemory(temp, strlen(temp));
+	ZeroMemory(temp, sizeof(temp));
 };
 const char *GetTitle(char* str)
 {
@@ -1373,52 +1382,82 @@ const char *GetTitle(char* str)
 
 	return finalstr;
 };
-int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *hl)		
+void _saveSSH(char *ip, int port, int recd, char *buffcpy)
 {
-	char b[16] = {0};
-	
-	if(	strstr(buffcpy, "[IGNR_ADDR]") != NULL ) return -1;
-	if(p == 22)
+	if(buffcpy != NULL)
 	{
-		flag = -22;
+		char b[16] = {0};
 		char log[2048] = {0};
 		char logEmit[2048] = {0};
 		char goodStr[256] = {0};
 		char banner[256] = {0};
 
 		char *ptr1 = strstr(buffcpy, "|+|");
-		int gsz = ptr1 - buffcpy;
-		strncpy(goodStr, buffcpy, gsz);
-		if(strlen(ptr1 + 3) > 0) strcpy(banner, ptr1 + 3);
-		strcpy(logEmit, "[SSH] ");
-		strcpy(log, "[SSH] <font color=\"#00a8ff\">");
-		strcat(log, goodStr);
-		strcat(log, "</font>");
-		strcat(log, "<font color=\"#323232\">; Banner:</font> <font color=\"#9cff00\">");
-		strcat(log, banner);
-		strcat(log, "</font>");
+		if(ptr1 != NULL)
+		{
+			int gsz = ptr1 - buffcpy;
+			strncpy(goodStr, buffcpy, gsz);
+			if(strlen(ptr1 + 3) > 0) strcpy(banner, ptr1 + 3);
+			strcpy(logEmit, "[SSH] ");
+			strcpy(log, "[SSH] <font color=\"#00a8ff\">");
+			strcat(log, goodStr);
+			strcat(log, ":");
+			strcat(log, itoa(port, b, 10));
+			strcat(log, "</font>");
+			strcat(log, "<font color=\"#323232\">; Banner:</font> <font color=\"#9cff00\">");
+			strcat(log, banner);
+			strcat(log, "</font>");
 
-		++PieSSH;
+			++PieSSH;
+			strcat(logEmit, "<span style=\"color: #00a8ff;\">");
+			strcat(logEmit, goodStr);
+			strcat(logEmit, ":");
+			strcat(logEmit, itoa(port, b, 10));
+			strcat(logEmit, "</span>");
 
-		strcat(logEmit, "<span style=\"color: #00a8ff;\">");
-		strcat(logEmit, goodStr);
-		strcat(logEmit, "</span>");
-
-		fputsf (ip, itoa(p, b, 10), log, flag, "SSH");
-
-		char loginSSH[128] = {0};
-		char passSSH[128] = {0};
-		char *ptrl1 = strstr(buffcpy, ":");
-		int lpsz = ptrl1 - buffcpy;
-		strncpy(loginSSH, buffcpy, lpsz);
-		char *ptrl2 = strstr(buffcpy, "@");
-		lpsz = ptrl2 - ptrl1;
-		strncpy(passSSH, ptrl1 + 1, lpsz);
-		fillGlobalLogData(ip, hl, itoa(p, b, 10), std::to_string((long double)recd).c_str(), "[SSH service]", loginSSH, passSSH, "NULL", "UTF-8", "SSH");
-
-#pragma region QTGUI_Area
-		stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
-#pragma endregion
+			fputsf (ip, itoa(port, b, 10), log, -22, "SSH");
+			char loginSSH[128] = {0};
+			char passSSH[128] = {0};
+			char *ptrl1 = strstr(buffcpy, ":");
+			int lpsz = ptrl1 - buffcpy;
+			strncpy(loginSSH, buffcpy, lpsz);
+			char *ptrl2 = strstr(buffcpy, "@");
+			lpsz = ptrl2 - ptrl1;
+			strncpy(passSSH, ptrl1 + 1, lpsz);
+			fillGlobalLogData(ip, "", itoa(port, b, 10), std::to_string((long double)recd).c_str(), "[SSH service]", loginSSH, passSSH, "NULL", "UTF-8", "SSH");
+			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
+		}
+		else
+		{
+			stt->doEmitionRedFoundData("[_saveSSH] Wrong format! [" + QString(ip) + ":" + QString::number(port) + "]");
+		};
+	}
+	else
+	{
+		stt->doEmitionRedFoundData("[_saveSSH] Empty buffer! [" + QString(ip) + ":" + QString::number(port) + "]");
+	};
+};
+int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *hl)		
+{
+	char b[16] = {0};
+	
+	if(	strstr(buffcpy, "[IGNR_ADDR]") != NULL ) return -1;
+	if(	strstr(buffcpy, "SSH-2.0-OpenSSH") != NULL ) 
+	{
+		conSTR CSTR;
+		CSTR.lowerBuff = NULL;
+		CSTR.size = 0;
+		int res = _SSHLobby(ip, p, &CSTR);
+		if(res != -1 && res != -2)
+		{
+			_saveSSH(ip, p, recd, CSTR.lowerBuff);
+		};
+		return -1;
+	};
+	
+	if(p == 22)
+	{
+		_saveSSH(ip, p, recd, buffcpy);
 		return -1;
 	};
 
@@ -1433,7 +1472,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	ZeroMemory(ps.headr, sizeof(ps.headr));
 	ZeroMemory(ps.path, sizeof(ps.path));
 
-	char finalstr[TITLE_MAX_LENGTH] = {0};
+	char finalstr[TITLE_MAX_SIZE] = {0};
 	char port[32] = {0};
 	int flag = 0;
 	char cp[32] = {0};
@@ -1451,7 +1490,6 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	std::vector<std::string> redirStrLst;
 	char rBuff[65536] = {0};
 	strncpy(rBuff, buffcpy, 65535);
-	char cookie[1024] = {0};
 	if(flag == 0 || flag == 3 || flag == 7 )
 	{
 		int rh = _header(ip, p, buffcpy, lx, &ps, &redirStrLst, rBuff);
@@ -1462,11 +1500,14 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 			strcat(finalstr, ps.headr);
 			p = ps.port;
 			strcpy(ip, ps.ip);
-			strcpy(cookie, ps.cookie);
 		};
 		
 		int sz = strlen(ps.path);
 		strncpy(pps, ps.path, (sz < 256 ? sz : 256));
+	}
+	else
+	{
+		if(strstr(buffcpy, "Set-Cookie:") != NULL) strncpy(ps.cookie, _getAttribute(buffcpy, "Set-Cookie:"), COOKIE_MAX_SIZE);		
 	};
 
 	strcpy(port, itoa(p, b, 10));
@@ -1475,9 +1516,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	if(flag == -1 || flag == 6 || strstr(finalstr, "[IGNR_ADDR]") != NULL) return -1;
 
 	fillerFlag = 1;
-	
 #pragma region Fillers
-
 	if(flag == 16) 
 	{
 		Connector con;
@@ -1577,8 +1616,6 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 			fputsf(ip, port, log, flag, "FTP");
 	
 			fillGlobalLogData(ip, hl, port, std::to_string((long double)recd).c_str(), "[FTP service]", lps.login, lps.pass, "NULL", cp, "FTP");
-			
-
 #pragma region QTGUI_Area
 			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
 #pragma endregion
@@ -1685,6 +1722,10 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	{
 		_specBrute(ps.cookie, ip, p, hl, "[Micros] IP Camera", flag, "/gui/rem_display.shtml", "[Micros] IP Camera", "Basic Authorization", cp, recd, "");
 	}
+	else if(flag == 44) //Hikvision ip cam 2
+	{
+		_specBrute(ps.cookie, ip, p, hl, "[Hikvision] IP Camera", flag, "/ISAPI/Security/userCheck", "[Hikvision] IP Camera", "Basic Authorization", cp, recd, "");
+	}
 	else if(flag == 20) //AXIS Camera
 	{
 		_specBrute(ps.cookie, ip, p, hl, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "AXIS Camera", "Basic Authorization", cp, recd, "");
@@ -1746,7 +1787,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 		fillGlobalLogData(ip, hl, port, std::to_string((long double)recd).c_str(), finalstr, lps.login, lps.pass, "HFS-FTP", cp, "Basic Authorization");
 		fputsf (ip, port, log , flag, "HFS");
 		stt->doEmitionFoundData(QString::fromLocal8Bit(log));
-		ZeroMemory(temp, strlen(temp));
+		ZeroMemory(temp, sizeof(temp));
 	}
 	else if(flag == 1) 
 	{
@@ -1797,7 +1838,6 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 	if(strstri(str, "https://") != NULL)
 	{
 		tempPort = 443;
-		
 		char *ptr1 = strstri(str, "https://");
 		char *ptr2 = _findFirstOcc(str + 8, ":/");
 		if(ptr2 != NULL)
@@ -2288,6 +2328,26 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 							else strncpy(dataBuff, ptrQuote1 + 1, lsz);
 						};
 					};
+				}
+				else
+				{
+					ptrQuote1 = strstr(ptr2, "=");
+					if(ptrQuote1 != NULL)
+					{
+						char *ptrQuote2 = _findFirstOcc(ptr2, ";\n");
+						if(ptrQuote2 != NULL)
+						{
+							int sz = ptrQuote2 - ptr2 - 1;
+							char link1[512] = {0};
+							strncpy(link1, ptr2 + 1, sz);
+							char *ptrQuote3 = strstr(link1, "/");
+							if(ptrQuote3 != NULL)
+							{
+								char link[512] = {0};
+								strcpy(dataBuff, ptrQuote3);
+							};
+						};
+					};
 				};
 			};
 		}
@@ -2321,7 +2381,7 @@ void _getJSCookie(char *dataBuff, char *str, char *ip, int port)
 int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std::vector<std::string> *redirStrLst, char *rBuff)
 {
 	std::string redirectStr = "";
-	if(strstr(str, "Set-Cookie:") != NULL) strncpy(ps->cookie, _getAttribute(str, "Set-Cookie:"), 1024);
+	if(strstr(str, "Set-Cookie:") != NULL) strncpy(ps->cookie, _getAttribute(str, "Set-Cookie:"), COOKIE_MAX_SIZE);
 
 #pragma region Prechecks
 	if(strstr(str, "[IGNR_ADDR]") != NULL) 
@@ -2387,6 +2447,7 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 #pragma region 302 Redirects
 	if( strstri(str, "http/1.0 301") != NULL || strstri(str, "http/1.1 301") != NULL
 		|| strstri(str, "http/1.0 302") != NULL || strstri(str, "http/1.1 302") != NULL
+		|| strstri(str, "http/1.0 307") != NULL || strstri(str, "http/1.1 307") != NULL
 		|| strstri(str, "303 see other") != NULL
 		)
 	{	
@@ -2545,7 +2606,6 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 				memset(scriptContainer + sz, '\0', 1);
 
 				if(strstri(scriptContainer, "location.href") != NULL)			_getLinkFromJSLocation(linkPtr, scriptContainer, "location.href", ip, port);
-				else if(strstri(scriptContainer, "window.location") != NULL)	_getLinkFromJSLocation(linkPtr, scriptContainer, "window.location", ip, port);
 				else if(strstri(scriptContainer, "location.replace") != NULL)	_getLinkFromJSLocation(linkPtr, scriptContainer, "location.replace", ip, port);
 				else if(strstri(scriptContainer, "location.reload") != NULL)	strcpy(linkPtr, "/");
 				else if(strstri(scriptContainer, "location") != NULL)			_getLinkFromJSLocation(linkPtr, scriptContainer, "location", ip, port);
@@ -2560,7 +2620,11 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 					};
 				};
 				delete []scriptContainer;
-				if(ps->flag == 1) return -2;
+				if(ps->flag >= 17 || ps->flag == 11 || ps->flag == 12 
+				|| ps->flag == 13 || ps->flag == 14 || ps->flag == 1 
+				|| ps->flag == 10
+				) 
+				return -2;
 			}
 			else
 			{
@@ -2571,6 +2635,46 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 			ptr1 = strstri(ptr2, "<script");
 		}
 		while(ptr1 != NULL);
+	}
+	else if(strstri(str, " onload") != NULL)
+	{
+		char *ptr1 = strstri(str, " onload");
+		char *ptr2 = strstr(ptr1, ">");
+		if(ptr2 != NULL)
+		{
+			int sz = ptr2 - ptr1;
+			if(sz < 512)
+			{
+				char linkPtr[512] = {0};
+				ZeroMemory(linkPtr, 512);
+				strncpy(linkPtr, ptr1, sz);
+				char *scriptContainer = new char[sz + 1];
+				ZeroMemory(scriptContainer, sz + 1);
+				strncpy(scriptContainer, ptr1, sz);
+				memset(scriptContainer + sz, '\0', 1);
+
+				if(strstri(scriptContainer, "location.href") != NULL)			_getLinkFromJSLocation(linkPtr, scriptContainer, "location.href", ip, port);
+				else if(strstri(scriptContainer, "location.replace") != NULL)	_getLinkFromJSLocation(linkPtr, scriptContainer, "location.replace", ip, port);
+				else if(strstri(scriptContainer, "location.reload") != NULL)	strcpy(linkPtr, "/");
+				else if(strstri(scriptContainer, "location") != NULL)			_getLinkFromJSLocation(linkPtr, scriptContainer, "location", ip, port);
+				
+				if(strlen(linkPtr) != 0)
+				{
+					redirectStr = std::string(linkPtr);
+					if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
+					{
+						redirStrLst->push_back(redirectStr);
+						redirectReconnect(ps->cookie, ip, port, linkPtr, l, ps, redirStrLst, rBuff);
+					};
+				};
+				delete []scriptContainer;
+				if(ps->flag >= 17 || ps->flag == 11 || ps->flag == 12 
+				|| ps->flag == 13 || ps->flag == 14 || ps->flag == 1 
+				|| ps->flag == 10
+				) 
+				return -2;
+			};
+		};
 	};
 #pragma endregion
 

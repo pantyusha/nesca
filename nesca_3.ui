@@ -251,7 +251,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255))</string>
+     <string notr="true">background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255));</string>
     </property>
     <widget class="QTabWidget" name="tabMainWidget">
      <property name="enabled">
@@ -2629,33 +2629,6 @@ background-color: #000000;</string>
       <string>&lt;</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="IRCModeBut">
-     <property name="geometry">
-      <rect>
-       <x>390</x>
-       <y>50</y>
-       <width>48</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Eurostile</family>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>Netstalker IRC Messenger</string>
-     </property>
-     <property name="whatsThis">
-      <string>Netstalker IRC Messenger</string>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
-     </property>
-     <property name="text">
-      <string>:NS-IRC</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="labelTracker">
      <property name="geometry">
       <rect>
@@ -2843,33 +2816,6 @@ background-color: #000000;</string>
       <string>X</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="DataflowModeBut">
-     <property name="geometry">
-      <rect>
-       <x>440</x>
-       <y>50</y>
-       <width>48</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Eurostile</family>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>Online datastream</string>
-     </property>
-     <property name="whatsThis">
-      <string>Online datastream</string>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
-     </property>
-     <property name="text">
-      <string>:Dataflow</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="secretMessageBut_1">
      <property name="geometry">
       <rect>
@@ -3001,7 +2947,7 @@ background-color: #000000;</string>
     <widget class="QLabel" name="newMessageLabel">
      <property name="geometry">
       <rect>
-       <x>300</x>
+       <x>265</x>
        <y>53</y>
        <width>70</width>
        <height>10</height>
@@ -3223,14 +3169,12 @@ background-color: #000000;</string>
     <zorder>labelBadAddr</zorder>
     <zorder>labelOffline_Value</zorder>
     <zorder>switcherBut</zorder>
-    <zorder>IRCModeBut</zorder>
     <zorder>labelTracker</zorder>
     <zorder>graphicActivityGrid</zorder>
     <zorder>graphicActivity</zorder>
     <zorder>VoiceScanBut</zorder>
     <zorder>graphicsVoice</zorder>
     <zorder>clearLogBut</zorder>
-    <zorder>DataflowModeBut</zorder>
     <zorder>secretMessageBut_1</zorder>
     <zorder>secretMessageBut_2</zorder>
     <zorder>secretMessageBut_3</zorder>
@@ -3252,34 +3196,13 @@ background-color: #000000;</string>
      <rect>
       <x>500</x>
       <y>44</y>
-      <width>500</width>
+      <width>498</width>
       <height>730</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255));border: none;</string>
+     <string notr="true">background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255));</string>
     </property>
-    <widget class="QPushButton" name="IRCModeBut_2">
-     <property name="geometry">
-      <rect>
-       <x>390</x>
-       <y>6</y>
-       <width>48</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Eurostile</family>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
-     </property>
-     <property name="text">
-      <string>:NS-Scan</string>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="ircServerBox">
      <property name="geometry">
       <rect>
@@ -3560,27 +3483,6 @@ p, li { white-space: pre-wrap; }
       <string>Check proxy</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="IRCModeChangerBut">
-     <property name="geometry">
-      <rect>
-       <x>340</x>
-       <y>6</y>
-       <width>48</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Eurostile</family>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
-     </property>
-     <property name="text">
-      <string>:IRC raw</string>
-     </property>
-    </widget>
     <widget class="QTextBrowser" name="ircRaw">
      <property name="geometry">
       <rect>
@@ -3634,33 +3536,6 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="openLinks">
       <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="DataflowModeBut_2">
-     <property name="geometry">
-      <rect>
-       <x>440</x>
-       <y>6</y>
-       <width>48</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Eurostile</family>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>Anomaly map</string>
-     </property>
-     <property name="whatsThis">
-      <string>Online datastream</string>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
-     </property>
-     <property name="text">
-      <string>:Dataflow</string>
      </property>
     </widget>
     <widget class="QPushButton" name="nickShowBut">
@@ -3899,7 +3774,6 @@ color: rgb(71, 71, 71);</string>
     </widget>
     <zorder>nickList</zorder>
     <zorder>ircRaw</zorder>
-    <zorder>IRCModeBut_2</zorder>
     <zorder>ircServerBox</zorder>
     <zorder>shoutBox</zorder>
     <zorder>serverPortBox</zorder>
@@ -3909,8 +3783,6 @@ color: rgb(71, 71, 71);</string>
     <zorder>ircProxy</zorder>
     <zorder>ircProxyPort</zorder>
     <zorder>IRCCheckProxyBut</zorder>
-    <zorder>IRCModeChangerBut</zorder>
-    <zorder>DataflowModeBut_2</zorder>
     <zorder>nickShowBut</zorder>
     <zorder>topicLine</zorder>
     <zorder>IRCUTFMode</zorder>
@@ -3919,6 +3791,166 @@ color: rgb(71, 71, 71);</string>
     <zorder>labelIPRange_3</zorder>
     <zorder>labelIPRange_4</zorder>
     <zorder>labelIPRange_5</zorder>
+   </widget>
+   <widget class="QWidget" name="widgetJOB" native="true">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>44</y>
+      <width>498</width>
+      <height>730</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255));</string>
+    </property>
+    <widget class="QGraphicsView" name="jobRangeVisual">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>480</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+    </widget>
+    <widget class="QTableWidget" name="jobIPContractsTable">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>105</y>
+       <width>480</width>
+       <height>296</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTableWidget" name="jobIPWantedTable">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>425</y>
+       <width>480</width>
+       <height>296</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="DataflowModeBut">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>50</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Eurostile</family>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Online datastream</string>
+    </property>
+    <property name="whatsThis">
+     <string>Online datastream</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+    </property>
+    <property name="text">
+     <string>:Dataflow</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="IRCModeBut">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>50</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Eurostile</family>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Darknet IRC</string>
+    </property>
+    <property name="whatsThis">
+     <string>Darknet IRC</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+    </property>
+    <property name="text">
+     <string>:IRC</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="JobModeBut">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>50</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Eurostile</family>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>IP range distribution</string>
+    </property>
+    <property name="whatsThis">
+     <string>IP range distribution</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+    </property>
+    <property name="text">
+     <string>:Jobs</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="IRCModeChangerBut">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>50</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Eurostile</family>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Raw or normal log view</string>
+    </property>
+    <property name="whatsThis">
+     <string>Raw or normal log view</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+    </property>
+    <property name="text">
+     <string>:IRC raw</string>
+    </property>
    </widget>
   </widget>
  </widget>

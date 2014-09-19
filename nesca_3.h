@@ -93,6 +93,7 @@ protected:
 		void setNickBox(QString str);
 		void SaySmthng();
 		void ChangeIRCRawLog();
+		void switchToJobMode();
 		void ConnectToIRCServer();
 		void CheckProxy();
 		void ChangeDispalyMode();

@@ -1,5 +1,4 @@
 #include "DrawerTh_GridQoSScanner.h"
-#include "STh.h"
 
 void DrawerTh_GridQoSScanner::doEmitAddLine()
 {

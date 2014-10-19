@@ -884,7 +884,7 @@ void *_connect(void* ss)
 	for(int i = 0; i <= overallPorts; ++i)
 	{
 		if(globalScanFlag == false) break;		
-		con._ConnectToPort( ip, std::to_string((long double)portArr[i]).c_str(), "" );
+		if(con._ConnectToPort( ip, std::to_string((long double)portArr[i]).c_str(), "" ) == -2) break;
 	};
 
 	ConDec();
@@ -1604,8 +1604,8 @@ int fInit(int InitMode, char *gR)
 };
 void FileLoader(char *str)
 {
-	char res[64] = {0}; 
-	char curIP[64] = {0}, curIPCopy[64] = {0};
+	char res[256] = {0}; 
+	char curIP[256] = {0}, curIPCopy[256] = {0};
 	char tempBuff[4] = {0};
 
 	FILE *fl = fopen(str, "r");
@@ -1641,7 +1641,7 @@ void FileLoader(char *str)
 
 		rewind(fl);
 
-		while(fgets(curIP, 64, fl) != NULL)
+		while(fgets(curIP, 256, fl) != NULL)
 		{
 			if(curIP[0] != '#' && curIP[0] != ' ' && curIP[0] != '\n' && curIP[0] != '\r' && strcmp(curIP, "") != 0 && 
 				((curIP[0] == '/' && curIP[1] == '/') == false) && ((curIP[0] == '\t' && curIP[1] == '\t' && curIP[2] == '\t' && (curIP[3] == 13 || curIP[3] == 10 || curIP[3] == '#')) == false)
@@ -1720,8 +1720,8 @@ void FileLoader(char *str)
 						)
 					)
 					{
-						char tempMsg[64] = {0};
-						strcpy(tempMsg, "[IP Loader]Error in IP list. Line-> [");
+						char tempMsg[256] = {0};
+						strcpy(tempMsg, "[IP Loader]Wrong list format. Line-> [");
 						strcat(tempMsg, std::to_string((long double)flCounter).c_str());
 						strcat(tempMsg, "] String-> [");
 						strcat(tempMsg, curIPCopy);
@@ -1821,7 +1821,14 @@ void FileLoader(char *str)
 				}
 				else
 				{
-					stt->doEmitionRedFoundData("[IP Loader] Wrong list format. String: " + QString(curIP));
+					char tempMsg[256] = {0};
+					strcpy(tempMsg, "[IP Loader]Wrong list format. Line-> [");
+					strcat(tempMsg, std::to_string((long double)flCounter).c_str());
+					strcat(tempMsg, "] String-> [");
+					strcat(tempMsg, curIPCopy);
+					strcat(tempMsg, "]");
+					stt->doEmitionRedFoundData(QString(tempMsg));
+					return;
 				};
 				ZeroMemory(curIP, sizeof(curIP));
 			};

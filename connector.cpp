@@ -1476,21 +1476,16 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 	HOSTENT *host;  
 #if defined(WIN32)
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ip);  
-	else if(host = gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
-	else 
-	{
-		++offlines;
-		return -1;
-	};
 #else
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ip);  
-	else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
+#endif
+	else if(host = gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 	else 
 	{
 		++offlines;
-		return -1;
+		if(host == NULL) return -2;
+		else return -1;
 	};
-#endif
 
 	SOCKET sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 	while(sock == INVALID_SOCKET)
@@ -2518,13 +2513,13 @@ int _SSHLobby(char *ip, int port, conSTR *CSTR)
 		return _EstablishSSHConnection(ip, port, CSTR, banner);
 	};
 };
-void Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
+int Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
 {	
 	if(gPingNScan)
 	{
 		if(_pingMyTarget(ip) == 0)
 		{
-			return;
+			return -2;
 		};
 	};
 
@@ -2540,10 +2535,12 @@ void Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
 	int port = atoi(portC);
 	int cRes;
 
-	if(port == 443) cRes = _EstablishSSLConnection(ip, port, mes, &CSTR);
+	if(port == 443)		cRes = _EstablishSSLConnection(ip, port, mes, &CSTR);
 	else if(port == 22) cRes = _SSHLobby(ip, port, &CSTR);
-	else cRes = _EstablishConnection(ip, port, mes, &CSTR);
+	else				cRes = _EstablishConnection(ip, port, mes, &CSTR);
 	int size = CSTR.size;
+
+	if(cRes == -2) return -2;
 
 	if(size > 0 && cRes != -1)
 	{

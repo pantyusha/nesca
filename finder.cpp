@@ -1839,10 +1839,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 	{
 		tempPort = 443;
 		char *ptr1 = strstri(str, "https://");
-		char *ptr2 = _findFirstOcc(str + 8, ":/");
+		char *ptr2 = _findFirstOcc(str + 8, ":/?");
 		if(ptr2 != NULL)
 		{
 			int sz = ptr2 - ptr1 - 8;
+			ZeroMemory(tempIP, MAX_ADDR_LEN);
 			strncpy(tempIP, ptr1 + 8, sz < 128 ? sz : 128);
 			if(ptr2[0] == ':')
 			{
@@ -1867,6 +1868,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			{
 				strncpy(tempPath, ptr2, strlen(ptr2));
 			}
+			else if(ptr2[0] == '?')
+			{
+				strcpy(tempPath, "/");
+				strncat(tempPath, ptr2, strlen(ptr2));
+			}
 			else
 			{
 				stt->doEmitionRedFoundData("[Redirect] Unknown protocol (" + QString(ip) + ":" + QString::number(port) + ")");
@@ -1874,6 +1880,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		}
 		else
 		{
+			ZeroMemory(tempIP, MAX_ADDR_LEN);
 			strncpy(tempIP, ptr1 + 8, strlen(str) - 8);
 			strcpy(tempPath, "/");
 		};
@@ -1893,7 +1900,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		conSTR cstr;
 		cstr.size = 0;
 		cstr.lowerBuff = NULL;
-		if(con._EstablishSSLConnection(tempIP, tempPort, mes, &cstr) != -1)
+		if(con._EstablishSSLConnection(tempIP, tempPort, mes, &cstr) > -1)
 		{
 			strncpy(buff, cstr.lowerBuff, (cstr.size < 65535 ? cstr.size : 65535));
 			strcpy(ps->codepage, GetCodePage(cstr.lowerBuff));
@@ -1958,10 +1965,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 	else if(strstr(str, "http://") != NULL) //http
 	{
 		char *ptr1 = strstri(str, "http://");
-		char *ptr2 = _findFirstOcc(str + 7, ":/");
+		char *ptr2 = _findFirstOcc(str + 7, ":/?");
 		if(ptr2 != NULL)
 		{
 			int sz = ptr2 - ptr1 - 7;
+			ZeroMemory(tempIP, MAX_ADDR_LEN);
 			strncpy(tempIP, ptr1 + 7, sz < 128 ? sz : 128);
 			if(ptr2[0] == ':')
 			{
@@ -1986,6 +1994,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			{
 				strncpy(tempPath, ptr2, strlen(ptr2));
 			}
+			else if(ptr2[0] == '?')
+			{
+				strcpy(tempPath, "/");
+				strncat(tempPath, ptr2, strlen(ptr2));
+			}
 			else
 			{
 				stt->doEmitionRedFoundData("[Redirect] Unknown protocol (" + QString(ip) + ":" + QString::number(port) + ")");
@@ -1993,6 +2006,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		}
 		else
 		{
+			ZeroMemory(tempIP, MAX_ADDR_LEN);
 			strncpy(tempIP, ptr1 + 7, strlen(str) - 7);
 			strcpy(tempPath, "/");
 		};
@@ -2013,7 +2027,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		conSTR cstr;
 		cstr.size = 0;
 		cstr.lowerBuff = NULL;		
-		if(con._EstablishConnection(tempIP, tempPort, mes, &cstr) != -1)
+		if(con._EstablishConnection(tempIP, tempPort, mes, &cstr) > -1)
 		{
 			strncpy(buff, cstr.lowerBuff, (cstr.size < 65535 ? cstr.size : 65535));
 			strcpy(ps->codepage, GetCodePage(cstr.lowerBuff));
@@ -2122,7 +2136,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		{
 			strncpy(buff, cstr.lowerBuff, 65535);
 		};
-		if(cRes != -1)
+		if(cRes > -1)
 		{
 			strcpy(ps->codepage, GetCodePage(cstr.lowerBuff));
 

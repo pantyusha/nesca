@@ -243,6 +243,6 @@ class Connector
 		int _EstablishSSLConnection(char *ip, int port, char *request, conSTR *cstr);
 		void _StartRangeFapping(int ipsstart[], int ipsend[], int &cons, char *argv2, ST *st);
 		void _Connect(void *s);
-		void _ConnectToPort(char *ip, const char *port, char *hl);
+		int _ConnectToPort(char *ip, const char *port, char *hl);
 	};
 

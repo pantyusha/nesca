@@ -134,35 +134,20 @@ QString GetNSErrorDefinition(char *str, char *elem)
 };
 void ConInc()
 {
-	while(ConnLocked) Sleep(20);
-	
-	ConnLocked = true;
 	__asm
 	{
-		add cons, 1;
+		lock inc cons;
 	};
-	ConnLocked = false;
 	#pragma region QTGUI_Area
 	stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
 	#pragma endregion
 };
-volatile bool ConnLocked2 = false;
 void ConDec()
 {
-	while(ConnLocked) Sleep(10 + (rand() % 5 + 1));
-	
-	ConnLocked = true;
-	while(ConnLocked2) Sleep(18);
-	ConnLocked2 = true;
-	if(cons > 0)
+	__asm
 	{
-		__asm
-		{
-			sub cons, 1;
-		};
+		lock dec cons;
 	};
-	ConnLocked2 = false;
-	ConnLocked = false;
 	#pragma region QTGUI_Area
 	stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
 	#pragma endregion

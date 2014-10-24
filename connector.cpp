@@ -15,11 +15,10 @@ int gMaxBrutingThreads = 200;
 volatile bool BConnLocked = false;
 void BConInc()
 {
-	while(BConnLocked == true) Sleep(6);
-
-	BConnLocked = true;
-	++BrutingThrds;
-	BConnLocked = false;
+	__asm
+	{
+		lock inc BrutingThrds;
+	};
 #pragma region QTGUI_Area
 	stt->doEmitionChangeBA(QString::number(BrutingThrds));
 #pragma endregion
@@ -27,11 +26,10 @@ void BConInc()
 };
 void BConDec()
 {
-	while(BConnLocked == true) Sleep(8);
-
-	BConnLocked = true;
-	if(BrutingThrds > 0) --BrutingThrds;
-	BConnLocked = false;
+	__asm
+	{
+		lock dec BrutingThrds;
+	};
 #pragma region QTGUI_Area
 	stt->doEmitionChangeBA(QString::number(BrutingThrds));
 #pragma endregion
@@ -39,22 +37,20 @@ void BConDec()
 bool SSHConnLocked = false;
 void SSHConInc()
 {
-	while(SSHConnLocked == true) Sleep(6);
-
-	SSHConnLocked = true;
-	++BrutingThrds;
-	SSHConnLocked = false;
+	__asm
+	{
+		lock inc BrutingThrds;
+	};
 #pragma region QTGUI_Area
 	stt->doEmitionChangeBA(QString::number(BrutingThrds));
 #pragma endregion
 };
 void SSHConDec()
 {
-	while(SSHConnLocked == true) Sleep(6);
-
-	SSHConnLocked = true;
-	if(BrutingThrds > 0) --BrutingThrds;
-	SSHConnLocked = false;
+	__asm
+	{
+		lock dec BrutingThrds;
+	};
 #pragma region QTGUI_Area
 	stt->doEmitionChangeBA(QString::number(BrutingThrds));
 #pragma endregion

@@ -2,6 +2,9 @@
 #include "CheckKey_Th.h"
 #include "CheckProxy_Th.h"
 #include "STh.h"
+#include "externData.h"
+#include "externFunctions.h"
+
 int emitIfOK = -1;
 int KeyCheckerMain()
 {
@@ -204,9 +207,9 @@ int KeyCheckerMain()
 	else if(strstr(msg, "400 Bad Request") != NULL)
 	{
 #pragma region QTGUI_Area
-						QString errorDef = GetNSErrorDefinition(msg, "notify");
-						if(errorDef == "Invalid access key") stt->doEmitionYellowFoundData("[NS-Track] [Key is unauthorized] A valid key is required.");
-						else stt->doEmitionYellowFoundData("[NS-Track] -FAIL! [400 Bad Request : " + GetNSErrorDefinition(msg, "notify") + "]");
+		QString errorDef = GetNSErrorDefinition(msg, "notify");
+		if(errorDef == "Invalid access key") stt->doEmitionYellowFoundData("[NS-Track] [Key is unauthorized] A valid key is required.");
+		else stt->doEmitionYellowFoundData("[NS-Track] -FAIL! [400 Bad Request : " + GetNSErrorDefinition(msg, "notify") + "]");
 #pragma endregion
 		closesocket(sock);
 		return -1;

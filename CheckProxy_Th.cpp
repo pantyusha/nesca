@@ -1,4 +1,5 @@
 #include "CheckProxy_Th.h"
+#include "externData.h"
 
 void CheckProxy_Th::doEmitChangeRedIRCData(QString str)
 {
@@ -23,7 +24,6 @@ void CheckProxy_Th::doEmitChangeRawIRCDataOut(QString str)
 
 void CheckProxyLogic()
 {
-	destroychPThFlag = false;
 	QString str1 = ui->ircProxyPort->text();
 	QString str2 = ui->ircProxy->text();
 	strcpy(ircProxy, str2.toUtf8().data());

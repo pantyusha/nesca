@@ -1,13 +1,15 @@
 ﻿#pragma once
 #include "STh.h"
 #include "resource.h"	
+#include "externFunctions.h"
+#include "externData.h"
 
 char* __cdecl strstri(char *_Str, const char *_SubStr)
 {
 	if(_Str != NULL)
 	{
-		string _lowStr = toLowerStr(_Str);
-		string _lowSubStr = toLowerStr(_SubStr);
+		std::string _lowStr = toLowerStr(_Str);
+		std::string _lowSubStr = toLowerStr(_SubStr);
 		const char *resChar = strstr(_lowStr.c_str(), _lowSubStr.c_str());
 		int offset = resChar - _lowStr.c_str();
 		if(offset < 0) return NULL;
@@ -986,9 +988,9 @@ void _getFormVal(char *data, char *result, char *key, char *path = NULL)
 };
 
 static const std::string arrUser[] = {"user", "usr", "username", "login", "lgn", "account", "acc", "param1", "param3", "id", "A1", "uname", "mail", "name"};
-vector<std::string> vecUser (arrUser, arrUser + sizeof(arrUser) / sizeof(arrUser[0]) );
+std::vector<std::string> vecUser (arrUser, arrUser + sizeof(arrUser) / sizeof(arrUser[0]) );
 static const std::string arrPass[] = {"pass", "pw", "password", "code", "param2", "param4", "secret", "login_p", "A2", "admin_pw", "pws", "secretkey"};
-vector<std::string> vecPass (arrPass, arrPass + sizeof(arrPass) / sizeof(arrPass[0]) );
+std::vector<std::string> vecPass (arrPass, arrPass + sizeof(arrPass) / sizeof(arrPass[0]) );
 
 char *_getAttribute(char *str, char *attrib)
 {
@@ -1062,7 +1064,7 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 		};
 		return;
 	};
-	OnLiner = 1;
+	isActive = 1;
 
 	char b[16] = {0};
 	char methodVal[128] = {0};
@@ -1220,7 +1222,7 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 			///putInFile(flag, ip, tport, recd, title, hl, cp);
 		};
 	};
-	OnLiner = 0;
+	isActive = 0;
 };
 void _specWEBIPCAMBrute(char *ip, int port, char *hl, char *finalstr, int flag, char *comment, char *tclass, char *cp, int recd, char *SPEC)
 {
@@ -1244,7 +1246,7 @@ void _specWEBIPCAMBrute(char *ip, int port, char *hl, char *finalstr, int flag, 
 };
 void _specBrute(char *cookie, char *ip, int port, char *hl, char *finalstr, int flag, char *path, char *comment, char *tclass, char *cp, int recd, char *data)
 {
-	OnLiner = 1;
+	isActive = 1;
 	lopaStr lps;
 	ZeroMemory(lps.login, sizeof(lps.login));
 	ZeroMemory(lps.pass, sizeof(lps.pass));
@@ -1515,12 +1517,11 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	if(strstr(finalstr, ps.headr) == NULL) strcat(finalstr, ps.headr);
 	if(flag == -1 || flag == 6 || strstr(finalstr, "[IGNR_ADDR]") != NULL) return -1;
 
-	fillerFlag = 1;
 #pragma region Fillers
 	if(flag == 16) 
 	{
 		Connector con;
-		OnLiner = 1;
+		isActive = 1;
 
 		char log[2048] = {0};
 		char logEmit[2048] = {0};
@@ -1763,7 +1764,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 		char temp[64] = {0};
 		char log[512] = {0};
 		Connector con;
-		OnLiner = 1;
+		isActive = 1;
 		++AnomC1;
 		
 		strcpy(log, "[HFS]:<font color=\"#ff6600\">");
@@ -1806,7 +1807,6 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 		putInFile(flag, ip, port, recd, finalstr, hl, cp);
 	};
 #pragma endregion
-	fillerFlag = 0;
 
 	return flag;
 };

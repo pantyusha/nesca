@@ -1,4 +1,6 @@
 #include "progressbardrawer.h"
+#include "externData.h"
+
 void ProgressbarDrawer::update()
 {
 	emit pbTh->upd();

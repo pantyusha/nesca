@@ -1,5 +1,7 @@
 #include "oIRC_Th.h"
 #include <QtMultimedia\qsound.h>
+#include "externData.h"
+#include "externFunctions.h"
 
 int iWantToConnect = false;
 

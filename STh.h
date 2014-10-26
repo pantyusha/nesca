@@ -4,6 +4,9 @@
 #pragma once
 #include "nesca_3.h"
 #include "resource.h"
+#include "externFunctions.h"
+
+extern int tMax;
 
 class STh : public QThread
 {
@@ -41,7 +44,6 @@ public: signals: void showRedVersion();
 public: signals: void startScanIP();
 public: signals: void startScanDNS();
 public: signals: void startScanImport();
-
 public: signals: void signalDataSaved(bool);
 public: signals: void changeGreenBAData(QString);
 public: signals: void changeRedBAData(QString);

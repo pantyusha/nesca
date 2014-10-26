@@ -1,33 +1,37 @@
 ﻿#pragma once
 #include "STh.h"
 #include "resource.h"
+#include "externData.h"
+#include "externFunctions.h"
+
+typedef struct ST{ 
+    char argv[MAX_ADDR_LEN];
+}sockstruct;
+
+QJsonArray *jsonArr = new QJsonArray();
 
 bool __savingBackUpFile = false;
 bool horLineFlag = false;
-QJsonArray *jsonArr = new QJsonArray();
 static int portArr[65536] = {0};
 int gThreadDelay = 10;
 int gC = 0;
 int gTimeOut = 3;
 int PieAnomC1 = 0, PieBA = 0, PieSusp = 0, PieLowl = 0, PieWF = 0, PieSSH = 0;
 int AnomC1 = 0, Filt = 0, Overl = 0, Lowl = 0, Alive = 0, saved = 0, Susp = 0, WF = 0, offlines = 0, ssh = 0;
-int GlobalWSAErr = 0;
 int GlobalNegativeSize = 0;
-int ovrlIPs = 0, ipCounter = 0;
+int ipCounter = 0;
 int mode;
-int found = 0, fillerFlag = 0, indexIP = 1;
-int gMaxSize = 65536;
+int found = 0, indexIP = 1;
 int gMode;
-int OnLiner = 0;
+int isActive = 0;
 int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSSHPass = 0;
 int ipsstart[4], ipsend[4], 
-	startNum, endNum, overallPorts, flCounter, octet[4];
+	overallPorts, flCounter, octet[4];
 unsigned char **ipsstartfl = NULL, **ipsendfl = NULL, **starterIP = NULL;
 unsigned int importFileSize = 0;
 int gPingTimeout = 2000;
 double ips = 0;
 char top_level_domain[128] = {0};
-char startM[64] = {0}, endM[64] = {0};
 char endIP2[128] = {0};
 char **GlobalNegatives = 0;
 char **loginLst, **passLst;
@@ -47,7 +51,6 @@ char metaETA[256] = {0};
 char metaOffline[256] = {0};
 bool ErrLogFirstTime = true;
 bool gPingNScan = false;
-volatile bool ConnLocked = false;
 unsigned long long gTargets = 0, gTargetsOverall = 1, targets, Activity = 0;
 volatile int gThreads;
 volatile int cons = 0;
@@ -381,7 +384,7 @@ void *_timer()
 {	
 	char dbuffer[32] = {0}, timeLeft[64] = {0}, b[32] = {0};
 	int ticks = 0;
-	ovrlIPs = 0;
+	int ovrlIPs = 0;
 	ips = 1;
 	Sleep(50);
 	while(globalScanFlag)
@@ -1226,9 +1229,8 @@ void ReadUTF8(FILE* nFile, char *cp)
 	};
 }
 #ifdef WIN32
-string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage)
+std::string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage)
 {
-	string res;
     int wsize = MultiByteToWideChar(srcCodePage, 0, src, -1, 0, 0);
     LPWSTR wbuf = (LPWSTR)new char[wsize * sizeof(WCHAR)];
     MultiByteToWideChar(srcCodePage, 0, src, -1, wbuf, wsize);
@@ -1236,6 +1238,8 @@ string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage)
     char * buf = (char *)new char[size];
     WideCharToMultiByte(dstCodePage, 0, wbuf, -1, buf, size, 0, 0);
     delete [] wbuf;
+	
+	std::string res;
 	res.append(buf);
     delete [] buf;
 	return res;
@@ -2505,7 +2509,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		if(flCounter == 0) 
 		{
 			stt->doEmitionRedFoundData("Empty IP list.");
-			OnLiner = 0;
+			isActive = 0;
 			globalScanFlag = false;
 			stt->doEmitionKillSttThread();
 
@@ -2643,8 +2647,18 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 	stt->doEmitionChangeStatus("Stopping...");
 	#pragma endregion
 	
-	while(cons > 0 || OnLiner == 1 || jsonArr->size() > 0) Sleep(2000);
+	while(cons > 0 || isActive == 1 || jsonArr->size() > 0) Sleep(2000);
 
+	nCleanup();
+	#pragma region QTGUI_Area
+	stt->doEmitionGreenFoundData("Done. Saved: " + QString::number(saved) + "; Alive: " + QString::number(found) + ".");
+	stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
+	stt->doEmitionChangeStatus("Idle");
+	stt->doEmitionKillSttThread();
+	#pragma endregion
+};
+
+void nCleanup(){
 	if(loginLst != NULL)
 	{
 		for(int i = 0; i < MaxLogin; ++i) delete []loginLst[i];
@@ -2703,10 +2717,4 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		delete []starterIP;
 		starterIP = NULL;
 	};
-	#pragma region QTGUI_Area
-	stt->doEmitionGreenFoundData("Done. Saved: " + QString::number(saved) + "; Alive: " + QString::number(found) + ".");
-	stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
-	stt->doEmitionChangeStatus("Idle");
-	stt->doEmitionKillSttThread();
-	#pragma endregion
-};
+}

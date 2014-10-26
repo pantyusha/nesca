@@ -1,4 +1,5 @@
 #include "ActivityDrawerTh_HorNet.h"
+#include "externData.h"
 
 void ActivityDrawerTh_HorNet::doEmitDrawActivityLine(QString data)
 {

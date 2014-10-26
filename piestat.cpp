@@ -1,4 +1,5 @@
 #include "piestat.h"
+#include "externData.h"
 
 void PieStat::doEmitUpdatePie()
 {

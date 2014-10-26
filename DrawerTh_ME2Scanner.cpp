@@ -1,5 +1,6 @@
 #include "DrawerTh_ME2Scanner.h"
 #include "STh.h"
+#include "externData.h"
 
 void DrawerTh_ME2Scanner::doEmitDrawTextPlacers()
 {

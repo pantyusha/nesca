@@ -1,6 +1,9 @@
 #pragma once
 #include "DrawerTh_QoSScanner.h"
 #include "STh.h"
+#include "externData.h"
+
+int tMax;
 
 void DrawerTh_QoSScanner::run()
 {

@@ -21,15 +21,21 @@
 #include <libssh\libssh.h>
 
 extern Ui::nesca_3Class *ui;
-extern bool widgetIsHidden;
-extern bool IRCLogToggled;
-extern bool BALogSwitched;
-extern void ShowMsgPopup(QString str);
-extern bool blinkFlag;
-extern bool disableBlink;
-extern bool debugFileOK;
+extern bool widgetIsHidden, IRCLogToggled, BALogSwitched, blinkFlag, disableBlink, debugFileOK, QOSWait,
+	connectedToIRC, ME2ScanFlag, QoSScanFlag, VoiceScanFlag, PieStatFlag, proxyEnabledFlag,
+	smBit_8, smBit_7, smBit_6, smBit_5, smBit_4, smBit_3, smBit_2, smBit_1, printDelimiter;
+extern float QoSStep;
+extern int MaxDataVal;
+extern char endIP2[128], inputStr[256];
+extern SOCKET lSock;
+
+extern QVector<int> vAlivLst, vAnomLst, vWFLst, vSuspLst, vLowlLst, vBALst, vSSHLst, vOvrlLst, actLst;
+extern QVector<QPointF> vect;
+extern QList<int> lstOfLabels;
 extern QSystemTrayIcon *tray;
-extern bool QOSWait;
+
+extern void ShowMsgPopup(QString str);
+
 class nesca_3 : public QMainWindow
 {
 	Q_OBJECT
@@ -144,7 +150,6 @@ protected:
 private:
 	QPoint dragPosition;
 };
-
 class PieStatView : public QGraphicsView
 {
 	Q_OBJECT
@@ -153,7 +158,6 @@ public:
 public:
 	void contextMenuEvent(QContextMenuEvent *event);
 };
-
 class PopupMsgWidget : public QWidget
 {
 	Q_OBJECT

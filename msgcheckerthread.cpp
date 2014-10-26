@@ -1,4 +1,5 @@
 #include "msgcheckerthread.h"
+#include "externData.h"
 
 void MSGCheckerThread::doEmitionShowNewMsg(QString str)
 {

@@ -1,4 +1,5 @@
 #include "DrawerTh_VoiceScanner.h"
+#include "externData.h"
 
 void DrawerTh_VoiceScanner::doEmitAddLine()
 {

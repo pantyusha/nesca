@@ -27,6 +27,8 @@
 #include <qdesktopservices.h>
 #include <qmessagebox.h>
 #include "progressbardrawer.h"
+#include "externFunctions.h"
+#include "externData.h"
 
 QDate date = QDate::currentDate();
 int ver = 100*(100*(date.year()%100) + date.month()) + date.day();
@@ -100,7 +102,6 @@ bool connectedToIRC = false;
 bool globalScanFlag;
 float QoSStep = 1;
 int MaxDataVal = 1;
-int tMax = 0;
 QGraphicsScene *sceneGrid;
 QGraphicsScene *sceneGrid2;
 QGraphicsScene *sceneGraph;
@@ -163,7 +164,6 @@ bool BALogSwitched = false;
 bool widgetIsHidden = false;
 bool blinkFlag = false;
 bool printDelimiter = false;
-bool destroychPThFlag = false;
 bool IRCLogToggled = true;
 int PhraseIndex = 0;
 QList<QString> PhraseLog;
@@ -208,7 +208,6 @@ void setSceneArea()
 	ui->pbgv->setScene(pbScene);
 	ui->jobRangeVisual->setScene(jobRangeVisualScene);
 	
-
 	ui->graphicLog->setSceneRect(0, 0, ui->graphicLog->width(), ui->graphicLog->height());
 	ui->graphicLog_2->setSceneRect(0, 0, ui->graphicLog_2->width(), ui->graphicLog_2->height());
 	ui->graphicDelim->setSceneRect(0, 0, ui->graphicDelim->width(), ui->graphicDelim->height());
@@ -3344,21 +3343,20 @@ void _startMsgCheck()
 	_startVerCheck();
 	_startMsgCheck();
 
-	//for(int i = 0; i < 480; ++i+=)
-	float step = 0;
-	QPen iprvPenRegular(QColor(51, 51, 51, 100));
-	QPen iprvPen(QColor(51, 51, 51, 100));
-	while(step < 480)
-	{
-		jobRangeVisualScene->addLine(step, 0, step, 41, iprvPenRegular);
-		step += 30;
-	};
-	QPen iprvPenComplete(QColor(51, 51, 51, 100));
-	while(step < 480)
-	{
-		jobRangeVisualScene->addLine(step, 0, step, 41, iprvPen);
-		step += 30;
-	};
+	//float step = 0;
+	//QPen iprvPenRegular(QColor(51, 51, 51, 100));
+	//QPen iprvPen(QColor(51, 51, 51, 100));
+	//while(step < 480)
+	//{
+	//	jobRangeVisualScene->addLine(step, 0, step, 41, iprvPenRegular);
+	//	step += 30;
+	//};
+	//QPen iprvPenComplete(QColor(51, 51, 51, 100));
+	//while(step < 480)
+	//{
+	//	jobRangeVisualScene->addLine(step, 0, step, 41, iprvPen);
+	//	step += 30;
+	//};
 };
 void nesca_3::playFcknSound()
 {
@@ -3511,61 +3509,10 @@ void nesca_3::STTTerminate()
 	globalScanFlag = false;
 
 	stt->terminate();
+
 	while(__savingBackUpFile) Sleep(100);
-	if(loginLst != NULL)
-	{
-		for(int i = 0; i < MaxLogin; i++) delete []loginLst[i];
-		delete []loginLst;
-		loginLst = NULL;
-	};
-	if(passLst != NULL)
-	{
-		for(int i = 0; i < MaxPass; i++) delete []passLst[i];
-		delete []passLst;
-		passLst = NULL;
-	};
-	if(GlobalNegatives != NULL)
-	{
-		for(int i = 0; i < GlobalNegativeSize; i++) delete []GlobalNegatives[i];
-		delete []GlobalNegatives;
-		GlobalNegatives = NULL;
-	};
-	if(wfPassLst != NULL)
-	{
-		for(int i = 0; i < MaxWFPass; ++i) delete []wfPassLst[i];
-		delete []wfPassLst;
-		wfPassLst = NULL;
-	};
-	if(wfLoginLst != NULL)
-	{
-		for(int i = 0; i < MaxWFLogin; ++i) delete []wfLoginLst[i];
-		delete []wfLoginLst;
-		wfLoginLst = NULL;
-	};
-	if(sshlpLst != NULL)
-	{
-		for(int i = 0; i < MaxSSHPass; ++i) delete []sshlpLst[i];
-		delete []sshlpLst;
-		sshlpLst = NULL;
-	};
-	if(ipsstartfl != NULL)
-	{
-		for(int i = 0; i < importFileSize; ++i) delete []ipsstartfl[i];
-		delete []ipsstartfl;
-		ipsstartfl = NULL;
-	};
-	if(ipsendfl != NULL)
-	{
-		for(int i = 0; i < importFileSize; ++i) delete []ipsendfl[i];
-		delete []ipsendfl;
-		ipsendfl = NULL;
-	};
-	if(starterIP != NULL)
-	{
-		for(int i = 0; i < importFileSize; ++i) delete []starterIP[i];
-		delete []starterIP;
-		starterIP = NULL;
-	};
+
+	nCleanup();
 	ui->tabMainWidget->setTabEnabled(0, true);
 	ui->tabMainWidget->setTabEnabled(1, true);
 	ui->tabMainWidget->setTabEnabled(2, true);
@@ -3576,7 +3523,6 @@ void nesca_3::STTTerminate()
 	BrutingThrds = 0;
 	cons = 0;
 	setButtonStyleArea();
-	ui->lineEditStartIPDNS->setText("");
 	ui->startScanButton_3->setText("Start");
 	ui->startScanButton_4->setText("Start");
 	ui->importButton->setText("Import&&Scan");

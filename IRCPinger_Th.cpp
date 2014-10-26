@@ -1,5 +1,6 @@
 #pragma once
 #include "IRCPinger_Th.h"
+#include "externData.h"
 
 void IRCPinger_Th::doEmitChangeRedIRCData(QString str)
 {

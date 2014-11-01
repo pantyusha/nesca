@@ -3,7 +3,6 @@
 
 #pragma once 
 #include "STh.h"
-#include "resource.h"
 
 class VerCheckerThread : public QThread
 {

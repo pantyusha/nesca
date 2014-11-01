@@ -3,7 +3,6 @@
 
 #pragma once
 #include "nesca_3.h"
-#include "resource.h"
 #include "irc_nmblinker.h"
 #include "IRCPinger_Th.h"
 

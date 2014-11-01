@@ -102,10 +102,10 @@ class Connector
 		lopaStr _BALobby(char *cookie, char *ip, int port, char *path, char *method, char *data);
 		lopaStr _WFLobby(char *cookie, char *ip, int port, char *methodVal, char *actionVal, char *userVal, char *passVal, char *formVal);
 		lopaStr _IPCameraBLobby(char *ip, int port, char *SPEC);
+		int _SSHLobby(char *ip, int port, conSTR *CSTR);
 		
 		int _EstablishConnection(char *ip, int port, char *request, conSTR *cstr, int force = 0);
 		int _EstablishSSLConnection(char *ip, int port, char *request, conSTR *cstr);
-		//void _StartRangeFapping(int ipsstart[], int ipsend[], int &cons, char *argv2, ST *st);
 		void _Connect(void *s);
 		int _ConnectToPort(char *ip, const char *port, char *hl);
 	};

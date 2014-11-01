@@ -1,5 +1,6 @@
 #include "vercheckerthread.h"
 #include "externData.h"
+#include "resource.h"
 
 void _checkVer()
 {

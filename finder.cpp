@@ -1446,10 +1446,11 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	if(	strstr(buffcpy, "[IGNR_ADDR]") != NULL ) return -1;
 	if(	strstr(buffcpy, "SSH-2.0-OpenSSH") != NULL ) 
 	{
+		Connector con;
 		conSTR CSTR;
 		CSTR.lowerBuff = NULL;
 		CSTR.size = 0;
-		int res = _SSHLobby(ip, p, &CSTR);
+		int res = con._SSHLobby(ip, p, &CSTR);
 		if(res != -1 && res != -2)
 		{
 			_saveSSH(ip, p, recd, CSTR.lowerBuff);
@@ -2017,6 +2018,9 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		strcat(mes, tempPath);
 		strcat(mes, rbuff2);
 		strcat(mes, tempIP);
+		strcat(mes, ":");
+		char tbuff[16] = {0};
+		strcat(mes, itoa(tempPort, tbuff, 10));
 		if(strlen(cookie) != 0)
 		{
 			strcat(mes, rbuff3);

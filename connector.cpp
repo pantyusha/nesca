@@ -3,6 +3,7 @@
 #include <libssh/libssh.h>
 #include <sstream>
 #include <openssl/md5.h>
+#include "resource.h"
 #include "externFunctions.h"
 #include "externData.h"
 #pragma once
@@ -1800,6 +1801,9 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 				strcat(request, " HTTP/1.1\r\n");
 				strcat(request, "Host: ");
 				strcat(request, ip);
+				strcat(request, ":");
+				char tbuff[16] = {0};
+				strcat(request, itoa(port, tbuff, 10));
 				if(cookieLen != 0)
 				{
 					strcat(request, "\r\nCookie: ");
@@ -1922,6 +1926,9 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 				strcat(request, " HTTP/1.1\r\n");
 				strcat(request, "Host: ");
 				strcat(request, ip);
+				strcat(request, ":");
+				char tbuff[16] = {0};
+				strcat(request, itoa(port, tbuff, 10));
 				if(cookieLen != 0)
 				{
 					strcat(request, "\r\nCookie: ");
@@ -2500,7 +2507,7 @@ QString strIP;
 QString strPort;
 const char *buff1 = "GET / HTTP/1.1\r\nHost: ";
 const char *buff2 = "\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: us-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nConnection: close\r\n\r\n";
-int _SSHLobby(char *ip, int port, conSTR *CSTR)
+int Connector::_SSHLobby(char *ip, int port, conSTR *CSTR)
 {
 	char banner[256] = {0};
 	strncpy(banner, _get_ssh_banner(ip, port), 256);
@@ -2527,6 +2534,8 @@ int Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
 	int strFlag = 0;
 	strcpy(mes, buff1);
 	strcat(mes, ip);
+	strcat(mes, ":");
+	strcat(mes, portC);
 	strcat(mes, buff2);
 	int port = atoi(portC);
 	int cRes;

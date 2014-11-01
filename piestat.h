@@ -3,7 +3,6 @@
 
 #pragma once
 #include "nesca_3.h"
-#include "resource.h"
 
 class PieStat : public QThread
 {

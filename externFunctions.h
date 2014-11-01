@@ -12,5 +12,4 @@ extern void _SaveBackupToFile();
 extern char* __cdecl strstri(char *_Str, const char *_SubStr);
 extern char* _getAttribute(char *str, char *attrib);
 extern char *_findFirstOcc(char *str, char *delim);
-extern int _SSHLobby(char *ip, int port, conSTR *CSTR);
 extern void nCleanup();

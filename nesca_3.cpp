@@ -17,7 +17,6 @@
 #include "DrawerTh_ME2Scanner.h"
 #include "DrawerTh_VoiceScanner.h"
 #include "piestat.h"
-#include "resource.h"
 #include <QMenu>
 #include <QGraphicsSceneContextMenuEvent>
 #include <QDesktopWidget>

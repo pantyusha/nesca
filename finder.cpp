@@ -235,70 +235,76 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 		)
 		&& strstr(buffcpy, "digest realm") != NULL
 		&& strstr(buffcpy, "basic realm") == NULL
-		) return 101;
+		)																												return 101;
 	if(strstr(buffcpy, "401 authorization") != NULL || strstr(buffcpy, "401 unauthorized") != NULL || (strstr(buffcpy, "www-authenticate") != NULL && strstr(buffcpy, "401 ") != NULL )
 		|| strstr(buffcpy, "401 unauthorized access denied") != NULL || strstr(buffcpy, "401 unauthorised") != NULL || (strstr(buffcpy, "www-authenticate") != NULL && strstr(buffcpy, " 401\r\n") != NULL)
-		) return 1;
-	if(strstr(buffcpy, "netwave ip camera")) return 11;
-	if(strstr(buffcpy, "live view / - axis")) return 12;
-	if(strstr(buffcpy, "vilar ipcamera")) return 13;
-	if(strstr(buffcpy, "window.location = \"rdr.cgi\"")) return 14;
-	if(strstr(buffcpy, "httpfileserver")) return 15;
-	if(strstr(buffcpy, "real-time ip camera monitoring system") != NULL ||
-		strstr(buffcpy, "server push mode") != NULL
-		) return 17; //Real-time IP Camera Monitoring System
-	if(strstr(buffcpy, "linksys.com") != NULL && strstr(buffcpy, "tm05") != NULL) return 18; //linksys.com cameras
-	if(strstr(buffcpy, "reecam ip camera") != NULL) return 19; //reecam cameras
-	if(strstr(buffcpy, "bridge eyeon") != NULL) return 21; //Bridge Eyeon
-	if(strstr(buffcpy, "ip camera control webpage") != NULL && strstr(buffcpy, "/main/cs_motion.asp") != NULL) return 22; //ip camera control
-	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/live/index2.html") != NULL) return 23; //network camera BB-SC384
-	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/viewer/live/en/live.html") != NULL) return 24; //Network Camera VB-M40
-	if(strstr(buffcpy, "panasonic ") != NULL && strstr(buffcpy, ":60002/snapshotjpeg") != NULL) return 25; //Panasonic wtfidonteven-camera
-	if(strstr(buffcpy, "sony network camera") != NULL && strstr(buffcpy, "/command/inquiry.cgi?") != NULL) return 26; //Sony Network Camera
-	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "src=\"webs.cgi?") != NULL) return 27; //UA Network Camera
-	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/viewer/live/index.html") != NULL) return 28; //Network Camera VB-M40
-	if(strstr(buffcpy, "lg smart ip device") != NULL) return 29; //LG Smart IP Device Camera
-	if(strstr(buffcpy, "/view/viewer_index.shtml") != NULL) return 20; //axis cameras
-	if(strstr(buffcpy, "nas") != NULL && strstr(buffcpy, "/cgi-bin/data/viostor-220/viostor/viostor.cgi") != NULL) return 30; //NAX
-	if(strstr(buffcpy, "ip camera") != NULL && strstr(buffcpy, "check_user.cgi") != NULL) return 31; //ip cams
-	if(strstr(buffcpy, "ws(\"user\");") != NULL && strstr(buffcpy, "src=\"/tool.js") != NULL && strstr(buffcpy, "<b class=\"xb1\"></b>") != NULL) return 32; //IPC web ip cam
-	if(strstr(buffcpy, "geovision") != NULL && (strstr(buffcpy, "ip camera") != NULL || strstr(buffcpy, "ssi.cgi/login.htm") != NULL)) return 33; //GEO web ip cam
-	if((strstr(buffcpy, "easy cam") != NULL && strstr(buffcpy, "easy life") != NULL)
-		|| strstr(buffcpy, "ipcamera") != NULL && strstr(buffcpy, "/tool.js") != NULL) return 35; //EasyCam
-	if(strstr(buffcpy, "/config/cam_portal.cgi") != NULL || strstr(buffcpy, "/config/easy_index.cgi") != NULL) return 36; //Panasonic Cam
-	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/view/getuid.cgi") != NULL) return 37; //Panasonic Cam WJ-HD180
-	if(strstr(buffcpy, "ipcam client") != NULL && strstr(buffcpy, "plugins.xpi") != NULL && strstr(buffcpy, "js/upfile.js") != NULL) return 38; //Foscam
-	if(strstr(buffcpy, "ip surveillance") != NULL && strstr(buffcpy, "customer login") != NULL) return 39; //EagleEye
-	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/admin/index.shtml?") != NULL) return 40; //Network Camera VB-C300
-	if(strstr(buffcpy, "sq-webcam") != NULL && strstr(buffcpy, "liveview.html") != NULL) return 41; //AVIOSYS-camera
-	if(strstr(buffcpy, "nw_camera") != NULL && strstr(buffcpy, "/cgi-bin/getuid") != NULL) return 42; //NW_camera
-	if(strstr(buffcpy, "micros") != NULL && strstr(buffcpy, "/gui/gui_outer_frame.shtml") != NULL) return 43; //NW_camera
-	if(strstr(buffcpy, "lapassword") != NULL 
-		&& strstr(buffcpy, "lausername") != NULL 
-		&& strstr(buffcpy, "g_ologin.dologin()") != NULL
-		) return 44; //hikvision cam 2
-	if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL && strstr(buffcpy, "dvrdvs-webs") != NULL)
-		|| (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL && strstr(buffcpy, "dologin()") != NULL)) return 34; //hikvision cam
-	
-	if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
+		)																												return 1;
+	if(strstr(buffcpy, "netwave ip camera"))																			return 11;
+	if(strstr(buffcpy, "live view / - axis"))																			return 12;
+	if(strstr(buffcpy, "vilar ipcamera"))																				return 13;
+	if(strstr(buffcpy, "window.location = \"rdr.cgi\""))																return 14;
+	if(strstr(buffcpy, "httpfileserver"))																				return 15;
+		if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
 		(strstri(buffcpy, "220 diskStation ftp server ready") != NULL) ||
 		(strstri(buffcpy, "220 ftp server ready") != NULL)
 		|| strstr(buffcpy, "500 'get': command not understood") != NULL
-		) return 16; // 16 - FTP
+		)																												return 16; // 16 - FTP
+	if(strstr(buffcpy, "real-time ip camera monitoring system") != NULL ||
+		strstr(buffcpy, "server push mode") != NULL
+		)																												return 17; //Real-time IP Camera Monitoring System
+	if(strstr(buffcpy, "linksys.com") != NULL && strstr(buffcpy, "tm05") != NULL)										return 18; //linksys.com cameras
+	if(strstr(buffcpy, "reecam ip camera") != NULL)																		return 19; //reecam cameras
+	if(strstr(buffcpy, "/view/viewer_index.shtml") != NULL)																return 20; //axis cameras
+	if(strstr(buffcpy, "bridge eyeon") != NULL)																			return 21; //Bridge Eyeon
+	if(strstr(buffcpy, "ip camera control webpage") != NULL && strstr(buffcpy, "/main/cs_motion.asp") != NULL)			return 22; //ip camera control
+	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/live/index2.html") != NULL)						return 23; //network camera BB-SC384
+	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/viewer/live/en/live.html") != NULL)				return 24; //Network Camera VB-M40
+	if(strstr(buffcpy, "panasonic ") != NULL && strstr(buffcpy, ":60002/snapshotjpeg") != NULL)							return 25; //Panasonic wtfidonteven-camera
+	if(strstr(buffcpy, "sony network camera") != NULL && strstr(buffcpy, "/command/inquiry.cgi?") != NULL)				return 26; //Sony Network Camera
+	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "src=\"webs.cgi?") != NULL)							return 27; //UA Network Camera
+	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/viewer/live/index.html") != NULL)					return 28; //Network Camera VB-M40
+	if(strstr(buffcpy, "lg smart ip device") != NULL)																	return 29; //LG Smart IP Device Camera
+	if(strstr(buffcpy, "nas") != NULL && strstr(buffcpy, "/cgi-bin/data/viostor-220/viostor/viostor.cgi") != NULL)		return 30; //NAX
+	if(strstr(buffcpy, "ip camera") != NULL && strstr(buffcpy, "check_user.cgi") != NULL)								return 31; //ip cams
+	if(strstr(buffcpy, "ws(\"user\");") != NULL && strstr(buffcpy, "src=\"/tool.js") != NULL 
+		&& strstr(buffcpy, "<b class=\"xb1\"></b>") != NULL)															return 32; //IPC web ip cam
+	if(strstr(buffcpy, "geovision") != NULL && (strstr(buffcpy, "ip camera") != NULL 
+		|| strstr(buffcpy, "ssi.cgi/login.htm") != NULL))																return 33; //GEO web ip cam
+		if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL 
+			&& strstr(buffcpy, "dvrdvs-webs") != NULL)
+		|| (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL 
+		&& strstr(buffcpy, "dologin()") != NULL))																		return 34; //hikvision cam
+	if((strstr(buffcpy, "easy cam") != NULL && strstr(buffcpy, "easy life") != NULL)
+		|| strstr(buffcpy, "ipcamera") != NULL && strstr(buffcpy, "/tool.js") != NULL)									return 35; //EasyCam
+	if(strstr(buffcpy, "/config/cam_portal.cgi") != NULL || strstr(buffcpy, "/config/easy_index.cgi") != NULL)			return 36; //Panasonic Cam
+	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/view/getuid.cgi") != NULL)								return 37; //Panasonic Cam WJ-HD180
+	if(strstr(buffcpy, "ipcam client") != NULL && strstr(buffcpy, "plugins.xpi") != NULL 
+		&& strstr(buffcpy, "js/upfile.js") != NULL)																		return 38; //Foscam
+	if(strstr(buffcpy, "ip surveillance") != NULL && strstr(buffcpy, "customer login") != NULL)							return 39; //EagleEye
+	if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/admin/index.shtml?") != NULL)						return 40; //Network Camera VB-C300
+	if(strstr(buffcpy, "sq-webcam") != NULL && strstr(buffcpy, "liveview.html") != NULL)								return 41; //AVIOSYS-camera
+	if(strstr(buffcpy, "nw_camera") != NULL && strstr(buffcpy, "/cgi-bin/getuid") != NULL)								return 42; //NW_camera
+	if(strstr(buffcpy, "micros") != NULL && strstr(buffcpy, "/gui/gui_outer_frame.shtml") != NULL)						return 43; //NW_camera
+	if(strstr(buffcpy, "lapassword") != NULL 
+		&& strstr(buffcpy, "lausername") != NULL 
+		&& strstr(buffcpy, "g_ologin.dologin()") != NULL
+		)																												return 44; //hikvision cam 2
+	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/config/index.cgi") != NULL)							return 45; //Panasonic Cam BB-HG???
+
 	if(strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
 		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
 		|| strstr(buffcpy, "network camera server") != NULL
-		|| strstr(buffcpy, "$lock extended") != NULL
-		|| strstr(buffcpy, "ip camera") != NULL
+		|| strstr(buffcpy, "$lock extended") != NULL	|| strstr(buffcpy, "ip camera") != NULL
 		|| strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
 		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
 		|| strstr(buffcpy, "ipcam") != NULL
-		) return 0;
-	if(lxf.globalSearchNeg(buffcpy, ip, port) == -1) return -1;
-	if(globalSearchPrnt(buffcpy) == -1) return -1;
-	if(strstr(buffcpy, "<form ") != NULL && strstr(buffcpy, "302 found") == NULL) return 10;
-	if(f) return 7;
+		)																												return 0;
+	if(lxf.globalSearchNeg(buffcpy, ip, port) == -1)																	return -1;
+	if(globalSearchPrnt(buffcpy) == -1)																					return -1;
+	if(strstr(buffcpy, "<form ") != NULL && strstr(buffcpy, "302 found") == NULL)										return 10;
+	if(f)																												return 7;
+
 	return 0;
 };
 //> 1600
@@ -351,6 +357,7 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 		&& strstr(buffcpy, "lausername") != NULL 
 		&& strstr(buffcpy, "g_ologin.dologin()") != NULL
 		) return 44; //hikvision cam 2
+	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/config/index.cgi") != NULL)							return 45; //Panasonic Cam BB-HG???
 	if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL && strstr(buffcpy, "dvrdvs-webs") != NULL)
 		|| (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL && strstr(buffcpy, "dologin()") != NULL)) return 34; //hikvision cam
 	
@@ -364,8 +371,7 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
 		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
 		|| strstr(buffcpy, "network camera server") != NULL
-		|| strstr(buffcpy, "$lock extended") != NULL
-		|| strstr(buffcpy, "ip camera") != NULL
+		|| strstr(buffcpy, "$lock extended") != NULL	|| strstr(buffcpy, "ip camera") != NULL
 		|| strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
 		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
 		|| strstr(buffcpy, "ipcam") != NULL
@@ -1728,6 +1734,10 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	{
 		_specBrute(ps.cookie, ip, p, hl, "[Hikvision] IP Camera", flag, "/ISAPI/Security/userCheck", "[Hikvision] IP Camera", "Basic Authorization", cp, recd, "");
 	}
+	else if(flag == 45) //Panasonic ip cam
+	{
+		_specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/config/index.cgi", "[Panasonic] IP Camera", "Basic Authorization", cp, recd, "");
+	}
 	else if(flag == 20) //AXIS Camera
 	{
 		_specBrute(ps.cookie, ip, p, hl, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "AXIS Camera", "Basic Authorization", cp, recd, "");
@@ -2622,7 +2632,8 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 				ZeroMemory(scriptContainer, sz + 1);
 				strncpy(scriptContainer, ptr1, sz);
 				memset(scriptContainer + sz, '\0', 1);
-
+				
+				ZeroMemory(linkPtr, 512);
 				if(strstri(scriptContainer, "location.href") != NULL)			_getLinkFromJSLocation(linkPtr, scriptContainer, "location.href", ip, port);
 				else if(strstri(scriptContainer, "location.replace") != NULL)	_getLinkFromJSLocation(linkPtr, scriptContainer, "location.replace", ip, port);
 				else if(strstri(scriptContainer, "location.reload") != NULL)	strcpy(linkPtr, "/");
@@ -2654,7 +2665,8 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 		}
 		while(ptr1 != NULL);
 	}
-	else if(strstri(str, " onload") != NULL)
+	
+	if(strstri(str, " onload") != NULL)
 	{
 		char *ptr1 = strstri(str, " onload");
 		char *ptr2 = strstr(ptr1, ">");
@@ -2670,7 +2682,8 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 				ZeroMemory(scriptContainer, sz + 1);
 				strncpy(scriptContainer, ptr1, sz);
 				memset(scriptContainer + sz, '\0', 1);
-
+				
+				ZeroMemory(linkPtr, 512);
 				if(strstri(scriptContainer, "location.href") != NULL)			_getLinkFromJSLocation(linkPtr, scriptContainer, "location.href", ip, port);
 				else if(strstri(scriptContainer, "location.replace") != NULL)	_getLinkFromJSLocation(linkPtr, scriptContainer, "location.replace", ip, port);
 				else if(strstri(scriptContainer, "location.reload") != NULL)	strcpy(linkPtr, "/");

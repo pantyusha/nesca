@@ -181,7 +181,7 @@ int Lexems::globalSearchNeg(const char *buffcpy, char *ip, int port)
 			{
 				if(gNegDebugMode)
 				{
-					stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "]	Negative hit: \"" + QString::fromLocal8Bit(negWord).toHtmlEscaped() + "\"");
+					stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "]		Negative hit: \"" + QString::fromLocal8Bit(negWord).toHtmlEscaped() + "\"");
 					if(strlen(negWord) < 2) 
 					{
 						stt->doEmitionDebugFoundData("		Len:" + QString::number(strlen(negWord)));
@@ -1849,7 +1849,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 	Connector con;
 	char tempIP[MAX_ADDR_LEN] = {0};
 	strcpy(tempIP, ip);
-	int tempPort = 80;
+	int tempPort = port;
 	char tempPath[1024] = {0};
 	char mes[2048]= {0};
 

@@ -181,7 +181,7 @@ int Lexems::globalSearchNeg(const char *buffcpy, char *ip, int port)
 			{
 				if(gNegDebugMode)
 				{
-					stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Negative hit: \"" + QString::fromLocal8Bit(negWord).toHtmlEscaped() + "\"");
+					stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "]	Negative hit: \"" + QString::fromLocal8Bit(negWord).toHtmlEscaped() + "\"");
 					if(strlen(negWord) < 2) 
 					{
 						stt->doEmitionDebugFoundData("		Len:" + QString::number(strlen(negWord)));
@@ -290,6 +290,7 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 		&& strstr(buffcpy, "g_ologin.dologin()") != NULL
 		)																												return 44; //hikvision cam 2
 	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/config/index.cgi") != NULL)							return 45; //Panasonic Cam BB-HG???
+	if(strstr(buffcpy, "/ui/") != NULL && strstr(buffcpy, "sencha-touch") != NULL)										return 46; //BUFFALO disk
 
 	if(strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
@@ -358,6 +359,8 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 		&& strstr(buffcpy, "g_ologin.dologin()") != NULL
 		) return 44; //hikvision cam 2
 	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/config/index.cgi") != NULL)							return 45; //Panasonic Cam BB-HG???
+	if(strstr(buffcpy, "/ui/") != NULL && strstr(buffcpy, "sencha-touch") != NULL)										return 46; //BUFFALO disk
+
 	if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL && strstr(buffcpy, "dvrdvs-webs") != NULL)
 		|| (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL && strstr(buffcpy, "dologin()") != NULL)) return 34; //hikvision cam
 	
@@ -1708,7 +1711,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	}
 	else if(flag == 38) //Foscam
 	{
-		_specWEBIPCAMBrute(ip, p, hl, "[Foscam] IP Camera", flag, "[Foscam] IP Camera", "Basic Authorization", cp, recd, "Foscam");
+		_specWEBIPCAMBrute(ip, p, hl, "[Foscam] IP Camera", flag, "[Foscam] IP Camera", "Web Authorization", cp, recd, "Foscam");
 	}
 	else if(flag == 39) //EagleEye
 	{
@@ -1720,7 +1723,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	}
 	else if(flag == 41) //AVIOSYS-camera
 	{
-		_specWEBIPCAMBrute(ip, p, hl, "[AVIOSYS] IP Camera", flag, "[AVIOSYS] IP Camera", "Basic Authorization", cp, recd, "AVIOSYS");
+		_specWEBIPCAMBrute(ip, p, hl, "[AVIOSYS] IP Camera", flag, "[AVIOSYS] IP Camera", "Web Authorization", cp, recd, "AVIOSYS");
 	}
 	else if(flag == 42) //NW_camera
 	{
@@ -1737,6 +1740,10 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	else if(flag == 45) //Panasonic ip cam
 	{
 		_specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/config/index.cgi", "[Panasonic] IP Camera", "Basic Authorization", cp, recd, "");
+	}
+	else if(flag == 46) //Buffalo disk
+	{
+		_specWEBIPCAMBrute(ip, p, hl, "[Buffalo] Lan Disk", flag, "[Buffalo] Lan Disk", "Web Authorization", cp, recd, "BUFFALO");
 	}
 	else if(flag == 20) //AXIS Camera
 	{
@@ -1901,6 +1908,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		strcat(mes, tempPath);
 		strcat(mes, rbuff2);
 		strcat(mes, tempIP);
+		if(tempPort != 80){
+			strcat(mes, ":");
+			char tbuff[16] = {0};
+			strcat(mes, itoa(tempPort, tbuff, 10));
+		}
 		if(strlen(cookie) != 0)
 		{
 			strcat(mes, rbuff3);
@@ -2028,9 +2040,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		strcat(mes, tempPath);
 		strcat(mes, rbuff2);
 		strcat(mes, tempIP);
-		strcat(mes, ":");
-		char tbuff[16] = {0};
-		strcat(mes, itoa(tempPort, tbuff, 10));
+		if(tempPort != 80){
+			strcat(mes, ":");
+			char tbuff[16] = {0};
+			strcat(mes, itoa(tempPort, tbuff, 10));
+		}
 		if(strlen(cookie) != 0)
 		{
 			strcat(mes, rbuff3);
@@ -2129,6 +2143,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		strcat(mes, tempPath);
 		strcat(mes, rbuff2);
 		strcat(mes, ip);
+		if(tempPort != 80){
+			strcat(mes, ":");
+			char tbuff[16] = {0};
+			strcat(mes, itoa(tempPort, tbuff, 10));
+		}
 		if(strlen(cookie) != 0)
 		{
 			strcat(mes, rbuff3);
@@ -2217,6 +2236,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		strcat(mes, tempPath);
 		strcat(mes, rbuff2);
 		strcat(mes, ip);
+		if(tempPort != 80){
+			strcat(mes, ":");
+			char tbuff[16] = {0};
+			strcat(mes, itoa(tempPort, tbuff, 10));
+		}
 		if(strlen(cookie) != 0)
 		{
 			strcat(mes, rbuff3);

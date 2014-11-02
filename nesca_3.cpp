@@ -2194,7 +2194,7 @@ void nesca_3::slotOutData(QString ip, QString str)
 		str.replace("Accept-Encoding:", "<font color=\"GoldenRod\">Accept-Encoding:</font>");
 		str.replace("User-Agent:", "<font color=\"GoldenRod\">User-Agent:</font>");
 		str.replace("Connection:", "<font color=\"GoldenRod\">Connection:</font>");
-		str.replace("Content-length:", "<font color=\"GoldenRod\">Content-length:</font>");
+		str.replace("Content-Length:", "<font color=\"GoldenRod\">Content-Length:</font>");
 		str.replace("Authorization:", "<font color=\"GoldenRod\">Authorization:</font>");
 		_rOutProt.indexIn(str);
 		prot = _rOutProt.cap(0);

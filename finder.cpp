@@ -18,7 +18,7 @@ char* __cdecl strstri(char *_Str, const char *_SubStr)
 };
 
 bool gGlobalTrackLocked = false;
-char *_findFirstOcc(char *str, char *delim)
+char *_findFirst(char *str, char *delim)
 {
 	int sz = strlen(str);
 	int dsz = strlen(delim);
@@ -32,7 +32,7 @@ char *_findFirstOcc(char *str, char *delim)
 
 	return NULL;
 };
-char *FindLastOcc(char *str, char *delim)
+char *_findLast(char *str, char *delim)
 {
 	int sz = strlen(str);
 	int dsz = strlen(delim);
@@ -57,7 +57,7 @@ char *GetCodePage(char *str)
 		if(strstri((char *)(temp2 + strlen("<meta ")), "charset=") != NULL)
 		{
 			char *temp3 = strstri((char *)(temp2 + strlen("<meta ")), "charset=");
-			char *temp4 = _findFirstOcc((char *)(temp3 + strlen("charset=")), " \"'>\n\r");
+			char *temp4 = _findFirst((char *)(temp3 + strlen("charset=")), " \"'>\n\r");
 			if(temp4 != NULL)
 			{
 				int ln = (int)(temp4 - temp3 - strlen("charset="));
@@ -77,7 +77,7 @@ char *GetCodePage(char *str)
 		else if(strstri((char *)(temp2 + strlen("<meta ")), "charset = ") != NULL)
 		{
 			char *temp3 = strstri((char *)(temp2 + strlen("<meta ")), "charset = ");
-			char *temp4 = _findFirstOcc((char *)(temp3 + strlen("charset = ")), " \"'>\n\r");
+			char *temp4 = _findFirst((char *)(temp3 + strlen("charset = ")), " \"'>\n\r");
 			if(temp4 != NULL)
 			{
 				int ln = (int)(temp4 - temp3 - strlen("charset = "));
@@ -97,7 +97,7 @@ char *GetCodePage(char *str)
 		else if(strstri((char *)(temp2 + strlen("<meta ")), "charset =") != NULL)
 		{
 			char *temp3 = strstri((char *)(temp2 + strlen("<meta ")), "charset =");
-			char *temp4 = _findFirstOcc((char *)(temp3 + strlen("charset =")), " \"'>\n\r");
+			char *temp4 = _findFirst((char *)(temp3 + strlen("charset =")), " \"'>\n\r");
 			if(temp4 != NULL)
 			{
 				int ln = (int)(temp4 - temp3 - strlen("charset ="));
@@ -119,7 +119,7 @@ char *GetCodePage(char *str)
 			if(strstri(str, "charset=") != NULL)
 			{
 				char *temp2 = strstri(str, "charset=");
-				char *temp3 = _findFirstOcc((char *)(temp2 + strlen("charset=")), " \"'>\n\r");
+				char *temp3 = _findFirst((char *)(temp2 + strlen("charset=")), " \"'>\n\r");
 				if(temp3 != NULL)
 				{
 					int ln = (int)(temp3 - temp2 - strlen("charset="));
@@ -145,7 +145,7 @@ char *GetCodePage(char *str)
 	else if(strstri(str, "charset=") != NULL)
 	{
 		char *temp2 = strstri(str, "charset=");
-		char *temp3 = _findFirstOcc((char *)(temp2 + strlen("charset=")), " \"'\n\r");
+		char *temp3 = _findFirst((char *)(temp2 + strlen("charset=")), " \"'\n\r");
 		if(temp3 != NULL)
 		{
 			int ln = (int)(temp3 - temp2 - strlen("charset="));
@@ -181,7 +181,7 @@ int Lexems::globalSearchNeg(const char *buffcpy, char *ip, int port)
 			{
 				if(gNegDebugMode)
 				{
-					stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "]		Negative hit: \"" + QString::fromLocal8Bit(negWord).toHtmlEscaped() + "\"");
+					stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "]\tNegative hit: \"" + QString::fromLocal8Bit(negWord).toHtmlEscaped() + "\"");
 					if(strlen(negWord) < 2) 
 					{
 						stt->doEmitionDebugFoundData("		Len:" + QString::number(strlen(negWord)));
@@ -891,7 +891,7 @@ void _getFormVal(char *data, char *result, char *key, char *path = NULL)
 	{
 		if(strstr(path, "./") == NULL)
 		{
-			char *ptrP1 = FindLastOcc(path, "/");
+			char *ptrP1 = _findLast(path, "/");
 			if(ptrP1 != path)
 			{
 				int pSz = ptrP1 -path;
@@ -902,16 +902,16 @@ void _getFormVal(char *data, char *result, char *key, char *path = NULL)
 	char *keyResult1 = strstri(parVal, key);
 	if(keyResult1 != NULL)
 	{
-		char *pkeyResult2 = _findFirstOcc(keyResult1, " >");
+		char *pkeyResult2 = _findFirst(keyResult1, " >");
 		if(pkeyResult2 != NULL)
 		{
 			int psz2 = pkeyResult2 - keyResult1;
 			strncpy(parVal2, keyResult1, (psz2 < 256 ? psz2 : 256));
 
-			char *keyResult2 = _findFirstOcc(parVal2, "'\"");
+			char *keyResult2 = _findFirst(parVal2, "'\"");
 			if(keyResult2 != NULL)
 			{
-				char *keyResult3 = _findFirstOcc(keyResult2 + 1, "'\"> ");
+				char *keyResult3 = _findFirst(keyResult2 + 1, "'\"> ");
 				if(keyResult3 != NULL)
 				{
 					sz = keyResult3 - keyResult2 - 1;
@@ -945,10 +945,10 @@ void _getFormVal(char *data, char *result, char *key, char *path = NULL)
 			}
 			else
 			{
-				keyResult2 = _findFirstOcc(parVal2, "=");
+				keyResult2 = _findFirst(parVal2, "=");
 				if(keyResult2 != NULL)
 				{
-					char *keyResult3 = _findFirstOcc(keyResult2, "'\"> ");
+					char *keyResult3 = _findFirst(keyResult2, "'\"> ");
 					if(keyResult3 != NULL )
 					{
 						sz = keyResult3 - keyResult2 - 1;
@@ -1007,7 +1007,7 @@ char *_getAttribute(char *str, char *attrib)
 	{
 		char res[1024] = {0};
 		char *ptrStart = strstri(str, attrib);
-		char *ptrEnd = _findFirstOcc(ptrStart, "\r\n");
+		char *ptrEnd = _findFirst(ptrStart, "\r\n");
 		if(ptrEnd != NULL)
 		{
 			int szAt = strlen(attrib);
@@ -1108,7 +1108,7 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 		if(actionVal[0] == '.')
 		{
 			char tmpBuff[512] = {0};
-			char *tempPtr1 = FindLastOcc(path, "/");
+			char *tempPtr1 = _findLast(path, "/");
 			int sz = tempPtr1 - path;
 			if(sz > 0)
 			{
@@ -1857,7 +1857,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 	{
 		tempPort = 443;
 		char *ptr1 = strstri(str, "https://");
-		char *ptr2 = _findFirstOcc(str + 8, ":/?");
+		char *ptr2 = _findFirst(str + 8, ":/?");
 		if(ptr2 != NULL)
 		{
 			int sz = ptr2 - ptr1 - 8;
@@ -1988,7 +1988,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 	else if(strstr(str, "http://") != NULL) //http
 	{
 		char *ptr1 = strstri(str, "http://");
-		char *ptr2 = _findFirstOcc(str + 7, ":/?");
+		char *ptr2 = _findFirst(str + 7, ":/?");
 		if(ptr2 != NULL)
 		{
 			int sz = ptr2 - ptr1 - 7;
@@ -2118,25 +2118,9 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 	}
 	else if(str[0] == '/' || (str[0] == '.' && str[1] == '/') || (str[0] == '.' && str[1] == '.' && str[2] == '/'))
 	{
-		char *ptr1 = strstr(str, "/");
-		if( strstr(str, "')" ) )
-		{
-			strncpy(tempPath, ptr1, strlen(ptr1) - strlen(strstr(ptr1, "')")));
-		}
-		else if( strstr(str, "\"") )
-		{
-			strncpy(tempPath, ptr1, strstr(str, "\"") - str);
-		}
-		else if( strstr(str, "\n") )
-		{
-			strncpy(tempPath, ptr1, strlen(ptr1) - strlen(strstr(ptr1, "\n")));
-		}
-		else 
-		{ 
-			if(str[0] == '.' && str[1] == '.') strcpy(tempPath, str + 2);
-			else if(str[0] == '.') strcpy(tempPath, str + 1);
-			else strcpy(tempPath, str);
-		};
+		if(str[0] == '.' && str[1] == '.') strcpy(tempPath, str + 2);
+		else if(str[0] == '.') strcpy(tempPath, str + 1);
+		else strcpy(tempPath, str);
 
 		strcpy(mes, rbuff1);
 		if(tempPath[0] != '/') strcat(mes, "/");
@@ -2348,21 +2332,21 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 	char *ptr1 = strstr(str, tag);
 	if(ptr1 != NULL)
 	{
-		char *ptr2 = _findFirstOcc(ptr1, "=(");
-		char *ptrSemi = _findFirstOcc(ptr1 + strlen(tag), ".;");
+		char *ptr2 = _findFirst(ptr1, "=(");
+		char *ptrSemi = _findFirst(ptr1 + strlen(tag), ".;");
 		if(ptr2 != NULL && ptrSemi != NULL)
 		{
 			int sz = ptrSemi - ptr2;
 			if(sz > 2)
 			{
-				char *ptrQuote1 = _findFirstOcc(ptr2, "\"'");
+				char *ptrQuote1 = _findFirst(ptr2, "\"'");
 				if(ptrQuote1 != NULL)
 				{
 					char delim[2] = {0};
 					ZeroMemory(delim, 1);
 					delim[0] = ptrQuote1[0];
 					delim[1] = '\0';
-					char *ptrQuote2 = strstr(ptrQuote1 + 1, delim);
+					char *ptrQuote2 = _findLast(ptrQuote1 + 1, delim);
 					if(ptrQuote2 != NULL)
 					{
 						int lsz = ptrQuote2 - ptrQuote1 - 1;
@@ -2386,7 +2370,7 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 					ptrQuote1 = strstr(ptr2, "=");
 					if(ptrQuote1 != NULL)
 					{
-						char *ptrQuote2 = _findFirstOcc(ptr2, ";\n");
+						char *ptrQuote2 = _findFirst(ptr2, ";\n");
 						if(ptrQuote2 != NULL)
 						{
 							int sz = ptrQuote2 - ptr2 - 1;
@@ -2414,10 +2398,10 @@ void _getJSCookie(char *dataBuff, char *str, char *ip, int port)
 	char *ptr1 = strstri(str, "document.cookie");
 	if(ptr1 != NULL)
 	{
-		char *ptr2 = _findFirstOcc(ptr1, "\"'");
+		char *ptr2 = _findFirst(ptr1, "\"'");
 		if(ptr2 != NULL)
 		{
-			char *ptr3 = _findFirstOcc(ptr2 + 1, "\"'");
+			char *ptr3 = _findFirst(ptr2 + 1, "\"'");
 			if(ptr3 != NULL)
 			{
 				int sz = ptr3 - ptr2 - 1;
@@ -2592,7 +2576,7 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 
 				if(temp[4] == '"' || temp[4] == '\'' || temp[4] == ' ' || temp[4] == '\n' || temp[4] == '\r')
 				{
-					temp2 = _findFirstOcc(temp + 6, " \n>\"'");
+					temp2 = _findFirst(temp + 6, " \n>\"'");
 					if(temp2 != NULL)
 					{
 						sz = (int)(temp2 - temp) - 5;
@@ -2601,7 +2585,7 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 				}
 				else 
 				{
-					temp2 = _findFirstOcc(temp + 4, " \n>\"'");
+					temp2 = _findFirst(temp + 4, " \n>\"'");
 					if(temp2 != NULL)
 					{
 						sz = (int)(temp2 - temp) - 4;
@@ -2807,7 +2791,7 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 
 			if(str1 != NULL)
 			{
-				str2 = _findFirstOcc(str1 + AreaLen, "'\">");
+				str2 = _findFirst(str1 + AreaLen, "'\">");
 				if(str2 != NULL)
 				{
 					char script[128] = {0};
@@ -2877,10 +2861,10 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 				char redirStr[512] = {0};
 				if(ptr3[1] == ' ' || ptr3[1] == '"' || ptr3[1] == '\"')
 				{
-					ptr4 = _findFirstOcc(ptr3, " \"'\n\r");
+					ptr4 = _findFirst(ptr3, " \"'\n\r");
 					if(ptr4 != NULL)
 					{
-						ptrEnd = _findFirstOcc(ptr4 + 1, " \"'\n\r");
+						ptrEnd = _findFirst(ptr4 + 1, " \"'\n\r");
 						if(ptrEnd != NULL)
 						{
 							sz = ptrEnd - ptr4 - 1;
@@ -2890,7 +2874,7 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 				}
 				else 
 				{
-					ptrEnd = _findFirstOcc(ptr3, " \"'\n\r");
+					ptrEnd = _findFirst(ptr3, " \"'\n\r");
 					if(ptrEnd != NULL)
 					{
 						sz = ptrEnd - ptr3 - 1;

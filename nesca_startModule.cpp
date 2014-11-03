@@ -581,9 +581,13 @@ void *_tracker()
 
 			ZeroMemory(rBuffT, sizeof(rBuffT));
 
-			while(trackerOK)
+			while(true)
 			{
 				if(globalScanFlag == false && jsonArr->size() == 0) break;
+				if(!trackerOK) {
+					Sleep(1000);
+					continue;
+				};
 				trackAlreadyGoing = true;
 				if(jsonArr->size() > 0)
 				{

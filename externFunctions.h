@@ -11,5 +11,5 @@ extern QString GetNSErrorDefinition(char *str, char *defin);
 extern void _SaveBackupToFile();
 extern char* __cdecl strstri(char *_Str, const char *_SubStr);
 extern char* _getAttribute(char *str, char *attrib);
-extern char *_findFirstOcc(char *str, char *delim);
+extern char *_findFirst(char *str, char *delim);
 extern void nCleanup();

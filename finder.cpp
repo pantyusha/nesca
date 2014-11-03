@@ -2334,6 +2334,10 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 	{
 		char *ptr2 = _findFirst(ptr1, "=(");
 		char *ptrSemi = _findFirst(ptr1 + strlen(tag), ".;");
+		if(ptrSemi == NULL)
+		{
+			ptrSemi = _findLast(ptr1 + strlen(tag) + 1, "'\"");
+		}
 		if(ptr2 != NULL && ptrSemi != NULL)
 		{
 			int sz = ptrSemi - ptr2;

@@ -555,7 +555,6 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 		if(globalScanFlag == false) break;
 		for(int j = 0; j < MaxPass; j++)
 		{
-			Sleep(80);
 			if(globalScanFlag == false) break;
 
 			ZeroMemory(request, REQUEST_MAX_SIZE);
@@ -689,7 +688,6 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 							strncat(recvBuff, recvBuff2, x);
 						};
 						if(BALogSwitched) stt->doEmitionBAData("Checked BA: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " + QString(curLogin) + ":" + QString(curPass) + ";	- Progress: (" + QString::number((passCounter/(double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
-						++passCounter;
 					}
 					else
 					{
@@ -728,10 +726,15 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 
 			if(dataSz == 0)
 			{
-				Sleep(1000);
+				stt->doEmitionBAData("[BA] No reply from: " + QString(ip) + "; Repeating...");
 				--j;
 				continue;
+			}
+			else
+			{
+				++passCounter;
 			};
+
 			if(strcmp(method, "[DIGEST]") == 0)
 			{
 				ZeroMemory(localBuff, sizeof(localBuff));

@@ -147,9 +147,12 @@ void ConInc()
 };
 void ConDec()
 {
-	__asm
+	if(cons > 0)
 	{
-		lock dec cons;
+		__asm
+		{
+			lock dec cons;
+		};
 	};
 	#pragma region QTGUI_Area
 	stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
@@ -2705,19 +2708,19 @@ void nCleanup(){
 	};
 	if(ipsstartfl != NULL)
 	{
-		for(int i = 0; i < MaxSSHPass; ++i) delete []ipsstartfl[i];
+		for(int i = 0; i < flCounter; ++i) delete []ipsstartfl[i];
 		delete []ipsstartfl;
 		ipsstartfl = NULL;
 	};
 	if(ipsendfl != NULL)
 	{
-		for(int i = 0; i < MaxSSHPass; ++i) delete []ipsendfl[i];
+		for(int i = 0; i < flCounter; ++i) delete []ipsendfl[i];
 		delete []ipsendfl;
 		ipsendfl = NULL;
 	};
 	if(starterIP != NULL)
 	{
-		for(int i = 0; i < MaxSSHPass; ++i) delete []starterIP[i];
+		for(int i = 0; i < flCounter; ++i) delete []starterIP[i];
 		delete []starterIP;
 		starterIP = NULL;
 	};

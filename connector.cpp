@@ -28,10 +28,13 @@ void BConInc()
 };
 void BConDec()
 {
-	__asm
+	if(BrutingThrds > 0)
 	{
-		lock dec BrutingThrds;
-	};
+		__asm
+		{
+			lock dec BrutingThrds;
+		};
+	}
 #pragma region QTGUI_Area
 	stt->doEmitionChangeBA(QString::number(BrutingThrds));
 #pragma endregion

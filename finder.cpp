@@ -295,7 +295,7 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 	if(strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
 		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
-		|| strstr(buffcpy, "network camera server") != NULL
+		|| strstr(buffcpy, "network camera") != NULL
 		|| strstr(buffcpy, "$lock extended") != NULL	|| strstr(buffcpy, "ip camera") != NULL
 		|| strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
 		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
@@ -373,7 +373,7 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 	if(strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
 		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
-		|| strstr(buffcpy, "network camera server") != NULL
+		|| strstr(buffcpy, "network camera") != NULL
 		|| strstr(buffcpy, "$lock extended") != NULL	|| strstr(buffcpy, "ip camera") != NULL
 		|| strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
 		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
@@ -2346,28 +2346,38 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 				char *ptrQuote1 = _findFirst(ptr2, "\"'");
 				if(ptrQuote1 != NULL)
 				{
+					char *ptrQuoteTemp = _findFirst(ptrQuote1 + 1, ";\n}");
+					if(ptrQuoteTemp != NULL)
+					{
+						sz = ptrQuoteTemp - ptrQuote1 + 1;
+					};
+					char *tempBuff = new char[sz + 1];
+					ZeroMemory(tempBuff, sizeof(tempBuff));
+					strncpy(tempBuff, ptrQuote1 + 1, sz);
+					memset(tempBuff + sz, 0, 1);
 					char delim[2] = {0};
 					ZeroMemory(delim, 1);
 					delim[0] = ptrQuote1[0];
 					delim[1] = '\0';
-					char *ptrQuote2 = _findLast(ptrQuote1 + 1, delim);
+					char *ptrQuote2 = _findLast(tempBuff + 1, delim);
 					if(ptrQuote2 != NULL)
 					{
-						int lsz = ptrQuote2 - ptrQuote1 - 1;
+						sz = ptrQuote2 - tempBuff;
 						char link[512] = {0};
-						if(lsz < 511)
+						if(sz < 511)
 						{
-							if(ptrQuote1[1] != '/' 
-								&& strstri(ptrQuote1, "http://") == NULL 
-								&& strstri(ptrQuote1, "https://") == NULL
+							if(tempBuff[1] != '/' 
+								&& strstri(tempBuff, "http://") == NULL 
+								&& strstri(tempBuff, "https://") == NULL
 								) 
 							{
 								strcpy(dataBuff, "/");
-								strncat(dataBuff, ptrQuote1 + 1, lsz);
+								strncat(dataBuff, tempBuff, sz);
 							}
-							else strncpy(dataBuff, ptrQuote1 + 1, lsz);
+							else strncpy(dataBuff, tempBuff, sz);
 						};
 					};
+					delete tempBuff;
 				}
 				else
 				{

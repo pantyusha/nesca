@@ -2366,7 +2366,7 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 						char link[512] = {0};
 						if(sz < 511)
 						{
-							if(tempBuff[1] != '/' 
+							if(tempBuff[0] != '/' 
 								&& strstri(tempBuff, "http://") == NULL 
 								&& strstri(tempBuff, "https://") == NULL
 								) 
@@ -2676,6 +2676,7 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 				|| ps->flag == 10
 				) 
 				return -2;
+				else if(ps->flag == -1) return -1;
 			}
 			else
 			{
@@ -2726,6 +2727,7 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 				|| ps->flag == 10
 				) 
 				return -2;
+				else if(ps->flag == -1) return -1;
 			};
 		};
 	};
@@ -2847,7 +2849,8 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 						|| flag == 13 || flag == 14 || flag >= 17 || flag == 10)
 					{
 						return -2;
-					};
+					}
+					else if(ps->flag == -1) return -1;
 				}
 				else
 				{

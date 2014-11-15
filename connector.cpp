@@ -646,12 +646,9 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			if(port == 443)
 			{
 				ZeroMemory(recvBuff, sizeof(recvBuff));
-//				while(baSSLLocked) Sleep(100);
-//				baSSLLocked = true;
 				if(BALogSwitched) stt->doEmitionBAData("Probing SSL:BA " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(tPass) + ";");
 				_baSSLWorker(ip, request, recvBuff);
 				dataSz = strlen(recvBuff);
-//				baSSLLocked = false;
 			}
 #pragma endregion
 			else

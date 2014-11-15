@@ -28,7 +28,6 @@ int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSS
 int ipsstart[4], ipsend[4], 
 	overallPorts, flCounter, octet[4];
 unsigned char **ipsstartfl = NULL, **ipsendfl = NULL, **starterIP = NULL;
-unsigned int importFileSize = 0;
 int gPingTimeout = 2000;
 double ips = 0;
 char top_level_domain[128] = {0};
@@ -1603,6 +1602,7 @@ void FileLoader(char *str)
 	char res[256] = {0}; 
 	char curIP[256] = {0}, curIPCopy[256] = {0};
 	char tempBuff[4] = {0};
+	unsigned int importFileSize = 0;
 
 	FILE *fl = fopen(str, "r");
 	if(fl != NULL)

@@ -5,6 +5,15 @@
 #include "externData.h"
 #include "externFunctions.h"
 
+char *getHeader(char *buff)
+{
+	char result[64] = {0};
+	char *ptr1 = strstri(buff, "http");
+	char *ptr2 = strstri(ptr1, "\r\n");
+	int sz = ptr2 - ptr1 - 8;
+	strncpy(result, ptr1 + 8, sz < 64 ? sz : 64);
+	return result;
+}
 int emitIfOK = -1;
 int KeyCheckerMain()
 {
@@ -214,10 +223,18 @@ int KeyCheckerMain()
 		closesocket(sock);
 		return -1;
 	}
+	else if(strstr(msg, "502 Bad Gateway") != NULL)
+	{
+		stt->doEmitionYellowFoundData("[NS-Track] 502 Backend not responding!");
+		closesocket(sock);
+		return -1;
+	}
 	else
 	{
 #pragma region QTGUI_Area
-		stt->doEmitionYellowFoundData("[Key check] -FAIL! An error occured. (" + QString::number(WSAGetLastError()) + ")");
+		char header[64] = {0};
+		strcpy(header, getHeader(msg));
+		stt->doEmitionYellowFoundData("[Key check] -FAIL! An error occured. (" + QString::number(WSAGetLastError()) + ") Header: <u>" + QString::fromLocal8Bit(header) + "</u>");
 		if(gDebugMode) stt->doEmitionDebugFoundData(QString(msg));
 #pragma endregion
 		closesocket(sock);

@@ -5,14 +5,34 @@
 #include "externData.h"
 #include "externFunctions.h"
 
-char *getHeader(char *buff)
+void getSubStrEx(char *src, char *startStr, char *endStr, char *dest, int szDest)
 {
-	char result[64] = {0};
-	char *ptr1 = strstri(buff, "http");
-	char *ptr2 = strstri(ptr1, "\r\n");
-	int sz = ptr2 - ptr1 - 8;
-	strncpy(result, ptr1 + 8, sz < 64 ? sz : 64);
-	return result;
+	ZeroMemory(dest, szDest);
+	char *ptr1 = strstri(src, startStr);
+	if(ptr1 != NULL)
+	{
+		char *ptr2 = strstri(ptr1, endStr);
+		if(ptr2 != NULL)
+		{
+			int szStartStr = strlen(startStr);
+			int sz = ptr2 - ptr1 - szStartStr;
+			strncpy(dest, ptr1 + szStartStr, sz < szDest ? sz : szDest);
+		};
+	};
+}
+void getSubStr(char *src, char *startStr, char *endStr, char *dest, int szDest)
+{
+	ZeroMemory(dest, szDest);
+	char *ptr1 = strstri(src, startStr);
+	if(ptr1 != NULL)
+	{
+		char *ptr2 = strstri(ptr1, endStr);
+		if(ptr2 != NULL)
+		{
+			int sz = ptr2 - ptr1;
+			strncpy(dest, ptr1, sz < szDest ? sz : szDest);
+		};
+	};
 }
 int emitIfOK = -1;
 int KeyCheckerMain()
@@ -223,9 +243,9 @@ int KeyCheckerMain()
 		closesocket(sock);
 		return -1;
 	}
-	else if(strstr(msg, "502 Bad Gateway") != NULL)
+	else if(strstr(msg, "503 Bad Gateway") != NULL)
 	{
-		stt->doEmitionYellowFoundData("[NS-Track] 502 Backend not responding!");
+		stt->doEmitionYellowFoundData("[NS-Track] 503 Backend not responding!");
 		closesocket(sock);
 		return -1;
 	}
@@ -233,7 +253,7 @@ int KeyCheckerMain()
 	{
 #pragma region QTGUI_Area
 		char header[64] = {0};
-		strcpy(header, getHeader(msg));
+		getSubStrEx(msg, "http/1.1 ", "\r\n", header, 64);
 		stt->doEmitionYellowFoundData("[Key check] -FAIL! An error occured. (" + QString::number(WSAGetLastError()) + ") Header: <u>" + QString::fromLocal8Bit(header) + "</u>");
 		if(gDebugMode) stt->doEmitionDebugFoundData(QString(msg));
 #pragma endregion

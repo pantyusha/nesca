@@ -13,3 +13,5 @@ extern char* __cdecl strstri(char *_Str, const char *_SubStr);
 extern char* _getAttribute(char *str, char *attrib);
 extern char *_findFirst(char *str, char *delim);
 extern void nCleanup();
+extern void getSubStr(char *src, char *startStr, char *endStr, char *dest, int szDest);
+extern void getSubStrEx(char *src, char *startStr, char *endStr, char *dest, int szDest);

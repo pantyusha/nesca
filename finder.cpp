@@ -737,7 +737,7 @@ void putInFile(int flag, char *ip, char *port, int recd, char *finalstr, char *h
 		int sz = strf.size();
 		strncat(msg, QString::fromLocal8Bit(finalstr).toHtmlEscaped().toLocal8Bit().data(), (sz < 128 ? sz : 128));
 		strcat(msg, "</font>");
-		resMes += " <font color=\"#0084ff\">: </font><font color=\"#ff9600\">" + QString(finalstr).toHtmlEscaped() + "</font>";
+		resMes += " <font color=\"#0084ff\">: </font><font color=\"#ff9600\">" + strf.toHtmlEscaped() + "</font>";
 	};
 #pragma region QTGUI_Area
 	stt->doEmitionFoundData(resMes);

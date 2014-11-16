@@ -2350,7 +2350,12 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 					if(ptrQuoteTemp != NULL)
 					{
 						sz = ptrQuoteTemp - ptrQuote1 + 1;
-					};
+					}
+					else
+					{
+						ptrQuoteTemp = _findFirst(ptrQuote1 + 1, "\"'");
+						sz = ptrQuoteTemp - ptrQuote1 + 1;
+					}
 					char *tempBuff = new char[sz + 1];
 					ZeroMemory(tempBuff, sizeof(tempBuff));
 					strncpy(tempBuff, ptrQuote1 + 1, sz);

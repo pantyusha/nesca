@@ -1350,8 +1350,7 @@ void nesca_3::CheckProxy()
 };
 void nesca_3::slotIRCOfflined()
 {
-	shutdown(lSock, 2);
-	closesocket(lSock);
+	CSSOCKET(lSock);
 	ui->IRCConnectBut->setStyleSheet(
 		" #IRCConnectBut {"
 		"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
@@ -1421,8 +1420,7 @@ void nesca_3::ConnectToIRCServer()
 					ui->IRCConnectBut->setText("Connect");
 					ui->ircText->append("<span style=\"color:#efe100;\">[-//-] Disconnected.</span>");
 								
-				shutdown(lSock, 2);
-				closesocket(lSock);
+				CSSOCKET(lSock);
 			};
 		}
 		else
@@ -1808,8 +1806,7 @@ void nesca_3::slotRestartIRC()
 {
 	ircPTh->terminate();
 	globalPinger = 0;
-	shutdown(lSock, 2);
-	closesocket(lSock);
+	CSSOCKET(lSock);
 	ircTh->terminate();
 	ircTh->start();
 };

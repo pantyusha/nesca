@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "STh.h"
-#include "resource.h"	
+#include "mainResources.h"	
 #include "externFunctions.h"
 #include "externData.h"
 

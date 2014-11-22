@@ -80,22 +80,19 @@ int KeyCheckerMain()
 	int test = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 	if(test == -1)
 	{
-#pragma region QTGUI_Area
 		stt->doEmitionRedFoundData("[Key check] -connect() returned. Cannot connect to balancer! " + QString::number(WSAGetLastError()) + ".");
-		closesocket(sock);
+		CSSOCKET(sock);
 		return -1;
-#pragma endregion
 	};
 
 	test = send(sock, msg, strlen(msg), 0);
 
 	if(test == -1)
 	{
-#pragma region QTGUI_Area
 		stt->doEmitionRedFoundData("[Key check] -send() returned. Cannot send to balancer! " + QString::number(WSAGetLastError()) + ".");
-		closesocket(sock);
+		CSSOCKET(sock);
+
 		return -1;
-#pragma endregion
 	};
 
 	ZeroMemory(msg, sizeof(msg));
@@ -110,11 +107,10 @@ int KeyCheckerMain()
 
 	if(test == -1)
 	{
-#pragma region QTGUI_Area
 		stt->doEmitionRedFoundData("[Key check] -recv() returned. Cannot recv from balancer! " + QString::number(WSAGetLastError()) + ".");
-		closesocket(sock);
+		CSSOCKET(sock);
+
 		return -1;
-#pragma endregion
 	};
 
 	char *t1;
@@ -128,20 +124,17 @@ int KeyCheckerMain()
 			int ln = t2 - t1 - strlen("http://");
 			if(ln > 64)
 			{
-#pragma region QTGUI_Area
 				stt->doEmitionRedFoundData("[Key check] -Received server string is not valid!");
-				closesocket(sock);
+				CSSOCKET(sock);
+
 				return -1;
-#pragma endregion
 			}
 			else strncpy(ndbServer, (char*)(t1 + strlen("http://")), ln);
 
 			
 			if(strlen(t2) > 64)
 			{
-	#pragma region QTGUI_Area
-					stt->doEmitionYellowFoundData("[Key check] -Fragmentation detected!");
-	#pragma endregion
+				stt->doEmitionYellowFoundData("[Key check] -Fragmentation detected!");
 				if(strstr(t2, "\r\n") != NULL)
 				{
 					char *t3 = strstr(t2, "\r\n");
@@ -149,11 +142,10 @@ int KeyCheckerMain()
 
 					if(y > 64)
 					{
-						#pragma region QTGUI_Area
 						stt->doEmitionRedFoundData("[Key check] -Received server string is not valid!");
-						closesocket(sock);
+						CSSOCKET(sock);
+
 						return -1;
-						#pragma endregion
 					}
 					else
 					{
@@ -162,30 +154,26 @@ int KeyCheckerMain()
 				}
 				else
 				{
-					#pragma region QTGUI_Area
 					stt->doEmitionRedFoundData("[Key check] -Received server string is not valid!");
-					closesocket(sock);
+					CSSOCKET(sock);
+
 					return -1;
-					#pragma endregion
 				};
 			} else strcpy(ndbScript, t2);
 		}
 		else
 		{
-#pragma region QTGUI_Area
 			stt->doEmitionRedFoundData("[Key check] -Cannot receive script value!");
-			closesocket(sock);
+			CSSOCKET(sock);
+
 			return -1;
-#pragma endregion
 		};
 
-	ZeroMemory(msg, sizeof(msg));
+		ZeroMemory(msg, sizeof(msg));
 
-#pragma region QTGUI_Area
-	stt->doEmitionGreenFoundData("[Key check] -OK. -Server string aquired! Checking key...");
-	closesocket(sock);
-#pragma endregion
-
+		stt->doEmitionGreenFoundData("[Key check] -OK. -Server string aquired! Checking key...");
+		CSSOCKET(sock);
+		
 	sockAddr.sin_family = AF_INET;  
 	sockAddr.sin_port = htons(atoi(trcSrvPortLine));
 	strcpy(msg, "GET ");
@@ -209,14 +197,14 @@ int KeyCheckerMain()
 	if(c == SOCKET_ERROR)
 	{
 		stt->doEmitionRedFoundData("[Key check] -Connection timeout.");
-		closesocket(sock);
+		CSSOCKET(sock);
 		return -1;
 	};
 	c = send(sock, msg, strlen(msg), 0);
 	if(c == SOCKET_ERROR)
 	{
 		stt->doEmitionRedFoundData("[Key check] -Send error.");
-		closesocket(sock);
+		CSSOCKET(sock);
 		return -1;
 	};
 	ZeroMemory(msg, sizeof(msg));
@@ -227,7 +215,8 @@ int KeyCheckerMain()
 #pragma region QTGUI_Area
 		stt->doEmitionGreenFoundData("[Key check] -OK. Key is valid!");
 #pragma endregion
-		closesocket(sock);
+		CSSOCKET(sock);
+
 		if(emitIfOK == 0) stt->doEmitionStartScanIP();
 		else if(emitIfOK == 1) stt->doEmitionStartScanDNS();
 		else if(emitIfOK == 2) stt->doEmitionStartScanImport();
@@ -240,13 +229,13 @@ int KeyCheckerMain()
 		if(errorDef == "Invalid access key") stt->doEmitionYellowFoundData("[NS-Track] [Key is unauthorized] A valid key is required.");
 		else stt->doEmitionYellowFoundData("[NS-Track] -FAIL! [400 Bad Request : " + GetNSErrorDefinition(msg, "notify") + "]");
 #pragma endregion
-		closesocket(sock);
+		CSSOCKET(sock);
 		return -1;
 	}
 	else if(strstr(msg, "503 Bad Gateway") != NULL)
 	{
 		stt->doEmitionYellowFoundData("[NS-Track] 503 Backend not responding!");
-		closesocket(sock);
+		CSSOCKET(sock);
 		return -1;
 	}
 	else
@@ -257,19 +246,19 @@ int KeyCheckerMain()
 		stt->doEmitionYellowFoundData("[Key check] -FAIL! An error occured. (" + QString::number(WSAGetLastError()) + ") Header: <u>" + QString::fromLocal8Bit(header) + "</u>");
 		if(gDebugMode) stt->doEmitionDebugFoundData(QString(msg));
 #pragma endregion
-		closesocket(sock);
+		CSSOCKET(sock);
 		return -1;
 	};
 
 	ZeroMemory(msg, sizeof(msg));
-	closesocket(sock);
+	CSSOCKET(sock);
 	}
 	else
 	{
 #pragma region QTGUI_Area
 		stt->doEmitionRedFoundData("[Key check] -Balancer replied with invalid string.");
 		if(gDebugMode) stt->doEmitionDebugFoundData(QString(msg));
-		closesocket(sock);
+		CSSOCKET(sock);
 		return -1;
 #pragma endregion
 	};

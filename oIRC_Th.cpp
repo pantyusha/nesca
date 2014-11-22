@@ -806,12 +806,10 @@ void IRCLoop()
 				
 #pragma endregion
 			};
-			shutdown(lSock, 2);
-			closesocket(lSock);
+			CSSOCKET(lSock);
 		};
 	//};
-	shutdown(lSock, 2);
-	closesocket(lSock);
+	CSSOCKET(lSock);
 };
 
 void oIRC_Th::run()

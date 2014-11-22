@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "STh.h"
-#include "resource.h"
+#include "mainResources.h"
 #include "externData.h"
 #include "externFunctions.h"
 
@@ -462,7 +462,7 @@ void *_tracker()
 		int test = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 		if(test == -1)
 		{
-			closesocket(sock);
+			CSSOCKET(sock);
 #pragma region QTGUI_Area
 			stt->doEmitionRedFoundData("[NS-Track] -Cannot connect to balancer! " + QString::number(WSAGetLastError()) + ".");
 #pragma endregion
@@ -473,7 +473,7 @@ void *_tracker()
 
 		if(test == -1)
 		{
-			closesocket(sock);
+			CSSOCKET(sock);
 #pragma region QTGUI_Area
 			stt->doEmitionRedFoundData("[NS-Track] -Cannot send to balancer! " + QString::number(WSAGetLastError()) + ".");
 #pragma endregion
@@ -496,7 +496,7 @@ void *_tracker()
 		};
 		if(test == -1)
 		{
-			closesocket(sock);
+			CSSOCKET(sock);
 #pragma region QTGUI_Area
 			stt->doEmitionRedFoundData("[NS-Track] -Cannot recv from balancer! " + QString::number(WSAGetLastError()) + ".");
 #pragma endregion
@@ -514,7 +514,7 @@ void *_tracker()
 				int ln = t2 - t1 - strlen("http://");
 				if(ln > 64)
 				{
-					closesocket(sock);
+					CSSOCKET(sock);
 #pragma region QTGUI_Area
 					stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
 					SaveErrorLog("NS-Track", msg, rBuffT);
@@ -535,7 +535,7 @@ void *_tracker()
 
 						if(y > 64)
 						{
-							closesocket(sock);
+							CSSOCKET(sock);
 #pragma region QTGUI_Area
 							stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
 #pragma endregion
@@ -545,7 +545,7 @@ void *_tracker()
 						else
 						{
 							strncpy(ndbScriptT, t2, y);
-							closesocket(sock);
+							CSSOCKET(sock);;
 #pragma region QTGUI_Area
 							stt->doEmitionGreenFoundData("[NS-Track] -OK! -Fragmented server string aquired! Starting NS-Track loop...");
 #pragma endregion
@@ -554,7 +554,7 @@ void *_tracker()
 					}
 					else
 					{
-						closesocket(sock);
+						CSSOCKET(sock);
 #pragma region QTGUI_Area
 						stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
 #pragma endregion
@@ -568,13 +568,13 @@ void *_tracker()
 #pragma region QTGUI_Area
 					stt->doEmitionGreenFoundData("[NS-Track] -OK! -Server string aquired! Starting NS-Track loop...");
 #pragma endregion
-					closesocket(sock);
+					CSSOCKET(sock);
 					strncpy(ndbScript, ndbScriptT, strlen(ndbScriptT) - 2 );
 				};
 			}
 			else
 			{
-				closesocket(sock);
+				CSSOCKET(sock);
 #pragma region QTGUI_Area
 				stt->doEmitionRedFoundData("[NS-Track] -Cannot receive script value!");
 #pragma endregion
@@ -745,9 +745,7 @@ void *_tracker()
 					}
 					else
 					{
-#pragma region QTGUI_Area
-				stt->doEmitionYellowFoundData("[NS-Track] -FAIL! An error occured [" + QString(msgR) + "]");
-#pragma endregion
+						stt->doEmitionYellowFoundData("[NS-Track] -FAIL! An error occured [" + QString(msgR) + "]");
 						SaveErrorLog("NS-Track", msg, rBuffT);
 					};
 
@@ -760,20 +758,17 @@ void *_tracker()
 						msg = 0;
 					};
 
-					shutdown(sock, 2);
-					closesocket(sock);
+					CSSOCKET(sock);
 				};
 				Sleep(10000);
 			};
 		}
 		else
 		{
-			shutdown(sock, 2);
-			closesocket(sock);
-#pragma region QTGUI_Area
+			CSSOCKET(sock);
+
 			stt->doEmitionRedFoundData("[NS-Track] -Balancer replied with invalid string.");
 			SaveErrorLog("NS-Track", msg, rBuffT);
-#pragma endregion
 		};
 
 	};

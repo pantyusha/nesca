@@ -15,3 +15,4 @@ extern char *_findFirst(char *str, char *delim);
 extern void nCleanup();
 extern void getSubStr(char *src, char *startStr, char *endStr, char *dest, int szDest);
 extern void getSubStrEx(char *src, char *startStr, char *endStr, char *dest, int szDest);
+

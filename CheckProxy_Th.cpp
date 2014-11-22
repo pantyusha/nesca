@@ -111,7 +111,7 @@ void CheckProxyLogic()
 #pragma endregion
 							proxyEnabledFlag = 1;
 
-							closesocket(pSock);
+							CSSOCKET(pSock);
 							break;
 						}
 						else
@@ -121,7 +121,7 @@ void CheckProxyLogic()
 #pragma endregion
 							proxyEnabledFlag = 0;
 
-							closesocket(pSock);
+							CSSOCKET(pSock);
 							break;
 						};
 					};
@@ -134,7 +134,7 @@ void CheckProxyLogic()
 #pragma endregion
 					proxyEnabledFlag = 0;
 
-					closesocket(pSock);
+					CSSOCKET(pSock);
 					break;
 				};
 			};

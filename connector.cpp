@@ -1467,17 +1467,10 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 		stt->doEmitionRedFoundData("[Cannot create socket]");
 
 		CSSOCKET(sock);
-		Sleep(500);
+		Sleep(100);
 		sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 	};
 
-	while(WSAGetLastError() == 10038)
-	{
-		if(gDebugMode) stt->doEmitionDebugFoundData("10038 occured - [" + QString(ip) + ":" + QString::number(port) + "]");
-
-		CSSOCKET(sock);
-		sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-	};
 #if defined(WIN32)
 	u_long FAR cmd = 1;
 	if( ioctlsocket( sock , FIONBIO, &cmd ) != 0 )
@@ -1494,38 +1487,37 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 	linger.l_linger = 10;
 	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &on, sizeof(on));
 	setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *) &linger, sizeof(linger));
-		
-	fd_set read_fs;
-	FD_ZERO(&read_fs);
-	FD_SET(sock, &read_fs);
 
 	int iError, iResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
-
+	while(sock == INVALID_SOCKET)
+	{
+		if(gDebugMode) stt->doEmitionDebugFoundData("[Invalid socket]: " + QString::number(WSAGetLastError()));
+		CSSOCKET(sock);
+		Sleep(100);
+		sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+		setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &on, sizeof(on));
+		setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *) &linger, sizeof(linger));
+		iResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
+	};
 	if(iResult == SOCKET_ERROR)
 	{
 		iError = WSAGetLastError();
-		while(iError == 10038)
-		{
-			if(gDebugMode) stt->doEmitionDebugFoundData("10038 occured - [" + QString(ip) + ":" + QString::number(port) + "]");
-
-			CSSOCKET(sock);
-			sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-			iResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
-			iError = WSAGetLastError();
-		};
-
+		
 		if(iError == 10035)
-		{
+		{	
+			fd_set read_fs;
+			FD_ZERO(&read_fs);
+			FD_SET(sock, &read_fs);
 			timeval tv = { gTimeOut, 0 };
-			iResult = select(sock + 1, NULL, &read_fs, NULL, &tv);
 
-			int cErrCode;
+			iResult = select(sock + 1, NULL, &read_fs, NULL, &tv);
+			
 			if (iResult == SOCKET_ERROR) 
 			{
 				++offlines;
 
 				stt->doEmitionRedFoundData("[Omitting IP] Select error - " + 
-					QString::number(cErrCode) + 
+					QString::number(WSAGetLastError()) + 
 					" - " + QString(ip) + ":" + QString::number(port));
 			}
 			else

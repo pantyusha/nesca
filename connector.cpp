@@ -1525,8 +1525,8 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 				++offlines;
 
 				stt->doEmitionRedFoundData("[Omitting IP] Select error - " + 
-					QString(std::to_string((long double)cErrCode).c_str()) + 
-					" - " + QString(ip) + ":" + QString(std::to_string((long double)port).c_str()));
+					QString::number(cErrCode) + 
+					" - " + QString(ip) + ":" + QString::number(port));
 			}
 			else
 			{
@@ -1569,7 +1569,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 					else
 					{
 						++offlines;
-						stt->doEmitionRedFoundData("Send error " + QString(ip) + " - " + QString(std::to_string((long double)WSAGetLastError()).c_str()));
+						stt->doEmitionRedFoundData("Send error " + QString(ip) + " - " + QString::number(WSAGetLastError()));
 					};
 				};
 			};
@@ -1584,22 +1584,22 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 			else if(iError == 10049)
 			{
 				stt->doEmitionRedFoundData("[ADDR_NOT_AVAIL] " + QString(ip) +
-											":" + QString(std::to_string((long double)port).c_str()) + 
-											" - " + std::to_string((long double)iError).c_str());
+											":" + QString::number(port) + 
+											" - " + QString::number(iError));
 			}
 			else
 			{
 				stt->doEmitionRedFoundData("[Unpredictable error] " + QString(ip) +
-											":" + QString(std::to_string((long double)port).c_str()) + 
-											" - " + std::to_string((long double)iError).c_str());
+											":" + QString::number(port) + 
+											" - " + QString::number(iError));
 			};
 		};
 	}
 	else
 	{
 		stt->doEmitionRedFoundData("[?!] Strange behavior detected - " + 
-										QString(std::to_string((long double)WSAGetLastError()).c_str()) + 
-										" - " + QString(ip) + ":" + QString(std::to_string((long double)port).c_str()));
+										QString::number(WSAGetLastError()) + 
+										" - " + QString(ip) + ":" + QString::number(port));
 	};
 	
 	CSSOCKET(sock);
@@ -2204,6 +2204,11 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 	{
 		negVector.push_back("Non-Existed");
 	}
+	else if(strcmp(SPEC, "IPCAM") == 0)
+	{
+		negVector.push_back("var check=\"0\"");
+		negVector.push_back("var authLevel =\"0\";");
+	}
 	else
 	{
 		stt->doEmitionRedFoundData("[_IPCameraBrute] No \"SPEC\" specified!");
@@ -2366,6 +2371,22 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				strcat(request, "\r\n\r\n");
 				strcat(request, passString);
 				delete []passString;
+			}
+			else if(strcmp(SPEC, "IPCAM") == 0)
+			{
+				strcpy(request, "GET /cgi-bin/hi3510/checkuser.cgi?&-name=");
+				strcat(request, login);
+				strcat(request, "&-passwd=");
+				strcat(request, pass);
+				strcat(request, "&-time=1416767330831 HTTP/1.1\r\nHost: ");
+				strcat(request, ip);
+				if(port != 80){
+					strcat(request, ":");
+					char tbuff[16] = {0};
+					strcat(request, itoa(port, tbuff, 10));
+				};
+				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
+			
 			};
 
 			int res = _webLoginSeq(request, login, pass, ip, port, passCounter, SPEC, negVector);

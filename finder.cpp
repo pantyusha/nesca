@@ -292,7 +292,9 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/config/index.cgi") != NULL)							return 45; //Panasonic Cam BB-HG???
 	if(strstr(buffcpy, "/ui/") != NULL && strstr(buffcpy, "sencha-touch") != NULL)										return 46; //BUFFALO disk
 	if(strstr(buffcpy, "digital video server") != NULL && strstr(buffcpy, "gui.css") != NULL)							return 47; //Digital Video Server
-
+	if(strstr(buffcpy, "/ipcamerasetup.zip") != NULL && strstr(buffcpy, "download player") != NULL
+		&& strstr(buffcpy, "ipcam") != NULL)																			return 48; //ipCam
+	
 	if(strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
 		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
@@ -370,6 +372,8 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/config/index.cgi") != NULL)														return 45; //Panasonic Cam BB-HG???
 	if(strstr(buffcpy, "/ui/") != NULL && strstr(buffcpy, "sencha-touch") != NULL)																	return 46; //BUFFALO disk
 	if(strstr(buffcpy, "digital video server") != NULL && strstr(buffcpy, "gui.css") != NULL)														return 47; //Digital Video Server
+		if(strstr(buffcpy, "/ipcamerasetup.zip") != NULL && strstr(buffcpy, "download player") != NULL
+		&& strstr(buffcpy, "ipcam") != NULL)																										return 48; //ipCam
 
 
 	if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
@@ -1756,6 +1760,10 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	else if(flag == 47) //Digital Video Server
 	{
 		_specWEBIPCAMBrute(ip, p, hl, "[DVS] Camera", flag, "[DVS] Camera", "Web Authorization", cp, recd, "DVS");
+	}	
+	else if(flag == 48) //ipCAM
+	{
+		_specWEBIPCAMBrute(ip, p, hl, "[ipCAM] Camera", flag, "[ipCAM] Camera", "Web Authorization", cp, recd, "IPCAM");
 	}
 	else if(flag == 20) //AXIS Camera
 	{

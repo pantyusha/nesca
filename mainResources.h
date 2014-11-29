@@ -59,6 +59,7 @@ struct PathStr{
 	int port;
 	char ip[MAX_ADDR_LEN];
 	char cookie[COOKIE_MAX_SIZE];
+	int directoryCount;
 };
 
 struct lopaStr{

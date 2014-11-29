@@ -698,9 +698,7 @@ void fputsf(char *ip, char *port, char *text, int flag, char *msg)
 	}
 	else
 	{
-#pragma region QTGUI_Area
 		stt->doEmitionRedFoundData("Cannot open file [FLAG: " + QString::number(flag) + "]");
-#pragma endregion
 	};
 };
 void putInFile(int flag, char *ip, char *port, int recd, char *finalstr, char *hl, char *cp)
@@ -1634,7 +1632,9 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 			strcat(logEmit, lps.pass);
 			strcat(logEmit, "@");
 			strcat(logEmit, ip);
-			strcat(logEmit, "</span></a>");
+			strcat(logEmit, "</span></a> (F:");
+			strcat(logEmit, std::to_string((long double)ps.directoryCount).c_str());
+			strcat(logEmit, ")");
 
 			fputsf(ip, port, log, flag, "FTP");
 	

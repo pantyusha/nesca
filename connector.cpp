@@ -15,6 +15,18 @@
 int gMaxBrutingThreads = 200;
 fd_set write_fs;
 
+
+int _countFTPDirectories(char *recvBuff){
+	int dirCounter = 0;
+	strcat(recvBuff, "\n");
+	char *dirPtr = strstr(recvBuff, "\n");
+	while(dirPtr != NULL){
+		++dirCounter;
+		dirPtr = strstr(dirPtr + 1, "\n");
+	};
+
+	return dirCounter;
+};
 void BConInc()
 {
 	__asm
@@ -1107,6 +1119,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 
 #pragma region Get pasv Port
 							char *ptr0 = strstr(recvBuff2, "227 ");
+
 							if( ptr0 != NULL )
 							{
 								if(strstr(ptr0, "(") != NULL)
@@ -1136,7 +1149,6 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 										connectionResult = connect(newSockFTP, (sockaddr*)&sockAddr, sizeof(sockAddr));
 
 										send(sockFTP, "LIST\r\n", 6, 0);
-
 										ZeroMemory(recvBuff, sizeof(recvBuff));
 										int x = recvWT(newSockFTP, recvBuff, sizeof(recvBuff), gTimeOut + 3, &bTO);
 										if(x <= 0 || strstr(recvBuff, "unknown command") != NULL) 
@@ -1155,9 +1167,16 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 												strcpy(lps.login, "UNKNOWN");
 												return lps;
 											}
-											else stt->doEmition_BAGreenData("[+] " + QString(pass) + " 	[MLSD succeeded]");
+											else {
+												stt->doEmition_BAGreenData("[+] " + QString(pass) + " 	[MLSD succeeded]");
+												ps->directoryCount = _countFTPDirectories(recvBuff);
+											};
 										}
-										else stt->doEmition_BAGreenData("[+] " + QString(pass) + " 	[LIST succeeded]");
+										else
+										{
+											stt->doEmition_BAGreenData("[+] " + QString(pass) + " 	[LIST succeeded]");
+											ps->directoryCount = _countFTPDirectories(recvBuff);
+										};
 
 										CSSOCKET(newSockFTP);
 									}
@@ -2014,6 +2033,7 @@ int _EstablishSSHConnection(char *host, int port, conSTR *CSTR, char *banner)
 		ZeroMemory(temp, sizeof(temp));
 		if(res == 0) 
 		{
+			if(i == 0) return -2; //Failhit
 			SSHConDec();
 			isActive = 0;
 			return 0;

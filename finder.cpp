@@ -244,11 +244,12 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 	if(strstr(buffcpy, "vilar ipcamera"))																				return 13;
 	if(strstr(buffcpy, "window.location = \"rdr.cgi\""))																return 14;
 	if(strstr(buffcpy, "httpfileserver"))																				return 15;
-		if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
-		(strstri(buffcpy, "220 diskStation ftp server ready") != NULL) ||
-		(strstri(buffcpy, "220 ftp server ready") != NULL)
-		|| strstr(buffcpy, "500 'get': command not understood") != NULL
-		)																												return 16; // 16 - FTP
+	if(((strstr(buffcpy, "220") != NULL && port == 21) || 
+		strstr(buffcpy, "220 diskstation ftp server ready") != NULL ||
+		strstr(buffcpy, "220 ftp server ready") != NULL ||
+		strstr(buffcpy, "500 'get': command not understood") != NULL
+		)
+		&& strstr(buffcpy, "firewall authentication required") == NULL)																												return 16; // 16 - FTP
 	if(strstr(buffcpy, "real-time ip camera monitoring system") != NULL ||
 		strstr(buffcpy, "server push mode") != NULL
 		)																												return 17; //Real-time IP Camera Monitoring System

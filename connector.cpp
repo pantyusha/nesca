@@ -17,14 +17,14 @@ fd_set write_fs;
 
 
 int _countFTPDirectories(char *recvBuff){
+	if(strcmp(recvBuff, "dummy\r\n") == 0) return 0;
 	int dirCounter = 0;
-	strcat(recvBuff, "\n");
+	if(recvBuff[strlen(recvBuff) - 1] != '\n') strcat(recvBuff, "\n");
 	char *dirPtr = strstr(recvBuff, "\n");
 	while(dirPtr != NULL){
 		++dirCounter;
 		dirPtr = strstr(dirPtr + 1, "\n");
 	};
-
 	return dirCounter;
 };
 void BConInc()
@@ -918,8 +918,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 				while (true)
 				{
 					Sleep(100);
-					if(globalScanFlag == false) break;
-					ZeroMemory(recvBuff, sizeof(recvBuff));
+					ZeroMemory(recvBuff, 1024);
 					x = recvWT(sockFTP, recvBuff, 1024, gTimeOut + 5, &bTO);
 					if(x <= 0) break;
 					if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(recvBuff));
@@ -992,6 +991,8 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						++i;
 						break;
 					};
+
+					if(globalScanFlag == false) break;
 
 					if((strstr(recvBuff, "530 Sorry") != NULL) 
 						|| (strstr(recvBuff, "530") != NULL && strstr(recvBuff, "maximum") != NULL)
@@ -1519,7 +1520,18 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 				if (!iResult) ++offlines;
 				else
 				{
-					if(send(sock, request, strlen(request), 0) != SOCKET_ERROR) 
+					int sResult = send(sock, request, strlen(request), 0);
+					while(sResult == SOCKET_ERROR)
+					{
+						stt->doEmitionRedFoundData("[_EC]Resending: " + QString(ip) + " - " + QString::number(WSAGetLastError()));
+
+						CSSOCKET(sock);
+						Sleep(100);
+						sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+						connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
+						sResult = send(sock, request, strlen(request), 0);
+					};
+					if(sResult != SOCKET_ERROR) 
 					{
 						if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
 						Activity += strlen(request);
@@ -1555,7 +1567,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 					else
 					{
 						++offlines;
-						stt->doEmitionRedFoundData("Send error " + QString(ip) + " - " + QString::number(WSAGetLastError()));
+						stt->doEmitionRedFoundData("[_EC]Send error: " + QString(ip) + " - " + QString::number(WSAGetLastError()));
 					};
 				};
 			};

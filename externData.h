@@ -3,7 +3,7 @@
 #define SD_BOTH 2
 #define PORTSET "80,81,88,8080,8081,60001,60002,8008,8888,554,9000,441,4111,6667,3536,22,21"
 #define IRC_CHAN "iskopasi_lab03"
-#define CSSOCKET(Socket) shutdown(Socket, SD_BOTH); closesocket(Socket);
+#define CSSOCKET(Socket) shutdown(Socket, SD_BOTH); closesocket(Socket); Socket = -1;
 
 extern QJsonArray *jsonArr;
 

@@ -1,4 +1,5 @@
 ﻿yadro.ru
+Firewall Authentication required before
 liveinternet
 #[Dlink]
 session_login.php?reload=1

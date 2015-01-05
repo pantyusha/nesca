@@ -295,7 +295,9 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 	if(strstr(buffcpy, "digital video server") != NULL && strstr(buffcpy, "gui.css") != NULL)							return 47; //Digital Video Server
 	if(strstr(buffcpy, "/ipcamerasetup.zip") != NULL && strstr(buffcpy, "download player") != NULL
 		&& strstr(buffcpy, "ipcam") != NULL)																			return 48; //ipCam
-	
+	if(strstr(buffcpy, "dvr") != NULL && strstr(buffcpy, "ieorforefox") != NULL
+		&& strstr(buffcpy, "sofari") != NULL)																			return 49; //IEORFOREFOX
+	 
 	if(strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
 		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
@@ -375,7 +377,9 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 	if(strstr(buffcpy, "digital video server") != NULL && strstr(buffcpy, "gui.css") != NULL)														return 47; //Digital Video Server
 		if(strstr(buffcpy, "/ipcamerasetup.zip") != NULL && strstr(buffcpy, "download player") != NULL
 		&& strstr(buffcpy, "ipcam") != NULL)																										return 48; //ipCam
-
+	if(strstr(buffcpy, "dvr") != NULL && strstr(buffcpy, "ieorforefox") != NULL
+		&& strstr(buffcpy, "sofari") != NULL)																			return 49;								//IEORFOREFOX
+	
 
 	if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
 		(strstr(buffcpy, "220 diskStation ftp server ready") != NULL) ||
@@ -830,17 +834,21 @@ void _specFillerBA(char *hl, char *ip, char *port, char *finalstr, char *login, 
 	
 	strcpy(log, "[BA]:");
 	strcat(log, "<span id=\"hostSpan\"><a href=\"http://");
-	strcat(log, login);
-	strcat(log, ":");
-	strcat(log, pass);
-	strcat(log, "@");
+	if(strcmp(login, "NULL") != 0 && strcmp(pass, "NULL") != 0) {
+		strcat(log, login);
+		strcat(log, ":");
+		strcat(log, pass);
+		strcat(log, "@");
+	}
 	strcat(log, ip);
 	strcat(log, port);
 	strcat(log, "\"><font color=MediumSeaGreen>");
-	strcat(log, login);
-	strcat(log, ":");
-	strcat(log, pass);
-	strcat(log, "@");
+	if(strcmp(login, "NULL") != 0 && strcmp(pass, "NULL") != 0) {
+		strcat(log, login);
+		strcat(log, ":");
+		strcat(log, pass);
+		strcat(log, "@");
+	}
 	strcat(log, ip);
 	strcat(log, port);
 	strcat(log, "</font></a></span> T: <font color=GoldenRod>");
@@ -1765,6 +1773,10 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	else if(flag == 48) //ipCAM
 	{
 		_specWEBIPCAMBrute(ip, p, hl, "[ipCAM] Camera", flag, "[ipCAM] Camera", "Web Authorization", cp, recd, "IPCAM");
+	}	
+	else if(flag == 49) //IEORFOREFOX
+	{
+		_specWEBIPCAMBrute(ip, p, hl, "[IEORFOREFOX] Camera", flag, "[IEORFOREFOX] Camera", "Web Authorization", cp, recd, "IEORFOREFOX");
 	}
 	else if(flag == 20) //AXIS Camera
 	{
@@ -2338,12 +2350,18 @@ void _getPopupTitle(PathStr *ps, char *str)
 		}
 		else
 		{
-			strcat(ps->headr, "[BOUNDARY_ERROR]");
+			strcat(ps->headr, "[BOUNDARY ERROR]");
 		};
 	}
 	else
 	{
-		strcat(ps->headr, "[BOUNDARY_ERROR]");
+		char temp[32] = {0};
+		if(strstr(str, "(") != NULL){
+			strncpy(temp, strstr(str, "("), 32);
+			strcat(ps->headr, temp);
+		} else {
+			strcat(ps->headr, "[No title]");
+		};
 	};
 
 	strcat(ps->headr, "]"); 

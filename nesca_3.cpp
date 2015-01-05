@@ -1639,7 +1639,8 @@ void nesca_3::SaySmthng()
 			}
 			else strf = ui->shoutBox->text();
 			
-			strcpy(temp, "PRIVMSG #");
+			strcpy(temp, "PRIV");
+			strcat(temp, "MSG #");
 			strcat(temp, IRC_CHAN);
 			strcat(temp, " :");
 			strcat(temp, "ACTION ");
@@ -1681,7 +1682,8 @@ void nesca_3::SaySmthng()
 			}
 			else strf = msgP;
 
-			strcpy(temp, "PRIVMSG ");
+			strcpy(temp, "PRIV");
+			strcat(temp, "MSG ");
 			strcat(temp, nickP.toLocal8Bit().data());
 			strcat(temp, " :");
 			strcat(temp, strf.toLocal8Bit().data());
@@ -1731,7 +1733,8 @@ void nesca_3::SaySmthng()
 			else strf = ui->shoutBox->text();
 			if(IRCLogToggled) 
 			{
-				strcpy(temp, "PRIVMSG #");
+				strcpy(temp, "PRIV");
+				strcat(temp, "MSG #");
 				strcat(temp, IRC_CHAN);
 				strcat(temp, " :");
 				strcat(temp, strf.toLocal8Bit().data());
@@ -3699,7 +3702,7 @@ void nesca_3::appendDefaultText(QString str)
 };
 void nesca_3::appendErrText(QString str)
 {
-	ui->dataText->append("<span style=\"color:red;background-color:#313131;\">[" + QTime::currentTime().toString() + "][FAIL] " + QString::fromUtf8(str.toLocal8Bit().data()) + "</span>");
+	ui->dataText->append("<span style=\"color:red;background-color:#313131;\">[" + QTime::currentTime().toString() + "]" + QString::fromUtf8(str.toLocal8Bit().data()) + "</span>");
 
 	if(stt->isRunning() == false)
 	{

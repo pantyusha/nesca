@@ -343,9 +343,7 @@ void IRCLoop()
 			OnlineMsgSentFlag = false;
 
 			lSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-			setsockopt(lSock, SOL_SOCKET, SO_REUSEADDR, (char*)&yes, sizeof(int));
-
+			
 			if(proxyEnabledFlag)  ircTh->doEmitChangeYellowIRCData("Connecting to proxy " + QString(ircProxy) + "..."); 
 			if(connect(lSock, (sockaddr*)&addr, sizeof(addr)) != SOCKET_ERROR) 
 			{
@@ -389,6 +387,10 @@ void IRCLoop()
 				char recvBuffG[MAX_IRC_RECV_LEN] = {0};
 				char serverRealName[256] = {0};
 				bool nameLocked = false;
+												
+				char pTemp[32] = {0};
+				strcpy(pTemp, "PRIV");
+				strcat(pTemp, "MSG ");
 				while(recvS(lSock, recvBuffG, MAX_IRC_RECV_LEN, 0) > 0 && iWantToConnect) 
 				{
 					if(strlen(recvBuffG) > 0)
@@ -413,11 +415,16 @@ void IRCLoop()
 								Gtemp = strstr(Gtemp + 1, "\n");
 								
 								char privTemp[64] = {0};
-								strcpy(privTemp, "PRIVMSG #");
+								
+								strcpy(privTemp, "PRIV");
+								strcat(privTemp, "MSG #");
 								strcat(privTemp, IRC_CHAN);
 								strcat(privTemp, " :");
 
-								if(strstr(comStr, " PRIVMSG ") == NULL)
+								char pTemp[32] = {0};
+								strcpy(pTemp, " PRIV");
+								strcat(pTemp, "MSG ");
+								if(strstr(comStr, pTemp) == NULL)
 								{
 									char topicTemp[64] = {0};
 									strcpy(topicTemp, "TOPIC #");
@@ -637,7 +644,8 @@ void IRCLoop()
 												OnlineMsgSentFlag = true;
 
 												char temp[64] = {0};
-												strcpy(temp, "PRIVMSG #");
+												strcpy(temp, "PRIV");
+												strcat(temp, "MSG #");
 												strcat(temp, IRC_CHAN);
 												strcat(temp, " :My version: v3_");
 												strcat(temp, gVER);
@@ -669,7 +677,8 @@ void IRCLoop()
 								else if(strstri(comStr, privTemp) != NULL)
 								{
 									char channelName[64] = {0};
-									strcpy(channelName, "PRIVMSG #");
+									strcpy(channelName, "PRIV");
+									strcat(channelName, "MSG #");
 									strcat(channelName, IRC_CHAN);
 									strcat(channelName, " :");
 
@@ -729,7 +738,7 @@ void IRCLoop()
 									ZeroMemory(senderNick, sizeof(senderNick));
 
 								}
-								else if(strstri( comStr, QString("PRIVMSG " + QString(ircNick)).toLocal8Bit().data() ) != NULL)
+								else if(strstri( comStr, QString(QString(pTemp) + " " + QString(ircNick)).toLocal8Bit().data() ) != NULL)
 								{			
 									char *tprv = comStr;
 									char *temp = NULL;
@@ -744,7 +753,7 @@ void IRCLoop()
 											int nickLen = temp2 - temp;
 											if(nickLen <= 32)
 											{
-												char *tempD = strstri(tprv, QString("PRIVMSG " + QString(ircNick)).toLocal8Bit().data());
+												char *tempD = strstri(tprv, QString(QString(pTemp) + " " + QString(ircNick)).toLocal8Bit().data());
 												int nsz = QString(ircNick).size() + 10;
 
 												if(tempD == NULL) break;

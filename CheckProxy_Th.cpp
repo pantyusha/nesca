@@ -46,7 +46,6 @@ void CheckProxyLogic()
 	else if(host=gethostbyname (ircProxy)) ((unsigned long*) &addr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 #endif
 	pSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	setsockopt(pSock, SOL_SOCKET, SO_REUSEADDR, (char*)&yes, sizeof(int));
 
 	if(pSock == INVALID_SOCKET) 
 	{
@@ -117,7 +116,7 @@ void CheckProxyLogic()
 						else
 						{
 #pragma region QTGUI_Area
-							chPTh->doEmitChangeRedIRCData("[Fail] " + QString(ircProxy) + ":" + QString(ircProxyPort) + " - is not CONNECT proxy? Try another one.");
+							chPTh->doEmitChangeRedIRCData(QString(ircProxy) + ":" + QString(ircProxyPort) + " - is not CONNECT proxy? Try another one.");
 #pragma endregion
 							proxyEnabledFlag = 0;
 
@@ -130,7 +129,7 @@ void CheckProxyLogic()
 				else
 				{
 #pragma region QTGUI_Area
-					chPTh->doEmitChangeRedIRCData("[Fail] " + QString(ircProxy) + ":" + QString(ircProxyPort) + " - is not CONNECT proxy? Try another one.");
+					chPTh->doEmitChangeRedIRCData(QString(ircProxy) + ":" + QString(ircProxyPort) + " - is not CONNECT proxy? Try another one.");
 #pragma endregion
 					proxyEnabledFlag = 0;
 
@@ -142,7 +141,7 @@ void CheckProxyLogic()
 		else
 		{
 #pragma region QTGUI_Area
-			chPTh->doEmitChangeRedIRCData("[Fail] Cannot connect to " + QString(ircProxy) + ":" + QString(ircProxyPort) + ".");
+			chPTh->doEmitChangeRedIRCData("Cannot connect to " + QString(ircProxy) + ":" + QString(ircProxyPort) + ".");
 #pragma endregion
 			proxyEnabledFlag = 0;			
 		};

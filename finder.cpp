@@ -408,19 +408,22 @@ int ContentFilter(char *buff, int port, char *ip, char *cp)
 	if(buff != NULL)
 	{
 		int res = 0;
-		std::string tempString = toLowerStr(buff);
-		int sz = tempString.size();
-		char *lBuff = new char[sz + 1];
-		ZeroMemory(lBuff, sz + 1);
+		std::string tempString = "";
 
 		if(strstr(cp, "1251") != NULL)
 		{
-			strcpy(lBuff, toLowerStr(buff).c_str());
+			tempString = toLowerStr(buff);
 		}
 		else
 		{
-			strcpy(lBuff, toLowerStr(xcode(buff, CP_UTF8, CP_ACP).c_str()).c_str());
+			tempString = toLowerStr(xcode(buff, CP_UTF8, CP_ACP).c_str());
 		};
+		
+		int sz = tempString.size();
+		char *lBuff = new char[sz + 1];
+		ZeroMemory(lBuff, sz + 1);
+		strcpy(lBuff, tempString.c_str());
+
 		memset(lBuff + sz, '\0', 1);
 		if(sz <= 500)
 		{

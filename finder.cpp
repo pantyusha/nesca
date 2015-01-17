@@ -407,10 +407,12 @@ int ContentFilter(char *buff, int port, char *ip, char *cp)
 {
 	if(buff != NULL)
 	{
-		int sz = strlen(buff);
 		int res = 0;
+		std::string tempString = toLowerStr(buff);
+		int sz = tempString.size();
 		char *lBuff = new char[sz + 1];
 		ZeroMemory(lBuff, sz + 1);
+
 		if(strstr(cp, "1251") != NULL)
 		{
 			strcpy(lBuff, toLowerStr(buff).c_str());

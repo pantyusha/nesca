@@ -51,26 +51,6 @@ void BConDec()
 	stt->doEmitionChangeBA(QString::number(BrutingThrds));
 #pragma endregion
 };
-void SSHConInc()
-{
-	__asm
-	{
-		lock inc BrutingThrds;
-	};
-#pragma region QTGUI_Area
-	stt->doEmitionChangeBA(QString::number(BrutingThrds));
-#pragma endregion
-};
-void SSHConDec()
-{
-	__asm
-	{
-		lock dec BrutingThrds;
-	};
-#pragma region QTGUI_Area
-	stt->doEmitionChangeBA(QString::number(BrutingThrds));
-#pragma endregion
-};
 bool debugWriteWait = false;
 void _DebugWriteHTMLToFile(char *request, char *buff)
 {
@@ -2089,7 +2069,7 @@ int _EstablishSSHConnection(char *host, int port, conSTR *CSTR, char *banner)
 	char pass[32] = {0};
 	char temp[64] = {0};
 	isActive = 1;
-	SSHConInc();
+	BConInc();
 	int sz = 0;
 	char *ptr1 = 0;
 	int res = -1;
@@ -2108,19 +2088,19 @@ int _EstablishSSHConnection(char *host, int port, conSTR *CSTR, char *banner)
 		if(res == 0) 
 		{
 			if(i == 0) return -2; //Failhit
-			SSHConDec();
+			BConDec();
 			isActive = 0;
 			return 0;
 		}
 		else if(res == -2)
 		{
-			SSHConDec();
+			BConDec();
 			isActive = 0;
 			return -2;
 		};
 		Sleep(500);
 	};
-	SSHConDec();
+	BConDec();
 	isActive = 0;
 	return -1;
 };

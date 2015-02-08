@@ -696,7 +696,7 @@ void nesca_3::slotQoSAddLine()
 	fnt.setFamily("Eurostile");
 	fnt.setPixelSize(10);
 
-	QGraphicsTextItem *item = sceneUpper->addText("Max = " + QString(std::to_string((long double)MaxDataVal).c_str()), fnt);
+	QGraphicsTextItem *item = sceneUpper->addText("Max = " + QString(std::to_string(MaxDataVal).c_str()), fnt);
 	item->setX(215);
 	item->setDefaultTextColor(Qt::white);
 	QOSWait = false;
@@ -2938,6 +2938,10 @@ void RestoreSession()
 				lex = strtok(strstr(resStr, "[SESSION]:") + strlen("[SESSION]:"), " ");
 				gMode = atoi(lex);
 				lex = strtok(NULL, " ");
+				if (lex == nullptr) {
+					stt->doEmitionRedFoundData("Restore file is corrupted.");
+					return;
+				}
 
 				if(gMode == 0)
 				{

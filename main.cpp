@@ -6,18 +6,20 @@
 #endif
 
 //--Fixing _ITERATOR_DEBUG_LEVEL 0!=2
-#if defined(Q_OS_WIN32)
-int WINAPI WinMain(HINSTANCE hInstance,
-  HINSTANCE hPrevInstance, LPSTR lpcmdline, int ncmdshow)
-{
-	QApplication a(ncmdshow, (char **)lpcmdline);
-#else
+//#if defined(Q_OS_WIN32)
+//int WINAPI WinMain(HINSTANCE hInstance,
+//  HINSTANCE hPrevInstance, LPSTR lpcmdline, int ncmdshow)
+//{
+//	QApplication a(ncmdshow, (char **)lpcmdline);
+//#else
+//int main(int argc, char *argv[])
+//{
+//	QApplication a(argc, argv);
+//#endif
+//#if defined(Q_OS_WIN32)
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-#endif
-#if defined(Q_OS_WIN32)
-
 	QStringList list;
 	list << "Eurostile.ttf";
 	int fontID(-1);
@@ -36,7 +38,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-#endif
+//#endif
 nesca_3 *gui = new nesca_3();
 	
 	gui->showNormal();

@@ -6,6 +6,7 @@
 #include "mainResources.h"
 #include "externFunctions.h"
 #include "externData.h"
+#include <openssl/err.h>
 
 #if defined(Q_OS_WIN32)
 #include <iphlpapi.h>
@@ -172,14 +173,13 @@ int OpenConnection(SOCKET *sock, const char *hostname, int port)
 
 void _baSSLWorker(char *ip, char *request, char *rvBuff)
 {
-	SSL_CTX *ctx = NULL;
 	const SSL_METHOD *method = SSLv3_client_method();  /* Create new client-method instance */
-	ctx = SSL_CTX_new(method);   /* Create new context */
-	SSL_CTX_set_timeout(ctx, gTimeOut);
-	SOCKET sock;
+	SSL_CTX *ctx = SSL_CTX_new(method);   /* Create new context */
 
 	if(ctx != NULL)
 	{
+		SOCKET sock;
+		SSL_CTX_set_timeout(ctx, gTimeOut);
 		int result = OpenConnection(&sock, ip, 443);
 		if(result >= 0)
 		{
@@ -223,7 +223,12 @@ void _baSSLWorker(char *ip, char *request, char *rvBuff)
 	}
 	else
 	{
-		stt->doEmitionRedFoundData("SSL(InitCTX).");
+		char buff1[512] = {0};
+		char buff2[512] = {0};
+		
+		ERR_error_string(ERR_peek_error(), buff1);
+		ERR_error_string(ERR_peek_last_error(), buff2);
+		stt->doEmitionRedFoundData(QString(ip) + " SSL(InitCTX) 1:" + QString(buff1) + " 2:" + QString(buff2));
 	};
 };
 char *_getAttributeValue(char *str, char *val, char *ip, int port)
@@ -1239,7 +1244,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 
 				if(gThreads > 1 && WSAerr != 10060/*Timeout*/ && WSAerr != 10055/*POOLOVERFLOW*/ && WSAerr != 10061/*WSAECONNREFUSED*/ && WSAerr != 10054/*WSACONNABORTED*/ && WSAerr != 0) 
 				{
-					stt->doEmitionRedFoundData("[FTPBrute] Cannot connect to " + QString(ip) + " " + QString(std::to_string((long double)WSAerr).c_str()));
+					stt->doEmitionRedFoundData("[FTPBrute] Cannot connect to " + QString(ip) + " " + QString(std::to_string(WSAerr).c_str()));
 				};
 				CSSOCKET(sockFTP);	
 				isActive = 0;
@@ -1284,14 +1289,13 @@ int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 	int bytes = 0;
 	char *recvBuff2 = 0;
 	int resCode = 0;
-	SOCKET sock;
 
-	SSL_CTX *ctx = NULL;
 	const SSL_METHOD *method = SSLv3_client_method();  /* Create new client-method instance */
-	ctx = SSL_CTX_new(method);   /* Create new context */
-	SSL_CTX_set_timeout(ctx, gTimeOut);
+	SSL_CTX *ctx = SSL_CTX_new(method);   /* Create new context */
 	if(ctx != NULL)
 	{
+		SOCKET sock;
+		SSL_CTX_set_timeout(ctx, gTimeOut);
 		resCode = OpenConnection(&sock, iph, porth);
 		if(resCode >= 0)
 		{
@@ -1407,9 +1411,17 @@ int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 				return 0;
 			};
 		};
-	};
-	stt->doEmitionRedFoundData("SSL(InitCTX).");
-	return -1;
+	} 
+	else 
+	{
+		char buff1[512] = {0};
+		char buff2[512] = {0};
+
+		ERR_error_string(ERR_peek_error(), buff1);
+		ERR_error_string(ERR_peek_last_error(), buff2);
+		stt->doEmitionRedFoundData(QString(iph) + ":" + QString(porth) + " SSL(InitCTX) 1:" + QString(buff1) + " 2:" + QString(buff2));
+		return -1;
+	}
 };
 int Connector::_EstablishSSLConnection(char *iph, int porth, char *requesth, conSTR *CSTR)
 {

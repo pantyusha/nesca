@@ -307,6 +307,7 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
 		|| strstr(buffcpy, "ipcam") != NULL
 		)																												return 0;
+
 	if(lxf.globalSearchNeg(buffcpy, ip, port) == -1)																	return -1;
 	if(globalSearchPrnt(buffcpy) == -1)																					return -1;
 	if(strstr(buffcpy, "<form ") != NULL && strstr(buffcpy, "302 found") == NULL)										return 10;
@@ -380,7 +381,6 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 	if(strstr(buffcpy, "dvr") != NULL && strstr(buffcpy, "ieorforefox") != NULL
 		&& strstr(buffcpy, "sofari") != NULL)																			return 49;								//IEORFOREFOX
 	
-
 	if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
 		(strstr(buffcpy, "220 diskStation ftp server ready") != NULL) ||
 		(strstr(buffcpy, "220 ftp server ready") != NULL)
@@ -786,35 +786,35 @@ void putInFile(int flag, char *ip, char *port, int recd, char *finalstr, char *h
 	strcat(log, ":");
 	strcat(log, port);
 	strcat(log, "</font></a>;</span> <span id=\"recvSpan\">Received: <font color=SteelBlue>");
-	strcat(log, std::to_string((long double)recd).c_str());
+	strcat(log, std::to_string(recd).c_str());
 	strcat(log, "</font>");
 	
 	if(flag == 666 || flag == 350)	
 	{
-		fillGlobalLogData(ip, hl, port, std::to_string((long double)recd).c_str(), finalstr, "", "", "", cp, "Strange error");
+		fillGlobalLogData(ip, hl, port, std::to_string(recd).c_str(), finalstr, "", "", "", cp, "Strange error");
 		++PieAnomC1;
 		++AnomC1;
 	}
 	else if(flag == 0 || flag == 15 || flag == -10)
 	{
-		fillGlobalLogData(ip, hl, port, std::to_string((long double)recd).c_str(), finalstr, "", "", "", cp, "Anomaly");
+		fillGlobalLogData(ip, hl, port, std::to_string(recd).c_str(), finalstr, "", "", "", cp, "Anomaly");
 		++PieAnomC1;
 		++AnomC1;
 	}
 	else if(flag == 3)
 	{
-		fillGlobalLogData(ip, hl, port, std::to_string((long double)recd).c_str(), finalstr, "", "", "", cp, "Suspicious");
+		fillGlobalLogData(ip, hl, port, std::to_string(recd).c_str(), finalstr, "", "", "", cp, "Suspicious");
 		++PieSusp;
 		++Susp;
 	}
 	else if(flag == 7)				
 	{
-		fillGlobalLogData(ip, hl, port, std::to_string((long double)recd).c_str(), finalstr, "", "", "", cp, "Low load");
+		fillGlobalLogData(ip, hl, port, std::to_string(recd).c_str(), finalstr, "", "", "", cp, "Low load");
 		++PieLowl;
 	}
 	else if(flag == 10)	
 	{
-		fillGlobalLogData(ip, hl, port, std::to_string((long double)recd).c_str(), finalstr, "", "", "", cp, "Login form");
+		fillGlobalLogData(ip, hl, port, std::to_string(recd).c_str(), finalstr, "", "", "", cp, "Login form");
 		++PieWF;
 	};
 
@@ -1169,14 +1169,14 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 		else
 		{
 			if(gNegDebugMode) stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: No text/password fields found.");							
-			///fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, "NULL", "NULL", comment, cp, tclass);
+			///fillGlobalLogData(ip, hl, tport, std::to_string(recd).c_str(), title, "NULL", "NULL", comment, cp, tclass);
 			///putInFile(flag, ip, tport, recd, title, hl, cp);
 		};
 	}
 	else
 	{
 		stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: Cannot find form block.");
-		fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, "NULL", "NULL", comment, cp, tclass);
+		fillGlobalLogData(ip, hl, tport, std::to_string(recd).c_str(), title, "NULL", "NULL", comment, cp, tclass);
 		putInFile(flag, ip, tport, recd, title, hl, cp);
 	};
 	
@@ -1244,19 +1244,20 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 			{
 				_specFillerWF(hl, ip, tport, title, lps.login, lps.pass, flag);
 		
-				fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, lps.login, lps.pass, comment, cp, tclass);
+				fillGlobalLogData(ip, hl, tport, std::to_string(recd).c_str(), title, lps.login, lps.pass, comment, cp, tclass);
 				putInFile(flag, ip, tport, recd, title, hl, cp);
 			};
 		}
 		else
 		{
 			if(gNegDebugMode) stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: Cannot find user/pass field.");		
-			///fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), title, "", "", "UnknownWebform", cp, tclass);
+			///fillGlobalLogData(ip, hl, tport, std::to_string(recd).c_str(), title, "", "", "UnknownWebform", cp, tclass);
 			///putInFile(flag, ip, tport, recd, title, hl, cp);
 		};
 	};
 	isActive = 0;
 };
+
 void _specWEBIPCAMBrute(char *ip, int port, char *hl, char *finalstr, int flag, char *comment, char *tclass, char *cp, int recd, char *SPEC)
 {
 	lopaStr lps;
@@ -1274,7 +1275,7 @@ void _specWEBIPCAMBrute(char *ip, int port, char *hl, char *finalstr, int flag, 
 	{
 		_specFillerBA(hl, ip, tport, finalstr, lps.login, lps.pass, flag);
 
-		fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");	
+		fillGlobalLogData(ip, hl, tport, std::to_string(recd).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");	
 	};
 };
 void _specBrute(char *cookie, char *ip, int port, char *hl, char *finalstr, int flag, char *path, char *comment, char *tclass, char *cp, int recd, char *data)
@@ -1298,7 +1299,7 @@ void _specBrute(char *cookie, char *ip, int port, char *hl, char *finalstr, int 
 	{
 		_specFillerBA(hl, ip, tport, finalstr, lps.login, lps.pass, flag);
 
-		fillGlobalLogData(ip, hl, tport, std::to_string((long double)recd).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");
+		fillGlobalLogData(ip, hl, tport, std::to_string(recd).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");
 	};
 
 	ZeroMemory(temp, sizeof(temp));
@@ -1459,7 +1460,7 @@ void _saveSSH(char *ip, int port, int recd, char *buffcpy)
 			char *ptrl2 = strstr(buffcpy, "@");
 			lpsz = ptrl2 - ptrl1;
 			strncpy(passSSH, ptrl1 + 1, lpsz);
-			fillGlobalLogData(ip, "", itoa(port, b, 10), std::to_string((long double)recd).c_str(), "[SSH service]", loginSSH, passSSH, "NULL", "UTF-8", "SSH");
+			fillGlobalLogData(ip, "", itoa(port, b, 10), std::to_string(recd).c_str(), "[SSH service]", loginSSH, passSSH, "NULL", "UTF-8", "SSH");
 			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
 		}
 		else
@@ -1477,7 +1478,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	char b[16] = {0};
 	
 	if(	strstr(buffcpy, "[IGNR_ADDR]") != NULL ) return -1;
-	if(	strstr(buffcpy, "SSH-2.0-OpenSSH") != NULL ) 
+	if(	strstr(buffcpy, "SSH-2.0-OpenSSH") != NULL || strstr(buffcpy, "SSH-2.0-mod_sftp") != NULL) 
 	{
 		Connector con;
 		conSTR CSTR;
@@ -1567,7 +1568,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 		strcat(log, port);
 		strcat(log, "</font>");
 		strcat(log, "; Received: ");
-		strncat(log, std::to_string((long double)recd).c_str(), 100);
+		strncat(log, std::to_string(recd).c_str(), 100);
 				
 		lps = con._FTPLobby(ip, p, &ps);
 
@@ -1609,7 +1610,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 			
 			fputsf (ip, port, log, flag, "FTP");
 	
-			fillGlobalLogData(ip, hl, port, std::to_string((long double)recd).c_str(), "[FTP service]", lps.login, lps.pass, "Router FTP detected.", cp, "FTP");
+			fillGlobalLogData(ip, hl, port, std::to_string(recd).c_str(), "[FTP service]", lps.login, lps.pass, "Router FTP detected.", cp, "FTP");
 			
 
 			#pragma region QTGUI_Area
@@ -1647,12 +1648,12 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 			strcat(logEmit, "@");
 			strcat(logEmit, ip);
 			strcat(logEmit, "</span></a> (F:");
-			strcat(logEmit, std::to_string((long double)ps.directoryCount).c_str());
+			strcat(logEmit, std::to_string(ps.directoryCount).c_str());
 			strcat(logEmit, ")");
 
 			fputsf(ip, port, log, flag, "FTP");
 	
-			fillGlobalLogData(ip, hl, port, std::to_string((long double)recd).c_str(), "[FTP service]", lps.login, lps.pass, "NULL", cp, "FTP");
+			fillGlobalLogData(ip, hl, port, std::to_string(recd).c_str(), "[FTP service]", lps.login, lps.pass, "NULL", cp, "FTP");
 #pragma region QTGUI_Area
 			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
 #pragma endregion
@@ -1841,7 +1842,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 		strcat(log, ":");
 		strcat(log, lps.pass);
 		strcat(log, "</font>");
-		fillGlobalLogData(ip, hl, port, std::to_string((long double)recd).c_str(), finalstr, lps.login, lps.pass, "HFS-FTP", cp, "Basic Authorization");
+		fillGlobalLogData(ip, hl, port, std::to_string(recd).c_str(), finalstr, lps.login, lps.pass, "HFS-FTP", cp, "Basic Authorization");
 		fputsf (ip, port, log , flag, "HFS");
 		stt->doEmitionFoundData(QString::fromLocal8Bit(log));
 		ZeroMemory(temp, sizeof(temp));
@@ -2867,7 +2868,7 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 						strcpy(lol, "http://");
 						strcat(lol, ip);
 						strcat(lol, ":");
-						strcat(lol, std::to_string((long double)port).c_str());
+						strcat(lol, std::to_string(port).c_str());
 						if(script[0] != '/') strcat(lol, "/");
 						strcat(lol, script);
 					}

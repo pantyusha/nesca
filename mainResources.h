@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "base64.h"
 
+#include <libssh\libssh.h>
 #if defined(Q_OS_WIN32)
 #pragma once 
 #include "iostream"

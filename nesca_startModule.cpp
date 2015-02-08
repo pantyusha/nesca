@@ -186,7 +186,7 @@ void _SaveBackupToFile()
 		if(strlen(endIP2) > 0)
 		{
 			strcpy(saveStr, "[SESSION]:");
-			strcat(saveStr, std::to_string((long double)gMode).c_str());
+			strcat(saveStr, std::to_string(gMode).c_str());
 			strcat(saveStr, " ");
 			if(gMode == 0) strcat(saveStr, saveStartIP);
 			strcat(saveStr, endStr);
@@ -196,7 +196,7 @@ void _SaveBackupToFile()
 				strcat(saveStr, top_level_domain);
 			};
 			strcat(saveStr, " ");
-			strcat(saveStr, std::to_string((long double)gThreads).c_str());
+			strcat(saveStr, std::to_string(gThreads).c_str());
 			strcat(saveStr, " ");
 			strcat(saveStr, gPorts);
 
@@ -220,9 +220,9 @@ void _SaveBackupToFile()
 				{
 					for(int i = 0; i < 4; ++i)
 					{
-						strcat(curIpStart, std::to_string((long double)ipsstartfl[tCounter][i]).c_str());
+						strcat(curIpStart, std::to_string(ipsstartfl[tCounter][i]).c_str());
 						if ( i != 3) strcat(curIpStart, ".");
-						strcat(curIpEnd, std::to_string((long double)ipsendfl[tCounter][i]).c_str());
+						strcat(curIpEnd, std::to_string(ipsendfl[tCounter][i]).c_str());
 						if ( i != 3) strcat(curIpEnd, ".");
 					};
 
@@ -243,10 +243,10 @@ void _SaveBackupToFile()
 		};
 
 		strcpy(saveStr, "[SESSION]:");
-		strcat(saveStr, std::to_string((long double)gMode).c_str());
+		strcat(saveStr, std::to_string(gMode).c_str());
 		strcat(saveStr, " RESTORE_IMPORT_SESSION");
 		strcat(saveStr, " ");
-		strcat(saveStr, std::to_string((long double)gThreads).c_str());
+		strcat(saveStr, std::to_string(gThreads).c_str());
 		strcat(saveStr, " ");
 		strcat(saveStr, gPorts);
 
@@ -403,7 +403,7 @@ void *_timer()
 
 		if(ips > 0) 
 		{
-			strncpy(dbuffer, std::to_string((long double)((gTargets + 1)/ips/3600/24)).c_str(), 5);
+			strncpy(dbuffer, std::to_string(((gTargets + 1)/ips/3600/24)).c_str(), 5);
 		}
 		else strcpy(dbuffer, "INF");
 		strcpy(metaETA, dbuffer);
@@ -641,7 +641,7 @@ void *_tracker()
 						strcat(msg, ndbServer);
 						strcat(msg, "\r\nContent-Type: application/json\r\nAccept-Encoding: application/json\r\nContent-Length: ");
 
-						strcat(msg, std::to_string((long double)r.size()).c_str());
+						strcat(msg, std::to_string(r.size()).c_str());
 						strcat(msg, "\r\nConnection: close\r\n\r\n");
 
 						strcat(msg, r.data());
@@ -850,7 +850,7 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[])
 //	//	else 
 //	//	{
 //	//		strcpy(res, "Hostname: ");
-//	//		//if(result->h_length != NULL) strcat(res, std::to_string((long double)result->h_length).c_str());
+//	//		//if(result->h_length != NULL) strcat(res, std::to_string(result->h_length).c_str());
 //	//		//strcat(res, " ");
 //	//		//if(result->h_name != NULL) strcat(res, (result->h_name));
 //	//		//strcat(res, ":");
@@ -884,7 +884,7 @@ void *_connect(void* ss)
 	for(int i = 0; i <= overallPorts; ++i)
 	{
 		if(globalScanFlag == false) break;		
-		if(con._ConnectToPort( ip, std::to_string((long double)portArr[i]).c_str(), "" ) == -2) break;
+		if(con._ConnectToPort( ip, std::to_string(portArr[i]).c_str(), "" ) == -2) break;
 	};
 
 	ConDec();
@@ -966,7 +966,7 @@ void _passLoginFapper()
 		};
 
 	#pragma region QTGUI_Area
-		stt->doEmitionGreenFoundData("Password list loaded (" + QString(std::to_string((long double)MaxPass).c_str()) + " entries)");
+		stt->doEmitionGreenFoundData("Password list loaded (" + QString(std::to_string(MaxPass).c_str()) + " entries)");
 	#pragma endregion
 
 		i = 0;
@@ -981,7 +981,7 @@ void _passLoginFapper()
 		};
 
 		#pragma region QTGUI_Area
-		stt->doEmitionGreenFoundData("Login list loaded (" + QString(std::to_string((long double)MaxLogin).c_str()) + " entries)");
+		stt->doEmitionGreenFoundData("Login list loaded (" + QString(std::to_string(MaxLogin).c_str()) + " entries)");
 		#pragma endregion
 
 		fclose(loginList);
@@ -1047,7 +1047,7 @@ void _passLoginFapper()
 		};
 
 	#pragma region QTGUI_Area
-		stt->doEmitionGreenFoundData("WFPassword list loaded (" + QString(std::to_string((long double)MaxWFPass).c_str()) + " entries)");
+		stt->doEmitionGreenFoundData("WFPassword list loaded (" + QString(std::to_string(MaxWFPass).c_str()) + " entries)");
 	#pragma endregion
 
 		i = 0;
@@ -1062,7 +1062,7 @@ void _passLoginFapper()
 		};
 
 		#pragma region QTGUI_Area
-		stt->doEmitionGreenFoundData("WFLogin list loaded (" + QString(std::to_string((long double)MaxWFLogin).c_str()) + " entries)");
+		stt->doEmitionGreenFoundData("WFLogin list loaded (" + QString(std::to_string(MaxWFLogin).c_str()) + " entries)");
 		#pragma endregion
 
 		fclose(wfLoginList);
@@ -1113,7 +1113,7 @@ void _passLoginFapper()
 		};
 
 	#pragma region QTGUI_Area
-		stt->doEmitionGreenFoundData("SSH Password list loaded (" + QString(std::to_string((long double)MaxSSHPass).c_str()) + " entries)");
+		stt->doEmitionGreenFoundData("SSH Password list loaded (" + QString(std::to_string(MaxSSHPass).c_str()) + " entries)");
 	#pragma endregion
 		
 		fclose(sshlpList);
@@ -1128,7 +1128,7 @@ void _passLoginFapper()
 #pragma endregion
 
 	#pragma region QTGUI_Area
-	stt->doEmitionYellowFoundData("BA: ~" + QString(std::to_string((long double)MaxLogin * MaxPass/gTimeOut/60).c_str()) + "; WF: ~" + QString(std::to_string((long double)MaxWFLogin * MaxWFPass/gTimeOut/60).c_str()) + "; SSH: ~" + QString(std::to_string((long double)MaxSSHPass/gTimeOut/60).c_str()));
+	stt->doEmitionYellowFoundData("BA: ~" + QString(std::to_string(MaxLogin * MaxPass/gTimeOut/60).c_str()) + "; WF: ~" + QString(std::to_string(MaxWFLogin * MaxWFPass/gTimeOut/60).c_str()) + "; SSH: ~" + QString(std::to_string(MaxSSHPass/gTimeOut/60).c_str()));
 	#pragma endregion
 };
 void ReadUTF8(FILE* nFile, char *cp)
@@ -1719,7 +1719,7 @@ void FileLoader(char *str)
 					{
 						char tempMsg[256] = {0};
 						strcpy(tempMsg, "[IP Loader]Wrong list format. Line-> [");
-						strcat(tempMsg, std::to_string((long double)flCounter).c_str());
+						strcat(tempMsg, std::to_string(flCounter).c_str());
 						strcat(tempMsg, "] String-> [");
 						strcat(tempMsg, curIPCopy);
 						strcat(tempMsg, "]");
@@ -1820,7 +1820,7 @@ void FileLoader(char *str)
 				{
 					char tempMsg[256] = {0};
 					strcpy(tempMsg, "[IP Loader]Wrong list format. Line-> [");
-					strcat(tempMsg, std::to_string((long double)flCounter).c_str());
+					strcat(tempMsg, std::to_string(flCounter).c_str());
 					strcat(tempMsg, "] String-> [");
 					strcat(tempMsg, curIPCopy);
 					strcat(tempMsg, "]");
@@ -2329,13 +2329,13 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 							if(ipsstart[3] == ipsend[3] && eor2 == 1) eor3 = 1;
 							++indexIP;
 
-							strcat(res, std::to_string((long double)ipsstart[0]).c_str());
+							strcat(res, std::to_string(ipsstart[0]).c_str());
 							strcat(res, ".");
-							strcat(res, std::to_string((long double)ipsstart[1]).c_str());
+							strcat(res, std::to_string(ipsstart[1]).c_str());
 							strcat(res, ".");
-							strcat(res, std::to_string((long double)ipsstart[2]).c_str());
+							strcat(res, std::to_string(ipsstart[2]).c_str());
 							strcat(res, ".");
-							strcat(res, std::to_string((long double)ipsstart[3]).c_str());
+							strcat(res, std::to_string(ipsstart[3]).c_str());
 							
 							strcpy(st->argv, res);
 							strcpy(saveStartIP, res);
@@ -2551,21 +2551,21 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		sockstruct *st = NULL;
 		for(gC = 0; gC < flCounter; ++gC)
 		{
-			strcpy(metaRange, std::to_string((long double)ipsstartfl[gC][0]).c_str());
+			strcpy(metaRange, std::to_string(ipsstartfl[gC][0]).c_str());
 			strcat(metaRange, ".");
-			strcat(metaRange, std::to_string((long double)ipsstartfl[gC][1]).c_str());
+			strcat(metaRange, std::to_string(ipsstartfl[gC][1]).c_str());
 			strcat(metaRange, ".");
-			strcat(metaRange, std::to_string((long double)ipsstartfl[gC][2]).c_str());
+			strcat(metaRange, std::to_string(ipsstartfl[gC][2]).c_str());
 			strcat(metaRange, ".");
-			strcat(metaRange, std::to_string((long double)ipsstartfl[gC][3]).c_str());
+			strcat(metaRange, std::to_string(ipsstartfl[gC][3]).c_str());
 			strcat(metaRange, "-");
-			strcat(metaRange, std::to_string((long double)ipsendfl[gC][0]).c_str());
+			strcat(metaRange, std::to_string(ipsendfl[gC][0]).c_str());
 			strcat(metaRange, ".");
-			strcat(metaRange, std::to_string((long double)ipsendfl[gC][1]).c_str());
+			strcat(metaRange, std::to_string(ipsendfl[gC][1]).c_str());
 			strcat(metaRange, ".");
-			strcat(metaRange, std::to_string((long double)ipsendfl[gC][2]).c_str());
+			strcat(metaRange, std::to_string(ipsendfl[gC][2]).c_str());
 			strcat(metaRange, ".");
-			strcat(metaRange, std::to_string((long double)ipsendfl[gC][3]).c_str());
+			strcat(metaRange, std::to_string(ipsendfl[gC][3]).c_str());
 			
 			eor0 = 0, eor1 = 0, eor2 = 0, eor3 = 0;
 			while ((eor0 == 0 || eor1 == 0 || eor2 == 0 || eor3 == 0) && globalScanFlag)			
@@ -2596,13 +2596,13 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
 								++indexIP;
 
-								strcat(res, std::to_string((long double)ipsstartfl[gC][0]).c_str());
+								strcat(res, std::to_string(ipsstartfl[gC][0]).c_str());
 								strcat(res, ".");
-								strcat(res, std::to_string((long double)ipsstartfl[gC][1]).c_str());
+								strcat(res, std::to_string(ipsstartfl[gC][1]).c_str());
 								strcat(res, ".");
-								strcat(res, std::to_string((long double)ipsstartfl[gC][2]).c_str());
+								strcat(res, std::to_string(ipsstartfl[gC][2]).c_str());
 								strcat(res, ".");
-								strcat(res, std::to_string((long double)ipsstartfl[gC][3]).c_str());
+								strcat(res, std::to_string(ipsstartfl[gC][3]).c_str());
 								
 								strcpy(st->argv, res);
 								strcpy(saveStartIP, res);

@@ -518,7 +518,7 @@ bool ftsBA = true;
 bool ftsLF = true;
 
 bool fOpened = false;
-char styleBuff[1024] = {"<style> #recvSpan{display: inline-block;width: 150px;} #hostSpan{display: inline-block;width: 150px;}body { background-color: #141414; font-family: monospace; font-size:95%;} #ipd{background:black;width:100%;white-space:nowrap;overflow-x:none;display:inline-block;}#ipd:hover{color: #909090;background:#202020;}#tit{text-align:center;border:1px solid #5d5d5d;}a{color: gray;text-decoration: underline;} a:focus{ outline-style: dashed;outline-width:1px; outline-color: red;}</style>"};
+char styleBuff[1024] = {"<style> #recvSpan{display: inline-block;width: 150px;} #hostSpan{display: inline-block;width: 200px;}body { background-color: #141414; font-family: monospace; font-size:95%;} #ipd{background:black;width:100%;white-space:nowrap;overflow-x:none;display:inline-block;}#ipd:hover{color: #909090;background:#202020;}#tit{text-align:center;border:1px solid #5d5d5d;}a{color: gray;text-decoration: underline;} a:focus{ outline-style: dashed;outline-width:1px; outline-color: red;}</style>"};
 char topBuff[1024] = {"<div id=\"tit\"><a href=\"strange.html\">.strange</a> <a href=\"other.html\">.other</a> <a href=\"Basicauth.html\">.BasicAuth</a> <a href=\"FTP.html\">.FTP</a>  <a href=\"low_loads.html\">.LowLoads</a> <a href=\"LoginForms.html\">.loginforms</a> <a href=\"SSH.html\">.SSH</a></div><br><br>"};
 void fputsf(char *ip, char *port, char *text, int flag, char *msg)
 {
@@ -2007,7 +2007,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->flag = 3;
 				ls->flag = 3;
 			}
-			else if(strstr(cstr.lowerBuff, "[OVERFLOW]") != NULL) 
+			else if(cstr.overflow == true) 
 			{
 				ls->flag = 0;
 				ps->flag = 0;
@@ -2139,7 +2139,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->flag = 3;
 				ls->flag = 3;
 			}
-			else if(strstr(cstr.lowerBuff, "[OVERFLOW]") != NULL) 
+			else if(cstr.overflow == true) 
 			{
 				ls->flag = 0;
 				ps->flag = 0;
@@ -2235,7 +2235,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->flag = 3;
 				ls->flag = 3;
 			}
-			else if(strstr(cstr.lowerBuff, "[OVERFLOW]") != NULL) 
+			else if(cstr.overflow == true) 
 			{
 				ls->flag = 0;
 				ps->flag = 0;
@@ -2318,7 +2318,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->flag = 3;
 				ls->flag = 3;
 			}
-			else if(strstr(cstr.lowerBuff, "[OVERFLOW]") != NULL) 
+			else if(cstr.overflow == true) 
 			{
 				ls->flag = 0;
 				ps->flag = 0;

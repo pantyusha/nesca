@@ -1495,15 +1495,6 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 	setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *) &linger, sizeof(linger));
 
 	int iError, iResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
-						//CSSOCKET(sock);
-						//sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-						//setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &on, sizeof(on));
-						//int sResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
-						//		iError = WSAGetLastError();
-						//sResult = send(sock, request, strlen(request), 0);
-						//char r[128419];
-						//recv(sock, r, 128419, 0);
-
 	while(sock == INVALID_SOCKET)
 	{
 		if(gDebugMode) stt->doEmitionDebugFoundData("[Invalid socket]: " + QString::number(WSAGetLastError()));
@@ -1557,7 +1548,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 					{
 						if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
 						Activity += strlen(request);
-						char recvBuff[4096] = {0};
+						char recvBuff[8192] = {0};
 						recvBuff2 = new char[RECV_MAX_SIZE];
 						ZeroMemory(recvBuff2, RECV_MAX_SIZE);
 
@@ -1565,22 +1556,22 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 						int x = 256;
 						while (x > 0)				
 						{
-							ZeroMemory(recvBuff, sizeof(recvBuff));
-							x = recvWT(sock, recvBuff, sizeof(recvBuff), gTimeOut, &bTO);
+							ZeroMemory(recvBuff, 8192);
+							x = recvWT(sock, recvBuff, 8192, gTimeOut, &bTO);
 							if(x <= 0) break;
 							Activity += x;
 							recvBuffSize += x;
 							if( recvBuffSize > RECV_MAX_SIZE ) 
-							{ 
-								delete[] recvBuff2;
-								recvBuff2 = NULL;
-
+							{
 								CSSOCKET(sock);
 								++Overl;
 
-								CSTR->lowerBuff = new char[11];
-								strcpy(CSTR->lowerBuff, "[OVERFLOW]");
-								CSTR->size = 10;
+								CSTR->lowerBuff = new char[recvBuffSize];
+								strncpy(CSTR->lowerBuff, recvBuff2, recvBuffSize);
+								CSTR->size = recvBuffSize;
+								CSTR->overflow = true;
+								delete[] recvBuff2;
+								recvBuff2 = NULL;
 								return 0;
 							};
 							strncat(recvBuff2, recvBuff, x);
@@ -1596,22 +1587,22 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 							x = 1;
 							while (x > 0)				
 							{
-								ZeroMemory(recvBuff, sizeof(recvBuff));
-								x = recvWT(sock, recvBuff, sizeof(recvBuff), gTimeOut, &bTO);
+								ZeroMemory(recvBuff, 8192);
+								x = recvWT(sock, recvBuff, 8192, gTimeOut, &bTO);
 								if(x <= 0) break;
 								Activity += x;
 								recvBuffSize += x;
 								if( recvBuffSize > RECV_MAX_SIZE ) 
 								{ 
-									delete[] recvBuff2;
-									recvBuff2 = NULL;
-
 									CSSOCKET(sock);
 									++Overl;
 
-									CSTR->lowerBuff = new char[11];
-									strcpy(CSTR->lowerBuff, "[OVERFLOW]");
-									CSTR->size = 10;
+									CSTR->lowerBuff = new char[recvBuffSize];
+									strncpy(CSTR->lowerBuff, recvBuff2, recvBuffSize);
+									CSTR->size = recvBuffSize;
+									CSTR->overflow = true;
+									delete[] recvBuff2;
+									recvBuff2 = NULL;
 									return 0;
 								};
 								strncat(recvBuff2, recvBuff, x);

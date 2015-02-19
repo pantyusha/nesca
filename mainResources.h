@@ -72,6 +72,7 @@ struct lopaStr{
 struct conSTR{
 	char *lowerBuff;
 	int size;
+	bool overflow = false;
 };
 
 class Lexems

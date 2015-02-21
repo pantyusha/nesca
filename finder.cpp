@@ -2386,7 +2386,7 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 		if(ptr2 != NULL && ptrSemi != NULL)
 		{
 			int sz = ptrSemi - ptr2;
-			if(sz > 2)
+			if(sz >= 2)
 			{
 				char *ptrQuote1 = _findFirst(ptr2, "\"'");
 				if(ptrQuote1 != NULL)
@@ -2409,6 +2409,7 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 					ZeroMemory(delim, 1);
 					delim[0] = ptrQuote1[0];
 					delim[1] = '\0';
+
 					char *ptrQuote2 = _findLast(tempBuff + 1, delim);
 					if(ptrQuote2 != NULL)
 					{
@@ -2416,13 +2417,17 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 						char link[512] = {0};
 						if(sz < 511)
 						{
-							if(tempBuff[0] != '/' 
+							if (tempBuff[0] == '.' && tempBuff[1] == '/')
+							{
+								strncat(dataBuff, tempBuff + 1, sz - 1);
+							}
+							else if(tempBuff[0] != '/' 
 								&& strstri(tempBuff, "http://") == NULL 
 								&& strstri(tempBuff, "https://") == NULL
 								) 
 							{
 								strcpy(dataBuff, "/");
-								strncat(dataBuff, tempBuff, sz);
+								strncat(dataBuff, tempBuff + 1, sz - 1);
 							}
 							else strncpy(dataBuff, tempBuff, sz);
 						};

@@ -1299,6 +1299,7 @@ void nesca_3::ChangeDispalyMode()
 		ui->JobModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
 		ui->IRCModeBut->setStyleSheet("background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(0, 214, 0, 40);color: rgb(0, 214, 0);");
 		ui->widgetJOB->setGeometry(QRect(500, 44, 500, 730));
+		ui->widgetIRC->setStyleSheet("background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255));");
 		ui->widgetIRC->setGeometry(QRect(1, 44, 498, 730));
 		ui->shoutBox->setFocus();
 		QWidget::activateWindow();

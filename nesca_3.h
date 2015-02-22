@@ -128,6 +128,7 @@ protected:
 		void startScanButtonClickedDNS();
 		void saveOptions();
 		void ChangeTrackerOK(bool val);
+		void ChangeShuffle(bool val);
 		void ChangeLabelThreads_ValueChanged(QString);
 		void PingTO_ChangeValue(QString);
 		void ChangeLabelTO_ValueChanged(QString);

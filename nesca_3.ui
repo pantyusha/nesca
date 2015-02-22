@@ -1146,7 +1146,7 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>90</y>
+         <y>100</y>
          <width>208</width>
          <height>17</height>
         </rect>
@@ -1314,7 +1314,7 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>110</y>
+         <y>116</y>
          <width>276</width>
          <height>17</height>
         </rect>
@@ -1341,8 +1341,8 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>70</y>
-         <width>85</width>
+         <y>84</y>
+         <width>75</width>
          <height>17</height>
         </rect>
        </property>
@@ -1358,7 +1358,7 @@ border-radius: 3px;</string>
         <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
        </property>
        <property name="text">
-        <string>Ping hosts</string>
+        <string>Ping hosts:</string>
        </property>
        <property name="shortcut">
         <string>Ctrl+S</string>
@@ -1373,10 +1373,10 @@ border-radius: 3px;</string>
        </property>
        <property name="geometry">
         <rect>
-         <x>390</x>
-         <y>70</y>
+         <x>108</x>
+         <y>86</y>
          <width>51</width>
-         <height>20</height>
+         <height>15</height>
         </rect>
        </property>
        <property name="font">
@@ -1403,9 +1403,9 @@ border-radius: 3px;</string>
       <widget class="QLabel" name="label">
        <property name="geometry">
         <rect>
-         <x>320</x>
-         <y>71</y>
-         <width>68</width>
+         <x>163</x>
+         <y>85</y>
+         <width>17</width>
          <height>16</height>
         </rect>
        </property>
@@ -1418,7 +1418,7 @@ border-radius: 3px;</string>
         <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
        </property>
        <property name="text">
-        <string>Ping timeout:</string>
+        <string>ms</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="threadDelayBox">
@@ -1428,7 +1428,7 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>390</x>
-         <y>90</y>
+         <y>69</y>
          <width>51</width>
          <height>20</height>
         </rect>
@@ -1458,7 +1458,7 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>320</x>
-         <y>90</y>
+         <y>69</y>
          <width>68</width>
          <height>16</height>
         </rect>
@@ -1479,7 +1479,7 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>320</x>
-         <y>105</y>
+         <y>84</y>
          <width>62</width>
          <height>26</height>
         </rect>
@@ -1505,7 +1505,7 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>390</x>
-         <y>110</y>
+         <y>89</y>
          <width>51</width>
          <height>20</height>
         </rect>
@@ -1529,6 +1529,36 @@ border-radius: 3px;</string>
        </property>
        <property name="placeholderText">
         <string>100</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="shuffle_onoff">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>68</y>
+         <width>100</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string>Shuffle ip-ranges before scan.</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>Shuffle ip ranges</string>
+       </property>
+       <property name="shortcut">
+        <string>Ctrl+S</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </widget>

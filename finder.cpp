@@ -1531,6 +1531,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	{
 		int rh = _header(ip, p, buffcpy, lx, &ps, &redirStrLst, rBuff);
 		strcpy(cp, ps.codepage);
+		if (rh == -1) return -1;
 		if(rh <= -2) 
 		{
 			flag = ps.flag;

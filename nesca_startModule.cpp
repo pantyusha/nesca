@@ -10,6 +10,7 @@ typedef struct ST{
 
 QJsonArray *jsonArr = new QJsonArray();
 
+bool gShuffle = true;
 bool __savingBackUpFile = false;
 bool horLineFlag = false;
 static int portArr[65536] = {0};
@@ -64,7 +65,7 @@ void SaveErrorLog(char *sender, char *MesSent, char *ReplRecv)
 	{
 		fclose(errFile);
 	};
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	CreateDirectory(L"./logs", NULL);
 #else
 	struct stat st = {0};
@@ -378,7 +379,7 @@ void _saver()
 	};
 };
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 void _timer()	
 #else
 void *_timer()	
@@ -420,7 +421,7 @@ void *_timer()
 	};
 };
 bool trackAlreadyGoing = false;
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 void _tracker()
 #else
 void *_tracker()
@@ -450,7 +451,7 @@ void *_tracker()
 
 			HOSTENT *host; 
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 			if(inet_addr(trcSrv) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(trcSrv);  
 			else if(host=gethostbyname (trcSrv)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 #else
@@ -649,7 +650,7 @@ void *_tracker()
 						delete jsonArr;
 						jsonArr = new QJsonArray();
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 						if(inet_addr(ndbServer) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ndbServer);  
 						else if(host=gethostbyname (ndbServer)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 #else
@@ -789,11 +790,16 @@ void *_tracker()
 
 unsigned long int numOfIps(int ipsstart[], int ipsend[])
 {
-	gTargets += 256*256*256*(ipsend[0] - ipsstart[0]);
-	gTargets += 256*256*(ipsend[1] - ipsstart[1]);
-	gTargets += 256*(ipsend[2] - ipsstart[2]);
+	gTargets += 16777216 * (ipsend[0] - ipsstart[0]);
+	gTargets += 65536 * (ipsend[1] - ipsstart[1]);
+	gTargets += 256 * (ipsend[2] - ipsstart[2]);
 	gTargets += (ipsend[3] - ipsstart[3]);
 	gTargetsOverall = gTargets - 1;
+
+	//unsigned long ip1 = (ipsstart[0] * 16777216) + (ipsstart[1] * 65536) + (ipsstart[2] * 256) + ipsstart[3];
+	//unsigned long ip2 = (ipsend[0] * 16777216) + (ipsend[1] * 65536) + (ipsend[2] * 256) + ipsend[3];
+	//unsigned long gTargets = ip2 - ip1;
+
 	return gTargets;
 };
 //#include <sys/types.h>
@@ -868,7 +874,7 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[])
 //};
 
 Connector con;
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 void _connect(void* ss)
 #else
 void *_connect(void* ss)
@@ -2209,7 +2215,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 		targetAndIPWriter(--gTargets, st->argv);
 
 		ConInc();
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 		if(globalScanFlag) _beginthread( (void(*)(void*))_connect, 0, st );
 #else
 		if(globalScanFlag)
@@ -2245,7 +2251,7 @@ int startScan(char* args)
 	ZeroMemory(ipsstart, sizeof(ipsstart));
 	ZeroMemory(ipsend, sizeof(ipsend));
 		
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	CreateDirectory(L"./result_files", NULL);
 #else
 	struct stat st = {0};
@@ -2283,25 +2289,101 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 	_NegativeFapper();
 	
 	char res[256] = {0};
-	if(gMode == 0)
+	if (gMode == 0)
 	{
-#if defined(WIN32)
-		_beginthread( (void(*)(void*))_saver, 0, NULL );
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+		_beginthread((void(*)(void*))_saver, 0, NULL);
 #else
 		pthread_t thrs;
 		pthread_create(&thrs, NULL, (void *(*)(void*))&_saver, NULL);
 #endif
-#if defined(WIN32)
-		if(trackerOK) _beginthread( (void(*)(void*))_tracker, 0, NULL );
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+		if (trackerOK) _beginthread((void(*)(void*))_tracker, 0, NULL);
 		Sleep(50);
-		_beginthread( (void(*)(void*))_timer, 0, NULL );
+		_beginthread((void(*)(void*))_timer, 0, NULL);
 #else
 		pthread_t thrt;
 		pthread_t thrtt;
 		if(trackerOK) pthread_create(&thrt, NULL, (void *(*)(void*))&_tracker, NULL);
 		pthread_create(&thrtt, NULL, (void *(*)(void*))&_timer, NULL);
 #endif
-		int eor0 = 0, eor1 = 0, eor2 = 0, eor3 = 0;
+
+		unsigned long ip1 = (ipsstart[0] * 16777216) + (ipsstart[1] * 65536) + (ipsstart[2] * 256) + ipsstart[3];
+		unsigned long ip2 = (ipsend[0] * 16777216) + (ipsend[1] * 65536) + (ipsend[2] * 256) + ipsend[3];
+		
+		switch (gShuffle) {
+		case true: {
+					   std::vector<std::string> ipVec;
+					   struct in_addr tAddr;
+
+					   for (unsigned long i = ip1; i <= ip2; ++i) {
+						   if (globalScanFlag == false) break;
+						   int offset = ip2 - i;
+
+						   tAddr.s_addr = i;
+						   ipVec.push_back(std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1));
+
+						   if (ipVec.size() >= (offset < 1000 ? offset : 1000)) {
+
+							   std::random_shuffle(ipVec.begin(), ipVec.end());
+							   while (ipVec.size() != 0) {
+
+								   if (globalScanFlag == false) goto haters_gonna_hate_IPM;
+								   st = new sockstruct();
+								   ZeroMemory(st->argv, sizeof(st->argv));
+
+								   while (cons >= gThreads) Sleep(500);
+								   ++indexIP;
+								   strcpy(st->argv, ipVec[0].c_str());
+								   strcpy(saveStartIP, ipVec[0].c_str());
+								   ipVec.erase(ipVec.begin());
+
+								   targetAndIPWriter(gTargets--, st->argv);
+								   ConInc();
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+								   _beginthread((void(*)(void*))_connect, 0, st);
+#else
+								   pthread_t thrc;
+								   pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
+#endif
+								   Sleep(gThreadDelay);
+							   }
+						   }
+					   }
+
+				   haters_gonna_hate_IPM:;
+					   break;
+		}
+		case false: {
+						struct in_addr tAddr;
+						for (unsigned long i = ip1; i <= ip2; ++i) {
+							if (globalScanFlag == false) break;
+							st = new sockstruct();
+							ZeroMemory(st->argv, sizeof(st->argv));
+							ZeroMemory(res, sizeof(res));
+							while (cons >= gThreads) Sleep(500);
+							++indexIP;
+
+							tAddr.s_addr = i;
+							strcpy(res, (std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1)).c_str());
+							strcpy(st->argv, res);
+							strcpy(saveStartIP, res);
+
+							targetAndIPWriter(gTargets--, st->argv);
+							ConInc();
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+							_beginthread((void(*)(void*))_connect, 0, st);
+#else
+							pthread_t thrc;
+							pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
+#endif
+							Sleep(gThreadDelay);
+						}
+						break;
+		}
+		}
+
+		/*int eor0 = 0, eor1 = 0, eor2 = 0, eor3 = 0;
 		stt->doEmitionChangeStatus("Scanning...");
 		sockstruct *st = NULL;
 		while ((eor0 == 0 || eor1 == 0 || eor2 == 0 || eor3 == 0 ) && globalScanFlag)			
@@ -2342,7 +2424,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
 							targetAndIPWriter(gTargets--, st->argv);
 							ConInc();
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 							_beginthread( (void(*)(void*))_connect, 0, st );
 #else
 							pthread_t thrc;
@@ -2366,11 +2448,11 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 			ipsstart[3] = 0;
 			ipsstart[2] = 0;
 			ipsstart[1] = 0;
-		};
+		};*/
 	}
 	else if(gMode == 1 )
 	{
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 		_beginthread( (void(*)(void*))_saver, 0, NULL );
 #else
 		pthread_t thrs;
@@ -2382,7 +2464,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
 		if(trackerOK) 
 		{
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 		if(trackerOK) _beginthread( (void(*)(void*))_tracker, 0, NULL );
 #else
 		pthread_t thrt;
@@ -2391,7 +2473,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		};
 
 		Sleep(40);
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 		_beginthread( (void(*)(void*))_timer, 0, NULL );
 #else
 		pthread_t thrtt;
@@ -2490,7 +2572,6 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
 				stt->doEmitionRedFoundData(errStr);
 				return -1;
-
 			};
 		};
 
@@ -2511,9 +2592,9 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 			stt->doEmitionRedFoundData("DNS-Mode error");
 		};
 	}
-	else if(gMode == -1)
+	else if (gMode == -1)
 	{
-		if(flCounter == 0) 
+		if (flCounter == 0)
 		{
 			stt->doEmitionRedFoundData("Empty IP list.");
 			isActive = 0;
@@ -2522,34 +2603,33 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
 			return -1;
 		};
-#if defined(WIN32)
-		_beginthread( (void(*)(void*))_saver, 0, NULL );
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+		_beginthread((void(*)(void*))_saver, 0, NULL);
 #else
 		pthread_t thrs;
 		pthread_create(&thrs, NULL, (void *(*)(void*))&_saver, NULL);
 #endif
-		if(trackerOK) 
+		if (trackerOK)
 		{
-#if defined(WIN32)
-		_beginthread( (void(*)(void*))_tracker, 0, NULL );
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+			_beginthread((void(*)(void*))_tracker, 0, NULL);
 #else
-		pthread_t thrt;
-		pthread_create(&thrt, NULL, (void *(*)(void*))&_tracker, NULL);
+			pthread_t thrt;
+			pthread_create(&thrt, NULL, (void *(*)(void*))&_tracker, NULL);
 #endif
 		};
 
 		Sleep(40);
-#if defined(WIN32)
-		_beginthread( (void(*)(void*))_timer, 0, NULL );
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+		_beginthread((void(*)(void*))_timer, 0, NULL);
 #else
 		pthread_t thrtt;
 		pthread_create(&thrtt, NULL, (void *(*)(void*))&_timer, NULL);
 #endif
 
-		int eor0 = 0, eor1 = 0, eor2 = 0, eor3 = 0;
 		stt->doEmitionChangeStatus("Scanning...");
 		sockstruct *st = NULL;
-		for(gC = 0; gC < flCounter; ++gC)
+		for (gC = 0; gC < flCounter; ++gC)
 		{
 			strcpy(metaRange, std::to_string(ipsstartfl[gC][0]).c_str());
 			strcat(metaRange, ".");
@@ -2567,79 +2647,153 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 			strcat(metaRange, ".");
 			strcat(metaRange, std::to_string(ipsendfl[gC][3]).c_str());
 			
-			eor0 = 0, eor1 = 0, eor2 = 0, eor3 = 0;
-			while ((eor0 == 0 || eor1 == 0 || eor2 == 0 || eor3 == 0) && globalScanFlag)			
-			{
-				if(globalScanFlag == false) break;
-				while(ipsstartfl[gC][0] < 256 && eor0 == 0)
-				{
-					if(globalScanFlag == false) break;
-					if(ipsstartfl[gC][0] == ipsendfl[gC][0]) eor0 = 1;
-					while(ipsstartfl[gC][1] < 256 && eor1 == 0)
-					{
-						if(globalScanFlag == false) break;
-						if(ipsstartfl[gC][1] == ipsendfl[gC][1] && eor0 == 1) eor1 = 1;
-						while(ipsstartfl[gC][2] < 256 && eor2 == 0)
-						{
-							if(globalScanFlag == false) break;
-							if(ipsstartfl[gC][2] == ipsendfl[gC][2] && eor1 == 1) eor2 = 1;
-							while(ipsstartfl[gC][3] < 256 && eor3 == 0)
-							{
-								if(globalScanFlag == false) break;
+			unsigned long ip1 = (ipsstartfl[gC][0] * 16777216) + (ipsstartfl[gC][1] * 65536) + (ipsstartfl[gC][2] * 256) + ipsstartfl[gC][3];
+			unsigned long ip2 = (ipsendfl[gC][0] * 16777216) + (ipsendfl[gC][1] * 65536) + (ipsendfl[gC][2] * 256) + ipsendfl[gC][3];
+
+			switch (gShuffle) {
+			case true: {
+						   std::vector<std::string> ipVec;
+						   struct in_addr tAddr;
+
+						   for (unsigned long i = ip1; i <= ip2; ++i) {
+							   if (globalScanFlag == false) break;
+							   int offset = ip2 - i;
+
+							   tAddr.s_addr = i;
+							   ipVec.push_back(std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1));
+
+							   if (ipVec.size() >= (offset < 1000 ? offset : 1000)) {
+
+								   std::random_shuffle(ipVec.begin(), ipVec.end());
+								   while (ipVec.size() != 0) {
+
+									   if (globalScanFlag == false) goto haters_gonna_hate_IM;
+									   st = new sockstruct();
+									   ZeroMemory(st->argv, sizeof(st->argv));
+
+									   while (cons >= gThreads) Sleep(500);
+									   ++indexIP;
+									   strcpy(st->argv, ipVec[0].c_str());
+									   strcpy(saveStartIP, ipVec[0].c_str());
+									   ipVec.erase(ipVec.begin());
+
+									   targetAndIPWriter(gTargets--, st->argv);
+									   ConInc();
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+									   _beginthread((void(*)(void*))_connect, 0, st);
+#else
+									   pthread_t thrc;
+									   pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
+#endif
+									   Sleep(gThreadDelay);
+								   }
+							   }
+						   }
+					   haters_gonna_hate_IM:;
+						   break;
+			}
+			case false: {
+							struct in_addr tAddr;
+							for (unsigned long i = ip1; i <= ip2; ++i) {
+								if (globalScanFlag == false) break;
 								st = new sockstruct();
 								ZeroMemory(st->argv, sizeof(st->argv));
 								ZeroMemory(res, sizeof(res));
-
-								while(cons >= gThreads) Sleep(300);
-
-								if(ipsstartfl[gC][3] == ipsendfl[gC][3] && eor2 == 1) eor3 = 1;
-
+								while (cons >= gThreads) Sleep(500);
 								++indexIP;
 
-								strcat(res, std::to_string(ipsstartfl[gC][0]).c_str());
-								strcat(res, ".");
-								strcat(res, std::to_string(ipsstartfl[gC][1]).c_str());
-								strcat(res, ".");
-								strcat(res, std::to_string(ipsstartfl[gC][2]).c_str());
-								strcat(res, ".");
-								strcat(res, std::to_string(ipsstartfl[gC][3]).c_str());
-								
+								tAddr.s_addr = i;
+								strcpy(res, (std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1)).c_str());
 								strcpy(st->argv, res);
 								strcpy(saveStartIP, res);
 
 								targetAndIPWriter(gTargets--, st->argv);
-
 								ConInc();
-#if defined(WIN32)
-								_beginthread( (void(*)(void*))_connect, 0, st );
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+								_beginthread((void(*)(void*))_connect, 0, st);
 #else
 								pthread_t thrc;
-								pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st );
+								pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
 #endif
 								Sleep(gThreadDelay);
-								if(ipsstartfl[gC][3] == 255) break;
-								if(ipsstartfl[gC][3] <= ipsendfl[gC][3]) ++ipsstartfl[gC][3];
-							};
-							ipsstartfl[gC][3] = 0;
-							if(ipsstartfl[gC][2] == 255) break;
-							if(ipsstartfl[gC][2] <= ipsendfl[gC][2]) ++ipsstartfl[gC][2];
-						};
-						ipsstartfl[gC][3] = 0;
-						ipsstartfl[gC][2] = 0;
-						if(ipsstartfl[gC][1] == 255) break;
-						if(ipsstartfl[gC][1] <= ipsendfl[gC][1]) ++ipsstartfl[gC][1];
-					};	
-					ipsstartfl[gC][3] = 0;
-					ipsstartfl[gC][2] = 0;
-					ipsstartfl[gC][1] = 0;
-					if(ipsstartfl[gC][0] == 255) break;
-					if(ipsstartfl[gC][0] <= ipsendfl[gC][0]) ++ipsstartfl[gC][0];
-				};
-				ipsstartfl[gC][3] = 0;
-				ipsstartfl[gC][2] = 0;
-				ipsstartfl[gC][1] = 0;
+
+							}
+							break;
+							/*int eor0 = 0, eor1 = 0, eor2 = 0, eor3 = 0;
+							while ((eor0 == 0 || eor1 == 0 || eor2 == 0 || eor3 == 0) && globalScanFlag)
+							{
+								if (globalScanFlag == false) break;
+								while (ipsstartfl[gC][0] < 256 && eor0 == 0)
+								{
+									if (globalScanFlag == false) break;
+									if (ipsstartfl[gC][0] == ipsendfl[gC][0]) eor0 = 1;
+									while (ipsstartfl[gC][1] < 256 && eor1 == 0)
+									{
+										if (globalScanFlag == false) break;
+										if (ipsstartfl[gC][1] == ipsendfl[gC][1] && eor0 == 1) eor1 = 1;
+										while (ipsstartfl[gC][2] < 256 && eor2 == 0)
+										{
+											if (globalScanFlag == false) break;
+											if (ipsstartfl[gC][2] == ipsendfl[gC][2] && eor1 == 1) eor2 = 1;
+											while (ipsstartfl[gC][3] < 256 && eor3 == 0)
+											{
+												if (globalScanFlag == false) break;
+												st = new sockstruct();
+												ZeroMemory(st->argv, sizeof(st->argv));
+												ZeroMemory(res, sizeof(res));
+
+												while (cons >= gThreads) Sleep(300);
+
+												if (ipsstartfl[gC][3] == ipsendfl[gC][3] && eor2 == 1) eor3 = 1;
+
+												++indexIP;
+
+												strcat(res, std::to_string(ipsstartfl[gC][0]).c_str());
+												strcat(res, ".");
+												strcat(res, std::to_string(ipsstartfl[gC][1]).c_str());
+												strcat(res, ".");
+												strcat(res, std::to_string(ipsstartfl[gC][2]).c_str());
+												strcat(res, ".");
+												strcat(res, std::to_string(ipsstartfl[gC][3]).c_str());
+
+												strcpy(st->argv, res);
+												strcpy(saveStartIP, res);
+
+												targetAndIPWriter(gTargets--, st->argv);
+
+												ConInc();
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+												_beginthread((void(*)(void*))_connect, 0, st);
+#else
+												pthread_t thrc;
+												pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
+#endif
+												Sleep(gThreadDelay);
+												if (ipsstartfl[gC][3] == 255) break;
+												if (ipsstartfl[gC][3] <= ipsendfl[gC][3]) ++ipsstartfl[gC][3];
+											};
+											ipsstartfl[gC][3] = 0;
+											if (ipsstartfl[gC][2] == 255) break;
+											if (ipsstartfl[gC][2] <= ipsendfl[gC][2]) ++ipsstartfl[gC][2];
+										};
+										ipsstartfl[gC][3] = 0;
+										ipsstartfl[gC][2] = 0;
+										if (ipsstartfl[gC][1] == 255) break;
+										if (ipsstartfl[gC][1] <= ipsendfl[gC][1]) ++ipsstartfl[gC][1];
+									};
+									ipsstartfl[gC][3] = 0;
+									ipsstartfl[gC][2] = 0;
+									ipsstartfl[gC][1] = 0;
+									if (ipsstartfl[gC][0] == 255) break;
+									if (ipsstartfl[gC][0] <= ipsendfl[gC][0]) ++ipsstartfl[gC][0];
+								};
+								ipsstartfl[gC][3] = 0;
+								ipsstartfl[gC][2] = 0;
+								ipsstartfl[gC][1] = 0;
+							};*/
 			};
-		};
+			}
+		}
 	}
 	else
 	{

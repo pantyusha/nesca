@@ -13,7 +13,7 @@ extern volatile int BA, cons, BrutingThrds, gThreads;
 extern char **loginLst, **passLst, **wfLoginLst, **wfPassLst, **sshlpLst, **GlobalNegatives;
 extern bool trackerOK, __savingBackUpFile, globalScanFlag, MapWidgetOpened,
 	widgetIsHidden, OnlineMsgSentFlag, utfIRCFlag, HTMLDebugMode, gNegDebugMode, 
-	gDebugMode, horLineFlag, gPingNScan;
+	gDebugMode, horLineFlag, gPingNScan, gShuffle;
 extern int found, indexIP, gMode, 
 	MaxPass, MaxLogin, MaxWFLogin, MaxWFPass, MaxSSHPass,
 	GlobalNegativeSize, isActive, gMaxBrutingThreads,

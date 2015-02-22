@@ -2825,7 +2825,8 @@ void nesca_3::ConnectEvrthng()
 	connect ( ui->importButton, SIGNAL( clicked() ), this, SLOT( importAndScan() ) );
 	connect ( ui->startScanButton_3, SIGNAL( clicked() ), this, SLOT( startScanButtonClicked() ) );
 	connect ( ui->startScanButton_4, SIGNAL( clicked() ), this, SLOT( startScanButtonClickedDNS() ) );
-	connect ( ui->trackerOnOff, SIGNAL( toggled(bool) ), this, SLOT( ChangeTrackerOK(bool) ) );
+	connect ( ui->shuffle_onoff, SIGNAL(toggled(bool)), this, SLOT(ChangeShuffle(bool)));
+	connect ( ui->trackerOnOff, SIGNAL(toggled(bool)), this, SLOT(ChangeTrackerOK(bool)));
 	connect ( ui->pingingOnOff, SIGNAL( toggled(bool) ), this, SLOT( ChangePingerOK(bool) ) );
 	connect ( ui->debugFileOnOff, SIGNAL( toggled(bool) ), this, SLOT( ChangeDebugFileState(bool) ) );
 	connect ( ui->importThreads, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelThreads_ValueChanged(QString) ) );
@@ -3332,7 +3333,7 @@ void _startMsgCheck()
 	pbPointerFont.setFamily("Eurostile");
 	pbPointerFont.setPixelSize(8);
 	
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	WSADATA wsda;
 	if (WSAStartup(0x0101, &wsda)) 
 	{
@@ -3389,7 +3390,7 @@ void nesca_3::exitButtonClicked()
 {
 	globalScanFlag = false;
 	stt->terminate();
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	WSACleanup();
 #endif
 	qApp->quit();
@@ -3406,6 +3407,10 @@ void nesca_3::trayButtonClicked()
 		hide();
 		tray->show();
 	};
+};
+void nesca_3::ChangeShuffle(bool val)
+{
+	gShuffle = val;
 };
 void nesca_3::ChangeTrackerOK(bool val)
 {

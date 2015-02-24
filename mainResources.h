@@ -1,17 +1,15 @@
 ﻿#pragma once
 #include "base64.h"
 
-#include <libssh\libssh.h>
-#if defined(Q_OS_WIN32)
+#include <libssh/libssh.h>
+#include <openssl/ssl.h>
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 #pragma once 
 #include "iostream"
 #include <time.h>
 #include <process.h>
 #include <conio.h>
-#include <openssl/ssl.h>
-#endif
-#if defined(Q_OS_LINUX)
-#pragma once
+#else
 #include <string>
 #include <iostream>
 #include <stdio.h>
@@ -36,16 +34,20 @@
 #define WSAGetLastError() errno
 #define closesocket(sock) ::close((sock))
 
+typedef unsigned int        DWORD;
+typedef void*               LPVOID;
+typedef void*               HANDLE;
 typedef unsigned int		UINT;
 typedef const char *		LPCSTR;
 typedef int					SOCKET;
 typedef				hostent HOSTENT;
 typedef struct		linger	LINGER;
 typedef int					BOOL;
+
 #define INVALID_SOCKET  (SOCKET)(~0)
-#define SOCKET_ERROR            (-1)
+#define SOCKET_ERROR    (-1)
 #define SD_BOTH         0x02
-#define FAR                 far
+#define FAR             far
 #endif
 
 #define MAX_ADDR_LEN 128

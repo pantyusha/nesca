@@ -212,9 +212,9 @@ int KeyCheckerMain()
 
 	if(strstr(msg, "202 Accepted") != NULL)
 	{
-#pragma region QTGUI_Area
+
 		stt->doEmitionGreenFoundData("[Key check] -OK. Key is valid!");
-#pragma endregion
+
 		CSSOCKET(sock);
 
 		if(emitIfOK == 0) stt->doEmitionStartScanIP();
@@ -224,11 +224,11 @@ int KeyCheckerMain()
 	}
 	else if(strstr(msg, "400 Bad Request") != NULL)
 	{
-#pragma region QTGUI_Area
+
 		QString errorDef = GetNSErrorDefinition(msg, "notify");
 		if(errorDef == "Invalid access key") stt->doEmitionYellowFoundData("[NS-Track] [Key is unauthorized] A valid key is required.");
 		else stt->doEmitionYellowFoundData("[NS-Track] -FAIL! [400 Bad Request : " + GetNSErrorDefinition(msg, "notify") + "]");
-#pragma endregion
+
 		CSSOCKET(sock);
 		return -1;
 	}
@@ -240,12 +240,12 @@ int KeyCheckerMain()
 	}
 	else
 	{
-#pragma region QTGUI_Area
+
 		char header[64] = {0};
 		getSubStrEx(msg, "http/1.1 ", "\r\n", header, 64);
 		stt->doEmitionYellowFoundData("[Key check] -FAIL! An error occured. (" + QString::number(WSAGetLastError()) + ") Header: <u>" + QString::fromLocal8Bit(header) + "</u>");
 		if(gDebugMode) stt->doEmitionDebugFoundData(QString(msg));
-#pragma endregion
+
 		CSSOCKET(sock);
 		return -1;
 	};
@@ -255,12 +255,12 @@ int KeyCheckerMain()
 	}
 	else
 	{
-#pragma region QTGUI_Area
+
 		stt->doEmitionRedFoundData("[Key check] -Balancer replied with invalid string.");
 		if(gDebugMode) stt->doEmitionDebugFoundData(QString(msg));
 		CSSOCKET(sock);
 		return -1;
-#pragma endregion
+
 	};
 };
 

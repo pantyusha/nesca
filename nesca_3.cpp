@@ -170,7 +170,7 @@ bool ME2ScanFlag = true, QoSScanFlag = false, VoiceScanFlag = false, PieStatFlag
 
 Ui::nesca_3Class *ui = new Ui::nesca_3Class;
 
-#pragma endregion
+
 void setSceneArea()
 {
 	delete ui->graphicsVoice;
@@ -1426,16 +1426,16 @@ void nesca_3::ConnectToIRCServer()
 		}
 		else
 		{
-#pragma region QTGUI_Area
+
 			ui->ircText->append("<span style=\"color:red;background-color:#313131;\">No IRC port specified!</span>");
-#pragma endregion
+
 		};
 	}
 	else
 	{
-#pragma region QTGUI_Area
+
 		ui->ircText->append("<span style=\"color:red;background-color:#313131;\">No IRC server specified!</span>");
-#pragma endregion
+
 	};
 };
 void nesca_3::ChangeIRCRawLog()
@@ -2514,7 +2514,7 @@ void nesca_3::smReaction()
 	};
 
 };
-#pragma endregion
+
 void nesca_3::IPScanSeq()
 {
 	if(ui->ipLine->text() != "")
@@ -2919,7 +2919,7 @@ void nesca_3::ConnectEvrthng()
 	connect ( psTh, SIGNAL(sUpdatePie()), this, SLOT(slotUpdatePie()) );
 	connect ( irc_nmb, SIGNAL(sBlinkMessage()), this, SLOT(slotBlinkMessage()) );
 };
-#pragma endregion
+
 
 void RestoreSession()
 {
@@ -2929,9 +2929,9 @@ void RestoreSession()
 
 	if(resFile != NULL)
 	{
-#pragma region QTGUI_Area
+
 		stt->doEmitionYellowFoundData("Previous session file found! Restoring...");
-#pragma endregion
+
 		while(fgets(resStr, 128, resFile) != NULL)
 		{
 			if(strstr(resStr, "[SESSION]:") != NULL)
@@ -3198,9 +3198,9 @@ void RestoreSession()
 		};
 		fclose(resFile);
 
-#pragma region QTGUI_Area
+
 		stt->doEmitionGreenFoundData("Previous session restored.");
-#pragma endregion
+
 	};
 }
 void CreateVerFile()
@@ -3338,10 +3338,10 @@ void _startMsgCheck()
 	WSADATA wsda;
 	if (WSAStartup(0x0101, &wsda)) 
 	{
-		#pragma region QTGUI_Area
+		
 		stt->doEmitionRedFoundData("WSAStartup failed.");
 		stt->doEmitionKillSttThread();
-		#pragma endregion
+		
 	};
 #endif
 
@@ -3829,7 +3829,7 @@ void nesca_3::appendDefaultIRCText(bool pm, bool hlflag, int cCode, QString str,
 		pos += colr.matchedLength();
 		thisIsUrl = true;
 	};
-#pragma endregion
+
 
 #pragma region Bold-handler
 	int posBold = 0;
@@ -3844,7 +3844,7 @@ void nesca_3::appendDefaultIRCText(bool pm, bool hlflag, int cCode, QString str,
 		posBold += boldr.matchedLength();
 		thisIsUrl = true;
 	};
-#pragma endregion
+
 
 #pragma region underline-handler
 	int posUnder = 0;
@@ -3859,7 +3859,7 @@ void nesca_3::appendDefaultIRCText(bool pm, bool hlflag, int cCode, QString str,
 		posUnder += under.matchedLength();
 		thisIsUrl = true;
 	};
-#pragma endregion
+
 	
 #pragma region link-handler
 	r.indexIn(str);
@@ -3871,7 +3871,7 @@ void nesca_3::appendDefaultIRCText(bool pm, bool hlflag, int cCode, QString str,
 		str.replace(r, "<a href=\"" + link.trimmed() + "\"><span style=\"color: #717171;\">" + link.trimmed() + "</span></a> ");
 		thisIsUrl = true;
 	};
-#pragma endregion
+
 	
 	str.replace("", "</font>");
 	str.replace("", "</font>");

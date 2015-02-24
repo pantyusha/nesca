@@ -141,9 +141,9 @@ void ConInc()
 	{
 		lock inc cons;
 	};
-	#pragma region QTGUI_Area
+	
 	stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
-	#pragma endregion
+	
 };
 void ConDec()
 {
@@ -154,9 +154,9 @@ void ConDec()
 			lock dec cons;
 		};
 	};
-	#pragma region QTGUI_Area
+	
 	stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
-	#pragma endregion
+	
 };
 void _SaveBackupToFile()
 {
@@ -411,10 +411,10 @@ void *_timer()
 		strcat(dbuffer, "d)");
 		strcat(timeLeft,  (strcmp(dbuffer, "1.$d)") == 0 ? "INF)" : dbuffer));
 
-#pragma region QTGUI_Area
+
 		stt->doEmitionIPS(QString(timeLeft));
 		stt->doEmitionOffline(QString::number(offlines));
-#pragma endregion
+
 		ZeroMemory(timeLeft, sizeof(timeLeft));
 		ZeroMemory(dbuffer, sizeof(dbuffer));
 		Sleep(1000);
@@ -463,18 +463,18 @@ void *_tracker()
 			if(connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr)) == -1)
 			{
 				CSSOCKET(sock);
-#pragma region QTGUI_Area
+
 				stt->doEmitionRedFoundData("[NS-Track] -Cannot connect to balancer! " + QString::number(WSAGetLastError()) + ".");
-#pragma endregion
+
 				continue;
 			};
 
 			if(send(sock, msg, strlen(msg), 0) == -1)
 			{
 				CSSOCKET(sock);
-#pragma region QTGUI_Area
+
 				stt->doEmitionRedFoundData("[NS-Track] -Cannot send to balancer! " + QString::number(WSAGetLastError()) + ".");
-#pragma endregion
+
 				continue;
 			};
 
@@ -497,9 +497,9 @@ void *_tracker()
 			if(test == -1)
 			{
 				CSSOCKET(sock);
-#pragma region QTGUI_Area
+
 				stt->doEmitionRedFoundData("[NS-Track] -Cannot recv from balancer! " + QString::number(WSAGetLastError()) + ".");
-#pragma endregion
+
 				continue;
 			};
 
@@ -515,19 +515,19 @@ void *_tracker()
 					if(ln > 64)
 					{
 						CSSOCKET(sock);
-#pragma region QTGUI_Area
+
 						stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
 						SaveErrorLog("NS-Track", msg, rBuffT);
-#pragma endregion
+
 						continue;
 					}
 					else strncpy(ndbServer, (char*)(t1 + strlen("http://")), ln);
 
 					if(strlen(t2) > 64)
 					{
-#pragma region QTGUI_Area
+
 						stt->doEmitionYellowFoundData("[NS-Track] -Fragmentation detected!");
-#pragma endregion
+
 						if(strstr(t2, "\r\n") != NULL)
 						{
 							char *t3 = strstr(t2, "\r\n");
@@ -536,9 +536,9 @@ void *_tracker()
 							if(y > 64)
 							{
 								CSSOCKET(sock);
-#pragma region QTGUI_Area
+
 								stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
-#pragma endregion
+
 								SaveErrorLog("NS-Track", msg, rBuffT);
 								continue;
 							}
@@ -546,18 +546,18 @@ void *_tracker()
 							{
 								strncpy(ndbScriptT, t2, y);
 								CSSOCKET(sock);
-#pragma region QTGUI_Area
+
 								stt->doEmitionGreenFoundData("[NS-Track] -OK! -Fragmented server string aquired! Starting NS-Track loop...");
-#pragma endregion
+
 								strncpy(ndbScript, ndbScriptT, strlen(ndbScriptT) );
 							};
 						}
 						else
 						{
 							CSSOCKET(sock);
-#pragma region QTGUI_Area
+
 							stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
-#pragma endregion
+
 							SaveErrorLog("NS-Track", msg, rBuffT);
 							continue;
 						};
@@ -565,9 +565,9 @@ void *_tracker()
 					else 
 					{
 						strcpy(ndbScriptT, t2);
-#pragma region QTGUI_Area
+
 						stt->doEmitionGreenFoundData("[NS-Track] -OK! -Server string aquired! Starting NS-Track loop...");
-#pragma endregion
+
 						CSSOCKET(sock);
 						strncpy(ndbScript, ndbScriptT, strlen(ndbScriptT) - 2 );
 					};
@@ -575,9 +575,9 @@ void *_tracker()
 				else
 				{
 					CSSOCKET(sock);
-#pragma region QTGUI_Area
+
 					stt->doEmitionRedFoundData("[NS-Track] -Cannot receive script value!");
-#pragma endregion
+
 					continue;
 				};
 
@@ -668,9 +668,9 @@ void *_tracker()
 						{
 							CSSOCKET(sock);
 
-#pragma region QTGUI_Area
+
 							stt->doEmitionRedFoundData("[NS-Track] -connect() returned " + QString::number(WSAGetLastError()) + ".");
-#pragma endregion
+
 							continue;
 						};
 
@@ -684,9 +684,9 @@ void *_tracker()
 						if(send(sock, msg, strlen(msg), 0) == -1)
 						{
 							CSSOCKET(sock);
-#pragma region QTGUI_Area
+
 							stt->doEmitionRedFoundData("[NS-Track] -send() returned " + QString::number(WSAGetLastError()) + ".");
-#pragma endregion
+
 							SaveErrorLog("NS-Track", msg, "");
 							continue;
 						};
@@ -729,29 +729,29 @@ void *_tracker()
 						if(test == -1)
 						{
 							CSSOCKET(sock);
-#pragma region QTGUI_Area
+
 							stt->doEmitionRedFoundData("[NS-Track] -recv() returned " + QString::number(WSAGetLastError()) + ".");
-#pragma endregion
+
 							SaveErrorLog("NS-Track", msg, "");
 							continue;
 						};
 
 						if(strstr(rBuffT, "201 Created") != NULL)
 						{
-#pragma region QTGUI_Area
+
 							if(gDebugMode) stt->doEmitionYellowFoundData("[NS-Track] -OK. Data saved!");
 							stt->doEmitionDataSaved(true);
 							Sleep(1000);
 							stt->doEmitionDataSaved(false);
-#pragma endregion
+
 						}
 						else if(strstr(rBuffT, "400 Bad Request") != NULL)
 						{
-#pragma region QTGUI_Area
+
 							QString errorDef = GetNSErrorDefinition(rBuffT, "notify");
 							if(errorDef == "Invalid access key") stt->doEmitionYellowFoundData("[NS-Track] [Key is unauthorized] A valid key is required.");
 							else stt->doEmitionYellowFoundData("[NS-Track] -FAIL! [400 Bad Request : " + errorDef + "]");
-#pragma endregion
+
 							SaveErrorLog("NS-Track", msg, rBuffT);
 						}
 						else
@@ -868,7 +868,7 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[])
 //	//		};
 //	//	};
 //	//};
-//#pragma endregion
+//
 //
 //	return res;
 //};
@@ -913,10 +913,10 @@ void targetAndIPWriter(unsigned long int target, char *buff)
 	strcpy(curIPBuff, "--->");
 	strcat(curIPBuff, buff);
 		
-		#pragma region QTGUI_Area
+		
 		stt->doEmitionIPRANGE(QString(curIPBuff));
 		stt->doEmitionTargetsLeft(QString(targetNPers));
-		#pragma endregion
+		
 };
 void _passLoginFapper()
 {
@@ -971,9 +971,9 @@ void _passLoginFapper()
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
-	#pragma region QTGUI_Area
+	
 		stt->doEmitionGreenFoundData("Password list loaded (" + QString(std::to_string(MaxPass).c_str()) + " entries)");
-	#pragma endregion
+	
 
 		i = 0;
 
@@ -986,19 +986,19 @@ void _passLoginFapper()
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
-		#pragma region QTGUI_Area
+		
 		stt->doEmitionGreenFoundData("Login list loaded (" + QString(std::to_string(MaxLogin).c_str()) + " entries)");
-		#pragma endregion
+		
 
 		fclose(loginList);
 		fclose(passList);
 	} 
 	else 
 	{
-		#pragma region QTGUI_Area
+		
 		stt->doEmitionRedFoundData("No password/login list found");
 		stt->doEmitionKillSttThread();
-		#pragma endregion
+		
 	};
 
 	MaxWFLogin = 0;
@@ -1052,9 +1052,9 @@ void _passLoginFapper()
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
-	#pragma region QTGUI_Area
+	
 		stt->doEmitionGreenFoundData("WFPassword list loaded (" + QString(std::to_string(MaxWFPass).c_str()) + " entries)");
-	#pragma endregion
+	
 
 		i = 0;
 
@@ -1067,19 +1067,19 @@ void _passLoginFapper()
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
-		#pragma region QTGUI_Area
+		
 		stt->doEmitionGreenFoundData("WFLogin list loaded (" + QString(std::to_string(MaxWFLogin).c_str()) + " entries)");
-		#pragma endregion
+		
 
 		fclose(wfLoginList);
 		fclose(wfLoginList);
 	} 
 	else 
 	{
-		#pragma region QTGUI_Area
+		
 		stt->doEmitionRedFoundData("No password/login list found");
 		stt->doEmitionKillSttThread();
-		#pragma endregion
+		
 	};
 
 #pragma region SSHPASS
@@ -1118,24 +1118,24 @@ void _passLoginFapper()
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
-	#pragma region QTGUI_Area
+	
 		stt->doEmitionGreenFoundData("SSH Password list loaded (" + QString(std::to_string(MaxSSHPass).c_str()) + " entries)");
-	#pragma endregion
+	
 		
 		fclose(sshlpList);
 	} 
 	else 
 	{
-		#pragma region QTGUI_Area
+		
 		stt->doEmitionRedFoundData("No password/login list found");
 		stt->doEmitionKillSttThread();
-		#pragma endregion
+		
 	};
-#pragma endregion
 
-	#pragma region QTGUI_Area
+
+	
 	stt->doEmitionYellowFoundData("BA: ~" + QString(std::to_string(MaxLogin * MaxPass/gTimeOut/60).c_str()) + "; WF: ~" + QString(std::to_string(MaxWFLogin * MaxWFPass/gTimeOut/60).c_str()) + "; SSH: ~" + QString(std::to_string(MaxSSHPass/gTimeOut/60).c_str()));
-	#pragma endregion
+	
 };
 void ReadUTF8(FILE* nFile, char *cp)
 {
@@ -1231,19 +1231,19 @@ void ReadUTF8(FILE* nFile, char *cp)
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
-		#pragma region QTGUI_Area
+		
 		stt->doEmitionGreenFoundData("Negative list loaded (" + QString::number(GlobalNegativeSize) + " entries)");
-		#pragma endregion
+		
 		ZeroMemory(buffFG, sizeof(buffFG));
 
 		fclose(nFile);
 	}
 	else
 	{
-		#pragma region QTGUI_Area
+		
 		stt->doEmitionRedFoundData("No negative list found");
 		stt->doEmitionKillSttThread();
-		#pragma endregion
+		
 	};
 }
 #ifdef WIN32
@@ -1341,10 +1341,10 @@ void CheckMaskBits(char *res, int index)
 	}
 	else
 	{
-#pragma region QTGUI_Area
+
 				stt->doEmitionRedFoundData("[CheckMaskBits] Cannot parse IP list");
 				stt->doEmitionKillSttThread();
-#pragma endregion
+
 	};
 };
 void GetOctets(char *curIP)
@@ -2225,7 +2225,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 		};
 #endif
 		Sleep(gThreadDelay);
-#pragma endregion
+
 	};
 };
 
@@ -2275,10 +2275,10 @@ int startScan(char* args)
 	int resInit = fInit(gMode, gRange);
 	if(resInit == -1 ) 
 	{
-		#pragma region QTGUI_Area
+		
 		stt->doEmitionRedFoundData("[Error] fInit failure");
 		stt->doEmitionKillSttThread();
-		#pragma endregion
+		
 		return -1;
 	};
 
@@ -2797,26 +2797,26 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 	}
 	else
 	{
-#pragma region QTGUI_Area
+
 		stt->doEmitionRedFoundData("Wrong parameters.");
-#pragma endregion
+
 	};
 
 	Sleep(gTimeOut + 1);
-	#pragma region QTGUI_Area
+	
 	stt->doEmitionYellowFoundData("Stopping threads...");
 	stt->doEmitionChangeStatus("Stopping...");
-	#pragma endregion
+	
 	
 	while(cons > 0 || isActive == 1 || jsonArr->size() > 0) Sleep(2000);
 
 	nCleanup();
-	#pragma region QTGUI_Area
+	
 	stt->doEmitionGreenFoundData("Done. Saved: " + QString::number(saved) + "; Alive: " + QString::number(found) + ".");
 	stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
 	stt->doEmitionChangeStatus("Idle");
 	stt->doEmitionKillSttThread();
-	#pragma endregion
+	
 };
 
 void nCleanup(){

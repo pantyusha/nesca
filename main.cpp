@@ -1,8 +1,8 @@
 #include "nesca_3.h"
 #include <QApplication>
+#include <qfontdatabase.h>
 #if defined(Q_OS_WIN32)
 #include <windows.h>
-#include <qfontdatabase.h>
 #endif
 
 //--Fixing _ITERATOR_DEBUG_LEVEL 0!=2

@@ -17,9 +17,9 @@ void IRCPinger_Th::run()
 	{
 		if(globalPinger >= 360) //6min timeout
 		{
-#pragma region QTGUI_Area
+
 			ircPTh->doEmitChangeRedIRCData("-//- Ping timeout. Reconnecting... ");
-#pragma endregion
+
 
 			ircPTh->doEmitRestartIRC();
 			globalPinger = 0;

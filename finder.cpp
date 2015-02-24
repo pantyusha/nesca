@@ -2568,22 +2568,28 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 			if(temp2 != NULL)
 			{
 				res = temp2 - temp - 10;
-				char newLoc[128] = {0};
+				char newLoc[256] = {0};
 				char *tmp = strstr(temp, "/");
 
 				if(tmp != NULL)
 				{
-					strncat(newLoc, temp + 10, res < 128 ? res : 127);			
+					strncat(newLoc, temp + 10, res < 256 ? res : 255);
 					if(strstri(newLoc, "http://") == NULL && strstri(newLoc, "https://") == NULL)
 					{
 						if(newLoc[0] != '.')
 						{
 							if(newLoc[0] != '/')
 							{
-								char tnewLoc[128] = {0};
+								int sz = strlen(newLoc);
+								if (sz > 255)
+								{
+									stt->doEmitionRedFoundData("Huge redirect string detected! " + QString(ip) + ":" + QString::number(port));
+									sz = 255;
+								};
+								char tnewLoc[256] = {0};
 								strcpy(tnewLoc, "/");
-								strcat(tnewLoc, newLoc);
-								strcpy(newLoc, tnewLoc);
+								strncat(tnewLoc, newLoc, sz);
+								strncpy(newLoc, tnewLoc, sz);
 							};
 						};
 					};

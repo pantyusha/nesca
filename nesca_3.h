@@ -9,8 +9,8 @@
 #include <QGraphicsScene> 
 #include <QGraphicsItem>
 #include "ui_nesca_3.h"
-#include <QSystemTrayIcon.h>
-#include <QtGui\qevent.h>
+#include <QSystemTrayIcon>
+#include <QtGui/qevent.h>
 #include <qthread.h>
 #include <qdatetime.h>
 #include <qjsonobject.h>
@@ -18,7 +18,8 @@
 #include <qjsonarray.h>
 #include <qtextcodec.h>
 #include <qjsondocument.h>
-#include <libssh\libssh.h>
+#include <libssh/libssh.h>
+#include <mainResources.h>
 
 extern Ui::nesca_3Class *ui;
 extern bool widgetIsHidden, IRCLogToggled, BALogSwitched, blinkFlag, disableBlink, debugFileOK, QOSWait,
@@ -192,7 +193,7 @@ protected:
             move(x()+delta.x(), y()+delta.y());
             oldPos = evt->globalPos();
         }	
-        void mouseReleaseEvent(QMouseEvent *evt)
+        void mouseReleaseEvent()
         {
 			if(switchWindows)
 			{

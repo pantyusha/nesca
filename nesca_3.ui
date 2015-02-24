@@ -1,0 +1,3891 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>nesca_3Class</class>
+ <widget class="QMainWindow" name="nesca_3Class">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>500</width>
+    <height>400</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>500</width>
+    <height>800</height>
+   </size>
+  </property>
+  <property name="mouseTracking">
+   <bool>true</bool>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
+  <property name="windowTitle">
+   <string>NESCA 3</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="nesca_3.qrc">
+    <normaloff>:/nesca_3/Z:/nesca.ico</normaloff>:/nesca_3/Z:/nesca.ico</iconset>
+  </property>
+  <property name="windowOpacity">
+   <double>1.000000000000000</double>
+  </property>
+  <property name="toolTip">
+   <string notr="true"/>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgba(49, 49, 49,0);</string>
+  </property>
+  <property name="windowFilePath">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QWidget" name="widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>500</width>
+      <height>800</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255));</string>
+    </property>
+    <widget class="QTabWidget" name="tabMainWidget">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>481</width>
+       <height>161</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 0.4px solid #818181;background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="tabPosition">
+      <enum>QTabWidget::North</enum>
+     </property>
+     <property name="tabShape">
+      <enum>QTabWidget::Rounded</enum>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <property name="elideMode">
+      <enum>Qt::ElideMiddle</enum>
+     </property>
+     <property name="usesScrollButtons">
+      <bool>false</bool>
+     </property>
+     <property name="documentMode">
+      <bool>true</bool>
+     </property>
+     <property name="tabsClosable">
+      <bool>false</bool>
+     </property>
+     <property name="movable">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>IP Scan</string>
+      </attribute>
+      <widget class="QPushButton" name="startScanButton_3">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>110</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="ipLine">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>20</y>
+         <width>221</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>1.1.1.1-255.255.255.255</string>
+       </property>
+       <property name="maxLength">
+        <number>31</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>000.000.000.000-255.255.255.255</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="portLine">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>50</y>
+         <width>221</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>80,81,88,8080,8081,60001,60002,8008,8888,554,9000,441,4111,6667,3536,22,21</string>
+       </property>
+       <property name="maxLength">
+        <number>4096</number>
+       </property>
+       <property name="placeholderText">
+        <string>80,81,8080,8888,21,6667,7000</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="threadLine">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>80</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>200</string>
+       </property>
+       <property name="maxLength">
+        <number>3</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>100</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelIPRange">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>20</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>IP RANGE</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelIPPorts">
+       <property name="geometry">
+        <rect>
+         <x>54</x>
+         <y>50</y>
+         <width>34</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>PORTS</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelIPThreads">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>80</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>THREADS</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelIPTO">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>80</y>
+         <width>46</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>TIMEOUT</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="iptoLine_value">
+       <property name="geometry">
+        <rect>
+         <x>280</x>
+         <y>80</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>3</string>
+       </property>
+       <property name="maxLength">
+        <number>3</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>100</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="restoreDefaultPorts1">
+       <property name="geometry">
+        <rect>
+         <x>337</x>
+         <y>52</y>
+         <width>67</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Restore default ports</string>
+       </property>
+       <property name="whatsThis">
+        <string>Restore default ports</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+       </property>
+       <property name="text">
+        <string>:Default ports</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab_5">
+      <attribute name="title">
+       <string>DNS Scan</string>
+      </attribute>
+      <widget class="QLineEdit" name="lineEditStartIPDNS">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>20</y>
+         <width>221</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);</string>
+       </property>
+       <property name="text">
+        <string>[09][az][0-]</string>
+       </property>
+       <property name="maxLength">
+        <number>128</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>[09][az][0-][09][az][0-]</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="startScanButton_4">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>110</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineILVL">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>20</y>
+         <width>71</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);</string>
+       </property>
+       <property name="text">
+        <string>.mobi</string>
+       </property>
+       <property name="maxLength">
+        <number>128</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>.mobi</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEditPort">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>50</y>
+         <width>221</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);</string>
+       </property>
+       <property name="text">
+        <string>80,81,88,8080,8081,60001,60002,8008,8888,554,9000,441,4111,6667,3536,22,21</string>
+       </property>
+       <property name="maxLength">
+        <number>4096</number>
+       </property>
+       <property name="placeholderText">
+        <string>80,81,8080,8888,21,6667,7000</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEditThread">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>80</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);</string>
+       </property>
+       <property name="text">
+        <string>30</string>
+       </property>
+       <property name="maxLength">
+        <number>3</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>100</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelDNSRange">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>20</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>DNS RANGE</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelDNSPorts">
+       <property name="geometry">
+        <rect>
+         <x>54</x>
+         <y>50</y>
+         <width>34</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>PORTS</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelDNSThreads">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>80</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>THREADS</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelIPTO_2">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>80</y>
+         <width>46</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>TIMEOUT</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="iptoLine_value_2">
+       <property name="geometry">
+        <rect>
+         <x>280</x>
+         <y>80</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>2</string>
+       </property>
+       <property name="maxLength">
+        <number>3</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>100</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="restoreDefaultPorts2">
+       <property name="geometry">
+        <rect>
+         <x>337</x>
+         <y>52</y>
+         <width>67</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Restore default ports</string>
+       </property>
+       <property name="whatsThis">
+        <string>Restore default ports</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+       </property>
+       <property name="text">
+        <string>:Default ports</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab_6">
+      <attribute name="title">
+       <string>Import</string>
+      </attribute>
+      <widget class="QPushButton" name="importButton">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>110</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Import&amp;&amp;Scan</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelIpRange_9">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>0</y>
+         <width>253</width>
+         <height>37</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgba(2, 2, 2, 0);
+color: rgb(214, 214, 0);</string>
+       </property>
+       <property name="text">
+        <string>Please, read about the import file in do_not_read.txt.</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="importThreads">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>80</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);</string>
+       </property>
+       <property name="text">
+        <string>200</string>
+       </property>
+       <property name="maxLength">
+        <number>3</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>100</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="importPorts">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>50</y>
+         <width>221</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);</string>
+       </property>
+       <property name="text">
+        <string>80,81,88,8080,8081,60001,60002,8008,8888,554,9000,441,4111,6667,3536,22,21</string>
+       </property>
+       <property name="placeholderText">
+        <string>80,81,8080,8888,21,6667,7000</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelDNSThreads_2">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>80</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>THREADS</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelDNSPorts_2">
+       <property name="geometry">
+        <rect>
+         <x>54</x>
+         <y>50</y>
+         <width>33</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>PORTS</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelIPTO_3">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>80</y>
+         <width>46</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>TIMEOUT</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="iptoLine_value_3">
+       <property name="geometry">
+        <rect>
+         <x>280</x>
+         <y>80</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>3</string>
+       </property>
+       <property name="maxLength">
+        <number>3</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>100</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="restoreDefaultPorts3">
+       <property name="geometry">
+        <rect>
+         <x>337</x>
+         <y>52</y>
+         <width>67</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Restore default ports</string>
+       </property>
+       <property name="whatsThis">
+        <string>Restore default ports</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+       </property>
+       <property name="text">
+        <string>:Default ports</string>
+       </property>
+      </widget>
+      <widget class="QGraphicsView" name="pbgv">
+       <property name="geometry">
+        <rect>
+         <x>437</x>
+         <y>20</y>
+         <width>26</width>
+         <height>102</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:rgb(38, 38, 38);
+border: 1px solid rgb(227, 227, 227);
+border-radius: 3px;</string>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>NS-Track</string>
+      </attribute>
+      <widget class="QCheckBox" name="trackerOnOff">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>100</y>
+         <width>208</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string>d3w.org database (NDB) collects all found sites for structuring and further analysis.</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>Send results to NescaDatabase</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineTrackerScr">
+       <property name="geometry">
+        <rect>
+         <x>250</x>
+         <y>10</y>
+         <width>121</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>/go/</string>
+       </property>
+       <property name="maxLength">
+        <number>256</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>Balancer script</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineTrackerSrv">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>10</y>
+         <width>211</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>balancer.d3w.org</string>
+       </property>
+       <property name="maxLength">
+        <number>256</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>Balancer url</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="linePersKey">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>35</y>
+         <width>341</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56); border:none;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="maxLength">
+        <number>32</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>Your personal key here</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="trcSrvPortLine">
+       <property name="geometry">
+        <rect>
+         <x>379</x>
+         <y>10</y>
+         <width>62</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>80</string>
+       </property>
+       <property name="maxLength">
+        <number>5</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>Balancer port here</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="checkKeyBut">
+       <property name="geometry">
+        <rect>
+         <x>380</x>
+         <y>35</y>
+         <width>61</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Check key</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="debugFileOnOff">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>116</y>
+         <width>276</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string/>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>[DEBUG] Write main output to file &quot;./logs/output.txt&quot;</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="pingingOnOff">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>84</y>
+         <width>75</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string>Ping hosts before connection attempts. (For bad internet-providers)</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>Ping hosts:</string>
+       </property>
+       <property name="shortcut">
+        <string>Ctrl+S</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="PingTO">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>108</x>
+         <y>86</y>
+         <width>51</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(116, 116, 116);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>2000</string>
+       </property>
+       <property name="maxLength">
+        <number>5</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>100</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>163</x>
+         <y>85</y>
+         <width>17</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>ms</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="threadDelayBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>390</x>
+         <y>69</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>10</string>
+       </property>
+       <property name="maxLength">
+        <number>5</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>100</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>69</y>
+         <width>68</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>Thread delay:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="MaxBrutingThrLabel">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>84</y>
+         <width>62</width>
+         <height>26</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>7</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>Max bruting
+ threads:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="maxBrutingThrBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>390</x>
+         <y>89</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>200</string>
+       </property>
+       <property name="maxLength">
+        <number>3</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>100</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="shuffle_onoff">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>68</y>
+         <width>100</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string>Shuffle ip-ranges before scan.</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+       </property>
+       <property name="text">
+        <string>Shuffle ip ranges</string>
+       </property>
+       <property name="shortcut">
+        <string>Ctrl+S</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QLabel" name="labelNesca_3">
+     <property name="geometry">
+      <rect>
+       <x>95</x>
+       <y>10</y>
+       <width>306</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <weight>75</weight>
+       <bold>true</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="mouseTracking">
+      <bool>true</bool>
+     </property>
+     <property name="acceptDrops">
+      <bool>true</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>NESCA 3 :: Revealing the Unseen Horizon</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::PlainText</enum>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="Line" name="line">
+     <property name="windowModality">
+      <enum>Qt::NonModal</enum>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>480</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: white;background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="exitButton">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>10</y>
+       <width>10</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>X</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelIpRange">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>230</y>
+       <width>61</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>Current IP:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelThreads">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>260</y>
+       <width>61</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>Threads:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelBaThreads">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>290</y>
+       <width>71</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>Brute threads:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelIpRange_Value">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>230</y>
+       <width>331</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>--</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelThreads_Value">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>260</y>
+       <width>81</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>0/0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelBAThreads_Value">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>290</y>
+       <width>61</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelIPS">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>350</y>
+       <width>61</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>IP/s:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelIPS_Value">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>350</y>
+       <width>106</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QTextBrowser" name="dataText">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>445</y>
+       <width>453</width>
+       <height>326</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Consolas</family>
+       <stylestrategy>PreferDefault</stylestrategy>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(26, 26,26); border: 1px solid white;</string>
+     </property>
+     <property name="locale">
+      <locale language="Japanese" country="Japan"/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="undoRedoEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Consolas'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="cursorWidth">
+      <number>5</number>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::TextBrowserInteraction</set>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+     <property name="openLinks">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelParsed">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>375</y>
+       <width>73</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="text">
+      <string>Saved/Online:</string>
+     </property>
+     <property name="wordWrap">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelParsed_Value">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>375</y>
+       <width>108</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>0/0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelStatus">
+     <property name="geometry">
+      <rect>
+       <x>11</x>
+       <y>783</y>
+       <width>41</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="text">
+      <string>Status:</string>
+     </property>
+     <property name="wordWrap">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelStatus_Value">
+     <property name="geometry">
+      <rect>
+       <x>51</x>
+       <y>783</y>
+       <width>101</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>Idle</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelTargetsLeft">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>320</y>
+       <width>61</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>Targets:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelTargetsLeft_Value">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>320</y>
+       <width>114</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line_2">
+     <property name="windowModality">
+      <enum>Qt::NonModal</enum>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>210</y>
+       <width>480</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: white;background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="graphicLog">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>265</y>
+       <width>270</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(26, 26,26); border: 1px solid white;</string>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="RedLabel">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>235</x>
+       <y>370</y>
+       <width>8</width>
+       <height>5</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: red; visible: false;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="YellowLabel">
+     <property name="geometry">
+      <rect>
+       <x>235</x>
+       <y>400</y>
+       <width>8</width>
+       <height>5</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: #52b4e5;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="GreenLabel">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>370</y>
+       <width>8</width>
+       <height>5</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: green;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="BlueLabel">
+     <property name="geometry">
+      <rect>
+       <x>235</x>
+       <y>385</y>
+       <width>8</width>
+       <height>5</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: blue;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="CyanLabel">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>385</y>
+       <width>8</width>
+       <height>5</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 85, 0);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="PinkLabel">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>400</y>
+       <width>8</width>
+       <height>5</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: violet;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelAnomaly">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>368</y>
+       <width>91</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::RightToLeft</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>Anomalies</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::AutoText</enum>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelBA">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>383</y>
+       <width>61</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>Basic Auth</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelFiltered">
+     <property name="geometry">
+      <rect>
+       <x>385</x>
+       <y>383</y>
+       <width>51</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>Suspicious</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelBads">
+     <property name="geometry">
+      <rect>
+       <x>385</x>
+       <y>368</y>
+       <width>91</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>WebForms</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelOverloads">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>398</y>
+       <width>51</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>Overloads</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelLowloads">
+     <property name="geometry">
+      <rect>
+       <x>385</x>
+       <y>398</y>
+       <width>61</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>Lowloads</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="logoLabel">
+     <property name="geometry">
+      <rect>
+       <x>11</x>
+       <y>10</y>
+       <width>21</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border:none; background-color:black;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="nesca_3.qrc">
+       <normaloff>:/nesca_3/Z:/nesca.ico</normaloff>:/nesca_3/Z:/nesca.ico</iconset>
+     </property>
+    </widget>
+    <widget class="QLabel" name="WhiteLabel">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>415</y>
+       <width>8</width>
+       <height>5</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: white;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelAlives">
+     <property name="geometry">
+      <rect>
+       <x>385</x>
+       <y>413</y>
+       <width>61</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>Alive</string>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="graphicLog_2">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>265</y>
+       <width>270</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border:none;background-color: rgba(26, 26,26, 0);</string>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="renderHints">
+      <set>QPainter::HighQualityAntialiasing|QPainter::TextAntialiasing</set>
+     </property>
+     <property name="cacheMode">
+      <set>QGraphicsView::CacheNone</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="me2ScanBut">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>253</y>
+       <width>60</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+     </property>
+     <property name="text">
+      <string>:ME2 mode</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="QoSScanBut">
+     <property name="geometry">
+      <rect>
+       <x>281</x>
+       <y>253</y>
+       <width>60</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(130, 130, 130);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(130, 130, 130, 80);</string>
+     </property>
+     <property name="text">
+      <string>:QoS  mode</string>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="graphicDelim">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>265</y>
+       <width>270</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border:none;background-color: rgba(26, 26,26, 0);</string>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="graphicLog_Upper">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>265</y>
+       <width>270</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border:none;background-color: rgba(26, 26,26, 0);</string>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="renderHints">
+      <set>QPainter::TextAntialiasing</set>
+     </property>
+     <property name="cacheMode">
+      <set>QGraphicsView::CacheNone</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelBadAddr">
+     <property name="geometry">
+      <rect>
+       <x>19</x>
+       <y>405</y>
+       <width>73</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="text">
+      <string>Offline:</string>
+     </property>
+     <property name="wordWrap">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelOffline_Value">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>405</y>
+       <width>71</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QTextBrowser" name="BAText">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>445</y>
+       <width>453</width>
+       <height>326</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(26, 26,26); color:rgb(83, 83, 83);border: 1px solid white;</string>
+     </property>
+     <property name="locale">
+      <locale language="Chinese" country="China"/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="undoRedoEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="cursorWidth">
+      <number>5</number>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="switcherBut">
+     <property name="geometry">
+      <rect>
+       <x>480</x>
+       <y>500</y>
+       <width>16</width>
+       <height>205</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Brute activity</string>
+     </property>
+     <property name="whatsThis">
+      <string>Brute activity</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid rgb(216, 216, 216);
+color: rgb(216, 216, 216);
+background-color: #000000;</string>
+     </property>
+     <property name="text">
+      <string>&lt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelTracker">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>783</y>
+       <width>45</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="text">
+      <string>NS-Track:</string>
+     </property>
+     <property name="wordWrap">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="graphicActivityGrid">
+     <property name="geometry">
+      <rect>
+       <x>373</x>
+       <y>780</y>
+       <width>100</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border:1px solid white;background-color: rgba(26, 26,26, 0);</string>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="renderHints">
+      <set>QPainter::Antialiasing|QPainter::HighQualityAntialiasing|QPainter::TextAntialiasing</set>
+     </property>
+     <property name="cacheMode">
+      <set>QGraphicsView::CacheNone</set>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="graphicActivity">
+     <property name="geometry">
+      <rect>
+       <x>373</x>
+       <y>780</y>
+       <width>100</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border:none;background-color: rgba(26, 26,26, 0);</string>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="renderHints">
+      <set>QPainter::Antialiasing|QPainter::HighQualityAntialiasing|QPainter::TextAntialiasing</set>
+     </property>
+     <property name="cacheMode">
+      <set>QGraphicsView::CacheNone</set>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="graphicTextPlacer">
+     <property name="geometry">
+      <rect>
+       <x>162</x>
+       <y>265</y>
+       <width>328</width>
+       <height>181</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border:none;background-color: rgba(26, 26,26, 0);</string>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="renderHints">
+      <set>QPainter::HighQualityAntialiasing</set>
+     </property>
+     <property name="cacheMode">
+      <set>QGraphicsView::CacheNone</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="VoiceScanBut">
+     <property name="geometry">
+      <rect>
+       <x>342</x>
+       <y>253</y>
+       <width>60</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(130, 130, 130);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(130, 130, 130, 80);</string>
+     </property>
+     <property name="text">
+      <string>:Voice mode</string>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="graphicsVoice">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>265</y>
+       <width>270</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border:1px white solid;background-color: rgba(26, 26,26, 0);</string>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="renderHints">
+      <set>QPainter::TextAntialiasing</set>
+     </property>
+     <property name="cacheMode">
+      <set>QGraphicsView::CacheNone</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="clearLogBut">
+     <property name="geometry">
+      <rect>
+       <x>475</x>
+       <y>445</y>
+       <width>16</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string comment="Clear log">Clear logs</string>
+     </property>
+     <property name="whatsThis">
+      <string>Clear logs</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+     </property>
+     <property name="text">
+      <string>X</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="secretMessageBut_1">
+     <property name="geometry">
+      <rect>
+       <x>415</x>
+       <y>0</y>
+       <width>5</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 0.5px solid #313131; background-color:qlineargradient(spread:pad, x1:0.511, y1:0.477727, x2:0.512, y2:0, stop:0 rgba(0, 0, 0, 255), stop:0.0113636 rgba(83, 83, 83, 255), stop:0.0568182 rgba(98, 98, 98, 255), stop:0.0625 rgba(167, 0, 0, 255), stop:1 rgba(255, 0, 0, 255))</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="secretMessageBut_2">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>0</y>
+       <width>5</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 0.5px solid #313131; background-color:qlineargradient(spread:pad, x1:0.511, y1:0.477727, x2:0.512, y2:0, stop:0 rgba(0, 0, 0, 255), stop:0.0113636 rgba(83, 83, 83, 255), stop:0.0568182 rgba(98, 98, 98, 255), stop:0.0625 rgba(167, 0, 0, 255), stop:1 rgba(255, 0, 0, 255))</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="secretMessageBut_3">
+     <property name="geometry">
+      <rect>
+       <x>425</x>
+       <y>0</y>
+       <width>5</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 0.5px solid #313131; background-color:qlineargradient(spread:pad, x1:0.511, y1:0.477727, x2:0.512, y2:0, stop:0 rgba(0, 0, 0, 255), stop:0.0113636 rgba(83, 83, 83, 255), stop:0.0568182 rgba(98, 98, 98, 255), stop:0.0625 rgba(167, 0, 0, 255), stop:1 rgba(255, 0, 0, 255))</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="secretMessageBut_4">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>0</y>
+       <width>5</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 0.5px solid #313131; background-color:qlineargradient(spread:pad, x1:0.511, y1:0.477727, x2:0.512, y2:0, stop:0 rgba(0, 0, 0, 255), stop:0.0113636 rgba(83, 83, 83, 255), stop:0.0568182 rgba(98, 98, 98, 255), stop:0.0625 rgba(167, 0, 0, 255), stop:1 rgba(255, 0, 0, 255))</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="secretMessageBut_5">
+     <property name="geometry">
+      <rect>
+       <x>435</x>
+       <y>0</y>
+       <width>5</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 0.5px solid #313131; background-color:qlineargradient(spread:pad, x1:0.511, y1:0.477727, x2:0.512, y2:0, stop:0 rgba(0, 0, 0, 255), stop:0.0113636 rgba(83, 83, 83, 255), stop:0.0568182 rgba(98, 98, 98, 255), stop:0.0625 rgba(167, 0, 0, 255), stop:1 rgba(255, 0, 0, 255))</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="secretMessageBut_6">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>0</y>
+       <width>5</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 0.5px solid #313131; background-color:qlineargradient(spread:pad, x1:0.511, y1:0.477727, x2:0.512, y2:0, stop:0 rgba(0, 0, 0, 255), stop:0.0113636 rgba(83, 83, 83, 255), stop:0.0568182 rgba(98, 98, 98, 255), stop:0.0625 rgba(167, 0, 0, 255), stop:1 rgba(255, 0, 0, 255))</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="secretMessageBut_7">
+     <property name="geometry">
+      <rect>
+       <x>445</x>
+       <y>0</y>
+       <width>5</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 0.5px solid #313131; background-color:qlineargradient(spread:pad, x1:0.511, y1:0.477727, x2:0.512, y2:0, stop:0 rgba(0, 0, 0, 255), stop:0.0113636 rgba(83, 83, 83, 255), stop:0.0568182 rgba(98, 98, 98, 255), stop:0.0625 rgba(167, 0, 0, 255), stop:1 rgba(255, 0, 0, 255))</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="secretMessageBut_8">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>0</y>
+       <width>5</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 0.5px solid #313131; background-color:qlineargradient(spread:pad, x1:0.511, y1:0.477727, x2:0.512, y2:0, stop:0 rgba(0, 0, 0, 255), stop:0.0113636 rgba(83, 83, 83, 255), stop:0.0568182 rgba(98, 98, 98, 255), stop:0.0625 rgba(167, 0, 0, 255), stop:1 rgba(255, 0, 0, 255))</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="newMessageLabel">
+     <property name="geometry">
+      <rect>
+       <x>265</x>
+       <y>53</y>
+       <width>70</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:rgb(255, 0, 0);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="text">
+      <string>New message</string>
+     </property>
+     <property name="wordWrap">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="PieStatBut">
+     <property name="geometry">
+      <rect>
+       <x>403</x>
+       <y>253</y>
+       <width>60</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(130, 130, 130);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(130, 130, 130, 80);</string>
+     </property>
+     <property name="text">
+      <string>:Pie statistics</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="trayButton">
+     <property name="geometry">
+      <rect>
+       <x>455</x>
+       <y>10</y>
+       <width>10</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>_</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="DredLabel">
+     <property name="geometry">
+      <rect>
+       <x>235</x>
+       <y>417</y>
+       <width>8</width>
+       <height>5</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(85, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelSSH">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>415</y>
+       <width>61</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>SSH</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="rVerLabel">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>36</x>
+       <y>15</y>
+       <width>86</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:rgb(255, 0, 0);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="text">
+      <string>Outdated version</string>
+     </property>
+     <property name="wordWrap">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="NSTrackStatusLabel">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>249</x>
+       <y>785</y>
+       <width>8</width>
+       <height>8</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: black; border: 1px solid white;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <zorder>graphicTextPlacer</zorder>
+    <zorder>BAText</zorder>
+    <zorder>labelNesca_3</zorder>
+    <zorder>tabMainWidget</zorder>
+    <zorder>line</zorder>
+    <zorder>exitButton</zorder>
+    <zorder>labelIpRange</zorder>
+    <zorder>labelThreads</zorder>
+    <zorder>labelBaThreads</zorder>
+    <zorder>labelIpRange_Value</zorder>
+    <zorder>labelThreads_Value</zorder>
+    <zorder>labelBAThreads_Value</zorder>
+    <zorder>labelIPS</zorder>
+    <zorder>labelIPS_Value</zorder>
+    <zorder>dataText</zorder>
+    <zorder>labelParsed</zorder>
+    <zorder>labelParsed_Value</zorder>
+    <zorder>labelStatus</zorder>
+    <zorder>labelStatus_Value</zorder>
+    <zorder>labelTargetsLeft</zorder>
+    <zorder>labelTargetsLeft_Value</zorder>
+    <zorder>line_2</zorder>
+    <zorder>RedLabel</zorder>
+    <zorder>YellowLabel</zorder>
+    <zorder>GreenLabel</zorder>
+    <zorder>BlueLabel</zorder>
+    <zorder>CyanLabel</zorder>
+    <zorder>PinkLabel</zorder>
+    <zorder>labelAnomaly</zorder>
+    <zorder>labelBA</zorder>
+    <zorder>labelFiltered</zorder>
+    <zorder>labelBads</zorder>
+    <zorder>labelOverloads</zorder>
+    <zorder>labelLowloads</zorder>
+    <zorder>graphicLog</zorder>
+    <zorder>logoLabel</zorder>
+    <zorder>WhiteLabel</zorder>
+    <zorder>labelAlives</zorder>
+    <zorder>me2ScanBut</zorder>
+    <zorder>QoSScanBut</zorder>
+    <zorder>graphicDelim</zorder>
+    <zorder>graphicLog_2</zorder>
+    <zorder>graphicLog_Upper</zorder>
+    <zorder>labelBadAddr</zorder>
+    <zorder>labelOffline_Value</zorder>
+    <zorder>switcherBut</zorder>
+    <zorder>labelTracker</zorder>
+    <zorder>graphicActivityGrid</zorder>
+    <zorder>graphicActivity</zorder>
+    <zorder>VoiceScanBut</zorder>
+    <zorder>graphicsVoice</zorder>
+    <zorder>clearLogBut</zorder>
+    <zorder>secretMessageBut_1</zorder>
+    <zorder>secretMessageBut_2</zorder>
+    <zorder>secretMessageBut_3</zorder>
+    <zorder>secretMessageBut_4</zorder>
+    <zorder>secretMessageBut_5</zorder>
+    <zorder>secretMessageBut_6</zorder>
+    <zorder>secretMessageBut_7</zorder>
+    <zorder>secretMessageBut_8</zorder>
+    <zorder>newMessageLabel</zorder>
+    <zorder>PieStatBut</zorder>
+    <zorder>trayButton</zorder>
+    <zorder>DredLabel</zorder>
+    <zorder>labelSSH</zorder>
+    <zorder>rVerLabel</zorder>
+    <zorder>NSTrackStatusLabel</zorder>
+   </widget>
+   <widget class="QWidget" name="widgetIRC" native="true">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>44</y>
+      <width>498</width>
+      <height>730</height>
+     </rect>
+    </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="Base">
+        <brush brushstyle="SolidPattern">
+         <color alpha="0">
+          <red>49</red>
+          <green>49</green>
+          <blue>49</blue>
+         </color>
+        </brush>
+       </colorrole>
+       <colorrole role="Window">
+        <brush brushstyle="SolidPattern">
+         <color alpha="0">
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="Base">
+        <brush brushstyle="SolidPattern">
+         <color alpha="0">
+          <red>49</red>
+          <green>49</green>
+          <blue>49</blue>
+         </color>
+        </brush>
+       </colorrole>
+       <colorrole role="Window">
+        <brush brushstyle="SolidPattern">
+         <color alpha="0">
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="Base">
+        <brush brushstyle="SolidPattern">
+         <color alpha="0">
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+        </brush>
+       </colorrole>
+       <colorrole role="Window">
+        <brush brushstyle="SolidPattern">
+         <color alpha="0">
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255));</string>
+    </property>
+    <widget class="QLineEdit" name="ircServerBox">
+     <property name="geometry">
+      <rect>
+       <x>83</x>
+       <y>30</y>
+       <width>163</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:1px solid rgb(221, 221, 221);</string>
+     </property>
+     <property name="text">
+      <string>addr.ne.jp</string>
+     </property>
+     <property name="maxLength">
+      <number>128</number>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string>IRC server here</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="shoutBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>705</y>
+       <width>469</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:rgb(124, 124, 124);background-color: rgb(36, 36, 36);border:1px solid rgb(226, 226, 226);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="maxLength">
+      <number>256</number>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="serverPortBox">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>30</y>
+       <width>82</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:1px solid rgb(221, 221, 221);</string>
+     </property>
+     <property name="text">
+      <string>6667</string>
+     </property>
+     <property name="maxLength">
+      <number>5</number>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string>IRC port here</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="ircNickBox">
+     <property name="geometry">
+      <rect>
+       <x>369</x>
+       <y>30</y>
+       <width>117</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:1px solid rgb(221, 221, 221);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="maxLength">
+      <number>16</number>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string>Your nick here</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="IRCConnectBut">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>85</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>Connect</string>
+     </property>
+    </widget>
+    <widget class="QTextBrowser" name="ircText">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>140</y>
+       <width>469</width>
+       <height>556</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: #AFAFAF;background-color: rgb(26, 26,26);border:1px solid rgb(221, 221, 221);</string>
+     </property>
+     <property name="locale">
+      <locale language="Chinese" country="China"/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="undoRedoEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="acceptRichText">
+      <bool>true</bool>
+     </property>
+     <property name="cursorWidth">
+      <number>5</number>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::TextBrowserInteraction</set>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+     <property name="openLinks">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="ircProxy">
+     <property name="geometry">
+      <rect>
+       <x>83</x>
+       <y>55</y>
+       <width>163</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:1px solid rgb(221, 221, 221);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="maxLength">
+      <number>128</number>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string>Proxy here</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="ircProxyPort">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>55</y>
+       <width>82</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:1px solid rgb(221, 221, 221);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="maxLength">
+      <number>5</number>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string>Proxy port here</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="IRCCheckProxyBut">
+     <property name="geometry">
+      <rect>
+       <x>337</x>
+       <y>55</y>
+       <width>149</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>Check proxy</string>
+     </property>
+    </widget>
+    <widget class="QTextBrowser" name="ircRaw">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>140</y>
+       <width>469</width>
+       <height>556</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(26, 26,26);border:1px solid rgb(221, 221, 221);color:rgb(125, 125, 125);</string>
+     </property>
+     <property name="locale">
+      <locale language="Chinese" country="China"/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="undoRedoEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:2px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="acceptRichText">
+      <bool>true</bool>
+     </property>
+     <property name="cursorWidth">
+      <number>5</number>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::TextBrowserInteraction</set>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+     <property name="openLinks">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="nickShowBut">
+     <property name="geometry">
+      <rect>
+       <x>481</x>
+       <y>140</y>
+       <width>16</width>
+       <height>556</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Stalkers online</string>
+     </property>
+     <property name="whatsThis">
+      <string>Stalkers online</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid rgb(216, 216, 216);
+color: rgb(216, 216, 216);
+background-color: #000000;</string>
+     </property>
+     <property name="text">
+      <string notr="true">&lt;</string>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="nickList">
+     <property name="geometry">
+      <rect>
+       <x>329</x>
+       <y>145</y>
+       <width>147</width>
+       <height>0</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0, 0.5);
+color: rgb(212, 212, 212);</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Panel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="resizeMode">
+      <enum>QListView::Adjust</enum>
+     </property>
+     <property name="sortingEnabled">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="topicLine">
+     <property name="geometry">
+      <rect>
+       <x>44</x>
+       <y>115</y>
+       <width>435</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(26, 26,26);border:1px solid rgb(221, 221, 221);color:orange;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="maxLength">
+      <number>256</number>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="IRCUTFMode">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>80</y>
+       <width>48</width>
+       <height>12</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Codepage</string>
+     </property>
+     <property name="whatsThis">
+      <string>Codepage</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(0, 214, 0, 40);
+color: rgb(0, 214, 0);</string>
+     </property>
+     <property name="text">
+      <string>UTF-8</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="IRCCP1251Mode">
+     <property name="geometry">
+      <rect>
+       <x>392</x>
+       <y>80</y>
+       <width>48</width>
+       <height>12</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Codepage</string>
+     </property>
+     <property name="whatsThis">
+      <string>Codepage</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);
+color: rgb(71, 71, 71);</string>
+     </property>
+     <property name="text">
+      <string> CP-1251</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelIPRange_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>56</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>IRC SERVER</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelIPRange_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>55</y>
+       <width>68</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>PROXY&amp;PORT</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelIPRange_4">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>30</y>
+       <width>27</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>NICK</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelIPRange_5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>115</y>
+       <width>31</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Eurostile</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>TOPIC</string>
+     </property>
+    </widget>
+    <zorder>nickList</zorder>
+    <zorder>ircRaw</zorder>
+    <zorder>ircServerBox</zorder>
+    <zorder>shoutBox</zorder>
+    <zorder>serverPortBox</zorder>
+    <zorder>ircNickBox</zorder>
+    <zorder>IRCConnectBut</zorder>
+    <zorder>ircText</zorder>
+    <zorder>ircProxy</zorder>
+    <zorder>ircProxyPort</zorder>
+    <zorder>IRCCheckProxyBut</zorder>
+    <zorder>nickShowBut</zorder>
+    <zorder>topicLine</zorder>
+    <zorder>IRCUTFMode</zorder>
+    <zorder>IRCCP1251Mode</zorder>
+    <zorder>labelIPRange_2</zorder>
+    <zorder>labelIPRange_3</zorder>
+    <zorder>labelIPRange_4</zorder>
+    <zorder>labelIPRange_5</zorder>
+   </widget>
+   <widget class="QWidget" name="widgetJOB" native="true">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>44</y>
+      <width>498</width>
+      <height>730</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255));</string>
+    </property>
+    <widget class="QGraphicsView" name="jobRangeVisual">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>480</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+    </widget>
+    <widget class="QTableWidget" name="jobIPContractsTable">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>105</y>
+       <width>480</width>
+       <height>296</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTableWidget" name="jobIPWantedTable">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>425</y>
+       <width>480</width>
+       <height>296</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="DataflowModeBut">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>50</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Eurostile</family>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Online datastream</string>
+    </property>
+    <property name="whatsThis">
+     <string>Online datastream</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+    </property>
+    <property name="text">
+     <string>:Dataflow</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="IRCModeBut">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>50</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Eurostile</family>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Darknet IRC</string>
+    </property>
+    <property name="whatsThis">
+     <string>Darknet IRC</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+    </property>
+    <property name="text">
+     <string>:IRC</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="JobModeBut">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>50</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Eurostile</family>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>IP range distribution</string>
+    </property>
+    <property name="whatsThis">
+     <string>IP range distribution</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+    </property>
+    <property name="text">
+     <string>:Jobs</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="IRCModeChangerBut">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>50</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Eurostile</family>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Raw or normal log view</string>
+    </property>
+    <property name="whatsThis">
+     <string>Raw or normal log view</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+    </property>
+    <property name="text">
+     <string>:IRC raw</string>
+    </property>
+   </widget>
+   <zorder>widget</zorder>
+   <zorder>widgetJOB</zorder>
+   <zorder>widgetIRC</zorder>
+   <zorder>IRCModeChangerBut</zorder>
+   <zorder>IRCModeBut</zorder>
+   <zorder>JobModeBut</zorder>
+   <zorder>DataflowModeBut</zorder>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>ipLine</tabstop>
+  <tabstop>portLine</tabstop>
+  <tabstop>threadLine</tabstop>
+  <tabstop>lineEditStartIPDNS</tabstop>
+  <tabstop>lineILVL</tabstop>
+  <tabstop>lineEditPort</tabstop>
+  <tabstop>lineEditThread</tabstop>
+  <tabstop>lineTrackerSrv</tabstop>
+  <tabstop>lineTrackerScr</tabstop>
+  <tabstop>linePersKey</tabstop>
+  <tabstop>trackerOnOff</tabstop>
+  <tabstop>tabMainWidget</tabstop>
+  <tabstop>startScanButton_3</tabstop>
+  <tabstop>startScanButton_4</tabstop>
+  <tabstop>exitButton</tabstop>
+  <tabstop>dataText</tabstop>
+ </tabstops>
+ <resources>
+  <include location="nesca_3.qrc"/>
+ </resources>
+ <connections/>
+</ui>

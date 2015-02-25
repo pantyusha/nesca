@@ -1,0 +1,227 @@
+==========================
+SSH-2.0-dropbear_0.48
+
+==========================
+==========================
+
+GET / HTTP/1.1
+Host: 222.2.124.6:21
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: us-US,ru;q=0.9,en;q=0.8
+Accept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1
+Accept-Encoding: text, identity, *;q=0
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11
+Connection: close
+
+==========================
+220-MegaBit Gear TE4121C FTP server ready
+220 FTE4121_0113C (Tue Jan 14 18:20:09 JST 2003)
+530 USER and PASS required
+530 USER and PASS required
+
+==========================
+==========================
+
+GET / HTTP/1.1
+Host: 222.2.124.25:21
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: us-US,ru;q=0.9,en;q=0.8
+Accept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1
+Accept-Encoding: text, identity, *;q=0
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11
+Connection: close
+
+==========================
+220 (vsFTPd 1.2.0)
+530 Please login with USER and PASS.
+530 Please login with USER and PASS.
+530 Please login with USER and PASS.
+530 Please login with USER and PASS.
+530 Please login with USER and PASS.
+530 Please login with USER and PASS.
+530 Please login with USER and PASS.
+530 Please login with USER and PASS.
+530 Please login with USER and PASS.
+
+==========================
+==========================
+
+GET / HTTP/1.1
+Host: 222.2.124.44:21
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: us-US,ru;q=0.9,en;q=0.8
+Accept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1
+Accept-Encoding: text, identity, *;q=0
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11
+Connection: close
+
+==========================
+220-MegaBit Gear TE4121C FTP server ready
+220 FTE4121_0113C (Tue Jan 14 18:20:09 JST 2003)
+530 USER and PASS required
+530 USER and PASS required
+
+==========================
+==========================
+
+GET / HTTP/1.1
+Host: 222.2.124.65:21
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: us-US,ru;q=0.9,en;q=0.8
+Accept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1
+Accept-Encoding: text, identity, *;q=0
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11
+Connection: close
+
+==========================
+220-MegaBit Gear TE4121C FTP server ready
+220 FTE4121_0113C (Tue Jan 14 18:20:09 JST 2003)
+530 USER and PASS required
+530 USER and PASS required
+
+==========================
+==========================
+
+GET / HTTP/1.1
+Host: 222.2.124.200:21
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: us-US,ru;q=0.9,en;q=0.8
+Accept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1
+Accept-Encoding: text, identity, *;q=0
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11
+Connection: close
+
+==========================
+220-MegaBit Gear TE4121C FTP server ready
+220 FTE4121_0113C (Tue Jan 14 18:20:09 JST 2003)
+530 USER and PASS required
+530 USER and PASS required
+
+==========================
+==========================
+
+GET / HTTP/1.1
+Host: 222.2.144.207:21
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: us-US,ru;q=0.9,en;q=0.8
+Accept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1
+Accept-Encoding: text, identity, *;q=0
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11
+Connection: close
+
+==========================
+220 Simple FTPd welcomes you.
+
+
+
+==========================
+==========================
+
+GET / HTTP/1.1
+Host: 222.2.147.250:21
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: us-US,ru;q=0.9,en;q=0.8
+Accept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1
+Accept-Encoding: text, identity, *;q=0
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11
+Connection: close
+
+==========================
+220 FTP server ready.
+500 'GET' command not understood.
+
+==========================
+==========================
+
+==========================
+SSH-2.0-dropbear
+
+==========================
+==========================
+
+==========================
+SSH-2.0-dropbear
+
+==========================
+==========================
+
+GET / HTTP/1.1
+Host: 222.2.175.116:21
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: us-US,ru;q=0.9,en;q=0.8
+Accept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1
+Accept-Encoding: text, identity, *;q=0
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11
+Connection: close
+
+==========================
+220 FTP server ready.
+500 'GET' command not understood.
+
+==========================
+==========================
+
+GET / HTTP/1.1
+Host: 222.2.175.94:21
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: us-US,ru;q=0.9,en;q=0.8
+Accept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1
+Accept-Encoding: text, identity, *;q=0
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11
+Connection: close
+
+==========================
+220 Simple FTPd welcomes you.
+
+
+
+==========================
+==========================
+
+GET / HTTP/1.1
+Host: 222.2.189.106:21
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: us-US,ru;q=0.9,en;q=0.8
+Accept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1
+Accept-Encoding: text, identity, *;q=0
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11
+Connection: close
+
+==========================
+220 Simple FTPd welcomes you.
+
+
+
+==========================
+==========================
+
+==========================
+SSH-2.0-OpenSSH_6.6p1-hpn14v4
+
+==========================
+==========================
+
+GET / HTTP/1.1
+Host: 222.3.13.167:21
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: us-US,ru;q=0.9,en;q=0.8
+Accept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1
+Accept-Encoding: text, identity, *;q=0
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11
+Connection: close
+
+==========================
+220 ibs-soho FTP server (Version 6.4/OpenBSD/Linux-ftpd-0.17) ready.
+500 'GET / HTTP/1.1': command not understood.
+500 'HOST: 222.3.13.167:21': command not understood.
+500 'ACCEPT: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1': command not understood.
+500 'ACCEPT-LANGUAGE: us-US,ru;q=0.9,en;q=0.8': command not understood.
+500 'ACCEPT-CHARSET: iso-8859-1, utf-8, utf-16, *;q=0.1': command not understood.
+500 'ACCEPT-ENCODING: text, identity, *;q=0': command not understood.
+500 'USER-AGENT: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11': command not understood.
+500 'CONNECTION: close': command not understood.
+500 '': command not understood.
+
+==========================
+==========================
+

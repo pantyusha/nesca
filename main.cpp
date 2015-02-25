@@ -1,7 +1,7 @@
 #include "nesca_3.h"
 #include <QApplication>
 #include <qfontdatabase.h>
-#if defined(Q_OS_WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 #include <windows.h>
 #endif
 

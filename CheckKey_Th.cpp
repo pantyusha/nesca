@@ -212,9 +212,15 @@ int KeyCheckerMain()
 
 	if(strstr(msg, "202 Accepted") != NULL)
 	{
+<<<<<<< HEAD
 
 		stt->doEmitionGreenFoundData("[Key check] -OK. Key is valid!");
 
+=======
+#pragma region QTGUI_Area
+		stt->doEmitionGreenFoundData("[Key check] -OK. Key is valid!");
+#pragma endregion
+>>>>>>> 1f26df077976493c1916f7764c83dc03da1445fa
 		CSSOCKET(sock);
 
 		if(emitIfOK == 0) stt->doEmitionStartScanIP();
@@ -224,11 +230,19 @@ int KeyCheckerMain()
 	}
 	else if(strstr(msg, "400 Bad Request") != NULL)
 	{
+<<<<<<< HEAD
 
 		QString errorDef = GetNSErrorDefinition(msg, "notify");
 		if(errorDef == "Invalid access key") stt->doEmitionYellowFoundData("[NS-Track] [Key is unauthorized] A valid key is required.");
 		else stt->doEmitionYellowFoundData("[NS-Track] -FAIL! [400 Bad Request : " + GetNSErrorDefinition(msg, "notify") + "]");
 
+=======
+#pragma region QTGUI_Area
+		QString errorDef = GetNSErrorDefinition(msg, "notify");
+		if(errorDef == "Invalid access key") stt->doEmitionYellowFoundData("[NS-Track] [Key is unauthorized] A valid key is required.");
+		else stt->doEmitionYellowFoundData("[NS-Track] -FAIL! [400 Bad Request : " + GetNSErrorDefinition(msg, "notify") + "]");
+#pragma endregion
+>>>>>>> 1f26df077976493c1916f7764c83dc03da1445fa
 		CSSOCKET(sock);
 		return -1;
 	}
@@ -240,12 +254,20 @@ int KeyCheckerMain()
 	}
 	else
 	{
+<<<<<<< HEAD
 
+=======
+#pragma region QTGUI_Area
+>>>>>>> 1f26df077976493c1916f7764c83dc03da1445fa
 		char header[64] = {0};
 		getSubStrEx(msg, "http/1.1 ", "\r\n", header, 64);
 		stt->doEmitionYellowFoundData("[Key check] -FAIL! An error occured. (" + QString::number(WSAGetLastError()) + ") Header: <u>" + QString::fromLocal8Bit(header) + "</u>");
 		if(gDebugMode) stt->doEmitionDebugFoundData(QString(msg));
+<<<<<<< HEAD
 
+=======
+#pragma endregion
+>>>>>>> 1f26df077976493c1916f7764c83dc03da1445fa
 		CSSOCKET(sock);
 		return -1;
 	};
@@ -255,12 +277,20 @@ int KeyCheckerMain()
 	}
 	else
 	{
+<<<<<<< HEAD
 
+=======
+#pragma region QTGUI_Area
+>>>>>>> 1f26df077976493c1916f7764c83dc03da1445fa
 		stt->doEmitionRedFoundData("[Key check] -Balancer replied with invalid string.");
 		if(gDebugMode) stt->doEmitionDebugFoundData(QString(msg));
 		CSSOCKET(sock);
 		return -1;
+<<<<<<< HEAD
 
+=======
+#pragma endregion
+>>>>>>> 1f26df077976493c1916f7764c83dc03da1445fa
 	};
 };
 

@@ -1099,7 +1099,6 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 	};
 	isActive = 1;
 
-	char b[16] = {0};
 	char methodVal[128] = {0};
 	char actionVal[512] = {0};
 	char userVal[128] = {0};
@@ -1109,7 +1108,8 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 	char formVal[128] = {0};
 	int fbsz = 0;
 	char tport[16] = {0};
-	strcpy(tport, itoa(port, b, 10));
+
+    sprintf(tport, "%d", port);
 	std::vector<std::string> inputVec;
 	if(fBlock != NULL)
 	{
@@ -1264,10 +1264,8 @@ void _specWEBIPCAMBrute(char *ip, int port, char *hl, char *finalstr, int flag, 
 	ZeroMemory(lps.login, sizeof(lps.login));
 	ZeroMemory(lps.pass, sizeof(lps.pass));
 	ZeroMemory(lps.other, sizeof(lps.other));
-	char tport[32] = {0};
-	char b[16] = {0};
-	strcpy(tport, ":");
-	strcat(tport, itoa(port, b, 10));
+    char tport[32] = {0};
+    sprintf(tport, ":%d", port);
 	Connector con;
 	lps = con._IPCameraBLobby(ip, port, SPEC);
 
@@ -1286,10 +1284,8 @@ void _specBrute(char *cookie, char *ip, int port, char *hl, char *finalstr, int 
 	ZeroMemory(lps.pass, sizeof(lps.pass));
 	ZeroMemory(lps.other, sizeof(lps.other));
 	char temp[64] = {0};
-	char tport[32] = {0};
-	char b[16] = {0};
-	strcpy(tport, ":");
-	strcat(tport, itoa(port, b, 10));
+    char tport[32] = {0};
+    sprintf(tport, ":%d", port);
 	Connector con;
 
 	if(strcmp(comment, "[DIGEST]") == 0) lps = con._BALobby(cookie, ip, port, path, "[DIGEST]", data);
@@ -1434,24 +1430,30 @@ void _saveSSH(char *ip, int port, int recd, char *buffcpy)
 			int gsz = ptr1 - buffcpy;
 			strncpy(goodStr, buffcpy, gsz);
 			if(strlen(ptr1 + 3) > 0) strcpy(banner, ptr1 + 3);
-			strcpy(logEmit, "[SSH] ");
-			strcpy(log, "[SSH] <font color=\"#00a8ff\">");
-			strcat(log, goodStr);
-			strcat(log, ":");
-			strcat(log, itoa(port, b, 10));
-			strcat(log, "</font>");
-			strcat(log, "<font color=\"#323232\">; Banner:</font> <font color=\"#9cff00\">");
-			strcat(log, banner);
-			strcat(log, "</font>");
+            char portString[16] = {0};
+            sprintf(portString, "%d", port);
+            sprintf(log, "[SSH] <font color=\"#00a8ff\"> %s:%d </font><font color=\"#323232\">; Banner:</font> <font color=\"#9cff00\"> %s </font>", goodStr, port, banner);
+            sprintf(log, "[SSH] <span style=\"color: #00a8ff;\"> %s:%d </span>", goodStr, port, banner);
+
+//			strcpy(log, "[SSH] <font color=\"#00a8ff\">");
+//			strcat(log, goodStr);
+//			strcat(log, ":");
+//			strcat(log, itoa(port, b, 10));
+//			strcat(log, "</font>");
+//			strcat(log, "<font color=\"#323232\">; Banner:</font> <font color=\"#9cff00\">");
+//			strcat(log, banner);
+//			strcat(log, "</font>");
 
 			++PieSSH;
-			strcat(logEmit, "<span style=\"color: #00a8ff;\">");
-			strcat(logEmit, goodStr);
-			strcat(logEmit, ":");
-			strcat(logEmit, itoa(port, b, 10));
-			strcat(logEmit, "</span>");
 
-			fputsf (ip, itoa(port, b, 10), log, -22, "SSH");
+//            strcpy(logEmit, "[SSH] ");
+//			strcat(logEmit, "<span style=\"color: #00a8ff;\">");
+//			strcat(logEmit, goodStr);
+//			strcat(logEmit, ":");
+//			strcat(logEmit, itoa(port, b, 10));
+//			strcat(logEmit, "</span>");
+
+            fputsf (ip, portString, log, -22, "SSH");
 			char loginSSH[128] = {0};
 			char passSSH[128] = {0};
 			char *ptrl1 = strstr(buffcpy, ":");
@@ -1548,7 +1550,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 		if(strstr(buffcpy, "Set-Cookie:") != NULL) strncpy(ps.cookie, _getAttribute(buffcpy, "Set-Cookie:"), COOKIE_MAX_SIZE);		
 	};
 
-	strcpy(port, itoa(p, b, 10));
+    sprintf(port, "%d", p);
 
 	if(strstr(finalstr, ps.headr) == NULL) strcat(finalstr, ps.headr);
 	if(flag == -1 || flag == 6 || strstr(finalstr, "[IGNR_ADDR]") != NULL) return -1;
@@ -1943,6 +1945,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			strcpy(tempPath, "/");
 		};
 
+
 		strcpy(mes, rbuff1);
 		if(tempPath[0] != '/') strcat(mes, "/");
 		strcat(mes, tempPath);
@@ -1951,7 +1954,8 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		if(tempPort != 80){
 			strcat(mes, ":");
 			char tbuff[16] = {0};
-			strcat(mes, itoa(tempPort, tbuff, 10));
+            sprintf(tbuff, "%s", tempPort);
+            strcat(mes, tbuff);
 		}
 		if(strlen(cookie) != 0)
 		{
@@ -2083,7 +2087,8 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		if(tempPort != 80){
 			strcat(mes, ":");
 			char tbuff[16] = {0};
-			strcat(mes, itoa(tempPort, tbuff, 10));
+            sprintf(tbuff, "%s", tempPort);
+            strcat(mes, tbuff);
 		}
 		if(strlen(cookie) != 0)
 		{
@@ -2170,7 +2175,8 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		if(tempPort != 80){
 			strcat(mes, ":");
 			char tbuff[16] = {0};
-			strcat(mes, itoa(tempPort, tbuff, 10));
+            sprintf(tbuff, "%s", tempPort);
+            strcat(mes, tbuff);
 		}
 		if(strlen(cookie) != 0)
 		{
@@ -2263,7 +2269,8 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		if(tempPort != 80){
 			strcat(mes, ":");
 			char tbuff[16] = {0};
-			strcat(mes, itoa(tempPort, tbuff, 10));
+            sprintf(tbuff, "%s", tempPort);
+            strcat(mes, tbuff);
 		}
 		if(strlen(cookie) != 0)
 		{

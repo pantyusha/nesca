@@ -20,8 +20,8 @@
 #include <QMenu>
 #include <QGraphicsSceneContextMenuEvent>
 #include <QDesktopWidget>
-#include <QtMultimedia\qsound.h>
-#include <QtMultimedia\qsoundeffect.h>
+#include <QtMultimedia/qsound.h>
+#include <QtMultimedia/qsoundeffect.h>
 #include <qscrollbar.h>
 #include <qdesktopservices.h>
 #include <qmessagebox.h>
@@ -1911,12 +1911,12 @@ void nesca_3::slotSaveImage(QAction *qwe)
 			sceneGrid->render(&painter, QRect(ax, ay, w, h));
 			sceneGrid2->render(&painter, QRect(ax, ay, w, h));
 			
-			QString filename = QFileDialog::getSaveFileName(
+            QString filename = QFileDialog::getSaveFileName(
 			this, 
 			tr("Save image"), 
 			QDir::currentPath() + "/" + fn,
 			".png",
-			&tr("*.png")
+            (QString *)"*.png"
 			);
 			if(filename != "") image.save(filename + ".png");
 		}
@@ -1939,7 +1939,7 @@ void nesca_3::slotSaveImage(QAction *qwe)
 			tr("Save image"), 
 			QDir::currentPath() + "/" + fn,
 			".png",
-			&tr("*.png")
+            (QString *)"*.png"
 			);
 			if(filename != "") image.save(filename + ".png");
 		};
@@ -3545,11 +3545,14 @@ void writeDebugFile(QString str)
 	char b[8] = {0};
 	char fn[64] = {0};
 	strcpy(fn, "./output_");
-	strcat(fn, itoa(qd.currentDate().day(), b, 10));
+    sprintf(b, "%d", qd.currentDate().day());
+    strcat(fn, b);
 	strcat(fn, "_");
-	strcat(fn, itoa(qd.currentDate().month(), b, 10));
+    sprintf(b, "%d", qd.currentDate().month());
+    strcat(fn, b);
 	strcat(fn, "_");
-	strcat(fn, itoa(qd.currentDate().year(), b, 10));
+    sprintf(b, "%d", qd.currentDate().year());
+    strcat(fn, b);
 	strcat(fn, ".txt");
 
 	FILE *df = fopen(fn, "a");

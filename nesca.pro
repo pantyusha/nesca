@@ -36,7 +36,8 @@ SOURCES +=\
     piestat.cpp \
     progressbardrawer.cpp \
     STh.cpp \
-    vercheckerthread.cpp
+    vercheckerthread.cpp \
+    finder.cpp
 
 
 HEADERS  += ActivityDrawerTh_HorNet.h \

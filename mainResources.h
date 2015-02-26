@@ -40,8 +40,8 @@ typedef void*               HANDLE;
 typedef unsigned int		UINT;
 typedef const char *		LPCSTR;
 typedef int					SOCKET;
-typedef				hostent HOSTENT;
-typedef struct		linger	LINGER;
+typedef	hostent             HOSTENT;
+typedef struct linger       LINGER;
 typedef int					BOOL;
 
 #define INVALID_SOCKET  (SOCKET)(~0)

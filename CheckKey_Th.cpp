@@ -95,8 +95,7 @@ int KeyCheckerMain()
 		return -1;
 	};
 
-	ZeroMemory(msg, sizeof(msg));
-	int ror = sizeof(msg);
+    ZeroMemory(msg, sizeof(msg));
 
 	test = recv(sock, msg, sizeof(msg), 0);
 	char buff[512] = {0};

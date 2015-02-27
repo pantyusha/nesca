@@ -12,7 +12,7 @@ void DrawerTh_VoiceScanner::doEmitDrawGrid(int factor)
 void DrawerTh_VoiceScanner::doEmitDrawTextPlacers()
 {
 	emit vsTh->sDrawTextPlacers();
-};
+}
 
 void makeVoiceLine(int Al, int An, int Bd, int Sp, int Lo, int var, int Ovl, int WF, int SSH)
 {

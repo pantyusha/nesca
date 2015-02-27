@@ -4,16 +4,14 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-PKGCONFIG += openssl
 CONFIG += c++11
 
 TARGET = nesca
 TEMPLATE = app
-LIBS += -lssh
 INCLUDEPATH += /opt/Qt5.3.2/5.3/gcc_64/include/QtWidgets/
 SOURCES +=\
         main.cpp \
@@ -71,3 +69,11 @@ RESOURCES += \
 OTHER_FILES += \
     nesca_3.rc
 
+
+unix|win32: LIBS += -lssl
+
+unix|win32: LIBS += -lssh
+
+unix|win32: LIBS += -lcrypto
+
+unix|win32: LIBS += -lpthread

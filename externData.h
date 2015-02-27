@@ -4,6 +4,13 @@
 #define IRC_CHAN "iskopasi_lab03"
 #define CSSOCKET(Socket) shutdown(Socket, SD_BOTH); closesocket(Socket); Socket = -1;
 
+#ifndef CP_UTF8
+#define CP_UTF8 65001
+#endif
+#ifndef CP_ACP
+#define CP_ACP 0
+#endif
+
 extern QJsonArray *jsonArr;
 
 extern unsigned long long gTargetsOverall, Activity;

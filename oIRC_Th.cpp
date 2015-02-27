@@ -1,5 +1,5 @@
 #include "oIRC_Th.h"
-#include <QtMultimedia\qsound.h>
+#include <QtMultimedia/qsound.h>
 #include "externData.h"
 #include "externFunctions.h"
 
@@ -76,10 +76,8 @@ QString GetNickColor(char *sn)
 	QString nickColorStr = hexNick.mid(0, 6);
 	QString nickBGColorStr = hexNick.mid(hexNick.size() - 6, hexNick.size());
 
-	int nickColor = nickColorStr.toUInt(NULL, 16);
-	int nickBGColor = nickBGColorStr.toUInt(NULL, 16);
-	int dim = QString::number(nickColor).length();
-	int factor = pow((float)10, dim);
+    int nickColor = nickColorStr.toUInt(NULL, 16);
+    int dim = QString::number(nickColor).length();
 		
 	nickColor += (7*origLen + nickColor*6 + 123456 - hln*hln*hln*hln + (int)(str[0].toLatin1())*123);
 	nickColorStr.setNum(nickColor, 16);
@@ -93,12 +91,14 @@ QString GetNickColor(char *sn)
 	else nickBGColorStr = "#000000";
 
 	return nickColorStr + "; background-color: " + nickBGColorStr + ";";
-};
+}
+
 bool doHL(char *rawData)
 {
 	if(strstr(rawData, ircNick) != NULL) return true;
 	else return  false;
-};
+}
+
 void _blinkNLine(QString tempData = "", QString senderNick = "")
 {
 	if(widgetIsHidden == false && tray->isVisible() == false)
@@ -107,29 +107,30 @@ void _blinkNLine(QString tempData = "", QString senderNick = "")
 		if(irc_nmb->isRunning() == false) irc_nmb->start();
 		ircTh->doEmitUnhidePopup(tempData, senderNick);
 
-#pragma region QTGUI_Area
 		if(printDelimiter) ircTh->doEmitChangeIRCData(false, false, 0, "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------", "");
-		printDelimiter = false;
-#pragma endregion
+        printDelimiter = false;
 	};
-};
+}
+
 int sendS(int lSock, char *msg, int len, int mode)
 {
-	int b;
-
-	b = send(lSock, msg, len, mode);
-	if(b == -1)  ircTh->doEmitChangeRedIRCData("[IRC: RecvS error - (" + QString::number(WSAGetLastError()) + ")]");
+    if(lSock == ENOTSOCK || lSock <= 0 || !connectedToIRC) {
+        ircTh->doEmitChangeRedIRCData("Not connected.");
+        return -1;
+    }
+    int b = send(lSock, msg, len, mode);
+    if(b == -1) ircTh->doEmitChangeRedIRCData("[IRC: RecvS error - (" + QString::number(WSAGetLastError()) + ")]");
 	else
 	{
 		Activity += len;
 							
-#pragma region QTGUI_Area
 		ircTh->doEmitChangeRawIRCDataOut(QString::fromLocal8Bit(msg));
-#pragma endregion
+
 	};
 	return b;
-};
-int recvS(int lSock, char *recvBuffT, int len, int mode)
+}
+
+int recvS(int lSock, char *recvBuffT, int len)
 {
 	int b;
 	char recvBuff[MAX_IRC_RECV_LEN] = {0};
@@ -141,14 +142,15 @@ int recvS(int lSock, char *recvBuffT, int len, int mode)
 		Activity += len;
 
 		strcpy(recvBuffT, recvBuff);
-#pragma region QTGUI_Area
+
 		ircTh->doEmitChangeRawIRCDataInc(QString::fromLocal8Bit(recvBuff));
-#pragma endregion
+
 		ZeroMemory(recvBuff, sizeof(recvBuff));
 	};
 	return b;		
-};
-void UserNickInit(SOCKET sock)
+}
+
+void UserNickInit()
 {
 	strcpy(ircNick, ui->ircNickBox->text().toLocal8Bit().data());
 	char tempBuffUser[1024] = {0};
@@ -169,7 +171,8 @@ void UserNickInit(SOCKET sock)
 
 	memset(tempBuffUser, '0', sizeof(tempBuffUser));
 	memset(tempBuffNick, '0', sizeof(tempBuffNick));
-};
+}
+
 void GetNicks()
 {
 	char chanTemp[64] = {0};
@@ -177,7 +180,8 @@ void GetNicks()
 	strcat(chanTemp, IRC_CHAN);
 	strcat(chanTemp, "\r\n");
 	sendS(lSock, chanTemp, strlen(chanTemp), 0);
-};
+}
+
 char *GetServerName(char *buff)
 {
 	char *temp1 = NULL;
@@ -191,7 +195,8 @@ char *GetServerName(char *buff)
 	};
 
 	return name;
-};
+}
+
 int jFlag1 = 0;
 void __pinger(char *recvBuff)
 {
@@ -293,18 +298,17 @@ void __pinger(char *recvBuff)
 		if(ircPTh->isRunning() == false) ircPTh->start(); 
 		memset(tmpa, '\0', sizeof(tmpa));
 	};
-};
+}
 
 void IRCLoop()
 {
 	nickFlag = 0;
 	offlineFlag = 0;
 
-#pragma region QTGUI_Area
-	ircTh->doEmitChangeYellowIRCData("Connecting to IRC server " + QString(ircServer) + ":" + QString(ircPort) + "...");
-#pragma endregion
 
-	int err, yes = 1;
+	ircTh->doEmitChangeYellowIRCData("Connecting to IRC server " + QString(ircServer) + ":" + QString(ircPort) + "...");
+
+
 	jFlag1 = 0;
 		sockaddr_in addr;
 		addr.sin_family = AF_INET;
@@ -363,7 +367,7 @@ void IRCLoop()
 
 					sendS(lSock, tempSendMsg, strlen(tempSendMsg), 0);
 
-					recvS(lSock, temprecvBuff, sizeof(temprecvBuff), 0);
+                    recvS(lSock, temprecvBuff, sizeof(temprecvBuff));
 
 					if(strstr(temprecvBuff, "HTTP/1.1 200 OK") || strstr(temprecvBuff, "200 OK")
 						|| strstr(temprecvBuff, "OK 200") || strstr(temprecvBuff, "200 Connection") )
@@ -382,7 +386,7 @@ void IRCLoop()
 					sendS(lSock, "\r\n", strlen("\r\n"), 0);
 				};
 
-				UserNickInit(lSock);
+                UserNickInit();
 
 				char recvBuffG[MAX_IRC_RECV_LEN] = {0};
 				char serverRealName[256] = {0};
@@ -391,14 +395,14 @@ void IRCLoop()
 				char pTemp[32] = {0};
 				strcpy(pTemp, "PRIV");
 				strcat(pTemp, "MSG ");
-				while(recvS(lSock, recvBuffG, MAX_IRC_RECV_LEN, 0) > 0 && iWantToConnect) 
+                while(recvS(lSock, recvBuffG, MAX_IRC_RECV_LEN) > 0 && iWantToConnect)
 				{
 					if(strlen(recvBuffG) > 0)
 					{
 						char *recvBuff = recvBuffG;
-#pragma region Pinger
+
 						__pinger(recvBuff);		
-#pragma endregion 
+
 						char comStr[512] = {0};
 						char delimBf[512] = {0};
 						strcpy(delimBf, ":");
@@ -433,9 +437,9 @@ void IRCLoop()
 									if(strstr(comStr, serverRealName) != NULL && (strstr(comStr, "while we process your") != NULL || strstr(comStr, "Looking up your hostname") != NULL)
 										) 
 									{
-#pragma region QTGUI_Area
+
 										ircTh->doEmitChangeGreenIRCData("[OK] Connected to irc server: " + ui->ircServerBox->text()+ ":" + ui->serverPortBox->text() + ".");
-#pragma endregion
+
 										if(nameLocked == false)
 										{
 											nameLocked = true;
@@ -443,7 +447,7 @@ void IRCLoop()
 										};
 
 										Sleep(500);
-										UserNickInit(lSock);
+                                        UserNickInit();
 
 										Sleep(500);
 										char chanTemp[32] = {0};
@@ -456,17 +460,17 @@ void IRCLoop()
 									{
 										if(strstr(comStr, "Registration timed out") != NULL)
 										{
-#pragma region QTGUI_Area
+
 											ircTh->doEmitChangeRedIRCData("-//- [!] Connection failure. (Registration timed out)");
 											ircTh->terminate();
-#pragma endregion
+
 										}
 										else
 										{
-#pragma region QTGUI_Area
+
 											ircTh->doEmitChangeRedIRCData("-//- [!] Connection failure. (Closed link)");
 											ircTh->terminate();
-#pragma endregion
+
 										};
 									}
 									else if(strstr(comStr, serverRealName) != NULL && strstr(comStr, "flooding") != NULL)
@@ -539,25 +543,25 @@ void IRCLoop()
 									}
 									else if(strstr(comStr, serverRealName) != NULL && (strstr(comStr, " 432 ") > 0 || strstr(comStr, "Erroneous Nickname") > 0))
 									{
-#pragma region QTGUI_Area
+
 										ircTh->doEmitChangeRedIRCData("[Nope] Erroneous Nickname: Illegal characters.");
-#pragma endregion
+
 									}
 									else if(strstr(comStr, serverRealName) != NULL && (strstr(comStr, " 433 ") > 0 || strstr(comStr, "Nickname is already") > 0) )
 									{
-#pragma region QTGUI_Area
+
 										QTime time = QTime::currentTime();
 										qsrand((uint)time.msec());
 										ircTh->doEmitChangeRedIRCData("[Nope] Nickname is already in use.");
 										ircTh->doEmitSetNick("ns_" + QString::number(qrand() % 8999 + 1000 ));
-#pragma endregion
-										UserNickInit(lSock);
+
+                                        UserNickInit();
 									}
 									else if(strstr(comStr, serverRealName) != NULL && (strstr(comStr, " 438 ") > 0 || strstr(comStr, "Nick change too") > 0))
 									{
-#pragma region QTGUI_Area
+
 										ircTh->doEmitChangeRedIRCData("[Nope] You are changing nicks too fast.");
-#pragma endregion
+
 									}
 									else if(strstr(comStr, serverRealName) != NULL && (strstr(comStr, "End of /NAMES list") != NULL || strstr(comStr, "End of /names list") != NULL
 										|| strstr(comStr, "end of /NAMES list") != NULL || strstr(comStr, "end of /names list") != NULL)
@@ -582,7 +586,7 @@ void IRCLoop()
 
 													strncpy(leaverNick, temp1, (sz < 16 ? sz : 16));
 
-#pragma region QTGUI_Area
+
 													if(strstr(comStr, "QUIT :Ping timeout") != NULL) 
 													{
 														ircTh->doEmitChangeYellowIRCData("-//- " + QString(leaverNick) + " left channel (Ping timeout).");
@@ -593,7 +597,7 @@ void IRCLoop()
 														ircTh->doEmitChangeYellowIRCData("-//- " + QString(leaverNick) + " left channel.");
 														_blinkNLine(QString(leaverNick) + " left channel.", "[Server]");
 													};
-#pragma endregion
+
 												};
 											};
 										};
@@ -612,9 +616,9 @@ void IRCLoop()
 										memset(temp + strlen(temp), '\0', 1);
 
 										QString newNick = QString((char*)(temp + strlen("NICK :")));
-#pragma region QTGUI_Area
+
 										ircTh->doEmitChangeYellowIRCData("[" + QString(senderNick) + "] is now known as [" + newNick + "].");
-#pragma endregion
+
 										_blinkNLine("[" + QString(senderNick) + "] is now known as [" + newNick + "].", "[Server]");
 
 									}
@@ -629,7 +633,7 @@ void IRCLoop()
 										int nickLen = temp2 - temp;
 										if(nickLen > 0) strncpy(senderNick, temp + 1, nickLen - 1);
 
-#pragma region QTGUI_Area
+
 										if(QString::fromLocal8Bit(senderNick) != ui->ircNickBox->text()) 
 										{
 											ircTh->doEmitChangeYellowIRCData("[" + QString(senderNick) + "] joined the channel.");
@@ -655,7 +659,7 @@ void IRCLoop()
 												connectedToIRC = true;
 											};
 										};
-#pragma endregion
+
 									}
 									else if(iWantToConnect && (strstr(comStr, "PART #") > 0 || strstr(comStr, "Part #") > 0
 										|| strstr(comStr, "part #") > 0))
@@ -668,10 +672,10 @@ void IRCLoop()
 										int nickLen = temp2 - temp;
 										if(nickLen > 0) strncpy(senderNick, temp + 1, nickLen - 1);
 
-#pragma region QTGUI_Area
+
 										if(QString::fromLocal8Bit(senderNick) != ui->ircNickBox->text()) ircTh->doEmitChangeYellowIRCData("[" + QString(senderNick) + "] left the channel.");
 										else ircTh->doEmitChangeYellowIRCData("You have left the channel.");
-#pragma endregion
+
 									};
 								}
 								else if(strstri(comStr, privTemp) != NULL)
@@ -686,9 +690,8 @@ void IRCLoop()
 									char *temp = NULL;
 									char *temp2 = NULL;
 
-#pragma region Pinger
 									__pinger(recvBuff);		
-#pragma endregion 
+
 									char senderNick[32] = {0};
 									if(strstr(tprv, ":") != NULL) temp = strstr(tprv, ":");
 									if(strstr(temp, "!") != NULL) temp2 = strstr(tprv, "!");
@@ -727,14 +730,14 @@ void IRCLoop()
 													_blinkNLine(strf, QString::fromLocal8Bit(senderNick));
 													ircTh->doEmitionPlayDckingSound();
 													bool HLFlag = doHL(strf.toLocal8Bit().data());
-													int cCode = 0;
-#pragma region QTGUI_Area
+                                                    int cCode = 0;
 													ircTh->doEmitChangeIRCData(false, HLFlag, cCode, strf, " <a href=\"nesca:" + QString::fromLocal8Bit(senderNick) + "\"><font style=\"color:#" + GetNickColor(senderNick) + "\">[" + QString::fromLocal8Bit(senderNick) + "]:</font></a>");
-#pragma endregion
+
 												};
 											};
 										};
 									};
+
 									ZeroMemory(senderNick, sizeof(senderNick));
 
 								}
@@ -782,9 +785,9 @@ void IRCLoop()
 													ircTh->doEmitionPlayDckingSound();
 													bool HLFlag = doHL(strf.toLocal8Bit().data());
 													int cCode = 0;
-#pragma region QTGUI_Area
+
 													ircTh->doEmitChangeIRCData(true, HLFlag, cCode, strf, "<a href=\"nesca:" + QString::fromLocal8Bit(senderNick) + "\"><font style=\"color:#" + GetNickColor(senderNick) + "\">[" + QString::fromLocal8Bit(senderNick) + "]:</font></a>");
-#pragma endregion
+
 												};
 											};
 										};
@@ -799,9 +802,9 @@ void IRCLoop()
 
 				if(iWantToConnect == true)
 				{
-#pragma region QTGUI_Area
+
 					ircTh->doEmitChangeRedIRCData("[-//-] IRC server went offline.");
-#pragma endregion
+
 					_blinkNLine("IRC server offlined!", "[Server]");
 					Sleep(5000);
 					connectedToIRC == false;
@@ -809,11 +812,11 @@ void IRCLoop()
 			}
 			else
 			{
-#pragma region QTGUI_Area
+
 				if(proxyEnabledFlag) ircTh->doEmitChangeRedIRCData("[-//-] Cannot connect to proxy. (" + QString::number(WSAGetLastError()) + ")" );
 				else ircTh->doEmitChangeRedIRCData("[-//-] Connection failed. (" + QString::number(WSAGetLastError()) + ")" );
 				
-#pragma endregion
+
 			};
 			CSSOCKET(lSock);
 		};

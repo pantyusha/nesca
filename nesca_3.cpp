@@ -51,8 +51,6 @@ bool smBit_8 = false;
 bool debugFileOK = false;
 bool privateMsgFlag = false;
 
-static char *argv[] = {0};
-static int argc = 0;
 char inputStr[256] = {0};
 bool proxyEnabledFlag = false;
 bool disableBlink = false;
@@ -217,7 +215,8 @@ void setSceneArea()
 	ui->graphicsVoice->setSceneRect(0, 0, ui->graphicsVoice->width(), ui->graphicsVoice->height());
 	ui->pbgv->setSceneRect(0, 0, ui->pbgv->width(), ui->pbgv->height());	
 	ui->jobRangeVisual->setSceneRect(0, 0, ui->jobRangeVisual->width(), ui->jobRangeVisual->height());	
-};
+}
+
 void setButtonStyleArea()
 {
 	ui->checkKeyBut->setStyleSheet(
@@ -301,7 +300,8 @@ void setButtonStyleArea()
 		"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
 		"}"
 		);
-};
+}
+
 void setSomeStyleArea()
 {
 	qApp->setStyleSheet(
@@ -433,7 +433,8 @@ void setSomeStyleArea()
 		"}"
 		);
 	setButtonStyleArea();
-}; 
+}
+
 void SetValidators()
 {
 	QRegExpValidator *validator = new QRegExpValidator(
@@ -472,7 +473,7 @@ void SetValidators()
 	
 	validator = new QRegExpValidator(QRegExp("[a-zA-Z0-9]{32}"), NULL);
 	ui->linePersKey->setValidator(validator);
-};
+}
 
 void nesca_3::slotDrawTextPlacers()
 {
@@ -480,7 +481,7 @@ void nesca_3::slotDrawTextPlacers()
 	fnt.setFamily("Eurostile");
 	if(ME2ScanFlag)
 	{
-		delete []sceneTextPlacer;
+        delete sceneTextPlacer;
 		sceneTextPlacer = NULL;
 		sceneTextPlacer = new QGraphicsScene();
 		ui->graphicTextPlacer->setScene(sceneTextPlacer);
@@ -560,14 +561,13 @@ void nesca_3::slotDrawTextPlacers()
 	}
 	else if(VoiceScanFlag)
 	{
-		sceneTextPlacer->clear();
-		QPen penPT(QColor(255, 255, 255), 0.5, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin);
+        sceneTextPlacer->clear();
 		
 		fnt.setPixelSize(8);
 
 		int h = ui->graphicLog->height();
 
-		delete []sceneTextPlacer;
+        delete sceneTextPlacer;
 		sceneTextPlacer = NULL;
 		sceneTextPlacer = new QGraphicsScene();
 		ui->graphicTextPlacer->setScene(sceneTextPlacer);
@@ -581,7 +581,8 @@ void nesca_3::slotDrawTextPlacers()
 			item->setDefaultTextColor(QColor(255, 255, 255, 180));
 		};
 	};
-};
+}
+
 void nesca_3::slotDrawDelimLines()
 {
 	int gHeight = ui->graphicLog->height();
@@ -608,7 +609,8 @@ void nesca_3::slotDrawDelimLines()
 	sceneGrid2->addRect(154, 0, 38, gHeight - 3, penDelim2);
 	sceneGrid2->addRect(194, 0, 38, gHeight - 3, penDelim2);
 	sceneGrid2->addRect(234, 0, 35, gHeight - 3, penDelim2);
-};
+}
+
 QList<int> gLOL0;
 QList<int> gLOL1;
 QList<int> gLOL2;
@@ -625,8 +627,7 @@ void nesca_3::slotQoSAddLine()
 	sceneGrid2->clear();
 	sceneUpper->clear();
 
-	float gHeight = ui->graphicLog->height();
-	float gWidth = ui->graphicLog->width();
+    float gHeight = ui->graphicLog->height();
 	
 	float fact = (float)100 / (float)MaxDataVal;
 	
@@ -700,13 +701,13 @@ void nesca_3::slotQoSAddLine()
 	item->setX(215);
 	item->setDefaultTextColor(Qt::white);
 	QOSWait = false;
-};
+}
+
 void nesca_3::slotQoSAddGrid()
 {
 	sceneGrid->clear();
 
-	int gWidth = ui->graphicLog->width();
-	int gHeight = ui->graphicLog->height();
+    int gWidth = ui->graphicLog->width();
 	if(MaxDataVal > 100) MaxDataVal = 100;
 	float fact = (float)100/(float)MaxDataVal;
 
@@ -716,11 +717,13 @@ void nesca_3::slotQoSAddGrid()
 		th += fact;
 		sceneGrid->addLine(0, th, gWidth, th, rpen);
 	};
-};
+}
+
 void nesca_3::setNickBox(QString str)
 {
 	ui->ircNickBox->setText(str);
-};
+}
+
 void nesca_3::slotAddLine(int x1, int y1, int x2, int y2)
 {
 	sceneGrid->addLine(x1, y1, x2, y2, pen);
@@ -729,7 +732,8 @@ void nesca_3::slotAddLine(int x1, int y1, int x2, int y2)
 		sceneGrid->removeItem(vectOld[10]);
 		sceneGrid->items().pop_back();
 	};
-};
+}
+
 void nesca_3::slotAddPolyLine()
 {
 	if(ME2ScanFlag)
@@ -771,17 +775,18 @@ void nesca_3::slotAddPolyLine()
 		};
 		if(u > 10) u = 1;
 	};
-};
+}
+
 void nesca_3::slotDrawGrid()
 {
 	sceneGrid->clear();
-};
+}
+
 void nesca_3::slotDrawActivityGrid()
 {
 	sceneActivityGrid->clear();
 	QPen penActivity(QColor(170, 170, 170, 150), 0.1);
 
-	int gWidth = ui->graphicActivityGrid->width();
 	int gHeight = ui->graphicActivityGrid->height();
 	
 	//Vertical
@@ -789,7 +794,7 @@ void nesca_3::slotDrawActivityGrid()
 	{
 		sceneActivityGrid->addLine(i, 0, i, gHeight, penActivity);
 	};
-};
+}
 
 void nesca_3::slotDrawActivityLine(QString data)
 {
@@ -800,12 +805,7 @@ void nesca_3::slotDrawActivityLine(QString data)
 
 	for(int i = 1; i < actLst.size(); ++i)
 	{
-		as += 2;
-		int al1 = actLst[i];
-		int al12 = actLst[i-1];
-		int yy = 16 - actLst[i - 1];
-		int yy2 = 16 - actLst[i];
-
+        as += 2;
 		sceneActivity->addLine(as - 2, 16 - actLst[i - 1], as, 16 - actLst[i], penActivity);
 	};
 	QFont fnt;
@@ -815,7 +815,8 @@ void nesca_3::slotDrawActivityLine(QString data)
 	titem->setX(43 - data.length()*2);
 	titem->setY(-5);
 	titem->setDefaultTextColor(QColor(255, 255, 255, 80));
-};
+}
+
 void nesca_3::slotDrawVoiceGrid(int factor)
 {
 	sceneGrid->clear();
@@ -839,7 +840,8 @@ void nesca_3::slotDrawVoiceGrid(int factor)
 	{
 		sceneGrid->addLine(i, 0, i, gHeight, penActivity);
 	};
-};
+}
+
 void nesca_3::activateME2ScanScene()
 {
 	if(ME2ScanFlag == false)
@@ -891,7 +893,8 @@ void nesca_3::activateME2ScanScene()
 			dtME2->start();
 		};
 	};
-};
+}
+
 void nesca_3::activateQoSScanBut()
 {
 	if(QoSScanFlag == false)
@@ -948,7 +951,8 @@ void nesca_3::activateQoSScanBut()
 		if(dtQoS->isRunning() == false) dtQoS->start();
 		if(dtGridQoS->isRunning() == false) dtGridQoS->start();
 	};
-};
+}
+
 void nesca_3::activateVoiceScanBut()
 {
 	if(VoiceScanFlag == false)
@@ -989,7 +993,8 @@ void nesca_3::activateVoiceScanBut()
 
 		if(vsTh->isRunning() == false) vsTh->start();
 	};
-};
+}
+
 void nesca_3::slotUpdatePie()
 {
 	sceneGraph->clear();
@@ -1145,7 +1150,8 @@ void nesca_3::slotUpdatePie()
 		item->setBrush(QBrush(Qt::darkRed));
 		sceneGraph->addItem(item);
 	};
-};
+}
+
 void nesca_3::activatePieStatBut()
 {
 	if(PieStatFlag == false)
@@ -1187,7 +1193,8 @@ void nesca_3::activatePieStatBut()
 
 		if(psTh->isRunning() == false) psTh->start();
 	};
-};
+}
+
 bool stopFirst;
 void nesca_3::importAndScan()
 {
@@ -1255,7 +1262,8 @@ void nesca_3::importAndScan()
 			STTTerminate();
 		};
 	};
-};
+}
+
 void nesca_3::switchDataFields()
 {
 	if(ui->switcherBut->text() == "<")
@@ -1272,7 +1280,8 @@ void nesca_3::switchDataFields()
 		ui->BAText->lower();
 		ui->switcherBut->setText("<");
 	};
-};
+}
+
 void nesca_3::slotBlinkMessage()
 {
 	if(blinkFlag) 
@@ -1287,7 +1296,8 @@ void nesca_3::slotBlinkMessage()
 		ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 255);background-color: rgba(2, 2, 2, 0);");	
 		ui->IRCModeBut->setStyleSheet("color: rgb(255, 0, 0);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 0, 0, 255);");
 	};
-};
+}
+
 void nesca_3::ChangeDispalyMode()
 {
 	if(widgetIsHidden == false && tray->isVisible() == false)
@@ -1315,7 +1325,8 @@ void nesca_3::ChangeDispalyMode()
 		printDelimiter = true;
 		ui->widgetIRC->setGeometry(QRect(500, 44, 500, 730));
 	};
-};
+}
+
 void nesca_3::switchToJobMode()
 {
 	if(ui->widgetJOB->geometry().x() == 500)
@@ -1332,7 +1343,8 @@ void nesca_3::switchToJobMode()
 		ui->widgetJOB->setGeometry(QRect(500, 44, 500, 730));
 		ui->JobModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
 	};
-};
+}
+
 void nesca_3::CheckProxy()
 {
 	saveOptions();
@@ -1348,7 +1360,8 @@ void nesca_3::CheckProxy()
 
 	chPTh->doEmitChangeYellowIRCData("Checking " + ui->ircProxy->text() + ":" + ui->ircProxyPort->text() + "...");
 	chPTh->start();
-};
+}
+
 void nesca_3::slotIRCOfflined()
 {
 	CSSOCKET(lSock);
@@ -1360,7 +1373,8 @@ void nesca_3::slotIRCOfflined()
 		"}");
 	ui->IRCConnectBut->setText("Connect");
 	ui->ircText->append("<span style=\"color:#efe100;\">[-//-] Disconnected.</span>");
-};
+}
+
 void nesca_3::ConnectToIRCServer()
 {
 	saveOptions();
@@ -1400,7 +1414,7 @@ void nesca_3::ConnectToIRCServer()
 						"}");
 					ui->IRCConnectBut->setText("Disconnect");
 					if(proxyEnabledFlag) ui->ircText->append("<span style=\"color:#efe100;\">[*] Using proxy " + QString(ircProxy) + ":" + QString(ircProxyPort) + ".</span>");
-					else ui->ircText->append("<span style=\"color:#efe100;\">[*] No proxy selected! Connecting with your ip address.</span>");
+                    else ui->ircText->append("<span style=\"color:#efe100;\">[*] No proxy selected! Connecting directly...</span>");
 					ircTh->start();
 				}
 				else
@@ -1437,7 +1451,8 @@ void nesca_3::ConnectToIRCServer()
 		ui->ircText->append("<span style=\"color:red;background-color:#313131;\">No IRC server specified!</span>");
 
 	};
-};
+}
+
 void nesca_3::ChangeIRCRawLog()
 {
 	if(ui->IRCModeChangerBut->text() == ":IRC raw")
@@ -1454,13 +1469,15 @@ void nesca_3::ChangeIRCRawLog()
 		ui->ircText->raise();
 		ui->ircRaw->lower();
 	};
-};
+}
+
 void nesca_3::ChangeNick()
 {
 	strcpy(ircNick, ui->ircNickBox->text().toLocal8Bit().data());
-	UserNickInit(lSock);
+    UserNickInit();
 	ui->shoutBox->setFocus();
-};
+}
+
 void nesca_3::CheckPersKey()
 {
 	emitIfOK = -1;
@@ -1473,9 +1490,10 @@ void nesca_3::CheckPersKey()
 	}
 	else
 	{
-		stt->doEmitionRedFoundData("Wait until checker-thread finishes.");		
+        stt->doEmitionRedFoundData("Still ckecking your key, please wait...");
 	};
-};
+}
+
 void nesca_3::CheckPersKey(int val = -1)
 {
 	emitIfOK = val;
@@ -1483,14 +1501,15 @@ void nesca_3::CheckPersKey(int val = -1)
 	_SaveBackupToFile();
 	if(!chKTh->isRunning()) 
 	{	
-		stt->doEmitionYellowFoundData("[Key check] Starting checker-thread...");
+        stt->doEmitionYellowFoundData("[Key check] Starting checker-thread...");
 		chKTh->start();
 	}
 	else
 	{
-		stt->doEmitionRedFoundData("Wait until checker-thread finishes.");		
+        stt->doEmitionRedFoundData("Still ckecking your key, please wait...");
 	};
-};
+}
+
 void _finishNick()
 {
 	QList<QListWidgetItem *> ql = ui->nickList->findItems(ui->shoutBox->text(), Qt::MatchStartsWith);
@@ -1499,7 +1518,8 @@ void _finishNick()
 		ui->shoutBox->setText(ql[0]->text() + ", ");
 		ui->shoutBox->setFocus();
 	};
-};
+}
+
 bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 {
 	if (obj == ui->shoutBox)
@@ -1544,13 +1564,17 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 			{
 				privateMsgFlag = true;
 				event->accept();
+                return true;
 			};
+            return false;
 		}
 		else if (event->type() == QEvent::KeyRelease)
 		{
 			privateMsgFlag = false;	
 			event->accept();
+            return true;
 		};
+        return false;
 	}
 	else if (obj == ui->widgetIRC)
 	{
@@ -1565,13 +1589,17 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 			{
 				privateMsgFlag = true;
 				event->accept();
+                return true;
 			};
+            return false;
 		}
 		else if (event->type() == QEvent::KeyRelease)
 		{
 			privateMsgFlag = false;	
 			event->accept();
+            return true;
 		};
+        return false;
 	}
 	else
 	{
@@ -1582,15 +1610,20 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 			{
 				privateMsgFlag = true;
 				event->accept();
+                return true;
 			};
+            return false;
 		}
 		else if(event->type() == QEvent::KeyRelease)
 		{
 			privateMsgFlag = false;	
 			event->accept();
+            return true;
 		};
+        return false;
 	};
-};
+}
+
 void nesca_3::ChangeTopic()
 {
 	if(ui->topicLine->text().size() > 0)
@@ -1609,7 +1642,8 @@ void nesca_3::ChangeTopic()
 
 		sendS(lSock, temp, strlen(temp), 0);
 	};
-};
+}
+
 void nesca_3::SaySmthng()
 {
 	if(ui->shoutBox->text().size() > 0)
@@ -1722,7 +1756,7 @@ void nesca_3::SaySmthng()
 			strcat(temp, nickP.toLocal8Bit().data());
 			strcat(temp, "\n");
 			ui->ircNickBox->setText(nickP);
-			UserNickInit(lSock);
+            UserNickInit();
 		}
 		else 
 		{
@@ -1762,7 +1796,8 @@ void nesca_3::SaySmthng()
 
 		ui->shoutBox->clear();
 	};
-};
+}
+
 void nesca_3::slotChangeCPModeToUTF()
 {
 	utfIRCFlag = true;
@@ -1775,7 +1810,8 @@ void nesca_3::slotChangeCPModeToUTF()
 	ui->ircRaw->setHtml( QString(wtfR) );
 	ui->ircText->verticalScrollBar()->setValue(ui->ircText->verticalScrollBar()->maximum());
 	ui->ircRaw->verticalScrollBar()->setValue(ui->ircRaw->verticalScrollBar()->maximum());
-};
+}
+
 void nesca_3::slotChangeCPModeTo1251()
 {
 	utfIRCFlag = false;
@@ -1786,7 +1822,8 @@ void nesca_3::slotChangeCPModeTo1251()
 	ui->ircRaw->setHtml(globalIRCRaw.replace("\n", "<br>"));
 	ui->ircText->verticalScrollBar()->setValue(ui->ircText->verticalScrollBar()->maximum());
 	ui->ircRaw->verticalScrollBar()->setValue(ui->ircRaw->verticalScrollBar()->maximum());
-};
+}
+
 void nesca_3::onLinkClicked(QUrl link)
 {
 	QString lnk = link.toString();
@@ -1805,7 +1842,8 @@ void nesca_3::onLinkClicked(QUrl link)
 	{
 		QDesktopServices::openUrl(link);
 	};
-};
+}
+
 void nesca_3::slotRestartIRC()
 {
 	ircPTh->terminate();
@@ -1813,12 +1851,14 @@ void nesca_3::slotRestartIRC()
 	CSSOCKET(lSock);
 	ircTh->terminate();
 	ircTh->start();
-};
+}
+
 void nesca_3::slotClearLogs()
 {
 	ui->dataText->clear();
 	ui->BAText->clear();
-};
+}
+
 void nesca_3::slotIRCGetTopic(QString str)
 {
 	ui->topicLine->setText(str);
@@ -1826,7 +1866,8 @@ void nesca_3::slotIRCGetTopic(QString str)
 	rData = "<font style=\"color:#c0ff00; text-decoration: underline;\">Topic: \"" + str + "\"</font>";
 	globalIRCText += rData + "\n";
 	ui->ircText->append(rData);
-};
+}
+
 //unsigned char jpgHeader[623] = {
 //	0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01, 0x01, 0x01, 0x00, 0x60, 
 //	0x00, 0x60, 0x00, 0x00, 0xFF, 0xDB, 0x00, 0x43, 0x00, 0x02, 0x01, 0x01, 0x02, 0x01, 0x01, 0x02, 
@@ -1944,7 +1985,8 @@ void nesca_3::slotSaveImage(QAction *qwe)
 			if(filename != "") image.save(filename + ".png");
 		};
 	};
-};
+}
+
 void PieStatView::contextMenuEvent(QContextMenuEvent *event)
 {
 	menuPS = new QMenu;
@@ -1952,7 +1994,8 @@ void PieStatView::contextMenuEvent(QContextMenuEvent *event)
 	menuPS->popup(event->globalPos());
 
 	connect(menuPS, SIGNAL(triggered(QAction *)), gthis, SLOT(slotSaveImage(QAction *)));
-};
+}
+
 QLabel *msgLbl;
 QLabel *msgDLbl;
 QLabel *msgTLbl;
@@ -1970,7 +2013,8 @@ void nesca_3::slotUnhidePopup(QString strD = "", QString senderNick = "")
 	if(msgLbl != NULL) msgLbl->setText(str);
 	if(msgNLbl != NULL) msgNLbl->setText(senderNick);
 	if(msgDLbl != NULL) msgDLbl->setText(QTime::currentTime().toString());
-};
+}
+
 void CreateMsgPopupWidget(QString str = "", QString senderNick = "")
 {
 	QDesktopWidget desk;
@@ -2032,7 +2076,8 @@ void CreateMsgPopupWidget(QString str = "", QString senderNick = "")
 		"color: rgb(246, 246, 246);background-color: rgba(2, 2, 2, 0); border:none;font-weight: bold;text-decoration:underline;"
 		);
 	msgNLbl->show();
-};
+}
+
 QTextBrowser *SendData;
 QTextBrowser *RecvData;
 void nesca_3::slotShowDataflow()
@@ -2068,15 +2113,16 @@ void nesca_3::slotShowDataflow()
 	else
 	{
 		ui->DataflowModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
-		delete []SendData;
-		delete []RecvData;
-		delete []qwm;
+        delete SendData;
+        delete RecvData;
+        delete qwm;
 		qwm = NULL;
 		RecvData = NULL;
 		SendData = NULL;
 		MapWidgetOpened = false;
 	};
-};
+}
+
 QGraphicsPathItem *GiveMeGItem(QVector<QPointF> vAnomLst)
 {
 	QPolygonF qpf;
@@ -2094,7 +2140,8 @@ QGraphicsPathItem *GiveMeGItem(QVector<QPointF> vAnomLst)
 		};
 	};
 	return new QGraphicsPathItem(path);
-};
+}
+
 void nesca_3::slotVoiceAddLine()
 {
 	int as = 0;
@@ -2157,7 +2204,8 @@ void nesca_3::slotVoiceAddLine()
 			sceneVoice->addLine(as - 2, 120 - vSSHLst[i - 1], as, 120 - vSSHLst[i] - 1, penQoS7);
 		};
 	};
-};
+}
+
 void nesca_3::slotShowNicks()
 {
 	if(ui->nickShowBut->text() == "<")
@@ -2171,7 +2219,8 @@ void nesca_3::slotShowNicks()
 		ui->nickShowBut->setText("<");
 		ui->nickList->lower();
 	};
-};
+}
+
 QRegExp _rOutProt(" HTTP/1.\\d+");
 QRegExp _rOutPath(" /(\\w|\\.|,|/|:|-|_|\\?|!|\\@|#|\\$|%|\\^|&|\\*|\\(|\\)|=|\\+|<|>|;|:|\"|'|~|\\[|\\])* ");
 QRegExp _rOutHost("Host: ((\\w|\\d|\\.|:|/)*)\\r\\n");
@@ -2204,7 +2253,8 @@ void nesca_3::slotOutData(QString ip, QString str)
 
 		SendData->append("<font color=\"#F0FFFF\">[" + ip + "]</font><br>" + str + "<hr><br>");
 	};
-};
+}
+
 QRegExp _rIncProt("HTTP/1.\\d+ ");
 QRegExp _rIncHost("Host: ((\\w|\\d|\\.|:|/)*)\\r\\n");
 QRegExp _rIncTags1("&lt;.{1,8}&gt;");
@@ -2357,7 +2407,8 @@ void nesca_3::slotIncData(QString ip, QString str)
 			RecvData->append("<font color=\"#F0FFFF\">[" + ip + "]</font><br>" + str + "<hr><br>");
 		};
 	};
-};
+}
+
 #pragma region SM_Buts
 void nesca_3::smReaction()
 {
@@ -2512,8 +2563,7 @@ void nesca_3::smReaction()
 			stt->doEmitionDebugFoundData("[HTML Debug mode OFF]");
 		};
 	};
-
-};
+}
 
 void nesca_3::IPScanSeq()
 {
@@ -2597,7 +2647,8 @@ void nesca_3::IPScanSeq()
 			STTTerminate();
 		};
 	};
-};
+}
+
 void nesca_3::DNSScanSeq()
 {
 	if(ui->lineEditStartIPDNS->text() != "")
@@ -2648,7 +2699,8 @@ void nesca_3::DNSScanSeq()
 	{
 		stt->doEmitionRedFoundData("Wrong mask input.");
 	};
-};
+}
+
 void nesca_3::ImportScanSeq()
 {
 	QString fileName;
@@ -2684,7 +2736,8 @@ void nesca_3::ImportScanSeq()
 	{
 		stt->doEmitionYellowFoundData("Empty filename.");
 	};
-};
+}
+
 QLabel *smsgLbl;
 QLabel *smsgNLbl;
 void nesca_3::slotShowServerMsg(QString str)
@@ -2705,11 +2758,13 @@ void nesca_3::slotShowServerMsg(QString str)
 				"position: absolute;"
 				);
 	 msgBox.exec();
-};
-void nesca_3::DNSLine_ValueChanged(QString str)
+}
+
+void nesca_3::DNSLine_ValueChanged()
 {
 	if(globalScanFlag == 0) ui->startScanButton_4->setText("Start");	
-};
+}
+
 void nesca_3::slotRestoreDefPorts()
 {
 	int ci = ui->tabMainWidget->currentIndex();
@@ -2726,7 +2781,8 @@ void nesca_3::slotRestoreDefPorts()
 	{
 		ui->importPorts->setText(PORTSET);
 	};
-};
+}
+
 QGraphicsTextItem *textItem = NULL;
 QGraphicsRectItem* pbItem = NULL;
 QGraphicsRectItem* pbBlackRectItem = NULL;
@@ -2780,12 +2836,14 @@ void nesca_3::slotPBUpdate()
 	pbScene->addLine(0, 66, 8, 66, pbPen);
 	pbScene->addLine(4, 77, 6, 77, pbPen);
 	pbScene->addLine(4, 88, 6, 88, pbPen);
-};
+}
+
 void nesca_3::changeNSTrackLabel(bool status)
 {
 	if(status) ui->NSTrackStatusLabel->setStyleSheet("background-color: green; border: 1px solid white;");
 	else ui->NSTrackStatusLabel->setStyleSheet("background-color: black; border: 1px solid white;");
-};
+}
+
 #pragma region "Signal assignments"
 void nesca_3::ConnectEvrthng()
 {
@@ -2918,8 +2976,7 @@ void nesca_3::ConnectEvrthng()
 	connect ( vsTh, SIGNAL(sDrawTextPlacers()), this, SLOT(slotDrawTextPlacers()));
 	connect ( psTh, SIGNAL(sUpdatePie()), this, SLOT(slotUpdatePie()) );
 	connect ( irc_nmb, SIGNAL(sBlinkMessage()), this, SLOT(slotBlinkMessage()) );
-};
-
+}
 
 void RestoreSession()
 {
@@ -3203,6 +3260,7 @@ void RestoreSession()
 
 	};
 }
+
 void CreateVerFile()
 {
 	FILE *vf = fopen("version", "w");
@@ -3212,12 +3270,12 @@ void CreateVerFile()
 		fputs(gVER, vf);
 		fclose(vf);
 	};
-};
+}
+
 char *GetVer()
 {
 	int dver = 0;
-	int tver = 0;
-	char t[32] = __DATE__;
+    int tver = 0;
 
 	dver = __DATE__[9] - 48;
 	dver *= 10;
@@ -3262,20 +3320,22 @@ char *GetVer()
 	strcat(db, tb);
 
 	return db;
-};
+}
 
 void nesca_3::slotShowRedVersion()
 {
 	ui->rVerLabel->show();
-};
+}
+
 void _startVerCheck()
 {
 	vct->start();
-};
+}
+
 void _startMsgCheck()
 {
 	mct->start();
-};
+}
 
 	nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
 {
@@ -3362,11 +3422,13 @@ void _startMsgCheck()
 	//	jobRangeVisualScene->addLine(step, 0, step, 41, iprvPen);
 	//	step += 30;
 	//};
-};
+}
+
 void nesca_3::playFcknSound()
 {
 	QSound::play("00000036.wav");	
-};
+}
+
 void nesca_3::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton) {
@@ -3374,19 +3436,22 @@ void nesca_3::mousePressEvent(QMouseEvent *event)
 		event->accept();
 	};
 }
+
 void nesca_3::mouseReleaseEvent(QMouseEvent * event)
 {
 	if (event->modifiers() == Qt::ControlModifier) {
 		privateMsgFlag = false;
 		event->accept();
 	};
-};
+}
+
 void nesca_3::mouseMoveEvent(QMouseEvent * event)
 {
 	QPoint CPos = (event->globalPos() - dragPosition);
 	QWidget::move(CPos);
 	if(qwm != NULL) qwm->move(CPos.x() + WIDGET_WIDTH + 5, CPos.y());
-};
+}
+
 void nesca_3::exitButtonClicked()
 {
 	globalScanFlag = false;
@@ -3395,7 +3460,8 @@ void nesca_3::exitButtonClicked()
 	WSACleanup();
 #endif
 	qApp->quit();
-};
+}
+
 void nesca_3::trayButtonClicked()
 {
 	if(tray->isVisible())
@@ -3408,15 +3474,18 @@ void nesca_3::trayButtonClicked()
 		hide();
 		tray->show();
 	};
-};
+}
+
 void nesca_3::ChangeShuffle(bool val)
 {
 	gShuffle = val;
-};
+}
+
 void nesca_3::ChangeTrackerOK(bool val)
 {
 	trackerOK = val;
-};
+}
+
 void nesca_3::ChangePingerOK(bool val)
 {
 	ui->PingTO->setEnabled(val);
@@ -3429,13 +3498,13 @@ void nesca_3::ChangePingerOK(bool val)
 	{
 		ui->PingTO->setStyleSheet("color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;");
 	};
-};
-
+}
 
 void nesca_3::ChangeDebugFileState(bool val)
 {
 	debugFileOK = val;
-};
+}
+
 void nesca_3::saveOptions()
 {
 	int ci = ui->tabMainWidget->currentIndex();
@@ -3510,7 +3579,8 @@ void nesca_3::saveOptions()
 	strcpy(ircProxy, ui->ircProxy->text().toLocal8Bit().data());
 	strcpy(ircProxyPort, ui->ircProxyPort->text().toLocal8Bit().data());
 	strcpy(ircNick, ui->ircNickBox->text().toLocal8Bit().data());
-};
+}
+
 void nesca_3::STTTerminate()
 {
 	importFileName = "";
@@ -3536,7 +3606,8 @@ void nesca_3::STTTerminate()
 	ui->startScanButton_4->setText("Start");
 	ui->importButton->setText("Import&&Scan");
 	ui->labelStatus_Value->setText("Idle");
-};
+}
+
 bool dfLocked = false;
 void writeDebugFile(QString str)
 {
@@ -3567,7 +3638,8 @@ void writeDebugFile(QString str)
 	{
  		stt->doEmitionRedFoundData("[DEBUG: Cannot open " + QString(fn) + "]");
 	};
-};
+}
+
 void nesca_3::startScanButtonClicked()
 {
 	if(startFlag == false)
@@ -3621,7 +3693,8 @@ void nesca_3::startScanButtonClicked()
 			STTTerminate();
 		};
 	};
-};
+}
+
 void nesca_3::startScanButtonClickedDNS()
 {
 	if(startFlag == false)
@@ -3675,44 +3748,54 @@ void nesca_3::startScanButtonClickedDNS()
 			STTTerminate();
 		};
 	};
-};
+}
+
 void nesca_3::logoLabelClicked()
 {
 	QDesktopServices::openUrl(QUrl("http://nesca.d3w.org/"));
-};
+}
+
 void nesca_3::ChangeLabelTO_ValueChanged(QString str)
 {
 	gTimeOut = str.toInt();
-};
+}
+
 void nesca_3::ChangeLabelThreads_ValueChanged(QString str)
 {
 	gThreads = str.toInt();
-};
+}
+
 void nesca_3::PingTO_ChangeValue(QString str)
 {
 	gPingTimeout = str.toInt();
-};
+}
+
 void nesca_3::ThreadDelay_ChangeValue(QString str)
 {
 	gThreadDelay = str.toInt();
-};
+}
+
 void nesca_3::MaxBrutingThr_ChangeValue(QString str)
 {
 	gMaxBrutingThreads = str.toInt();
-};
+}
+
 void nesca_3::appendRedBAData(QString str)
 {
 	ui->BAText->append("<span style=\"color:red;background-color:#313131;\">" + QString::fromUtf8(str.toLocal8Bit().data()) + "</span>");
-};
+}
+
 void nesca_3::appendGreenBAData(QString str)
 {
 	ui->BAText->append("<span style=\"color:#06ff00;\">" + str + "</span>");
-};
+}
+
 void nesca_3::appendDefaultText(QString str)
 {
 	ui->dataText->append("<p style=\"color: #a1a1a1;\">[" + QTime::currentTime().toString() + "] " + str + "</p>");
 	if(debugFileOK) writeDebugFile(str + "\n");
-};
+}
+
 void nesca_3::appendErrText(QString str)
 {
 	ui->dataText->append("<span style=\"color:red;background-color:#313131;\">[" + QTime::currentTime().toString() + "]" + QString::fromUtf8(str.toLocal8Bit().data()) + "</span>");
@@ -3726,28 +3809,31 @@ void nesca_3::appendErrText(QString str)
 		stt->terminate();
 	};
 	if(debugFileOK) writeDebugFile(str + "\n");
-};
+}
+
 void nesca_3::appendOKText(QString str)
 {
 	ui->dataText->append("<span style=\"color:#06ff00;\">[" + QTime::currentTime().toString() + "][OK] " + str + "</span>");
 	if(debugFileOK) writeDebugFile(str + "\n");
-};
+}
+
 void nesca_3::appendNotifyText(QString str)
 {
 	ui->dataText->append("<span style=\"color:#efe100;\">[" + QTime::currentTime().toString() + "][*] " + str + "</span>");
 	if(debugFileOK) writeDebugFile(str + "\n");
-};
+}
+
 void nesca_3::appendDebugText(QString str)
 {
 	ui->dataText->append("<span style=\"color:#0084ff;\">[DEBUG] " + str + "</span>");
 	if(debugFileOK) writeDebugFile(str + "\n");
-};
+}
+
 
 QRegExp r("[ht|f]{0,2}tp[s]{0,1}://(\\w|\\.|,|/|:|-|_|\\?|!|\\@|#|\\$|%|\\^|&|\\*|=|\\+|<|>|;|:|\"|'|~|\\[|\\])*[\\s|\\t]{0,1}");
 QRegExp under("((.+|(.+$)))");
 QRegExp boldr("((.+|(.+$)))");
 QRegExp colr("(\\d+[,\\d+]{0,2})");
-
 QString GetColorCode(int mode, QString str)
 {
 	QRegExp c("(\\d{0,2})");
@@ -3787,7 +3873,8 @@ QString GetColorCode(int mode, QString str)
 	else result = "#AFAFAF";
 
 	return result;
-};
+}
+
 void nesca_3::appendDefaultIRCTextOut(QString str)
 {
 	bool thisIsUrl = false;
@@ -3816,8 +3903,9 @@ void nesca_3::appendDefaultIRCTextOut(QString str)
 	else ui->ircText->append(rData);
 
 	thisIsUrl = false;
-};
-void nesca_3::appendDefaultIRCText(bool pm, bool hlflag, int cCode, QString str, QString senderNick)
+}
+
+void nesca_3::appendDefaultIRCText(bool pm, bool hlflag, QString str, QString senderNick)
 {
 	bool thisIsUrl = false;
 	
@@ -3923,28 +4011,32 @@ void nesca_3::appendDefaultIRCText(bool pm, bool hlflag, int cCode, QString str,
 		}
 		else ui->ircText->append(rData);
 	};
-};
+}
+
 void nesca_3::appendRedIRCText(QString str)
 {
 	QString rData;
 	rData = "<font style=\"color:red;background-color:#313131;\">[" + QTime::currentTime().toString() + "] " + str + "</font>";
 	globalIRCText += rData + "\n";
 	ui->ircText->append(rData);
-};
+}
+
 void nesca_3::appendGreenIRCText(QString str)
 {
 	QString rData;
 	rData = "<font style=\"color:#06ff00;\">[" + QTime::currentTime().toString() + "] " + str + "</font>";
 	globalIRCText += rData + "\n";
 	ui->ircText->append(rData);
-};
+}
+
 void nesca_3::appendYellowIRCText(QString str)
 {
 	QString rData;
 	rData = "<font style=\"color:#efe100;\">[" + QTime::currentTime().toString() + "] " + "[*] " + str.trimmed() + "</font>";
 	globalIRCText += rData + "\n";
 	ui->ircText->append(rData);
-};
+}
+
 void nesca_3::appendDefaultIRCRawTextInc(QString str)
 {
 	QString rData;
@@ -3957,7 +4049,8 @@ void nesca_3::appendDefaultIRCRawTextInc(QString str)
 		ui->ircRaw->append(QString(wtf));
 	}
 	else ui->ircRaw->append(rData);
-};
+}
+
 void nesca_3::appendDefaultIRCRawTextOut(QString str)
 {
 	QString rData;
@@ -3970,11 +4063,13 @@ void nesca_3::appendDefaultIRCRawTextOut(QString str)
 		ui->ircRaw->append(QString(wtf));
 	}
 	else ui->ircRaw->append(rData);
-};
+}
+
 void nesca_3::slotClearNickList()
 {
 	ui->nickList->clear();
-};
+}
+
 void nesca_3::slotAppendIRCNick(QString str)
 {
 	if(str.size() > 0 && str != " ") 
@@ -3982,7 +4077,8 @@ void nesca_3::slotAppendIRCNick(QString str)
 		ui->nickList->addItem(str.remove("@"));
 		ui->nickList->setGeometry(ui->nickList->x(), ui->nickList->y(), ui->nickList->width(), ui->nickList->count() * 17 + 5);
 	};
-};
+}
+
 void nesca_3::slotItemClicked(QListWidgetItem* wi)
 {
 	if(privateMsgFlag == false)
@@ -3996,7 +4092,8 @@ void nesca_3::slotItemClicked(QListWidgetItem* wi)
 		ui->shoutBox->setText("/w " + wi->text().remove("@") + " ");
 		ui->shoutBox->setFocus();
 	};
-};
+}
+
 nesca_3::~nesca_3()
 {
 	delete[] ui;

@@ -672,9 +672,9 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				if(cCode == SOCKET_ERROR) {
 
 					int errorCode = WSAGetLastError();
-                    if(errorCode == ENOTSOCK) {
+                    if(errorCode == WSAENOTSOCK) {
 
-                        while(errorCode == ENOTSOCK)
+                        while(errorCode == WSAENOTSOCK)
 						{
                             if(gDebugMode) stt->doEmitionDebugFoundData("[BA][ENOTSOCK] - [" + QString(ip) + ":" + QString::number(port) + "]");
 							CSSOCKET(sock);
@@ -686,7 +686,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 
 						CSSOCKET(sock);
 
-                        if(errorCode != ETIMEDOUT)
+                        if(errorCode != WSAETIMEDOUT)
 						{
 							stt->doEmitionRedFoundData("[BA] Cannot connect to " + QString(ip) + "[" + QString::number(errorCode) + "]");
 						};
@@ -918,7 +918,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 				sockFTP = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 				connectionResult = connect(sockFTP, (sockaddr*)&sockAddr, sizeof(sockAddr));
 
-                while(WSAGetLastError() == ENOTSOCK)
+                while(WSAGetLastError() == WSAENOTSOCK)
 				{
                     if(gDebugMode) stt->doEmitionDebugFoundData("[FTP][ENOTSOCK] [" + QString(ip) + ":" + QString::number(port) + "]");
 					CSSOCKET(sockFTP);
@@ -1249,13 +1249,13 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
             {
 				int WSAerr;
 				if(connectionResult == -1) WSAerr = WSAGetLastError();
-                else WSAerr = ETIMEDOUT;
+                else WSAerr = WSAETIMEDOUT;
 
                 if(gThreads > 1
-                        && WSAerr != ETIMEDOUT/*Timeout*/
-                        && WSAerr != ENOBUFS/*POOLOVERFLOW*/
-                        && WSAerr != ECONNREFUSED/*WSAECONNREFUSED*/
-                        && WSAerr != ECONNRESET/*WSAECONNRESET*/
+					&& WSAerr != WSAETIMEDOUT/*Timeout*/
+					&& WSAerr != WSAENOBUFS/*POOLOVERFLOW*/
+					&& WSAerr != WSAECONNREFUSED/*WSAECONNREFUSED*/
+					&& WSAerr != WSAECONNRESET/*WSAECONNRESET*/
                         && WSAerr != 0)
 				{
 					stt->doEmitionRedFoundData("[FTPBrute] Cannot connect to " + QString(ip) + " " + QString(std::to_string(WSAerr).c_str()));
@@ -1524,7 +1524,7 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 	if(iResult == SOCKET_ERROR)
 	{
         iError = WSAGetLastError();
-        if(iError == EINPROGRESS)
+		if (iError == WSAEWOULDBLOCK)
 		{	
 			fd_set read_fs;
 			FD_ZERO(&read_fs);
@@ -1635,11 +1635,11 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 		else 
 		{
 			++offlines;
-            if(iError == ENOBUFS)
+			if (iError == WSAENOBUFS)
 			{
                 stt->doEmitionRedFoundData("[ENOBUFS] Connection pool depleted " + QString(ip) + ":" + QString::number(port));
 			}
-            else if(iError == EADDRNOTAVAIL)
+			else if (iError == WSAEADDRNOTAVAIL)
 			{
                 stt->doEmitionRedFoundData("[EADDRNOTAVAIL] " + QString(ip) +
 											":" + QString::number(port) + 
@@ -2157,7 +2157,7 @@ int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int
 	int cCode = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 	int cErrCode = WSAGetLastError();
 
-    while(cErrCode == ENOTSOCK)
+    while(cErrCode == WSAENOTSOCK)
 	{
 		CSSOCKET(sock);
 		sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );

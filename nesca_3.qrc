@@ -1,5 +1,6 @@
 <RCC>
-    <qresource prefix="/nesca_3">
-        <file>Eurostile.ttf</file>
-    </qresource>
+  <qresource prefix="/nesca_3">
+    <file>Eurostile.ttf</file>
+    <file>nesca.ico</file>
+  </qresource>
 </RCC>

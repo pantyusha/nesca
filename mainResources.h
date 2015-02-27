@@ -55,26 +55,29 @@ typedef int					BOOL;
 #ifndef SOCKET_ERROR
 #define SOCKET_ERROR        (-1)
 #endif
-#ifndef EINPROGRESS
-#define EINPROGRESS         WSAEINPROGRESS          //10036
+#ifndef WSAEWOULDBLOCK
+#define WSAEWOULDBLOCK         EWOULDBLOCK          //10035
 #endif
-#ifndef ENOTSOCK
-#define ENOTSOCK            WSAENOTSOCK             //10038
+#ifndef WSAEINPROGRESS
+#define WSAEINPROGRESS         EINPROGRESS          //10036
 #endif
-#ifndef EADDRNOTAVAIL
-#define EADDRNOTAVAIL       WSAEADDRNOTAVAIL        //10049
+#ifndef WSAENOTSOCK
+#define WSAENOTSOCK            ENOTSOCK             //10038
 #endif
-#ifndef ECONNRESET
-#define ECONNRESET          WSAECONNRESET           //10054
+#ifndef WSAEADDRNOTAVAIL
+#define WSAEADDRNOTAVAIL       EADDRNOTAVAIL        //10049
 #endif
-#ifndef ENOBUFS
-#define ENOBUFS             WSAENOBUFS              //10055
+#ifndef WSAECONNRESET
+#define WSAECONNRESET          ECONNRESET           //10054
 #endif
-#ifndef ETIMEDOUT
-#define ETIMEDOUT           WSAETIMEDOUT            //10060
+#ifndef WSAENOBUFS
+#define WSAENOBUFS             ENOBUFS              //10055
 #endif
-#ifndef ECONNREFUSED
-#define ECONNREFUSED        WSAECONNREFUSED         //10061
+#ifndef WSAETIMEDOUT
+#define WSAETIMEDOUT           ETIMEDOUT            //10060
+#endif
+#ifndef WSAECONNREFUSED
+#define WSAECONNREFUSED        ECONNREFUSED         //10061
 #endif
 
 #endif

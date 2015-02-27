@@ -114,7 +114,7 @@ void _blinkNLine(QString tempData = "", QString senderNick = "")
 
 int sendS(int lSock, char *msg, int len, int mode)
 {
-    if(lSock == ENOTSOCK || lSock <= 0 || !connectedToIRC) {
+    if(lSock == WSAENOTSOCK || lSock <= 0 || !connectedToIRC) {
         ircTh->doEmitChangeRedIRCData("Not connected.");
         return -1;
     }

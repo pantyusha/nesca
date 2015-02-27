@@ -44,10 +44,39 @@ typedef	hostent             HOSTENT;
 typedef struct linger       LINGER;
 typedef int					BOOL;
 
-#define INVALID_SOCKET  (SOCKET)(~0)
-#define SOCKET_ERROR    (-1)
-#define SD_BOTH         0x02
-#define FAR             far
+#define SD_BOTH             0x02
+#ifndef FAR
+#define FAR                 far
+#endif
+
+#ifndef INVALID_SOCKET
+#define INVALID_SOCKET      (SOCKET)(~0)
+#endif
+#ifndef SOCKET_ERROR
+#define SOCKET_ERROR        (-1)
+#endif
+#ifndef EINPROGRESS
+#define EINPROGRESS         WSAEINPROGRESS          //10036
+#endif
+#ifndef ENOTSOCK
+#define ENOTSOCK            WSAENOTSOCK             //10038
+#endif
+#ifndef EADDRNOTAVAIL
+#define EADDRNOTAVAIL       WSAEADDRNOTAVAIL        //10049
+#endif
+#ifndef ECONNRESET
+#define ECONNRESET          WSAECONNRESET           //10054
+#endif
+#ifndef ENOBUFS
+#define ENOBUFS             WSAENOBUFS              //10055
+#endif
+#ifndef ETIMEDOUT
+#define ETIMEDOUT           WSAETIMEDOUT            //10060
+#endif
+#ifndef ECONNREFUSED
+#define ECONNREFUSED        WSAECONNREFUSED         //10061
+#endif
+
 #endif
 
 #define MAX_ADDR_LEN 128

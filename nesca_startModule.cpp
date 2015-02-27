@@ -4,9 +4,11 @@
 #include "externData.h"
 #include "externFunctions.h"
 
-typedef struct ST{ 
+typedef struct {
     char argv[MAX_ADDR_LEN];
-}sockstruct;
+} ST;
+
+ST *st = NULL;
 
 QJsonArray *jsonArr = new QJsonArray();
 
@@ -420,7 +422,8 @@ void *_timer()
 		ZeroMemory(dbuffer, sizeof(dbuffer));
 		Sleep(1000);
 	};
-};
+}
+
 bool trackAlreadyGoing = false;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 void _tracker()
@@ -873,7 +876,7 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[])
 //
 //
 //	return res;
-//};
+//}
 
 Connector con;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
@@ -884,7 +887,7 @@ void *_connect(void* ss)
 {	
 	++ipCounter;
 	char ip[MAX_ADDR_LEN] = {0};
-	strcpy(ip, ((sockstruct*)ss)->argv);
+    strcpy(ip, ((ST*)ss)->argv);
 	//char hostLog[256] = {0};
 	//strcpy(hostLog, GetHost(ip));
 	delete []ss;
@@ -1059,7 +1062,6 @@ void _passLoginFapper()
 	
 		stt->doEmitionGreenFoundData("WFPassword list loaded (" + QString(std::to_string(MaxWFPass).c_str()) + " entries)");
 	
-
 		i = 0;
 
 		while(fgets(buffFG, 32, wfLoginList) != NULL)
@@ -1071,26 +1073,18 @@ void _passLoginFapper()
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
-		
 		stt->doEmitionGreenFoundData("WFLogin list loaded (" + QString(std::to_string(MaxWFLogin).c_str()) + " entries)");
-		
-
-		fclose(wfLoginList);
-		fclose(wfLoginList);
+        fclose(wfPassList);
+        fclose(wfLoginList);
 	} 
 	else 
-	{
-		
+    {
 		stt->doEmitionRedFoundData("No password/login list found");
-		stt->doEmitionKillSttThread();
-		
+        stt->doEmitionKillSttThread();
 	};
 
-#pragma region SSHPASS
 	MaxSSHPass = 0;
-
 	FILE *sshlpList;
-	
 	ZeroMemory(buffFG, sizeof(buffFG));
 	i = 0;
 
@@ -1122,24 +1116,17 @@ void _passLoginFapper()
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
-	
 		stt->doEmitionGreenFoundData("SSH Password list loaded (" + QString(std::to_string(MaxSSHPass).c_str()) + " entries)");
 	
-		
 		fclose(sshlpList);
 	} 
 	else 
-	{
-		
+    {
 		stt->doEmitionRedFoundData("No password/login list found");
 		stt->doEmitionKillSttThread();
-		
 	};
-
-
 	
 	stt->doEmitionYellowFoundData("BA: ~" + QString(std::to_string(MaxLogin * MaxPass/gTimeOut/60).c_str()) + "; WF: ~" + QString(std::to_string(MaxWFLogin * MaxWFPass/gTimeOut/60).c_str()) + "; SSH: ~" + QString(std::to_string(MaxSSHPass/gTimeOut/60).c_str()));
-	
 }
 
 void ReadUTF8(FILE* nFile, char *cp)
@@ -1165,8 +1152,7 @@ void ReadUTF8(FILE* nFile, char *cp)
 		if(strcmp(cp, "UTF") == 0) fseek(nFile, 3, 0);
 
 		GlobalNegatives = new char*[GlobalNegativeSize + 2];
-		
-		char buffcpy[256] = {0};
+
 		while(fgets(buffFG, sizeof(buffFG), nFile) != NULL)
 		{
 			if(buffFG[0] == '#' || buffFG[0] == ' ' || buffFG[0] == '\n' || buffFG[0] == '\r' || strcmp(buffFG, "") == 0 || 
@@ -1303,9 +1289,7 @@ std::string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage)
 }
 void _NegativeFapper()
 {
-	FILE *nFile = fopen("negatives.txt", "rb");
-	char buffFG[256] = {0};
-	unsigned char buffcpy[256] = {0};
+    FILE *nFile = fopen("negatives.txt", "rb");
 
 	if( nFile != NULL)
 	{
@@ -1648,9 +1632,7 @@ int fInit(int InitMode, char *gR)
 
 void FileLoader(char *str)
 {
-	char res[256] = {0}; 
-	char curIP[256] = {0}, curIPCopy[256] = {0};
-	char tempBuff[4] = {0};
+    char curIP[256] = {0}, curIPCopy[256] = {0};
 	unsigned int importFileSize = 0;
 
 	FILE *fl = fopen(str, "r");
@@ -1782,11 +1764,7 @@ void FileLoader(char *str)
 					++flCounter;
 				}
 				else if(strstr(curIP, "/") != NULL)
-				{
-					char *str1;
-					char *str2;
-					char res[8] = {0}; 
-
+                {
 					int mask = 0;
 					char *ptr1 = strstr(curIP, "/");
 					GetOctets(curIP);
@@ -1895,8 +1873,7 @@ char *GetCIDRRangeStr(char *str)
 {
 	char result[128] = {0};
 	char start[32] = {0};
-	char end[32] = {0};
-	char buff[16] = {0};
+    char end[32] = {0};
 
 	int mask = 0;
 	char *ptr1 = strstr(str, "/");
@@ -2188,8 +2165,6 @@ return 0;
 char charAll[38] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
 			'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 
 			'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '_', '-'};
-
-sockstruct *st = NULL;
 char iip[256] = {0};
 int _getPos(char l)
 {
@@ -2269,7 +2244,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 #pragma region DNS-SCAN
 		if(globalScanFlag == false) return 0;
 		strcpy(endIP2, saveMask);
-		st = new sockstruct();
+        st = new ST();
 		ZeroMemory(st->argv, sizeof(st->argv));
 		ZeroMemory(iip, sizeof(iip));
 		while(cons >= gThreads) Sleep(300);
@@ -2323,8 +2298,8 @@ int startScan(char* args)
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	CreateDirectory(L"./result_files", NULL);
 #else
-	struct stat st = {0};
-	if (stat("./result_files", &st) == -1) {
+    struct stat str = {0};
+    if (stat("./result_files", &str) == -1) {
 		mkdir("./result_files", 0700);
 	}
 #endif
@@ -2379,26 +2354,32 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
 		unsigned long ip1 = (ipsstart[0] * 16777216) + (ipsstart[1] * 65536) + (ipsstart[2] * 256) + ipsstart[3];
 		unsigned long ip2 = (ipsend[0] * 16777216) + (ipsend[1] * 65536) + (ipsend[2] * 256) + ipsend[3];
-		
-		switch (gShuffle) {
+
+        switch (gShuffle) {
 		case true: {
 					   std::vector<std::string> ipVec;
 					   struct in_addr tAddr;
 
 					   for (unsigned long i = ip1; i <= ip2; ++i) {
 						   if (globalScanFlag == false) break;
-						   int offset = ip2 - i;
+                           unsigned long offset = ip2 - i;
 
 						   tAddr.s_addr = i;
-						   ipVec.push_back(std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1));
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+						   ipVec.push_back(std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1));
+#else
+                           tAddr.s_addr = ntohl(tAddr.s_addr);
+                           const char *ipStr = inet_ntoa(tAddr);
+                           ipVec.push_back((char*)ipStr);
+#endif
 						   if (ipVec.size() >= (offset < 1000 ? offset : 1000)) {
 
 							   std::random_shuffle(ipVec.begin(), ipVec.end());
 							   while (ipVec.size() != 0) {
 
 								   if (globalScanFlag == false) goto haters_gonna_hate_IPM;
-								   st = new sockstruct();
+                                   st = new ST();
 								   ZeroMemory(st->argv, sizeof(st->argv));
 
 								   while (cons >= gThreads) Sleep(500);
@@ -2427,14 +2408,18 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 						struct in_addr tAddr;
 						for (unsigned long i = ip1; i <= ip2; ++i) {
 							if (globalScanFlag == false) break;
-							st = new sockstruct();
+                            st = new ST();
 							ZeroMemory(st->argv, sizeof(st->argv));
 							ZeroMemory(res, sizeof(res));
 							while (cons >= gThreads) Sleep(500);
 							++indexIP;
 
-							tAddr.s_addr = i;
-							strcpy(res, (std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1)).c_str());
+                            tAddr.s_addr = i;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+                           strcpy(res, (std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1)).c_str());
+#else
+                           strcpy(res, inet_ntoa(tAddr));
+#endif
 							strcpy(st->argv, res);
 							strcpy(saveStartIP, res);
 
@@ -2527,8 +2512,6 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		pthread_t thrs;
 		pthread_create(&thrs, NULL, (void *(*)(void*))&_saver, NULL);
 #endif
-		char iipFinish[64] = {0};
-
 		strcpy(top_level_domain, gFirstDom);
 
 		if(trackerOK) 
@@ -2696,8 +2679,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		pthread_create(&thrtt, NULL, (void *(*)(void*))&_timer, NULL);
 #endif
 
-		stt->doEmitionChangeStatus("Scanning...");
-		sockstruct *st = NULL;
+        stt->doEmitionChangeStatus("Scanning...");
 		for (gC = 0; gC < flCounter; ++gC)
 		{
 			strcpy(metaRange, std::to_string(ipsstartfl[gC][0]).c_str());
@@ -2728,16 +2710,20 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 							   if (globalScanFlag == false) break;
 							   int offset = ip2 - i;
 
-							   tAddr.s_addr = i;
-							   ipVec.push_back(std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1));
-
+                               tAddr.s_addr = i;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+                           ipVec.push_back(std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1));
+#else
+                           ipVec.push_back(inet_ntoa(tAddr));
+#endif
 							   if (ipVec.size() >= (offset < 1000 ? offset : 1000)) {
 
 								   std::random_shuffle(ipVec.begin(), ipVec.end());
 								   while (ipVec.size() != 0) {
 
 									   if (globalScanFlag == false) goto haters_gonna_hate_IM;
-									   st = new sockstruct();
+
+                                       st = new ST();
 									   ZeroMemory(st->argv, sizeof(st->argv));
 
 									   while (cons >= gThreads) Sleep(500);
@@ -2765,14 +2751,18 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 							struct in_addr tAddr;
 							for (unsigned long i = ip1; i <= ip2; ++i) {
 								if (globalScanFlag == false) break;
-								st = new sockstruct();
+                                st = new ST();
 								ZeroMemory(st->argv, sizeof(st->argv));
 								ZeroMemory(res, sizeof(res));
 								while (cons >= gThreads) Sleep(500);
 								++indexIP;
 
 								tAddr.s_addr = i;
-								strcpy(res, (std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1)).c_str());
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+                                strcpy(res, (std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1)).c_str());
+#else
+                                strcpy(res, inet_ntoa(tAddr));
+#endif
 								strcpy(st->argv, res);
 								strcpy(saveStartIP, res);
 
@@ -2902,8 +2892,7 @@ void nCleanup(){
 		passLst = NULL;
 	};
 	if(GlobalNegatives != NULL)
-	{
-		char temp[512] = {0};
+    {
 		for(int i = 0; i < GlobalNegativeSize; ++i) 
 		{
 			delete []GlobalNegatives[i];

@@ -548,14 +548,12 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	char tPass[256] = {0};
 	char curLogin[256] = {0};
 	char curPass[256] = {0};
-	int cCode;
-	int cErrCode;
+    int cCode;
 	int dataSz = 0;
 	char request[REQUEST_MAX_SIZE] = {0};
 	char recvBuff[4096] = {0};
 	char recvBuff2[512] = {0};
-	char pass[256] = {0};
-	int WSAErr;
+    char pass[256] = {0};
 
 	char localBuff[4096] = {0};
 	strcpy(localBuff, headerMsg);
@@ -674,11 +672,11 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				if(cCode == SOCKET_ERROR) {
 
 					int errorCode = WSAGetLastError();
-					if(errorCode == 10038) {
+                    if(errorCode == ENOTSOCK) {
 
-						while(errorCode == 10038)
+                        while(errorCode == ENOTSOCK)
 						{
-							if(gDebugMode) stt->doEmitionDebugFoundData("[BA][10038] - [" + QString(ip) + ":" + QString::number(port) + "]");
+                            if(gDebugMode) stt->doEmitionDebugFoundData("[BA][ENOTSOCK] - [" + QString(ip) + ":" + QString::number(port) + "]");
 							CSSOCKET(sock);
 							sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 							cCode = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
@@ -688,7 +686,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 
 						CSSOCKET(sock);
 
-						if(errorCode != 10060)
+                        if(errorCode != ETIMEDOUT)
 						{
 							stt->doEmitionRedFoundData("[BA] Cannot connect to " + QString(ip) + "[" + QString::number(errorCode) + "]");
 						};
@@ -920,9 +918,9 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 				sockFTP = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 				connectionResult = connect(sockFTP, (sockaddr*)&sockAddr, sizeof(sockAddr));
 
-				while(WSAGetLastError() == 10038)
+                while(WSAGetLastError() == ENOTSOCK)
 				{
-					if(gDebugMode) stt->doEmitionDebugFoundData("[FTP] 10038 occured - [" + QString(ip) + ":" + QString::number(port) + "]");
+                    if(gDebugMode) stt->doEmitionDebugFoundData("[FTP][ENOTSOCK] [" + QString(ip) + ":" + QString::number(port) + "]");
 					CSSOCKET(sockFTP);
 					sockFTP = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 					connectionResult = connect(sockFTP, (sockaddr*)&sockAddr, sizeof(sockAddr));
@@ -1248,14 +1246,17 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 				ZeroMemory(recvBuff, sizeof(recvBuff));
 			}
 			else
-			{
-				char err[128] = {0};
-
+            {
 				int WSAerr;
 				if(connectionResult == -1) WSAerr = WSAGetLastError();
-				else WSAerr = 10060;
+                else WSAerr = ETIMEDOUT;
 
-				if(gThreads > 1 && WSAerr != 10060/*Timeout*/ && WSAerr != 10055/*POOLOVERFLOW*/ && WSAerr != 10061/*WSAECONNREFUSED*/ && WSAerr != 10054/*WSACONNABORTED*/ && WSAerr != 0) 
+                if(gThreads > 1
+                        && WSAerr != ETIMEDOUT/*Timeout*/
+                        && WSAerr != ENOBUFS/*POOLOVERFLOW*/
+                        && WSAerr != ECONNREFUSED/*WSAECONNREFUSED*/
+                        && WSAerr != ECONNRESET/*WSAECONNRESET*/
+                        && WSAerr != 0)
 				{
 					stt->doEmitionRedFoundData("[FTPBrute] Cannot connect to " + QString(ip) + " " + QString(std::to_string(WSAerr).c_str()));
 				};
@@ -1424,7 +1425,7 @@ int _sslConnectTo(char *iph, int porth, char *requesth, conSTR *CSTR)
 				CSTR->size = 0;
 				return 0;
 			};
-		};
+        } else return -1;
 	} 
 	else 
 	{
@@ -1522,9 +1523,8 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 
 	if(iResult == SOCKET_ERROR)
 	{
-		iError = WSAGetLastError();
-		
-		if(iError == 10035)
+        iError = WSAGetLastError();
+        if(iError == EINPROGRESS)
 		{	
 			fd_set read_fs;
 			FD_ZERO(&read_fs);
@@ -1635,13 +1635,13 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 		else 
 		{
 			++offlines;
-			if(iError == 10055) 
+            if(iError == ENOBUFS)
 			{
-				stt->doEmitionRedFoundData("[10055] Connection pool depleted " + QString(ip) + ":" + QString::number(port));
+                stt->doEmitionRedFoundData("[ENOBUFS] Connection pool depleted " + QString(ip) + ":" + QString::number(port));
 			}
-			else if(iError == 10049)
+            else if(iError == EADDRNOTAVAIL)
 			{
-				stt->doEmitionRedFoundData("[10049] " + QString(ip) +
+                stt->doEmitionRedFoundData("[EADDRNOTAVAIL] " + QString(ip) +
 											":" + QString::number(port) + 
 											" - " + QString::number(iError));
 			}
@@ -1703,12 +1703,10 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 
 	char b[16] = {0};
 	char request[2048] = {0};
-	char argData[256] = {0};
-	char recvBuffer[65536] = {0};
+    char argData[256] = {0};
 
 	Connector con;
-	conSTR CSTR;
-	int cRes;
+    conSTR CSTR;
 	int firstCycle = 0;
 	if(strstri(methodVal, "get") != NULL)
 	{
@@ -1720,8 +1718,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 			{
 				if(globalScanFlag == false) break;
 				CSTR.lowerBuff = NULL;
-				CSTR.size = 0;
-				cRes = 0;
+                CSTR.size = 0;
 
 				strcpy(request, "GET ");
 				strcat(request, actionVal);
@@ -1748,8 +1745,8 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 				strcat(request, "\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: us-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nConnection: close");
 				strcat(request, "\r\n\r\n");
 
-				if(port == 443) cRes = con._EstablishSSLConnection(ip, port, request, &CSTR);
-				else cRes = con._EstablishConnection(ip, port, request, &CSTR);
+                if(port == 443) con._EstablishSSLConnection(ip, port, request, &CSTR);
+                else con._EstablishConnection(ip, port, request, &CSTR);
 
 				if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(wfLoginLst[i]) + ":" + QString(wfPassLst[j]) + ";	- Progress: (" + QString::number((passCounter/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
 				++passCounter;
@@ -1847,8 +1844,7 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 			{
 				if(globalScanFlag == false) break;
 				CSTR.lowerBuff = NULL;
-				CSTR.size = 0;
-				cRes = 0;
+                CSTR.size = 0;
 
 				strcpy(argData, userVal);
 				strcat(argData, "=");
@@ -1882,8 +1878,8 @@ lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionV
 				if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(wfLoginLst[i]) + ":" + QString(wfPassLst[j]) + ";	- Progress: (" + QString::number((passCounter/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
 				++passCounter;
 
-				if(port == 443) cRes = con._EstablishSSLConnection(ip, port, request, &CSTR);
-				else cRes = con._EstablishConnection(ip, port, request, &CSTR);
+                if(port == 443) con._EstablishSSLConnection(ip, port, request, &CSTR);
+                else con._EstablishConnection(ip, port, request, &CSTR);
 
 				if(CSTR.lowerBuff != NULL)
 				{
@@ -2151,7 +2147,7 @@ int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int
 	};
 #else
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ip);  
-	else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
+    else if(host=gethostbyname(ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 	else 
 	{
 		return -1;
@@ -2161,18 +2157,17 @@ int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int
 	int cCode = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 	int cErrCode = WSAGetLastError();
 
-	while(cErrCode == 10038)
+    while(cErrCode == ENOTSOCK)
 	{
 		CSSOCKET(sock);
 		sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 		cCode = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 		cErrCode = WSAGetLastError();
-		if(gDebugMode) stt->doEmitionDebugFoundData("[" + QString(type) + "] 10038 occured -- [" + QString(ip) + ":" + QString::number(port) + "]");
+        if(gDebugMode) stt->doEmitionDebugFoundData("[" + QString(type) + "][ENOTSOCK] [" + QString(ip) + ":" + QString::number(port) + "]");
 	};
 
 	if(cCode != SOCKET_ERROR) 
-	{
-		int x = 1;
+    {
 		Activity += strlen(request);
 
 		if(send(sock, request, strlen(request), 0) == SOCKET_ERROR) 	
@@ -2637,6 +2632,7 @@ int Connector::_SSHLobby(char *ip, int port, conSTR *CSTR)
 	{
 		return _EstablishSSHConnection(ip, port, CSTR, banner);
 	};
+    return -1;
 }
 
 int Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
@@ -2654,7 +2650,6 @@ int Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
 	CSTR.lowerBuff = NULL;
 	CSTR.size = 0;
 
-	int strFlag = 0;
 	strcpy(mes, buff1);
 	strcat(mes, ip);
 	int port = atoi(portC);
@@ -2688,6 +2683,6 @@ int Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
 	{
 		delete []CSTR.lowerBuff;
 		CSTR.lowerBuff = NULL;
-	};
-	strFlag = 1;
+    };
+    return 0;
 }

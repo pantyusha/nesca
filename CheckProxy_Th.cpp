@@ -29,7 +29,6 @@ void CheckProxyLogic()
 	strcpy(ircProxy, str2.toUtf8().data());
 	strcpy(ircProxyPort, str1.toUtf8().data());
 
-	int err, yes = 1;
 	SOCKET pSock;
 	char precvBuff[2048] = {0};
 	sockaddr_in addr;

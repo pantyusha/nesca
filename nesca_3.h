@@ -64,7 +64,7 @@ protected:
 		void ChangePingerOK(bool val);
 		void changeNSTrackLabel(bool status);
 		void slotPBUpdate();
-		void DNSLine_ValueChanged(QString str);
+        void DNSLine_ValueChanged();
 		void slotChangeCPModeToUTF();
 		void slotChangeCPModeTo1251();
 		void slotShowRedVersion();
@@ -141,7 +141,7 @@ protected:
 		void appendRedIRCText(QString str);
 		void appendGreenIRCText(QString str);
 		void appendYellowIRCText(QString str);
-		void appendDefaultIRCText(bool, bool, int, QString str, QString s);
+        void appendDefaultIRCText(bool, bool, QString str, QString s);
 		void appendDefaultIRCTextOut(QString str);
 		void appendDefaultIRCRawTextInc(QString str);
 		void appendDefaultIRCRawTextOut(QString str);

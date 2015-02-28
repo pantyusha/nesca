@@ -1990,7 +1990,6 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			strcpy(tempPath, "/");
 		};
 
-
 		strcpy(mes, rbuff1);
 		if(tempPath[0] != '/') strcat(mes, "/");
 		strcat(mes, tempPath);
@@ -2027,7 +2026,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				strcpy(ps->path, tempPath);
 				delete []cstr.lowerBuff;
 
-				return 0;
+				return -1;
 			};
 			if(ls->flag >= 17 || ls->flag == 11 || ls->flag == 12 
 				|| ls->flag == 13 || ls->flag == 14 || ls->flag == 1 || ls->flag == 10) 
@@ -2040,17 +2039,26 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 
 				delete []cstr.lowerBuff;
 
-				return ls->flag;
+				return -2;
 			};
 			if(ls->flag == 6)
 			{
 				ps->flag = ls->flag;
 				ps->port = tempPort;
-				return ls->flag;			
+				return -2;			
 			};
 			strcat(ps->headr, " -> ");
 			strcat(ps->headr, GetTitle(cstr.lowerBuff));
-			ls->_header(tempIP, tempPort, cstr.lowerBuff, ls, ps, redirStrLst, buff);
+			if (ls->_header(tempIP, tempPort, cstr.lowerBuff, ls, ps, redirStrLst, buff) == -1)
+			{
+				ps->flag = -1;
+				strcpy(ps->headr, "[IGNR_ADDR]");
+				strcpy(ps->path, tempPath);
+				delete[]cstr.lowerBuff;
+
+				return -1;
+			};
+
 			ps->port = tempPort;
 			if(strlen(cstr.lowerBuff) < 1)
 			{
@@ -2072,10 +2080,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _header::redirect [Dead host].");
 		};
 		
-		return 0;
+		return -2;
 	}
 	else if(strstr(str, "http://") != NULL) //http
 	{
+		tempPort = 80;
 		char *ptr1 = strstri(str, "http://");
 		char *ptr2 = _findFirst(str + 7, ":/?");
 		if(ptr2 != NULL)
@@ -2123,7 +2132,6 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			strcpy(tempPath, "/");
 		};
 
-		if(tempPort == 0) tempPort = port;
 		strcpy(mes, rbuff1);
 		if(tempPath[0] != '/') strcat(mes, "/");
 		strcat(mes, tempPath);
@@ -2172,17 +2180,25 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->port = tempPort;
 				strcpy(ps->ip, tempIP);
 
-				return ls->flag;
+				return -2;
 			};
 			if(ls->flag == 6)
 			{
 				ps->flag = ls->flag;
 				ps->port = tempPort;
-				return ls->flag;			
+				return -2;			
 			};
 			strcat(ps->headr, " -> ");
 			strcat(ps->headr, GetTitle(cstr.lowerBuff));		
-			ls->_header(tempIP, tempPort, cstr.lowerBuff, ls, ps, redirStrLst, buff);
+			if (ls->_header(tempIP, tempPort, cstr.lowerBuff, ls, ps, redirStrLst, buff) == -1)
+			{
+				ps->flag = -1;
+				strcpy(ps->headr, "[IGNR_ADDR]");
+				strcpy(ps->path, tempPath);
+				delete[]cstr.lowerBuff;
+
+				return -1;
+			};
 			ps->port = tempPort;
 
 			if(strlen(cstr.lowerBuff) < 1)
@@ -2204,7 +2220,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			ls->flag = -1;
 			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _header::redirect [Dead host].");
 		};
-		return 0;
+		return -2;
 	}
 	else if(str[0] == '/' || (str[0] == '.' && str[1] == '/') || (str[0] == '.' && str[1] == '.' && str[2] == '/'))
 	{
@@ -2270,17 +2286,25 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->port = port;
 				strcpy(ps->ip, ip);
 
-				return ls->flag;
+				return -2;
 			};
 			if(ls->flag == 6)
 			{
 				ps->flag = ls->flag;
 				ps->port = tempPort;
-				return ls->flag;			
+				return -2;			
 			};
 			strcat(ps->headr, "->");
 			strcat(ps->headr, GetTitle(cstr.lowerBuff));
-			ls->_header(ip, port, cstr.lowerBuff, ls, ps, redirStrLst, buff);
+			if (ls->_header(tempIP, tempPort, cstr.lowerBuff, ls, ps, redirStrLst, buff) == -1)
+			{
+				ps->flag = -1;
+				strcpy(ps->headr, "[IGNR_ADDR]");
+				strcpy(ps->path, tempPath);
+				delete[]cstr.lowerBuff;
+
+				return -1;
+			};
 			ps->port = tempPort;
 			if(strlen(cstr.lowerBuff) < 1)
 			{
@@ -2301,7 +2325,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			ls->flag = -1;
 			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _header::redirect [Dead host].");
 		};
-		return 0;
+		return -2;
 	}
 	else if(strlen(str) > 2)
 	{
@@ -2343,6 +2367,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 
 				return -1;
 			};
+
 			if(ls->flag >= 17 || ls->flag == 11 || ls->flag == 12 
 				|| ls->flag == 13 || ls->flag == 14 || ls->flag == 1 || ls->flag == 10) 
 			{
@@ -2353,13 +2378,14 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->port = port;
 				strcpy(ps->ip, ip);
 
-				return ls->flag;
+				return -2;
 			};
+
 		if(ls->flag == 6)
 		{
 			ps->flag = ls->flag;
 			ps->port = tempPort;
-			return ls->flag;			
+			return -2;			
 		};
 			strcat(ps->headr, " -> ");
 			strcat(ps->headr, GetTitle(cstr.lowerBuff));
@@ -2385,7 +2411,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			ls->flag = -1;
 			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _header::redirect [Dead host].");
 		};
-		return 0;
+		return -2;
 	};
 		
 	return -1;
@@ -2655,8 +2681,8 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 					if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 					{
 						redirStrLst->push_back(redirectStr);
-						redirectReconnect(ps->cookie, ip, port, newLoc, l, ps, redirStrLst, rBuff);
-					};
+						return redirectReconnect(ps->cookie, ip, port, newLoc, l, ps, redirStrLst, rBuff);
+					} return -1;
 					return -2;
 				};
 			};
@@ -2680,8 +2706,8 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 					if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 					{
 						redirStrLst->push_back(redirectStr);
-						redirectReconnect(ps->cookie, ip, port, newLoc, l, ps, redirStrLst, rBuff);
-					};
+						return redirectReconnect(ps->cookie, ip, port, newLoc, l, ps, redirStrLst, rBuff);
+					} return -1;
 					return -2;
 				};
 			};
@@ -2744,8 +2770,8 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 				if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 				{
 					redirStrLst->push_back(redirectStr);
-					redirectReconnect(ps->cookie, ip, port, temp3, l, ps, redirStrLst, rBuff);
-				};
+					return redirectReconnect(ps->cookie, ip, port, temp3, l, ps, redirStrLst, rBuff);
+				} return -1;
 				strcat(ps->headr, " ");
 				return -2;
 			};
@@ -2840,8 +2866,8 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 					if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 					{
 						redirStrLst->push_back(redirectStr);
-						redirectReconnect(ps->cookie, ip, port, linkPtr, l, ps, redirStrLst, rBuff);
-					};
+						return redirectReconnect(ps->cookie, ip, port, linkPtr, l, ps, redirStrLst, rBuff);
+					} return -1;
 				};
 				delete []scriptContainer;
 				if(ps->flag >= 17 || ps->flag == 11 || ps->flag == 12 
@@ -2954,8 +2980,8 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 							if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 							{
 								redirStrLst->push_back(redirectStr);
-								redirectReconnect(ps->cookie, ip, port, lol, l, ps, redirStrLst, rBuff);
-							};
+								return redirectReconnect(ps->cookie, ip, port, lol, l, ps, redirStrLst, rBuff);
+							} return -1;
 						}
 						else
 						{
@@ -3023,8 +3049,8 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 				if(std::find(redirStrLst->begin(), redirStrLst->end(), redirStr) == redirStrLst->end()) 
 				{		
 					redirStrLst->push_back(redirStr);
-					redirectReconnect(ps->cookie, ip, port, redirStr, l, ps, redirStrLst, rBuff);
-				};
+					return redirectReconnect(ps->cookie, ip, port, redirStr, l, ps, redirStrLst, rBuff);
+				} return -1;
 				return -2;
 			};
 		}

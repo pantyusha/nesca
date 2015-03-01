@@ -307,7 +307,8 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 		&& strstr(buffcpy, "ipcam") != NULL)																			return 48; //ipCam
 	if(strstr(buffcpy, "dvr") != NULL && strstr(buffcpy, "ieorforefox") != NULL
 		&& strstr(buffcpy, "sofari") != NULL)																			return 49; //IEORFOREFOX
-
+	if (strstr(buffcpy, "flexwatch") != NULL && strstr(buffcpy, "/app/multi/single.asp") != NULL)													return 50; //Network Video System
+	
 	if((strstr(buffcpy, "camera web server") != NULL	|| strstr(buffcpy, "webcamxp 5") != NULL
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
 		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
@@ -396,7 +397,8 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 		&& strstr(buffcpy, "ipcam") != NULL)																										return 48; //ipCam
 	if(strstr(buffcpy, "dvr") != NULL && strstr(buffcpy, "ieorforefox") != NULL
         && strstr(buffcpy, "sofari") != NULL)                                                                                                       return 49; //IEORFOREFOX
-
+	if (strstr(buffcpy, "flexwatch") != NULL && strstr(buffcpy, "/app/multi/single.asp") != NULL)													return 50; //Network Video System
+	
 	if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
 		(strstr(buffcpy, "220 diskStation ftp server ready") != NULL) ||
 		(strstr(buffcpy, "220 ftp server ready") != NULL)
@@ -1825,10 +1827,14 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	else if(flag == 48) //ipCAM
 	{
         _specWEBIPCAMBrute(ip, p, hl, "[ipCAM] Camera", flag, "Web Authorization", cp, recd, "IPCAM");
-	}	
-	else if(flag == 49) //IEORFOREFOX
+	}
+	else if (flag == 49) //IEORFOREFOX
 	{
-        _specWEBIPCAMBrute(ip, p, hl, "[IEORFOREFOX] Camera", flag, "Web Authorization", cp, recd, "IEORFOREFOX");
+		_specWEBIPCAMBrute(ip, p, hl, "[IEORFOREFOX] Camera", flag, "Web Authorization", cp, recd, "IEORFOREFOX");
+	}
+	else if (flag == 50) //IP Camera
+	{
+		_specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 20) //AXIS Camera
 	{

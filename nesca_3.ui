@@ -1228,7 +1228,7 @@ border-radius: 3px;</string>
         <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
        </property>
        <property name="text">
-        <string>ms</string>
+        <string>sec</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="threadDelayBox">

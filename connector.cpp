@@ -800,7 +800,8 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			{
 				if(HTMLDebugMode) _DebugWriteHTMLToFile(request, recvBuff);
 
-				stt->doEmitionRedFoundData("[-] 404 - Wrong path detected. (" + QString(ip) + ":" + QString::number(port) + QString(path) + ")");
+				if (i > 0 || j > 0) stt->doEmitionYellowFoundData("[?] Unexpected 404. Check <u>" + QString(ip) + ":" + QString::number(port) + " l/p:" + QString(tPass) + "</u> manually. (" + QString(ip) + ":" + QString::number(port) + QString(path) + ")");
+				else stt->doEmitionRedFoundData("[-] 404 - Wrong path detected. (" + QString(ip) + ":" + QString::number(port) + QString(path) + ")");
 
 				isActive = 0;
 				strcpy(lps.login, "UNKNOWN");

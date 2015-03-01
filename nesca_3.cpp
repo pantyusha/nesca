@@ -180,13 +180,15 @@ void setSceneArea()
 	ui->graphicsVoice->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	ui->graphicsVoice->setRenderHints(QPainter::TextAntialiasing);
 	ui->graphicsVoice->setCacheMode(QGraphicsView::CacheNone);
-
 	ui->graphicsVoice->raise();
 
 	sceneGrid = new QGraphicsScene();
 	sceneGrid2 = new QGraphicsScene();
 	sceneGraph = new QGraphicsScene();
 	sceneUpper = new QGraphicsScene();
+	sceneUpper->setSceneRect(0, 0, ui->graphicLog_Upper->width(), ui->graphicLog_Upper->height());
+	sceneGrid->setSceneRect(0, 0, ui->graphicLog_Upper->width(), ui->graphicLog_Upper->height());
+
 	sceneActivity = new QGraphicsScene();
 	sceneActivityGrid = new QGraphicsScene();
 	sceneTextPlacer = new QGraphicsScene();
@@ -1916,14 +1918,13 @@ void nesca_3::slotSaveImage(QAction *qwe)
 {
 	QObject *smB = this->sender();
 	int ci = ui->tabMainWidget->currentIndex();
-	QDate QD = QDate::currentDate();
 	QTime QT = QTime::currentTime();
 
 	if(smB == menuPS)
 	{
 		if(ME2ScanFlag || VoiceScanFlag)
 		{
-			QString fn = QString::number(QD.day()) + "." + QString::number(QD.month()) + "." +  QString::number(QD.year()) + "-h" +  QString::number(QT.hour()) + ".m" +  QString::number(QT.minute()) + "_" + (ME2ScanFlag ? QString("ME2") : QString("Voice")) + "_" + (ci == 0 ? ui->lineEditStartIPDNS->text() : ui->ipLine->text()) + ".png";
+			QString fn = QString::number(QT.msec()) + "_" + (ME2ScanFlag ? QString("ME2") : QString("Voice")) + "_" + (ci == 0 ? ui->ipLine->text() : ui->lineEditStartIPDNS->text()) + ".png";
 			int ax = 27;
 			int ay = 2;
 			int w = ui->graphicLog->width() + 30;
@@ -1933,6 +1934,7 @@ void nesca_3::slotSaveImage(QAction *qwe)
 			int spY = 108;
 			int wsp = 40;
 			int hsp = 70;
+
 			if(VoiceScanFlag) 
 			{
 				hOffset = -60;
@@ -1941,10 +1943,10 @@ void nesca_3::slotSaveImage(QAction *qwe)
 				wsp = 0;
 				hsp = -3;
 			};
-			QImage image(ui->graphicTextPlacer->width() + 5, ui->graphicTextPlacer->height() + hOffset, QImage::Format_RGB32);
-			QPainter painter(&image);
-			image.fill(NULL);
-			image.fill(QColor(0,0,0));
+
+			QPixmap pixmap(ui->graphicTextPlacer->width() + 5, ui->graphicTextPlacer->height() + hOffset);
+			QPainter painter(&pixmap);
+			pixmap.fill(QColor(0, 0, 0));
 			sceneTextPlacer->render(&painter, QRect(spX, spY, w + wsp, h + hsp));
 			sceneUpper->render(&painter, QRect(ax, ay, w, h));
 			sceneVoice->render(&painter, QRect(ax, ay, w, h));
@@ -1957,32 +1959,35 @@ void nesca_3::slotSaveImage(QAction *qwe)
 			tr("Save image"), 
 			QDir::currentPath() + "/" + fn,
 			".png",
-            (QString *)"*.png"
+			(QString*)&tr("*.png")
 			);
-			if(filename != "") image.save(filename + ".png");
+			if (filename != "") pixmap.save(filename);
 		}
 		else
 		{
-			QString fn = QString::number(QD.day()) + "." + QString::number(QD.month()) + "." +  QString::number(QD.year()) + "-h" +  QString::number(QT.hour()) + ".m" +  QString::number(QT.minute()) + "_" + (PieStatFlag ? "PieStat" : "QOS") + "_"+ (ci == 0 ? ui->lineEditStartIPDNS->text() : ui->ipLine->text()) + ".png";
-			QImage image(ui->graphicLog->width(), ui->graphicLog->height(), QImage::Format_ARGB32_Premultiplied);
-			QPainter painter(&image);
-			image.fill(NULL);
-			image.fill(QColor(0,0,0));
+			QString fn = QString::number(QT.msec()) + "_" + (PieStatFlag ? "PieStat" : "QOS") + "_" + (ci == 0 ? ui->ipLine->text() : ui->lineEditStartIPDNS->text()) + ".png";
+
+			QPixmap pixmap(ui->graphicLog->width(), ui->graphicLog->height());
+			QPainter painter(&pixmap);
+			pixmap.fill(Qt::black);
+
+			sceneGrid->render(&painter);
+			sceneGrid2->render(&painter);
+			sceneGrid2->render(&painter);
 			sceneUpper->render(&painter);
 			sceneVoice->render(&painter);
 			sceneGraph->render(&painter);
-			sceneGrid->render(&painter);
-			sceneGrid2->render(&painter);
-			
 
-			QString filename = QFileDialog::getSaveFileName( 
-			this, 
-			tr("Save image"), 
-			QDir::currentPath() + "/" + fn,
-			".png",
-            (QString *)"*.png"
-			);
-			if(filename != "") image.save(filename + ".png");
+			painter.end();
+		
+			QString filename = QFileDialog::getSaveFileName(
+				this,
+				tr("Save image"),
+				QDir::currentPath() + "/" + fn,
+				".png",
+				(QString*)&tr("*.png")
+				);
+			if (filename != "") pixmap.save(filename);
 		};
 	};
 }

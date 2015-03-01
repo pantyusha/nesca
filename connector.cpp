@@ -754,7 +754,11 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				strcpy(localBuff, recvBuff);
 			};
 			if (strstri(recvBuff, "http/1.1 401") != NULL
-				|| strstri(recvBuff, "http/1.0 401") != NULL)
+				|| strstri(recvBuff, "http/1.0 401") != NULL
+				|| (strstri(recvBuff, "200 ok") != NULL 
+				&& strstri(recvBuff, "<statusValue>401</statusValue>") != NULL
+				&& strstri(recvBuff, "<statusString>Unauthorized</statusString>") != NULL)
+				)
 			{
 				Sleep(200);
 			} else
@@ -808,10 +812,10 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 				)
 				&& strstri(recvBuff, "http/1.1 401 ") == NULL
 				&& strstri(recvBuff, "http/1.0 401 ") == NULL
-				&& strstr(headerMsg, "<statusValue>401</statusValue>") == NULL
-				&& strstr(headerMsg, "<statusString>Unauthorized</statusString>") == NULL
-				&& strstr(headerMsg, "неправильны") == NULL && strstr(headerMsg, "Неправильны") == NULL
-				&& strstr(headerMsg, "РќРµРїСЂР°РІРёР»СЊРЅС‹") == NULL
+				&& strstri(recvBuff, "<statusValue>401</statusValue>") == NULL
+				&& strstri(recvBuff, "<statusString>Unauthorized</statusString>") == NULL
+				&& strstri(recvBuff, "неправильны") == NULL
+				&& strstri(recvBuff, "РќРµРїСЂР°РІРёР»СЊРЅС‹") == NULL
 				&& dataSz > 13
 				) 
 			{
@@ -834,8 +838,8 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			}
 			else
 			{
-				if (strstri(headerMsg, "неправильны") == NULL
-					&& strstri(headerMsg, "РќРµРїСЂР°РІРёР»СЊРЅС‹") == NULL)
+				if (strstri(recvBuff, "неправильны") == NULL
+					&& strstri(recvBuff, "РќРµРїСЂР°РІРёР»СЊРЅС‹") == NULL)
 				{
 					ZeroMemory(pass, sizeof(pass));
 					sprintf(pass, "%s - Password found: %s", ip, tPass);

@@ -2505,7 +2505,7 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 								) 
 							{
 								strcpy(dataBuff, "/");
-								strncat(dataBuff, tempBuff + 1, sz - 1);
+								strncat(dataBuff, tempBuff, sz);
 							}
 							else strncpy(dataBuff, tempBuff, sz);
 						};

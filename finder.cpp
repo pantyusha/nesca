@@ -307,7 +307,7 @@ int _mainFinderFirst(char *buffcpy, int f, int port, char *ip)
 		&& strstr(buffcpy, "ipcam") != NULL)																			return 48; //ipCam
 	if(strstr(buffcpy, "dvr") != NULL && strstr(buffcpy, "ieorforefox") != NULL
 		&& strstr(buffcpy, "sofari") != NULL)																			return 49; //IEORFOREFOX
-	 
+
 	if((strstr(buffcpy, "camera web server") != NULL	|| strstr(buffcpy, "webcamxp 5") != NULL
 		|| strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
 		|| strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
@@ -372,10 +372,11 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 	if(strstr(buffcpy, "ip camera") != NULL && strstr(buffcpy, "check_user.cgi") != NULL)															return 31; //axis cameras
 	if(strstr(buffcpy, "ws(\"user\");") != NULL && strstr(buffcpy, "src=\"/tool.js") != NULL && strstr(buffcpy, "<b class=\"xb1\"></b>") != NULL)	return 32; //web ip cam
 	if(strstr(buffcpy, "geovision") != NULL && (strstr(buffcpy, "ip camera") != NULL || strstr(buffcpy, "ssi.cgi/login.htm") != NULL))				return 33; //GEO web ip cam
+
 	if(strstr(buffcpy, "hikvision-webs") != NULL || (strstr(buffcpy, "hikvision digital") != NULL && strstr(buffcpy, "dvrdvs-webs") != NULL)
 		|| (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL && strstr(buffcpy, "dologin()") != NULL))				return 34; //hikvision cam
 	if((strstr(buffcpy, "easy cam") != NULL && strstr(buffcpy, "easy life") != NULL)
-        || (strstr(buffcpy, "ipcamera") != NULL && strstr(buffcpy, "/tool.js") != NULL))																return 35; //EasyCam
+        || (strstr(buffcpy, "ipcamera") != NULL && strstr(buffcpy, "/tool.js") != NULL))															return 35; //EasyCam
 	if(strstr(buffcpy, "/config/cam_portal.cgi") != NULL || strstr(buffcpy, "/config/easy_index.cgi") != NULL)										return 36; //Panasonic Cam
 	if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/view/getuid.cgi") != NULL)															return 37; //Panasonic Cam WJ-HD180
 	if(strstr(buffcpy, "ipcam client") != NULL && strstr(buffcpy, "plugins.xpi") != NULL && strstr(buffcpy, "js/upfile.js") != NULL)				return 38; //Foscam
@@ -395,7 +396,7 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 		&& strstr(buffcpy, "ipcam") != NULL)																										return 48; //ipCam
 	if(strstr(buffcpy, "dvr") != NULL && strstr(buffcpy, "ieorforefox") != NULL
         && strstr(buffcpy, "sofari") != NULL)                                                                                                       return 49; //IEORFOREFOX
-	
+
 	if(((strstr(buffcpy, "220") != NULL) && (port == 21)) || 
 		(strstr(buffcpy, "220 diskStation ftp server ready") != NULL) ||
 		(strstr(buffcpy, "220 ftp server ready") != NULL)
@@ -1807,7 +1808,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	}
 	else if(flag == 44) //Hikvision ip cam 2
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Hikvision] IP Camera", flag, "/ISAPI/Security/userCheck", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "[Hikvision] IP Camera 2", flag, "/ISAPI/Security/userCheck", "Basic Authorization", cp, recd, "");
 	}
 	else if(flag == 45) //Panasonic ip cam
 	{

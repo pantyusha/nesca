@@ -740,7 +740,7 @@ void nesca_3::slotAddPolyLine()
 {
 	if(ME2ScanFlag)
 	{
-		double uu = 0;
+        double uu = 0.0;
 		QPainterPath path;
 		if(vect.size() > 0) 
 		{
@@ -750,30 +750,23 @@ void nesca_3::slotAddPolyLine()
 				path.lineTo(vect[i]);
 			};
 		};
+
 		QGraphicsPathItem* itm = new QGraphicsPathItem(path);
 		
-		itm->setPen(pen2i);
-		vectOld.push_front(itm);
-		QGraphicsPathItem* itemN;
-		for(int i = 0; i < vectOld.size(); ++i)
-		{
-			itemN = vectOld[i];
+        itm->setPen(pen2i);
+        int vSz = sceneGraph->items().size();
+        for(int i = 0; i < vSz; ++i)
+        {
+            sceneGraph->items()[i]->setY(u+i + 1);
+            sceneGraph->items()[i]->setOpacity(1 - uu);
+            uu+=0.027;
+            u+=1;
+        };
+        sceneGraph->addItem(itm);
 
-			itemN->setY(u+i);
-			itemN->setOpacity(1 - uu);
-			uu+=0.04;
-			sceneGraph->addItem(itemN);
-			u+=2;
-		};
-		int maxPrnt = 30;
-		while(vectOld.size() > maxPrnt) 
-		{
-			if(vectOld[maxPrnt] != 0)
-			{
-				sceneGraph->removeItem(vectOld[maxPrnt]);
-				delete vectOld[maxPrnt];
-				if(vectOld.size() > 0) vectOld.pop_back();
-			};
+        if(vSz == 50)
+        {
+            sceneGraph->items().pop_back();
 		};
 		if(u > 10) u = 1;
 	};
@@ -1918,7 +1911,8 @@ void nesca_3::slotSaveImage(QAction *qwe)
 {
 	QObject *smB = this->sender();
 	int ci = ui->tabMainWidget->currentIndex();
-	QTime QT = QTime::currentTime();
+    QTime QT = QTime::currentTime();
+    QString t("*.png");
 
 	if(smB == menuPS)
 	{
@@ -1953,13 +1947,13 @@ void nesca_3::slotSaveImage(QAction *qwe)
 			sceneGraph->render(&painter, QRect(ax, ay + 8, w - 2, h));
 			sceneGrid->render(&painter, QRect(ax, ay, w, h));
 			sceneGrid2->render(&painter, QRect(ax, ay, w, h));
-			
+
             QString filename = QFileDialog::getSaveFileName(
 			this, 
 			tr("Save image"), 
 			QDir::currentPath() + "/" + fn,
 			".png",
-			(QString*)&tr("*.png")
+            &t
 			);
 			if (filename != "") pixmap.save(filename);
 		}
@@ -1985,7 +1979,7 @@ void nesca_3::slotSaveImage(QAction *qwe)
 				tr("Save image"),
 				QDir::currentPath() + "/" + fn,
 				".png",
-				(QString*)&tr("*.png")
+                &t
 				);
 			if (filename != "") pixmap.save(filename);
 		};
@@ -3342,6 +3336,13 @@ void _startMsgCheck()
 	mct->start();
 }
 
+
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
+
 	nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
 {
 	setWindowFlags			( Qt::FramelessWindowHint );
@@ -3413,6 +3414,48 @@ void _startMsgCheck()
 	_startVerCheck();
 	_startMsgCheck();
 
+//      curl = curl_easy_init();
+//      if(curl) {
+//        curl_easy_setopt(curl, CURLOPT_URL, "http://www.google.com");
+//        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+//        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+//        res = curl_easy_perform(curl);
+//        curl_easy_cleanup(curl);
+
+//        std::cout << readBuffer << std::endl;
+//      }
+
+//        CURLcode res;
+//        std::string readBuffer;
+//        CURL *curl = curl_easy_init();
+
+//        if (curl)
+//        {
+//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_URL, "http://www.google.com")));
+//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback)));
+//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer)));
+//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_PROXY, "cache.fors.ru")));
+//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_PROXYPORT, 3128)));
+//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L)));
+//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut)));
+//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut)));
+
+//            //stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L)));
+//           // stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_URL, "http://www.google.com")));
+//           // stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut)));
+//           // stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_NOBODY, true)));
+//           // stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_PROXY, "cache.fors.ru")));
+//            //stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_PROXYPORT, 3128)));
+//            //stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_NTLM)));
+//            //stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_VERBOSE, true)));
+//            //stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback)));
+//            //stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer)));
+
+//            res = curl_easy_perform(curl);
+//            curl_easy_cleanup(curl);
+//        };
+
+//        stt->doEmitionFoundData(QString(readBuffer.c_str()));
 	//float step = 0;
 	//QPen iprvPenRegular(QColor(51, 51, 51, 100));
 	//QPen iprvPen(QColor(51, 51, 51, 100));

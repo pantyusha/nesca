@@ -86,9 +86,8 @@ void _DebugWriteHTMLToFile(char *request, char *buff)
 unsigned char tl(unsigned char d)
 {
 	if(d >= 192 && d <= 223)
-	{
-		unsigned char y = d + 32;
-		return y;
+    {
+        return (unsigned char)(d + 32);
 	}
 	else 
 	{
@@ -124,29 +123,45 @@ int recvWT(
 
 std::string toLowerStr(const char *str)
 {
-	int tsz = strlen(str);
-	if(tsz == 1)
-	{
-		if(str[0] == 10) return "[No data!]";
-		else return str;
-	}
-	else if(tsz > 1)
-	{
-		char * strr = new char[tsz+1];
-		ZeroMemory(strr, tsz);
+    if(str != NULL) {
+        int tsz = strlen(str);
+        char *strr = new char[tsz+1];
+        ZeroMemory(strr, tsz);
 
-		for (int i = 0; i < tsz; i++) 
-		{
-			strr[i] = tl(str[i]);
-		};
+        for (int i = 0; i < tsz; i++)
+        {
+            strr[i] = tl(str[i]);
+        };
 
-		memset(strr + tsz, '\0', 1);
+        memset(strr + tsz, '\0', 1);
 
-		std::string tstr = strr;
-		delete []strr;
-		return tstr;
-	};
-	return "";
+        std::string tstr = std::string(strr);
+        delete []strr;
+        return tstr;
+    } else return "";
+
+//    if(tsz == 1)
+//	{
+//		if(str[0] == 10) return "[No data!]";
+//		else return str;
+//	}
+//	else if(tsz > 1)
+//	{
+//		char * strr = new char[tsz+1];
+//		ZeroMemory(strr, tsz);
+
+//		for (int i = 0; i < tsz; i++)
+//		{
+//			strr[i] = tl(str[i]);
+//		};
+
+//		memset(strr + tsz, '\0', 1);
+
+//		std::string tstr = strr;
+//		delete []strr;
+//		return tstr;
+//	};
+//	return "";
 }
 
 int OpenConnection(SOCKET *sock, const char *hostname, int port)
@@ -1506,9 +1521,9 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ip);  
 #else
-	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ip);  
+    if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ip);
 #endif
-	else if(host = gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
+    else if(host = gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 	else 
 	{
 		++offlines;
@@ -1528,18 +1543,18 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	u_long FAR cmd = 1;
-	if( ioctlsocket( sock , FIONBIO, &cmd ) != 0 )
+    if( ioctlsocket( sock, FIONBIO, &cmd ) != 0 )
 #else
-	if( fcntl( sock , F_SETFL, O_NDELAY ) == -1 )
+    if( fcntl( sock, F_SETFL, O_NDELAY ) == -1 )
 #endif
-	{
-		stt->doEmitionRedFoundData("[FIONBIO failed]");
-	};
+    {
+        stt->doEmitionRedFoundData("[FIONBIO failed]");
+    };
 						
 	int recvBuffSize = 0;
-	linger.l_onoff = 1;
-	linger.l_linger = 5;
-	setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *) &linger, sizeof(linger));
+    linger.l_onoff = 1;
+    linger.l_linger = 5;
+    setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *) &linger, sizeof(linger));
 
 	int iError, iResult = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
 	while(sock == INVALID_SOCKET)
@@ -1555,15 +1570,18 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 	if(iResult == SOCKET_ERROR)
 	{
         iError = WSAGetLastError();
-		if (iError == WSAEWOULDBLOCK)
-		{	
-			fd_set read_fs;
+        if (iError == WSAEWOULDBLOCK || iError == WSAEINPROGRESS)
+        {
+            fd_set read_fs;
+            fd_set write_fs;
 			FD_ZERO(&read_fs);
-			FD_SET(sock, &read_fs);
+            FD_ZERO(&write_fs);
+            FD_SET(sock, &read_fs);
+            FD_SET(sock, &write_fs);
 			timeval tv = { gTimeOut, 0 };
 
 			int oldErr = WSAGetLastError();
-			iResult = select(sock + 1, NULL, &read_fs, NULL, &tv);
+            iResult = select(sock + 1, &read_fs, &write_fs, NULL, &tv);
 			
 			if (iResult == SOCKET_ERROR) 
 			{
@@ -1575,7 +1593,10 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 			}
 			else
 			{
-				if (!iResult) ++offlines;
+                if (!iResult) {
+                    ++offlines;
+                    stt->doEmitionFoundData(QString::number(WSAGetLastError()));
+                }
 				else
 				{
 					int sResult = send(sock, request, strlen(request), 0);
@@ -1686,9 +1707,9 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 	}
 	else
 	{
-		stt->doEmitionRedFoundData("[?!] Strange behavior detected - " + 
+        stt->doEmitionRedFoundData("[?!] Strange behavior detected (" +
 										QString::number(WSAGetLastError()) + 
-										" - " + QString(ip) + ":" + QString::number(port));
+                                        ") " + QString(ip) + ":" + QString::number(port));
 	};
 	
 	CSSOCKET(sock);
@@ -1722,7 +1743,6 @@ int Connector::_EstablishConnection(char *ip, int port, char *request, conSTR *C
 	};
 }
 
-#pragma region WF
 lopaStr _WFBrut(char *cookie, char *ip, int port, char *methodVal, char *actionVal, char *userVal, char *passVal, char *formVal)
 {
 	lopaStr lps;
@@ -2088,7 +2108,7 @@ char *_get_ssh_banner(char *ip, int port)
 	return recvBuff;
 }
 
-int check_ssh_pass(char *user, char *pass, char *userPass, char *host, int port, conSTR *CSTR, char *banner)
+int check_ssh_pass(char *user, char *pass, char *userPass, char *host, int port, std::string *buffer, char *banner)
 {
 	int res = -1;
 	if(BALogSwitched) stt->doEmitionBAData("Probing SSH: " + QString(user) + ":" + QString(pass) + "@" + QString(host) + ":" + QString::number(port));
@@ -2096,27 +2116,18 @@ int check_ssh_pass(char *user, char *pass, char *userPass, char *host, int port,
 	if(res == 0)
 	{
 		stt->doEmition_BAGreenData("[+] SSH: " + QString(user) + ":" + QString(pass) + "@" + QString(host));
-		char goodStr[512] = {0};
-		strcpy(goodStr, userPass);
-		strcat(goodStr, "@");
-		strcat(goodStr, host);
-		strcat(goodStr, "|+|");
-		strcat(goodStr, banner);
-		int bsz = strlen(goodStr);
-		CSTR->lowerBuff = new char[bsz + 1];
-		ZeroMemory(CSTR->lowerBuff, sizeof(CSTR->lowerBuff));
-		CSTR->size = bsz;
-		strncpy(CSTR->lowerBuff, goodStr, bsz);
-		memset(CSTR->lowerBuff + bsz, '\0', 1);
+        buffer->append(userPass);
+        buffer->append("@");
+        buffer->append(host);
+        buffer->append("|+|");
+        buffer->append(banner);
 		return 0;
 	};
 	return res;
 }
 
-int _EstablishSSHConnection(char *host, int port, conSTR *CSTR, char *banner)
+int _EstablishSSHConnection(char *host, int port, std::string *buffer, char *banner)
 {
-	CSTR->lowerBuff = NULL;
-	CSTR->size = 0;
 	char login[32] = {0};
 	char pass[32] = {0};
 	char temp[64] = {0};
@@ -2133,7 +2144,7 @@ int _EstablishSSHConnection(char *host, int port, conSTR *CSTR, char *banner)
 		sz = ptr1 - temp;
 		strncpy(login, temp, sz);
 		strcpy(pass, ptr1 + 1);
-		res = check_ssh_pass(login, pass, temp, host, port, CSTR, banner);
+        res = check_ssh_pass(login, pass, temp, host, port, buffer, banner);
 		ZeroMemory(login, sizeof(login));
 		ZeroMemory(pass, sizeof(pass));
 		ZeroMemory(temp, sizeof(temp));
@@ -2157,7 +2168,6 @@ int _EstablishSSHConnection(char *host, int port, conSTR *CSTR, char *banner)
 	return -1;
 }
 
-#pragma region IPCAMWeb
 int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int passCounter, char *type, std::vector<char*> negVector)
 {
 	char recvBuff[256] = {0};
@@ -2653,20 +2663,53 @@ int _pingMyTarget(char *ip)
 
 QString strIP;
 QString strPort;
-const char *buff1 = "GET / HTTP/1.1\r\nHost: ";
-const char *buff2 = "\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: us-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nConnection: close\r\n\r\n";
-int Connector::_SSHLobby(char *ip, int port, conSTR *CSTR)
+int Connector::_SSHLobby(char *ip, int port, std::string *buffer)
 {
 	char banner[256] = {0};
 	strncpy(banner, _get_ssh_banner(ip, port), 256);
 	if(strlen(banner) > 0)
 	{
-		return _EstablishSSHConnection(ip, port, CSTR, banner);
+        return _EstablishSSHConnection(ip, port, buffer, banner);
 	};
     return -1;
 }
 
-int Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
+static size_t nWriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
+
+int nConnect(char *ip, int port, std::string *buffer){
+    CURL *curl = curl_easy_init();
+
+    if (curl)
+    {
+        curl_easy_setopt(curl, CURLOPT_URL, ip);
+        curl_easy_setopt(curl, CURLOPT_PORT, port);
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0");
+        curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
+        curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nWriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, buffer);
+        curl_easy_setopt(curl, CURLOPT_PROXY, "cache.fors.ru");
+        curl_easy_setopt(curl, CURLOPT_PROXYPORT, 3128);
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut);
+
+        curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+    } else {
+        stt->doEmitionRedFoundData("Curl error.");
+        return -1;
+    };
+    return buffer->size();
+}
+
+int Connector::_ConnectToPort(char *ip, int port, char *hl)
 {	
 	if(gPingNScan)
 	{
@@ -2676,44 +2719,30 @@ int Connector::_ConnectToPort(char *ip, const char *portC, char *hl)
 		};
 	};
 
-	char mes[512] = {0};
-	conSTR CSTR;
-	CSTR.lowerBuff = NULL;
-	CSTR.size = 0;
+    std::string buffer = "";
+    int size = 0;
 
-	strcpy(mes, buff1);
-	strcat(mes, ip);
-	int port = atoi(portC);
-	if(port != 80){
-		strcat(mes, ":");
-		strcat(mes, portC);
-	};
-	strcat(mes, buff2);
-	int cRes;
+    if(port == 22) size = _SSHLobby(ip, port, &buffer);
+    else size = nConnect(ip, port, &buffer);
 
-	if(port == 443)		cRes = _EstablishSSLConnection(ip, port, mes, &CSTR);
-	else if(port == 22) cRes = _SSHLobby(ip, port, &CSTR);
-	else				cRes = _EstablishConnection(ip, port, mes, &CSTR);
-	int size = CSTR.size;
-
-	if(cRes == -2) return -2;
-
-	if(size > 0 && cRes != -1)
-	{
+    if(size > 0)
+	{     
 		++Alive;
 		++found;
 		stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
 
-		Lexems lx;
-		lx._filler(port, CSTR.lowerBuff, ip, size, &lx, hl);
-		delete []CSTR.lowerBuff;
-		CSTR.lowerBuff = NULL;
-	};
+        conSTR CSTR;
+        CSTR.lowerBuff = new char[size + 1];
+        CSTR.size = size;
+        memcpy(CSTR.lowerBuff, buffer.c_str(), size);
+        memset(CSTR.lowerBuff + size, '\0', 1);
 
-	if(CSTR.lowerBuff != NULL) 
-	{
-		delete []CSTR.lowerBuff;
-		CSTR.lowerBuff = NULL;
+		Lexems lx;
+        lx._filler(port, (char *)buffer.c_str(), ip, size, &lx, hl);
+
+        delete []CSTR.lowerBuff;
+        CSTR.lowerBuff = NULL;
     };
+
     return 0;
 }

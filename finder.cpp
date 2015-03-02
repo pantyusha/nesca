@@ -4,16 +4,17 @@
 #include "externFunctions.h"
 #include "externData.h"
 
-char* strstri(char *_Str, const char *_SubStr)
+char* strstri(const char *_Str, const char *_SubStr)
 {
 	if(_Str != NULL)
 	{
-		std::string _lowStr = toLowerStr(_Str);
-		std::string _lowSubStr = toLowerStr(_SubStr);
+        const std::string &_lowStr = toLowerStr(_Str);
+        const std::string &_lowSubStr = toLowerStr(_SubStr);
 		const char *resChar = strstr(_lowStr.c_str(), _lowSubStr.c_str());
-		int offset = resChar - _lowStr.c_str();
-		if(offset < 0) return NULL;
-		else return (char*)(_Str + offset);
+        if(resChar == 0) return NULL;
+        else {
+            return (char*)(_Str + (resChar - _lowStr.c_str()));
+        }
 	};
     return 0;
 }
@@ -50,73 +51,76 @@ char *_findLast(char *str, char *delim)
 	return (char *)(str + savedPosition);
 }
 
+
 char *GetCodePage(char *str)
 {
 	char cdpg[32] = {0};
-	if(strstri(str, "<meta ") != NULL)
-	{
-		char *temp2 = strstri(str, "<meta ");
+    char *ptr1 = strstri(str, "<meta ");
 
-		if(strstri((char *)(temp2 + strlen("<meta ")), "charset=") != NULL)
-		{
-			char *temp3 = strstri((char *)(temp2 + strlen("<meta ")), "charset=");
-			char *temp4 = _findFirst((char *)(temp3 + strlen("charset=")), " \"'>\n\r");
+    if(ptr1 != NULL)
+    {
+        char *ptr2 = strstri(ptr1 + 6, "charset=");
+        if(ptr2 != NULL)
+        {
+            char *temp4 = _findFirst((char *)(ptr2 + 6), " \"'>\n\r");
 			if(temp4 != NULL)
 			{
-				int ln = (int)(temp4 - temp3 - strlen("charset="));
+                int ln = (int)(temp4 - ptr2 - 8);
 				if(ln > 16) 
 				{
 					return "WTF?";
 				};
-				strncpy(cdpg, (char *)(temp3 + strlen("charset=")), (ln > 32) ? 32 : ln );
+                strncpy(cdpg, (char *)(ptr2 + 8), (ln > 32) ? 32 : ln );
 				if(strstri(cdpg, "%s") != NULL) return "UTF-8";
 				return cdpg;
 			}
 			else
 			{
-				stt->doEmitionRedFoundData("[GetCodePage] [" + QString(temp3).mid(0, 16) + "]");
+                stt->doEmitionRedFoundData("[GetCodePage] [" + QString(ptr2).mid(0, 16) + "]");
                 return "NULL";
 			};
-		}
-		else if(strstri((char *)(temp2 + strlen("<meta ")), "charset = ") != NULL)
-		{
-			char *temp3 = strstri((char *)(temp2 + strlen("<meta ")), "charset = ");
-			char *temp4 = _findFirst((char *)(temp3 + strlen("charset = ")), " \"'>\n\r");
+        }
+
+        ptr2 = strstri(ptr1 + 6, "charset = ");
+        if(ptr2 != NULL)
+        {
+            char *temp4 = _findFirst((char *)(ptr2 + 10), " \"'>\n\r");
 			if(temp4 != NULL)
 			{
-				int ln = (int)(temp4 - temp3 - strlen("charset = "));
+                int ln = (int)(temp4 - ptr2 - 10);
 				if(ln > 16) 
 				{
 					return "WTF?";
 				};
-				strncpy(cdpg, (char *)(temp3 + strlen("charset = ")), (ln > 32) ? 32 : ln );
+                strncpy(cdpg, (char *)(ptr2 + 10), (ln > 32) ? 32 : ln );
 				if(strstri(cdpg, "%s") != NULL) return "UTF-8";
 				return cdpg;
 			}
 			else
 			{
-				stt->doEmitionRedFoundData("[GetCodePage] [" + QString(temp3).mid(0, 16) + "]");
+                stt->doEmitionRedFoundData("[GetCodePage] [" + QString(ptr2).mid(0, 16) + "]");
                 return "NULL";
 			};
-		}
-		else if(strstri((char *)(temp2 + strlen("<meta ")), "charset =") != NULL)
-		{
-			char *temp3 = strstri((char *)(temp2 + strlen("<meta ")), "charset =");
-			char *temp4 = _findFirst((char *)(temp3 + strlen("charset =")), " \"'>\n\r");
+        }
+
+        ptr2 = strstri(ptr1 + 6, "charset =");
+        if(ptr2 != NULL)
+        {
+            char *temp4 = _findFirst((char *)(ptr2 + 9), " \"'>\n\r");
 			if(temp4 != NULL)
 			{
-				int ln = (int)(temp4 - temp3 - strlen("charset ="));
+                int ln = (int)(temp4 - ptr2 - 9);
 				if(ln > 16) 
 				{
 					return "WTF?";
 				};
-				strncpy(cdpg, (char *)(temp3 + strlen("charset =")), (ln > 32) ? 32 : ln );
+                strncpy(cdpg, (char *)(ptr2 + 9), (ln > 32) ? 32 : ln );
 				if(strstri(cdpg, "%s") != NULL) return "UTF-8";
 				return cdpg;
 			}
 			else
 			{
-				stt->doEmitionRedFoundData("[GetCodePage] [" + QString(temp3).mid(0, 16) + "]");
+                stt->doEmitionRedFoundData("[GetCodePage] [" + QString(ptr2).mid(0, 16) + "]");
                 return "NULL";
 			};
 		}
@@ -125,15 +129,15 @@ char *GetCodePage(char *str)
 			if(strstri(str, "charset=") != NULL)
 			{
 				char *temp2 = strstri(str, "charset=");
-				char *temp3 = _findFirst((char *)(temp2 + strlen("charset=")), " \"'>\n\r");
+                char *temp3 = _findFirst((char *)(temp2 + 8), " \"'>\n\r");
 				if(temp3 != NULL)
 				{
-					int ln = (int)(temp3 - temp2 - strlen("charset="));
+                    int ln = (int)(temp3 - temp2 - 8);
 					if(ln > 16) 
 					{
 						return "WTF?";
 					};
-					strncpy(cdpg, (char *)(temp2 + strlen("charset=")), (ln > 32) ? 32 : ln );
+                    strncpy(cdpg, (char *)(temp2 + 8), (ln > 32) ? 32 : ln );
 					if(strstri(cdpg, "%s") != NULL) return "UTF-8";
 					return cdpg;
 				}
@@ -149,18 +153,19 @@ char *GetCodePage(char *str)
 			};
 		};	
 	}
-	else if(strstri(str, "charset=") != NULL)
-	{
-		char *temp2 = strstri(str, "charset=");
-		char *temp3 = _findFirst((char *)(temp2 + strlen("charset=")), " \"'\n\r");
+
+    ptr1 = strstri(str, "charset=");
+    if(ptr1 != NULL)
+    {
+        char *temp3 = _findFirst((char *)(ptr1 + 8), " \"'\n\r");
 		if(temp3 != NULL)
 		{
-			int ln = (int)(temp3 - temp2 - strlen("charset="));
+            int ln = (int)(temp3 - ptr1 - 8);
 			if(ln > 16) 
 			{
 				return "WTF?";
 			};
-			strncpy(cdpg, (char *)(temp2 + strlen("charset=")), (ln > 32) ? 32 : ln );
+            strncpy(cdpg, (char *)(ptr1 + 8), (ln > 32) ? 32 : ln );
 			if(strstri(cdpg, "%s") != NULL) return "UTF-8";
 			return cdpg;
 		}
@@ -429,7 +434,7 @@ int _mainFinderSecond(char *buffcpy, int port, char *ip)
 
 int ContentFilter(char *buff, int port, char *ip, char *cp)
 {
-	if(buff != NULL)
+    if(buff != NULL)
 	{
 		int res = 0;
 		std::string tempString = "";
@@ -440,7 +445,11 @@ int ContentFilter(char *buff, int port, char *ip, char *cp)
 		}
 		else
 		{
-			tempString = toLowerStr(xcode(buff, CP_UTF8, CP_ACP).c_str());
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+            tempString = toLowerStr(xcode(buff, CP_UTF8, CP_ACP).c_str());
+#else
+            tempString = toLowerStr(buff);
+#endif
 		};
 		
 		int sz = tempString.size();
@@ -1512,19 +1521,17 @@ void _saveSSH(char *ip, int port, int recd, char *buffcpy)
 	};
 }
 
-int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *hl)		
+int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *hl)
 {
 	if(	strstr(buffcpy, "[IGNR_ADDR]") != NULL ) return -1;
 	if(	strstr(buffcpy, "SSH-2.0-OpenSSH") != NULL || strstr(buffcpy, "SSH-2.0-mod_sftp") != NULL) 
 	{
-		Connector con;
-		conSTR CSTR;
-		CSTR.lowerBuff = NULL;
-		CSTR.size = 0;
-		int res = con._SSHLobby(ip, p, &CSTR);
+        Connector con;
+        std::string sshBuff;
+        int res = con._SSHLobby(ip, p, &sshBuff);
 		if(res != -1 && res != -2)
 		{
-			_saveSSH(ip, p, recd, CSTR.lowerBuff);
+            _saveSSH(ip, p, recd, (char*)sshBuff.c_str());
 		};
 		return -1;
 	};
@@ -1551,7 +1558,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	int flag = 0;
 	char cp[32] = {0};
 
-	strcpy(cp, GetCodePage(buffcpy));
+    strcpy(cp, GetCodePage(buffcpy));
 	flag = ContentFilter(buffcpy, p, ip, cp);
 	if(flag == -1 ) return -1;
 	
@@ -1590,7 +1597,6 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	if(strstr(finalstr, ps.headr) == NULL) strcat(finalstr, ps.headr);
 	if(flag == -1 || flag == 6 || strstr(finalstr, "[IGNR_ADDR]") != NULL) return -1;
 
-#pragma region Fillers
 	if(flag == 16) 
 	{
 		Connector con;

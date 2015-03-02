@@ -5,12 +5,13 @@
 void DrawerTh_ME2Scanner::doEmitDrawTextPlacers()
 {
 	emit dtME2->sDrawTextPlacers();
-};
+}
 
 void DrawerTh_ME2Scanner::doEmitionAddPolyLine()
 {
 	emit dtME2->sAddPolyLine();
-};
+}
+
 void MakePolygonLine(int gWidth)
 {
 	vect.clear();
@@ -120,7 +121,8 @@ void MakePolygonLine(int gWidth)
 	Alive = 0;
 	Susp = 0;
 	vect.append(QPointF(gWidth, 20));
-};
+}
+
 void DrawerTh_ME2Scanner::run()
 {
 	int gWidth = ui->graphicLog->width();
@@ -144,6 +146,6 @@ void DrawerTh_ME2Scanner::run()
 			Alive = 0;
 			Susp = 0;
 		};
-		msleep(150);
+        msleep(120);
 	};
-};
+}

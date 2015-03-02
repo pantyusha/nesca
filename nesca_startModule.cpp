@@ -512,10 +512,10 @@ void *_tracker()
 			if(strstr(rBuffT, "http://") != NULL) 
 			{
 				t1 = strstr(rBuffT, "http://");
-				if(strstr((char*)(t1 + strlen("http://")), "/") != NULL)
+                if(strstr((char*)(t1 + 7), "/") != NULL)
 				{
-					t2 = strstr((char*)(t1 + strlen("http://")), "/");
-					int ln = t2 - t1 - strlen("http://");
+                    t2 = strstr((char*)(t1 + 7), "/");
+                    int ln = t2 - t1 - 7;
 					if(ln > 64)
 					{
 						CSSOCKET(sock);
@@ -525,7 +525,7 @@ void *_tracker()
 
 						continue;
 					}
-					else strncpy(ndbServer, (char*)(t1 + strlen("http://")), ln);
+                    else strncpy(ndbServer, (char*)(t1 + 7), ln);
 
 					if(strlen(t2) > 64)
 					{
@@ -895,7 +895,7 @@ void *_connect(void* ss)
 	for(int i = 0; i <= overallPorts; ++i)
 	{
 		if(globalScanFlag == false) break;		
-		if(con._ConnectToPort( ip, std::to_string(portArr[i]).c_str(), "" ) == -2) break;
+        if(con._ConnectToPort( ip, portArr[i], "" ) == -2) break;
 	};
 
 	ConDec();
@@ -1196,6 +1196,7 @@ void ReadUTF8(FILE* nFile, char *cp)
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
                 res = xcode(buffFG, CP_UTF8, CP_ACP);
 #else
+                res = std::string(buffFG);
 #endif
 				int sz = res.size();
 				GlobalNegatives[i] = new char[sz + 1];
@@ -1210,6 +1211,7 @@ void ReadUTF8(FILE* nFile, char *cp)
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
                 res = xcode(buffFG, CP_UTF8, CP_ACP);
 #else
+                res = std::string(buffFG);
 #endif
 				int sz = res.size();
 				GlobalNegatives[i] = new char[sz + 1];
@@ -1226,23 +1228,17 @@ void ReadUTF8(FILE* nFile, char *cp)
 #else
 			strncpy((char*)buffcpy2, buffFG, sz);
 #endif
-
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
-		
 		stt->doEmitionGreenFoundData("Negative list loaded (" + QString::number(GlobalNegativeSize) + " entries)");
-		
 		ZeroMemory(buffFG, sizeof(buffFG));
-
 		fclose(nFile);
 	}
 	else
-	{
-		
+    {
 		stt->doEmitionRedFoundData("No negative list found");
-		stt->doEmitionKillSttThread();
-		
+        stt->doEmitionKillSttThread();
 	};
 }
 

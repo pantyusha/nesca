@@ -8,10 +8,10 @@
 void getSubStrEx(char *src, char *startStr, char *endStr, char *dest, int szDest)
 {
 	ZeroMemory(dest, szDest);
-	char *ptr1 = strstri(src, startStr);
+    char *ptr1 = strstri((const char*)src, startStr);
 	if(ptr1 != NULL)
 	{
-		char *ptr2 = strstri(ptr1, endStr);
+        char *ptr2 = strstri((const char*)ptr1, endStr);
 		if(ptr2 != NULL)
 		{
 			int szStartStr = strlen(startStr);
@@ -23,10 +23,10 @@ void getSubStrEx(char *src, char *startStr, char *endStr, char *dest, int szDest
 void getSubStr(char *src, char *startStr, char *endStr, char *dest, int szDest)
 {
 	ZeroMemory(dest, szDest);
-	char *ptr1 = strstri(src, startStr);
+    char *ptr1 = strstri((const char*)src, startStr);
 	if(ptr1 != NULL)
 	{
-		char *ptr2 = strstri(ptr1, endStr);
+        char *ptr2 = strstri((const char*)ptr1, endStr);
 		if(ptr2 != NULL)
 		{
 			int sz = ptr2 - ptr1;
@@ -117,10 +117,10 @@ int KeyCheckerMain()
 	if(strstr(msg, "http://") != NULL) 
 	{
 		t1 = strstr(msg, "http://");
-		if(strstr((char*)(t1 + strlen("http://")), "/") != NULL)
+        if(strstr((char*)(t1 + 7), "/") != NULL)
 		{
-			t2 = strstr((char*)(t1 + strlen("http://")), "/");
-			int ln = t2 - t1 - strlen("http://");
+            t2 = strstr((char*)(t1 + 7), "/");
+            int ln = t2 - t1 - 7;
 			if(ln > 64)
 			{
 				stt->doEmitionRedFoundData("[Key check] -Received server string is not valid!");
@@ -128,7 +128,7 @@ int KeyCheckerMain()
 
 				return -1;
 			}
-			else strncpy(ndbServer, (char*)(t1 + strlen("http://")), ln);
+            else strncpy(ndbServer, (char*)(t1 + 7), ln);
 
 			
 			if(strlen(t2) > 64)

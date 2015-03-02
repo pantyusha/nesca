@@ -77,3 +77,5 @@ unix|win32: LIBS += -lssh
 unix|win32: LIBS += -lcrypto
 
 unix|win32: LIBS += -lpthread
+
+unix|win32: LIBS += -lcurl

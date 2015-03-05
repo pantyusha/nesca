@@ -1,6 +1,7 @@
 #include "DrawerTh_ME2Scanner.h"
 #include "STh.h"
 #include "externData.h"
+#include <WebformWorker.h>
 
 void DrawerTh_ME2Scanner::doEmitDrawTextPlacers()
 {
@@ -45,7 +46,7 @@ void MakePolygonLine(int gWidth)
 
 		if(xtx > 34 && xtx < 72) 
 		{
-			qp = QPointF(xtx, state ? qrand() % 3 - 3 + 20 - WF*2 - fact2 : 20);
+            qp = QPointF(xtx, state ? qrand() % 3 - 3 + 20 - WF*2 - fact2 : 20);
 
 			if(WF > 0) 
 			{

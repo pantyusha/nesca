@@ -19,7 +19,6 @@ SOURCES +=\
     base64.cpp \
     CheckKey_Th.cpp \
     CheckProxy_Th.cpp \
-    connector.cpp \
     DrawerTh_GridQoSScanner.cpp \
     DrawerTh_HorNet.cpp \
     DrawerTh_ME2Scanner.cpp \
@@ -35,7 +34,11 @@ SOURCES +=\
     progressbardrawer.cpp \
     STh.cpp \
     vercheckerthread.cpp \
-    finder.cpp
+    finder.cpp \
+    Utils.cpp \
+    WebformWorker.cpp \
+    Connector.cpp \
+    connector_old.cpp
 
 
 HEADERS  += ActivityDrawerTh_HorNet.h \
@@ -59,7 +62,10 @@ HEADERS  += ActivityDrawerTh_HorNet.h \
     progressbardrawer.h \
     resource.h \
     STh.h \
-    vercheckerthread.h
+    vercheckerthread.h \
+    Utils.h \
+    WebformWorker.h \
+    Connector.h
 
 FORMS    += nesca_3.ui
 

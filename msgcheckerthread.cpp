@@ -1,6 +1,8 @@
 #include "msgcheckerthread.h"
 #include "externData.h"
 #include "mainResources.h"
+#include <Utils.h>
+#include <Connector.h>
 
 void MSGCheckerThread::doEmitionShowNewMsg(QString str)
 {
@@ -9,31 +11,31 @@ void MSGCheckerThread::doEmitionShowNewMsg(QString str)
 
 void _getNewMsg()
 {
-	Connector con;
-	conSTR CSTR;
-	CSTR.lowerBuff = NULL;
-	CSTR.size = 0;
-	char request[256] = {0};
-	strcpy(request, "GET /mailbox?key=");
-	strncat(request, trcPersKey, 32);
-	strcat(request, " HTTP/1.1\r\nHost: nesca.d3w.org\r\nX-Nescav3: True\r\n\r\n");
-	con._EstablishConnection("nesca.d3w.org", 80, request, &CSTR, 1);
+    char request[256] = {0};
+    sprintf(request, "http://nesca.d3w.org/mailbox?key=%s", trcPersKey);
 
-	char *ptr1 = NULL;
-	if(CSTR.lowerBuff != NULL)
+    std::string buffer;
+    std::vector<std::string> headerVector {"X-Nescav3: True"};
+    Connector::nConnect(request, 80, &buffer, NULL, &headerVector);
+
+    char *ptr1 = NULL;
+    if(buffer.size() > 0)
 	{
-		if(strstr(CSTR.lowerBuff, "\r\n\r\n") != NULL && strstr(CSTR.lowerBuff, "HTTP/1.1 404 Not Found") == NULL && strstr(CSTR.lowerBuff, "HTTP/1.1 502 Bad Gateway") == NULL && strstr(CSTR.lowerBuff, "HTTP/1.1 400 Bad Request") == NULL && strstr(CSTR.lowerBuff, "\r\n\r\nEmpty") == NULL)
-		{
-			ptr1 = strstr(CSTR.lowerBuff, "\r\n\r\n");
-			if(strlen(ptr1 + 4) != 0)
-			{
-				mct->doEmitionShowNewMsg(QString(ptr1 + 4));
-			};
-		};
-		delete []CSTR.lowerBuff;
-		CSTR.lowerBuff = NULL;
+        if(Utils::ci_find_substr(buffer, std::string("\r\n\r\n")) != -1
+                && Utils::ci_find_substr(buffer, std::string("HTTP/1.1 404 Not Found")) == -1
+                && Utils::ci_find_substr(buffer, std::string("HTTP/1.1 502 Bad Gateway")) == -1
+                && Utils::ci_find_substr(buffer, std::string("HTTP/1.1 400 Bad Request")) == -1
+                && Utils::ci_find_substr(buffer, std::string("\r\n\r\nEmpty")) == -1
+                )
+        {
+                ptr1 = strstr((char*)buffer.c_str(), "\r\n\r\n");
+                if(strlen(ptr1 + 4) != 0)
+                {
+                    mct->doEmitionShowNewMsg(QString(ptr1 + 4));
+                };
+        }
 	};
-};
+}
 
 void MSGCheckerThread::run() 
 {
@@ -42,4 +44,4 @@ void MSGCheckerThread::run()
 		Sleep(60000);
 		_getNewMsg();
 	};
-};
+}

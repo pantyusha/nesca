@@ -3,6 +3,7 @@
 #include "mainResources.h"
 #include "externData.h"
 #include "externFunctions.h"
+#include "Connector.h"
 
 typedef struct {
     char argv[MAX_ADDR_LEN];
@@ -878,7 +879,7 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[])
 //	return res;
 //}
 
-Connector con;
+//Connector con;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 void _connect(void* ss)
 #else
@@ -895,7 +896,7 @@ void *_connect(void* ss)
 	for(int i = 0; i <= overallPorts; ++i)
 	{
 		if(globalScanFlag == false) break;		
-        if(con._ConnectToPort( ip, portArr[i], "" ) == -2) break;
+        if(Connector::_ConnectToPort( ip, portArr[i], "" ) == -2) break;
 	};
 
 	ConDec();

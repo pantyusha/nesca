@@ -13,6 +13,7 @@
 #else
 #include <string>
 #include <iostream>
+#include <vector>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -99,8 +100,8 @@ struct PathStr{
 };
 
 struct lopaStr{
-	char login[128];
-	char pass[32];
+    char login[128];
+    char pass[32];
 	char other[128];
 };
 
@@ -126,13 +127,19 @@ class Lexems
 			iterationCount = 0;
         }
 		
-		int _header(char *ip, int port, char str[],  Lexems *l, PathStr *ps, std::vector<std::string> *lst, char *rBuff);
+        int _header(char *ip,
+                    int port,
+                    char str[],
+                    Lexems *l,
+                    PathStr *ps,
+                    std::vector<std::string> *lst,
+                    char *rBuff);
         int _filler(int p, char *buffcpy, char* ipi, int recd, Lexems *lx, char *hl);
 		int globalSearchNeg(const char *buffcpy, char *ip, int port);
 	};
 
 
-class Connector
+class Connector_old
 	{
 	public:
 		int _Updater();
@@ -143,9 +150,13 @@ class Connector
 		lopaStr _IPCameraBLobby(char *ip, int port, char *SPEC);
         int _SSHLobby(char *ip, int port, std::string *buffer);
 		
-		int _EstablishConnection(char *ip, int port, char *request, conSTR *cstr, int force = 0);
-		int _EstablishSSLConnection(char *ip, int port, char *request, conSTR *cstr);
-		void _Connect(void *s);
+        //int _EstablishConnection(char *ip, int port, char *request, conSTR *cstr, int force = 0);
+        //int _EstablishSSLConnection(char *ip, int port, char *request, conSTR *cstr);
+        void _Connect(void *s);
         int _ConnectToPort(char *ip, int port, char *hl);
 	};
 
+
+extern lopaStr _IPCameraBLobby(char *ip, int port, char *SPEC);
+extern lopaStr _BALobby(char *cookie, char *ip, int port, char *path, char *method, char *data = NULL);
+extern lopaStr _FTPLobby(char *ip, int port, PathStr *ps);

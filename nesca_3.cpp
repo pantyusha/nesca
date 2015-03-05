@@ -3413,63 +3413,6 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
 
 	_startVerCheck();
 	_startMsgCheck();
-
-//      curl = curl_easy_init();
-//      if(curl) {
-//        curl_easy_setopt(curl, CURLOPT_URL, "http://www.google.com");
-//        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-//        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-//        res = curl_easy_perform(curl);
-//        curl_easy_cleanup(curl);
-
-//        std::cout << readBuffer << std::endl;
-//      }
-
-//        CURLcode res;
-//        std::string readBuffer;
-//        CURL *curl = curl_easy_init();
-
-//        if (curl)
-//        {
-//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_URL, "http://www.google.com")));
-//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback)));
-//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer)));
-//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_PROXY, "cache.fors.ru")));
-//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_PROXYPORT, 3128)));
-//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L)));
-//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut)));
-//            stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut)));
-
-//            //stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L)));
-//           // stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_URL, "http://www.google.com")));
-//           // stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut)));
-//           // stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_NOBODY, true)));
-//           // stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_PROXY, "cache.fors.ru")));
-//            //stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_PROXYPORT, 3128)));
-//            //stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_NTLM)));
-//            //stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_VERBOSE, true)));
-//            //stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback)));
-//            //stt->doEmitionFoundData( curl_easy_strerror(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer)));
-
-//            res = curl_easy_perform(curl);
-//            curl_easy_cleanup(curl);
-//        };
-
-//        stt->doEmitionFoundData(QString(readBuffer.c_str()));
-	//float step = 0;
-	//QPen iprvPenRegular(QColor(51, 51, 51, 100));
-	//QPen iprvPen(QColor(51, 51, 51, 100));
-	//while(step < 480)
-	//{
-	//	jobRangeVisualScene->addLine(step, 0, step, 41, iprvPenRegular);
-	//	step += 30;
-	//};
-	//QPen iprvPenComplete(QColor(51, 51, 51, 100));
-	//while(step < 480)
-	//{
-	//	jobRangeVisualScene->addLine(step, 0, step, 41, iprvPen);
-	//	step += 30;
-	//};
 }
 
 void nesca_3::playFcknSound()

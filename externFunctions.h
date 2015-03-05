@@ -15,4 +15,4 @@ extern void nCleanup();
 extern void getSubStr(char *src, char *startStr, char *endStr, char *dest, int szDest);
 extern void getSubStrEx(char *src, char *startStr, char *endStr, char *dest, int szDest);
 extern std::string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage);
-extern int nConnect(char *ip, int port, std::string *buffer);
+//extern int nConnect(char *ip, int port, std::string *buffer);

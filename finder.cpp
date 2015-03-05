@@ -3,6 +3,8 @@
 #include "mainResources.h"	
 #include "externFunctions.h"
 #include "externData.h"
+#include "WebformWorker.h"
+#include "Connector.h"
 
 char* strstri(const char *_Str, const char *_SubStr)
 {
@@ -1279,9 +1281,9 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 	if(inputVec.size() > 0)
 	{
 		if(strlen(userVal) != 0 && strlen(passVal) != 0)
-		{
-			Connector con;
-			lopaStr lps = con._WFLobby(cookie, ip, port, methodVal, actionVal, userVal, passVal, formVal);
+        {
+            WFClass WFC;
+            lopaStr lps = WFC._WFBrute(ip, port, methodVal, actionVal, userVal, passVal, formVal);
 
 			if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 			{
@@ -1309,8 +1311,8 @@ void _specWEBIPCAMBrute(char *ip, int port, char *hl, char *finalstr, int flag, 
 	ZeroMemory(lps.other, sizeof(lps.other));
     char tport[32] = {0};
     sprintf(tport, ":%d", port);
-	Connector con;
-	lps = con._IPCameraBLobby(ip, port, SPEC);
+
+    lps = _IPCameraBLobby(ip, port, SPEC);
 
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
@@ -1330,10 +1332,9 @@ void _specBrute(char *cookie, char *ip, int port, char *hl, char *finalstr, int 
 	char temp[64] = {0};
     char tport[32] = {0};
     sprintf(tport, ":%d", port);
-	Connector con;
 
-	if(strcmp(comment, "[DIGEST]") == 0) lps = con._BALobby(cookie, ip, port, path, "[DIGEST]", data);
-	else lps = con._BALobby(cookie, ip, port, path, "[NORMAL]", "");
+    if(strcmp(comment, "[DIGEST]") == 0) lps = _BALobby(cookie, ip, port, path, "[DIGEST]", data);
+    else lps = _BALobby(cookie, ip, port, path, "[NORMAL]", "");
 
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
@@ -1525,10 +1526,9 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 {
 	if(	strstr(buffcpy, "[IGNR_ADDR]") != NULL ) return -1;
 	if(	strstr(buffcpy, "SSH-2.0-OpenSSH") != NULL || strstr(buffcpy, "SSH-2.0-mod_sftp") != NULL) 
-	{
-        Connector con;
+    {
         std::string sshBuff;
-        int res = con._SSHLobby(ip, p, &sshBuff);
+        int res = Connector::_SSHLobby(ip, p, &sshBuff);
 		if(res != -1 && res != -2)
 		{
             _saveSSH(ip, p, recd, (char*)sshBuff.c_str());
@@ -1598,8 +1598,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	if(flag == -1 || flag == 6 || strstr(finalstr, "[IGNR_ADDR]") != NULL) return -1;
 
 	if(flag == 16) 
-	{
-		Connector con;
+    {
 		isActive = 1;
 
 		char log[2048] = {0};
@@ -1614,7 +1613,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 //		strcat(log, "; Received: ");
 //		strncat(log, std::to_string(recd).c_str(), 100);
 				
-        lps = con._FTPLobby(ip, p, &ps);
+        lps = _FTPLobby(ip, p, &ps);
 
 		if(strstr(lps.other, "ROUTER") != NULL)
 		{
@@ -1879,12 +1878,11 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	else if(flag == 15) //For HFS
 	{
 		char temp[64] = {0};
-		char log[512] = {0};
-		Connector con;
+        char log[512] = {0};
 		isActive = 1;
 		++AnomC1;
 
-        lps = con._BALobby(ps.cookie, ip, p, "/~login", "[NORMAL]", "");
+        lps = _BALobby(ps.cookie, ip, p, "/~login", "[NORMAL]", "");
         sprintf(log, "[HFS]:<font color=\"#ff6600\">%s :: </font><a href=\"http://%s:%s/\"><span style=\"color: #a1a1a1;\">%s:%s</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">%s Pass: %s:%s</font>",
                 hl, ip, port, ip, port, finalstr, lps.login, lps.pass);
 		
@@ -1948,7 +1946,6 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		return 0;
 	};
 
-	Connector con;
 	char tempIP[MAX_ADDR_LEN] = {0};
 	strcpy(tempIP, ip);
 	int tempPort = port;
@@ -2023,13 +2020,12 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		};
 		strcat(mes, rbuff4);
 
-		conSTR cstr;
-		cstr.size = 0;
-		cstr.lowerBuff = NULL;
-		if(con._EstablishSSLConnection(tempIP, tempPort, mes, &cstr) > -1)
+        std::string buffer;
+        int cSz = Connector::nConnect(tempIP, tempPort, buffer);
+        if(cSz > -1)
 		{
-			strncpy(buff, cstr.lowerBuff, (cstr.size < 65535 ? cstr.size : 65535));
-			strcpy(ps->codepage, GetCodePage(cstr.lowerBuff));
+            strncpy(buff, buffer.c_str(), (cSz < 65535 ? cSz : 65535));
+            strcpy(ps->codepage, GetCodePage(buff));
 
 			ls->flag = ContentFilter(cstr.lowerBuff, tempPort, tempIP, ps->codepage);
 			ps->flag = ls->flag;
@@ -2038,21 +2034,18 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			{
 				ps->flag = -1;
 				strcpy(ps->headr, "[IGNR_ADDR]");
-				strcpy(ps->path, tempPath);
-				delete []cstr.lowerBuff;
+                strcpy(ps->path, tempPath);
 
 				return -1;
 			};
 			if(ls->flag >= 17 || ls->flag == 11 || ls->flag == 12 
 				|| ls->flag == 13 || ls->flag == 14 || ls->flag == 1 || ls->flag == 10) 
 			{
-				strcat(ps->headr, GetTitle(cstr.lowerBuff));
+                strcat(ps->headr, GetTitle(buff));
 				ps->flag = ls->flag;
 				strcpy(ps->path, tempPath);
 				ps->port = tempPort;
 				strcpy(ps->ip, tempIP);
-
-				delete []cstr.lowerBuff;
 
 				return -2;
 			};
@@ -2062,20 +2055,20 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->port = tempPort;
 				return -2;			
 			};
+
 			strcat(ps->headr, " -> ");
-			strcat(ps->headr, GetTitle(cstr.lowerBuff));
-			if (ls->_header(tempIP, tempPort, cstr.lowerBuff, ls, ps, redirStrLst, buff) == -1)
+            strcat(ps->headr, GetTitle(buff));
+            if (ls->_header(tempIP, tempPort, cstr.lowerBuff, ls, ps, redirStrLst, buff) == -1)
 			{
 				ps->flag = -1;
 				strcpy(ps->headr, "[IGNR_ADDR]");
-				strcpy(ps->path, tempPath);
-				delete[]cstr.lowerBuff;
+                strcpy(ps->path, tempPath);
 
 				return -1;
 			};
 
 			ps->port = tempPort;
-			if(strlen(cstr.lowerBuff) < 1)
+            if(strlen(buff) < 1)
 			{
 				ps->flag = 3;
 				ls->flag = 3;
@@ -2084,9 +2077,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			{
 				ls->flag = 0;
 				ps->flag = 0;
-			};
-
-			delete []cstr.lowerBuff;
+            };
 		}
 		else
 		{
@@ -2165,12 +2156,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		};
 		strcat(mes, rbuff4);
 
-		conSTR cstr;
-		cstr.size = 0;
-		cstr.lowerBuff = NULL;		
-		if(con._EstablishConnection(tempIP, tempPort, mes, &cstr) > -1)
+        std::string buffer;
+        int cSz = Connector::nConnect(tempIP, tempPort, buffer);
+        if(cSz > -1)
 		{
-			strncpy(buff, cstr.lowerBuff, (cstr.size < 65535 ? cstr.size : 65535));
+            strncpy(buff, cstr.lowerBuff, (cSz< 65535 ? cSz : 65535));
 			strcpy(ps->codepage, GetCodePage(cstr.lowerBuff));
 
 			ls->flag = ContentFilter(cstr.lowerBuff, tempPort, tempIP, ps->codepage);
@@ -2180,8 +2170,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			{
 				ps->flag = -1;
 				strcpy(ps->headr, "[IGNR_ADDR]");
-				strcpy(ps->path, tempPath);
-				delete []cstr.lowerBuff;
+                strcpy(ps->path, tempPath);
 
 				return -1;
 			};
@@ -2190,8 +2179,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			{
 				strcat(ps->headr, GetTitle(cstr.lowerBuff));
 				ps->flag = ls->flag;
-				strcpy(ps->path, tempPath);
-				delete []cstr.lowerBuff;
+                strcpy(ps->path, tempPath);
 				ps->port = tempPort;
 				strcpy(ps->ip, tempIP);
 
@@ -2209,14 +2197,13 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			{
 				ps->flag = -1;
 				strcpy(ps->headr, "[IGNR_ADDR]");
-				strcpy(ps->path, tempPath);
-				delete[]cstr.lowerBuff;
+                strcpy(ps->path, tempPath);
 
 				return -1;
 			};
 			ps->port = tempPort;
 
-			if(strlen(cstr.lowerBuff) < 1)
+            if(strlen(buff) < 1)
 			{
 				ps->flag = 3;
 				ls->flag = 3;
@@ -2226,8 +2213,6 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ls->flag = 0;
 				ps->flag = 0;
 			};
-
-			delete []cstr.lowerBuff;
 		}
 		else
 		{

@@ -158,5 +158,5 @@ class Connector_old
 
 
 extern lopaStr _IPCameraBLobby(char *ip, int port, char *SPEC);
-extern lopaStr _BALobby(char *cookie, char *ip, int port, char *path, char *method, char *data = NULL);
+extern lopaStr _BALobby(char *cookie, char *ip, int port, char *path, char *method);
 extern lopaStr _FTPLobby(char *ip, int port, PathStr *ps);

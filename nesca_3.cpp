@@ -35,6 +35,8 @@ int ver = 100*(100*(date.year()%100) + date.month()) + date.day();
 #define WIDGET_WIDTH 500
 //#define IRC_CHAN "iskopasi_lab01"
 
+
+
 bool utfIRCFlag = true;
 bool HTMLDebugMode = false;
 bool code160 = false;
@@ -74,6 +76,8 @@ char trcProxy[128] = {0};
 char trcSrv[256] = {0};
 char trcScr[256] = {0};
 char trcPersKey[32] = {0};
+char gProxyIP[64] = {0};
+char gProxyPort[8] = {0};
 
 SOCKET lSock;
 
@@ -738,37 +742,39 @@ void nesca_3::slotAddLine(int x1, int y1, int x2, int y2)
 
 void nesca_3::slotAddPolyLine()
 {
+    sceneGraph->setItemIndexMethod(QGraphicsScene::NoIndex);
 	if(ME2ScanFlag)
-	{
-        double uu = 0.0;
-		QPainterPath path;
-		if(vect.size() > 0) 
-		{
-			path.moveTo(vect[0]);
-			for(int i = 1; i < vect.size(); ++i) 
-			{
-				path.lineTo(vect[i]);
-			};
-		};
-
-		QGraphicsPathItem* itm = new QGraphicsPathItem(path);
-		
-        itm->setPen(pen2i);
-        int vSz = sceneGraph->items().size();
-        for(int i = 0; i < vSz; ++i)
+    {
+        QPainterPath path;
+        if(vect.size() > 0)
         {
-            sceneGraph->items()[i]->setY(u+i + 1);
-            sceneGraph->items()[i]->setOpacity(1 - uu);
-            uu+=0.027;
-            u+=1;
+            path.moveTo(vect[0]);
+            for(int i = 1; i < vect.size(); ++i)
+            {
+                path.lineTo(vect[i]);
+            };
         };
+
+        QGraphicsPathItem* itm = new QGraphicsPathItem(path);
+        itm->setPen(pen2i);
         sceneGraph->addItem(itm);
 
-        if(vSz == 50)
+        double uu = 0.0;
+        int vSz = sceneGraph->items().count();
+        for(int i = 0; i < vSz; ++i)
         {
-            sceneGraph->items().pop_back();
-		};
-		if(u > 10) u = 1;
+            sceneGraph->items()[i]->setY(u + i + 1);
+            sceneGraph->items()[i]->setOpacity(0 + uu);
+            uu += 0.027;
+            u += 1;
+        };
+
+        while(sceneGraph->items().count() > 38)
+        {
+            sceneGraph->removeItem(sceneGraph->items().first());
+        };
+
+        if(u > 10) u = 1;
 	};
 }
 
@@ -2977,6 +2983,21 @@ void nesca_3::ConnectEvrthng()
 	connect ( irc_nmb, SIGNAL(sBlinkMessage()), this, SLOT(slotBlinkMessage()) );
 }
 
+QString loadNescaSetup(char *resStr, char *option) {
+
+    char *lex = NULL;
+    if(strstr(resStr, option) != NULL)
+    {
+        lex = strstr(resStr, option) + strlen(option);
+
+        if(strlen(lex) > 1)
+        {
+            lex[strlen(lex) - 1] = '\0';
+            return QString(lex);
+        } return "";
+    }
+    return "";
+}
 void RestoreSession()
 {
 	FILE *resFile = fopen("restore", "r");
@@ -2985,7 +3006,6 @@ void RestoreSession()
 
 	if(resFile != NULL)
 	{
-
 		stt->doEmitionYellowFoundData("Previous session file found! Restoring...");
 
 		while(fgets(resStr, 128, resFile) != NULL)
@@ -3087,176 +3107,32 @@ void RestoreSession()
 				};
 			};
 
-			if(strstr(resStr, "[NDBSERVER]:") != NULL)	
-			{
-				lex = strstr(resStr, "[NDBSERVER]:") + strlen("[NDBSERVER]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->lineTrackerSrv->setText(QString(lex));
-				};
-			}
-			else if(strstr(resStr, "[NDBSCRIPT]:") != NULL)	
-			{
-				lex = strstr(resStr, "[NDBSCRIPT]:") + strlen("[NDBSCRIPT]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->lineTrackerScr->setText(QString(lex));
-				};
-			}
-			else if(strstr(resStr, "[NDBPORT]:") != NULL)	
-			{
-				lex = strstr(resStr, "[NDBPORT]:") + strlen("[NDBPORT]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->trcSrvPortLine->setText(QString(lex));
-				};
-			}
-			else if(strstr(resStr, "[PROXY]:") != NULL)		
-			{
-				lex = strstr(resStr, "[PROXY]:") + strlen("[PROXY]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-				};
-			}
-			else if(strstr(resStr, "[PROXYPORT]:") != NULL)	
-			{
-				lex = strstr(resStr, "[PROXYPORT]:") + strlen("[PROXYPORT]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-				};
-			}
-			else if(strstr(resStr, "[PING]:") != NULL)	
-			{
-				lex = strstr(resStr, "[PING]:") + strlen("[PING]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->pingingOnOff->setChecked(strcmp(lex, "true") == 0 ? true : false);
-				};
-			}
-			else if(strstr(resStr, "[PING_TO]:") != NULL)	
-			{
-				lex = strstr(resStr, "[PING_TO]:") + strlen("[PING_TO]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->PingTO->setText(QString(lex));
-				};
-			}
-			else if(strstr(resStr, "[THREAD_DELAY]:") != NULL)	
-			{
-				lex = strstr(resStr, "[THREAD_DELAY]:") + strlen("[THREAD_DELAY]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->threadDelayBox->setText(QString(lex));
-				};
-			}
-			else if(strstr(resStr, "[TIMEOUT]:") != NULL)	
-			{
-				lex = strstr(resStr, "[TIMEOUT]:") + strlen("[TIMEOUT]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->iptoLine_value->setText(QString(lex));
-					ui->iptoLine_value_2->setText(QString(lex));
-					ui->iptoLine_value_3->setText(QString(lex));
-				};
-			}
-			else if(strstr(resStr, "[MAXBTHR]:") != NULL)	
-			{
-				lex = strstr(resStr, "[MAXBTHR]:") + strlen("[MAXBTHR]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->maxBrutingThrBox->setText(QString(lex));
-				};
-			}
-			else if(strstr(resStr, "[PERSKEY]:") != NULL)	
-			{
-				lex = strstr(resStr, "[PERSKEY]:") + strlen("[PERSKEY]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->linePersKey->setText(QString(lex));
-				};
-			}
-			else if(strstr(resStr, "[IRCSERVER]:") != NULL)	
-			{
-				lex = strstr(resStr, "[IRCSERVER]:") + strlen("[IRCSERVER]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->ircServerBox->setText(QString(lex));
-				};
-			}
-			else if(strstr(resStr, "[IRCPORT]:") != NULL)	
-			{
-				lex = strstr(resStr, "[IRCPORT]:") + strlen("[IRCPORT]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->serverPortBox->setText(QString(lex));
-				};
-			}
-			else if(strstr(resStr, "[IRCPROXY]:") != NULL)	
-			{
-				lex = strstr(resStr, "[IRCPROXY]:") + strlen("[IRCPROXY]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->ircProxy->setText(QString(lex));
-				};
-			}
-			else if(strstr(resStr, "[IRCPROXYPORT]:") != NULL)	
-			{
-				lex = strstr(resStr, "[IRCPROXYPORT]:") + strlen("[IRCPROXYPORT]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->ircProxyPort->setText(QString(lex));
-				};
-			}
-			else if(strstr(resStr, "[IRCNICK]:") != NULL)	
-			{
-				lex = strstr(resStr, "[IRCNICK]:") + strlen("[IRCNICK]:");
-
-				if(strlen(lex) > 1) 
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->ircNickBox->setText(QString(lex));
-				}
-				else
-				{
-					ui->ircNickBox->setText("ns_" + QString::number(qrand() % 8999 + 1000 ));
-				};
-			};
+           if(strstr(resStr, "[NDBSERVER]:") != NULL) ui->lineTrackerSrv->setText(loadNescaSetup(resStr, "[NDBSERVER]:").simplified());
+           if(strstr(resStr, "[NDBSCRIPT]:") != NULL) ui->lineTrackerScr->setText(loadNescaSetup(resStr, "[NDBSCRIPT]:").simplified());
+           if(strstr(resStr, "[NDBPORT]:") != NULL) ui->trcSrvPortLine->setText(loadNescaSetup(resStr, "[NDBPORT]:").simplified());
+           if(strstr(resStr, "[PING]:") != NULL) ui->pingingOnOff->setText(loadNescaSetup(resStr, "[PING]:").simplified());
+           if(strstr(resStr, "[PING_TO]:") != NULL) ui->PingTO->setText(loadNescaSetup(resStr, "[PING_TO]:").simplified());
+           if(strstr(resStr, "[THREAD_DELAY]:") != NULL) ui->threadDelayBox->setText(loadNescaSetup(resStr, "[THREAD_DELAY]:").simplified());
+           if(strstr(resStr, "[TIMEOUT]:") != NULL) {
+               ui->iptoLine_value->setText(loadNescaSetup(resStr, "[TIMEOUT]:"));
+               ui->iptoLine_value_2->setText(loadNescaSetup(resStr, "[TIMEOUT]:"));
+               ui->iptoLine_value_3->setText(loadNescaSetup(resStr, "[TIMEOUT]:"));
+           }
+           if(strstr(resStr, "[MAXBTHR]:") != NULL) ui->maxBrutingThrBox->setText(loadNescaSetup(resStr, "[MAXBTHR]:").simplified());
+           if(strstr(resStr, "[PERSKEY]:") != NULL) ui->linePersKey->setText(loadNescaSetup(resStr, "[PERSKEY]:").simplified());
+           if(strstr(resStr, "[IRCSERVER]:") != NULL) ui->ircServerBox->setText(loadNescaSetup(resStr, "[IRCSERVER]:").simplified());
+           if(strstr(resStr, "[IRCPORT]:") != NULL) ui->serverPortBox->setText(loadNescaSetup(resStr, "[IRCPORT]:").simplified());
+           if(strstr(resStr, "[IRCPROXY]:") != NULL) ui->ircProxy->setText(loadNescaSetup(resStr, "[IRCPROXY]:").simplified());
+           if(strstr(resStr, "[IRCPROXYPORT]:") != NULL) ui->ircProxyPort->setText(loadNescaSetup(resStr, "[IRCPROXYPORT]:").simplified());
+           if(strstr(resStr, "[SYSTEMPROXYIP]:") != NULL) ui->systemProxyIP->setText(loadNescaSetup(resStr, "[SYSTEMPROXYIP]:").simplified());
+           if(strstr(resStr, "[SYSTEMPROXYPORT]:") != NULL) ui->systemProxyPort->setText(loadNescaSetup(resStr, "[SYSTEMPROXYPORT]:").simplified());
+           if(strstr(resStr, "[IRCNICK]:") != NULL) ui->ircNickBox->setText(loadNescaSetup(resStr, "[IRCNICK]:").simplified());
+           ZeroMemory(resStr, sizeof(resStr));
 		};
+
 		fclose(resFile);
 
-
 		stt->doEmitionGreenFoundData("Previous session restored.");
-
 	};
 }
 
@@ -3334,13 +3210,6 @@ void _startVerCheck()
 void _startMsgCheck()
 {
 	mct->start();
-}
-
-
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    return size * nmemb;
 }
 
 	nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
@@ -3500,8 +3369,6 @@ void nesca_3::saveOptions()
 {
 	int ci = ui->tabMainWidget->currentIndex();
 
-
-
 	if(ci == 0) 
 	{
 		ZeroMemory(saveStartIP, sizeof(saveStartIP));
@@ -3570,6 +3437,10 @@ void nesca_3::saveOptions()
 	strcpy(ircProxy, ui->ircProxy->text().toLocal8Bit().data());
 	strcpy(ircProxyPort, ui->ircProxyPort->text().toLocal8Bit().data());
 	strcpy(ircNick, ui->ircNickBox->text().toLocal8Bit().data());
+    strncpy(gProxyIP, ui->systemProxyIP->text().toLocal8Bit().data(), 64);
+    strncpy(gProxyPort, ui->systemProxyPort->text().toLocal8Bit().data(), 8);
+
+    _SaveBackupToFile();
 }
 
 void nesca_3::STTTerminate()

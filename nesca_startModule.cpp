@@ -121,15 +121,15 @@ void SaveErrorLog(char *sender, char *MesSent, char *ReplRecv)
 	};
 }
 
-QString GetNSErrorDefinition(char *str, char *elem)
+QString GetNSErrorDefinition(const char *str, const char *elem)
 {
-	char *temp = strstr(str, elem);
+    const char *temp = strstr(str, elem);
 
 	if(temp != NULL)
 	{
 		char definition[128] = {0};
-		char *firstComma = strstr(temp + strlen(elem) + 1, "\"");
-		char *lastComma = strstr(firstComma + 1, "\"");
+        const char *firstComma = strstr(temp + strlen(elem) + 1, "\"");
+        const char *lastComma = strstr(firstComma + 1, "\"");
 
 		int sz = lastComma - firstComma - 1;
 
@@ -351,8 +351,16 @@ void _SaveBackupToFile()
 		ZeroMemory(saveStr, sizeof(saveStr));
 
         sprintf(saveStr, "[MAXBTHR]: %d\n", gMaxBrutingThreads);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+        strcat(saveBuffer, saveStr);
+        ZeroMemory(saveStr, sizeof(saveStr));
+
+        sprintf(saveStr, "[SYSTEMPROXYIP]: %s\n", gProxyIP);
+        strcat(saveBuffer, saveStr);
+        ZeroMemory(saveStr, sizeof(saveStr));
+
+        sprintf(saveStr, "[SYSTEMPROXYPORT]: %s\n", gProxyPort);
+        strcat(saveBuffer, saveStr);
+        ZeroMemory(saveStr, sizeof(saveStr));
 
 		strcpy(saveStr, "[PERSKEY]:");
 		strcat(saveStr, trcPersKey);
@@ -1127,7 +1135,9 @@ void _passLoginFapper()
 		stt->doEmitionKillSttThread();
 	};
 	
-	stt->doEmitionYellowFoundData("BA: ~" + QString(std::to_string(MaxLogin * MaxPass/gTimeOut/60).c_str()) + "; WF: ~" + QString(std::to_string(MaxWFLogin * MaxWFPass/gTimeOut/60).c_str()) + "; SSH: ~" + QString(std::to_string(MaxSSHPass/gTimeOut/60).c_str()));
+    stt->doEmitionYellowFoundData("BA: ~" + QString(std::to_string(MaxLogin * MaxPass/gTimeOut/60).c_str())
+                                  + "; WF: ~" + QString(std::to_string(MaxWFLogin * MaxWFPass/gTimeOut/60).c_str())
+                                  + "; SSH: ~" + QString(std::to_string(MaxSSHPass/gTimeOut/60).c_str()));
 }
 
 void ReadUTF8(FILE* nFile, char *cp)
@@ -2271,7 +2281,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 }
 
 int startScan(char* args)
-{	
+{
 	SSL_library_init();
 	OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
 	SSL_load_error_strings();   /* Bring in and register error messages */

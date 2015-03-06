@@ -147,6 +147,6 @@ void DrawerTh_ME2Scanner::run()
 			Alive = 0;
 			Susp = 0;
 		};
-        msleep(120);
+        msleep(90);
 	};
 }

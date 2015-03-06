@@ -1,8 +1,93 @@
 #include <Connector.h>
+#include <Utils.h>
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+int _pingMyTarget(char *ip)
+{
+    HANDLE hIcmpFile;
+    unsigned long ipaddr = INADDR_NONE;
+    DWORD dwRetVal = 0;
+    char SendData[32] = "Data Buffer";
+    LPVOID ReplyBuffer = NULL;
+    DWORD ReplySize = 0;
+
+    ipaddr = inet_addr(ip);
+
+    if (ipaddr == INADDR_NONE)
+    {
+        stt->doEmitionRedFoundData("[Pinger] INADDR_NONE! [" + QString(ip) + "]");
+        return 0;
+    }
+
+    hIcmpFile = IcmpCreateFile();
+    if (hIcmpFile == INVALID_HANDLE_VALUE)
+    {
+        stt->doEmitionRedFoundData("[Pinger] Unable to open handle. [" + QString::number(GetLastError()) + "]");
+        return 0;
+   }
+
+    ReplySize = sizeof(ICMP_ECHO_REPLY) + sizeof(SendData);
+    ReplyBuffer = (VOID*) malloc(ReplySize);
+    if (ReplyBuffer == NULL)
+    {
+        stt->doEmitionRedFoundData("[Pinger] Unable to allocate memory.");
+        return 0;
+    }
 
 
+    dwRetVal = IcmpSendEcho(hIcmpFile, ipaddr, SendData, sizeof(SendData),
+        NULL, ReplyBuffer, ReplySize, gPingTimeout*1000);
+    if (dwRetVal != 0) {
+        PICMP_ECHO_REPLY pEchoReply = (PICMP_ECHO_REPLY)ReplyBuffer;
+        struct in_addr ReplyAddr;
+        ReplyAddr.S_un.S_addr = pEchoReply->Address;
+        printf("\tSent icmp message to %s\n", "127.0.0.1");
+        if (dwRetVal > 1)
+        {
+            if(gDebugMode) stt->doEmitionYellowFoundData("[Pinger] Received " + QString::number(dwRetVal) + " icmp message responses.");
+        }
+        else
+        {
+            if(gDebugMode) stt->doEmitionYellowFoundData("[Pinger] Received " + QString::number(dwRetVal) + " icmp message responses.");
+        }
 
-int Connector::_sshConnect(char *user, char *pass, char *host, int port)
+        if(gDebugMode) stt->doEmitionYellowFoundData("[Pinger] Received from: " + QString(inet_ntoa( ReplyAddr )) + "; Status = " + QString::number(pEchoReply->Status) + "; Roundtrip time = " + QString::number(pEchoReply->RoundTripTime) + "ms.");
+        return 1;
+    }
+    else
+    {
+        printf("\tCall to IcmpSendEcho failed.\n");
+        printf("\tIcmpSendEcho returned error: %ld\n", GetLastError() );
+        if(gDebugMode) stt->doEmitionRedFoundData("[Pinger] Call to IcmpSendEcho failed. IcmpSendEcho returned error: " + QString::number(GetLastError()));
+        return 0;
+    };
+}
+#else
+int _pingMyTarget(char *ip)
+{
+    FILE *pipe = popen(("ping -w " + std::to_string(gPingTimeout) + " " + ip).c_str(), "r");
+    if(!pipe) {
+        stt->doEmitionRedFoundData("Ping pipe failed: cannot open pipe.");
+        perror("pipe");
+        return 0;
+    }
+
+    char buffer[128] = {0};
+    std::string result;
+
+    while(!feof(pipe)) {
+        if(fgets(buffer, 128, pipe) != NULL){
+            result += buffer;
+        }
+    }
+    pclose(pipe);
+
+    if(strstr((char*)result.c_str(), "100% packet loss") != NULL) return 0;
+    return 1;
+}
+#endif
+
+int _sshConnect(char *user, char *pass, char *host, int port)
 {
     char hostStr[128] = {0};
     ZeroMemory(hostStr, sizeof(hostStr));
@@ -50,7 +135,7 @@ int Connector::_sshConnect(char *user, char *pass, char *host, int port)
     return 0;
 }
 
-char Connector::_get_ssh_banner(char *ip, int port)
+char _get_ssh_banner(char *ip, int port)
 {
     char recvBuff[256] = {0};
     std::string buffer;
@@ -66,7 +151,7 @@ char Connector::_get_ssh_banner(char *ip, int port)
     return *recvBuff;
 }
 
-int Connector::check_ssh_pass(char *user, char *pass, char *userPass, char *host, int port, std::string *buffer, const char *banner)
+int check_ssh_pass(char *user, char *pass, char *userPass, char *host, int port, std::string *buffer, const char *banner)
 {
     int res = -1;
     if(BALogSwitched) stt->doEmitionBAData("Probing SSH: " + QString(user) + ":" + QString(pass) + "@" + QString(host) + ":" + QString::number(port));
@@ -84,7 +169,7 @@ int Connector::check_ssh_pass(char *user, char *pass, char *userPass, char *host
     return res;
 }
 
-int Connector::_EstablishSSHConnection(char *host, int port, std::string *buffer, const char *banner)
+int _EstablishSSHConnection(char *host, int port, std::string *buffer, const char *banner)
 {
     char login[32] = {0};
     char pass[32] = {0};
@@ -138,19 +223,101 @@ int Connector::_SSHLobby(char *ip, int port, std::string *buffer)
     return -1;
 }
 
+
+struct data {
+  char trace_ascii; /* 1 or 0 */
+};
+
+static
+void dump(const char *text,
+          FILE *stream, unsigned char *ptr, size_t size,
+          char nohex)
+{
+  size_t i;
+  size_t c;
+
+  unsigned int width=0x10;
+
+  if(nohex)
+    /* without the hex output, we can fit more on screen */
+    width = 0x40;
+
+  fprintf(stream, "%s, %10.10ld bytes (0x%8.8lx)\n",
+          text, (long)size, (long)size);
+
+  for(i=0; i<size; i+= width) {
+
+    fprintf(stream, "%4.4lx: ", (long)i);
+
+    if(!nohex) {
+      /* hex not disabled, show it */
+      for(c = 0; c < width; c++)
+        if(i+c < size)
+          fprintf(stream, "%02x ", ptr[i+c]);
+        else
+          fputs("   ", stream);
+    }
+
+    for(c = 0; (c < width) && (i+c < size); c++) {
+      /* check for 0D0A; if found, skip past and start a new line of output */
+      if (nohex && (i+c+1 < size) && ptr[i+c]==0x0D && ptr[i+c+1]==0x0A) {
+        i+=(c+2-width);
+        break;
+      }
+      fprintf(stream, "%c",
+              (ptr[i+c]>=0x20) && (ptr[i+c]<0x80)?ptr[i+c]:'.');
+      /* check again for 0D0A, to avoid an extra \n if it's at width */
+      if (nohex && (i+c+2 < size) && ptr[i+c+1]==0x0D && ptr[i+c+2]==0x0A) {
+        i+=(c+3-width);
+        break;
+      }
+    }
+    fputc('\n', stream); /* newline */
+  }
+  fflush(stream);
+}
+
+static
+int my_trace(CURL *handle, curl_infotype type,
+             char *data, size_t size,
+             void *userp)
+{
+  struct data *config = (struct data *)userp;
+  const char *text;
+  (void)handle; /* prevent compiler warning */
+
+  switch (type) {
+  case CURLINFO_TEXT:
+    //fprintf(stderr, "== Info: %s", data);
+  default: /* in case a new one is introduced to shock us */
+    return 0;
+  }
+
+  if(MapWidgetOpened) stt->doEmitionAddOutData(QString("size"), QString(data));
+  dump(text, stderr, (unsigned char *)data, size, config->trace_ascii);
+  return 0;
+}
+
 static size_t nWriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
-int Connector::nConnect(char *ip, int port, std::string *buffer,
-                        const char *postData = NULL,
-                        const std::vector<std::string> *customHeaders = NULL){
+
+int Connector::nConnect(const char *ip, const int port, std::string *buffer,
+                        const char *postData,
+                        const std::vector<std::string> *customHeaders){
 
     CURL *curl = curl_easy_init();
+    struct data config;
+
+    config.trace_ascii = 1; /* enable ascii tracing */
 
     if (curl)
     {
+        curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
+        curl_easy_setopt(curl, CURLOPT_DEBUGDATA, &config);
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
         curl_easy_setopt(curl, CURLOPT_URL, ip);
         curl_easy_setopt(curl, CURLOPT_PORT, port);
         curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0");
@@ -160,8 +327,11 @@ int Connector::nConnect(char *ip, int port, std::string *buffer,
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nWriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, buffer);
-        curl_easy_setopt(curl, CURLOPT_PROXY, "--");
-        curl_easy_setopt(curl, CURLOPT_PROXYPORT, 3128);
+        int proxyPort = std::atoi(gProxyPort);
+        if(strlen(gProxyIP) != 0 && (proxyPort > 0 && proxyPort < 65535)) {
+            curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
+            curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
+        }
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut);
@@ -175,15 +345,16 @@ int Connector::nConnect(char *ip, int port, std::string *buffer,
 
             struct curl_slist *chunk = NULL;
 
-            for(auto &ch : customHeaders) {
+            for(auto &ch : *customHeaders) {
 
-                chunk = curl_slist_append(chunk, *ch);
+                chunk = curl_slist_append(chunk, ch.c_str());
             }
 
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
         }
 
         curl_easy_perform(curl);
+        if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
         curl_easy_cleanup(curl);
     } else {
         stt->doEmitionRedFoundData("Curl error.");

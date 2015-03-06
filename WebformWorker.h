@@ -6,6 +6,7 @@
 #include <externFunctions.h>
 #include <Utils.h>
 #include "STh.h"
+#include "Connector.h"
 
 class WFClass {
 
@@ -25,12 +26,12 @@ public:
 
         ++WF;
         BConInc();
-        active = true;
+        this->active = true;
         passCounter = 1;
     }
 
     ~WFClass(){
-        active = false;
+        this->active = false;
         BConDec();
     }
 

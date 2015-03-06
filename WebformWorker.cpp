@@ -1,5 +1,7 @@
 #include <WebformWorker.h>
 
+bool WFClass::active = false;
+
 lopaStr WFClass::parseResponse(const char *ip,
                                const int port,
                                const std::string *buffer,

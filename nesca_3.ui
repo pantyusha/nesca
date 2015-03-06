@@ -78,6 +78,7 @@
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -90,7 +91,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideMiddle</enum>
@@ -144,6 +145,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -174,6 +176,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -201,6 +204,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -335,6 +339,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -365,6 +370,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="toolTip">
@@ -397,6 +403,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -448,6 +455,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -478,6 +486,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -505,6 +514,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -639,6 +649,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -669,6 +680,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="toolTip">
@@ -701,6 +713,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -749,6 +762,7 @@ color: rgb(214, 214, 0);</string>
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -779,6 +793,7 @@ color: rgb(214, 214, 0);</string>
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -881,6 +896,7 @@ color: rgb(214, 214, 0);</string>
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -911,6 +927,7 @@ color: rgb(214, 214, 0);</string>
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="toolTip">
@@ -957,7 +974,7 @@ border-radius: 3px;</string>
         <rect>
          <x>30</x>
          <y>100</y>
-         <width>208</width>
+         <width>241</width>
          <height>17</height>
         </rect>
        </property>
@@ -983,14 +1000,15 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>250</x>
-         <y>10</y>
+         <y>2</y>
          <width>121</width>
-         <height>20</height>
+         <height>16</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1013,14 +1031,15 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>10</y>
+         <y>2</y>
          <width>211</width>
-         <height>20</height>
+         <height>16</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1043,14 +1062,15 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>35</y>
+         <y>22</y>
          <width>341</width>
-         <height>20</height>
+         <height>12</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1073,14 +1093,15 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>379</x>
-         <y>10</y>
+         <y>2</y>
          <width>62</width>
-         <height>20</height>
+         <height>16</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1102,15 +1123,16 @@ border-radius: 3px;</string>
       <widget class="QPushButton" name="checkKeyBut">
        <property name="geometry">
         <rect>
-         <x>380</x>
-         <y>35</y>
+         <x>379</x>
+         <y>18</y>
          <width>61</width>
-         <height>23</height>
+         <height>16</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1132,6 +1154,7 @@ border-radius: 3px;</string>
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="whatsThis">
@@ -1159,6 +1182,7 @@ border-radius: 3px;</string>
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="whatsThis">
@@ -1215,7 +1239,7 @@ border-radius: 3px;</string>
         <rect>
          <x>163</x>
          <y>85</y>
-         <width>17</width>
+         <width>31</width>
          <height>16</height>
         </rect>
        </property>
@@ -1276,6 +1300,7 @@ border-radius: 3px;</string>
        <property name="font">
         <font>
          <family>Eurostile</family>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1346,7 +1371,7 @@ border-radius: 3px;</string>
         <rect>
          <x>30</x>
          <y>68</y>
-         <width>100</width>
+         <width>161</width>
          <height>17</height>
         </rect>
        </property>
@@ -1369,6 +1394,71 @@ border-radius: 3px;</string>
        </property>
        <property name="checked">
         <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="systemProxyIP">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>38</y>
+         <width>341</width>
+         <height>12</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56); border:none;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="maxLength">
+        <number>32</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>Proxy here</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="systemProxyPort">
+       <property name="geometry">
+        <rect>
+         <x>379</x>
+         <y>38</y>
+         <width>62</width>
+         <height>12</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Eurostile</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;</string>
+       </property>
+       <property name="text">
+        <string>3128</string>
+       </property>
+       <property name="maxLength">
+        <number>5</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>Balancer port here</string>
        </property>
       </widget>
      </widget>
@@ -1518,6 +1608,7 @@ border-radius: 3px;</string>
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -1545,6 +1636,7 @@ border-radius: 3px;</string>
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="autoFillBackground">
@@ -1569,6 +1661,7 @@ border-radius: 3px;</string>
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -1590,6 +1683,7 @@ border-radius: 3px;</string>
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -1611,6 +1705,7 @@ border-radius: 3px;</string>
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -1632,6 +1727,7 @@ border-radius: 3px;</string>
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -1678,7 +1774,7 @@ border-radius: 3px;</string>
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Consolas'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Consolas'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="cursorWidth">
@@ -1718,6 +1814,7 @@ p, li { white-space: pre-wrap; }
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -1745,6 +1842,7 @@ p, li { white-space: pre-wrap; }
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -1778,6 +1876,7 @@ p, li { white-space: pre-wrap; }
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -1805,6 +1904,7 @@ p, li { white-space: pre-wrap; }
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -1826,6 +1926,7 @@ p, li { white-space: pre-wrap; }
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -1847,6 +1948,7 @@ p, li { white-space: pre-wrap; }
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -2361,6 +2463,7 @@ p, li { white-space: pre-wrap; }
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -2388,6 +2491,7 @@ p, li { white-space: pre-wrap; }
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -2433,7 +2537,7 @@ p, li { white-space: pre-wrap; }
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="cursorWidth">
@@ -2494,6 +2598,7 @@ background-color: #000000;</string>
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -2809,6 +2914,7 @@ background-color: #000000;</string>
      <property name="font">
       <font>
        <family>Eurostile</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -3415,7 +3521,7 @@ background-color: #000000;</string>
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="acceptRichText">
@@ -3551,7 +3657,7 @@ p, li { white-space: pre-wrap; }
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:2px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="acceptRichText">
@@ -3885,6 +3991,7 @@ color: rgb(71, 71, 71);</string>
     <property name="font">
      <font>
       <family>Eurostile</family>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="toolTip">
@@ -3912,6 +4019,7 @@ color: rgb(71, 71, 71);</string>
     <property name="font">
      <font>
       <family>Eurostile</family>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="toolTip">
@@ -3939,6 +4047,7 @@ color: rgb(71, 71, 71);</string>
     <property name="font">
      <font>
       <family>Eurostile</family>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="toolTip">
@@ -3969,6 +4078,7 @@ color: rgb(71, 71, 71);</string>
     <property name="font">
      <font>
       <family>Eurostile</family>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="toolTip">

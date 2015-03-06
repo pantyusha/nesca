@@ -5,6 +5,7 @@
 #include "externData.h"
 #include "WebformWorker.h"
 #include "Connector.h"
+#include <memory>
 
 char* strstri(const char *_Str, const char *_SubStr)
 {
@@ -1322,7 +1323,7 @@ void _specWEBIPCAMBrute(char *ip, int port, char *hl, char *finalstr, int flag, 
 	};
 }
 
-void _specBrute(char *cookie, char *ip, int port, char *hl, char *finalstr, int flag, char *path, char *comment, char *cp, int recd, char *data)
+void _specBrute(char *cookie, char *ip, int port, char *hl, char *finalstr, int flag, char *path, char *comment, char *cp, int recd)
 {
 	isActive = 1;
 	lopaStr lps;
@@ -1333,8 +1334,8 @@ void _specBrute(char *cookie, char *ip, int port, char *hl, char *finalstr, int 
     char tport[32] = {0};
     sprintf(tport, ":%d", port);
 
-    if(strcmp(comment, "[DIGEST]") == 0) lps = _BALobby(cookie, ip, port, path, "[DIGEST]", data);
-    else lps = _BALobby(cookie, ip, port, path, "[NORMAL]", "");
+    if(strcmp(comment, "[DIGEST]") == 0) lps = _BALobby(cookie, ip, port, path, "[DIGEST]");
+    else lps = _BALobby(cookie, ip, port, path, "[NORMAL]");
 
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
@@ -1725,47 +1726,47 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	}
 	else if(flag == 21) //Eyeon
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Eyeon Camera", flag, "/user/index.htm", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "Eyeon Camera", flag, "/user/index.htm", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 22) //IP Camera control
 	{
-        _specBrute(ps.cookie, ip, p, hl, "IP camera Control webpage", flag, "/main/cs_motion.asp", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "IP camera Control webpage", flag, "/main/cs_motion.asp", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 23) //Network Camera BB-SC384
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Network Camera BB-SC384", flag, "/live/index2.html", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "Network Camera BB-SC384", flag, "/live/index2.html", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 24) //Network Camera VB-M40
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Network Camera VB-M40", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "Network Camera VB-M40", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 25) //Panasonic WTFISTHISAreaOMGIDONTEVEN-camera
 	{
-        _specBrute(ps.cookie, ip, 60002, hl, "Panasonic WTFISTHISAreaOMGIDONTEVEN-camera", flag, "/SnapshotJPEG", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, 60002, hl, "Panasonic WTFISTHISAreaOMGIDONTEVEN-camera", flag, "/SnapshotJPEG", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 26) //Sony Network Camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Sony Network Camera", flag, "/oneshotimage?", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "Sony Network Camera", flag, "/oneshotimage?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 27) //UA Network Camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "UA Network Camera", flag, "/webs.cgi?", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "UA Network Camera", flag, "/webs.cgi?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 28) //Network Camera VB-M40
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Network Camera VB-??", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "Network Camera VB-??", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 29) //LG Smart IP Device
 	{
-        _specBrute(ps.cookie, ip, p, hl, "LG Smart IP Device Camera", flag, "/digest.php", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "LG Smart IP Device Camera", flag, "/digest.php", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 30) //NAS
 	{
-        _specBrute(ps.cookie, ip, p, hl, "NAS", flag, "/cgi-bin/data/viostor-220/viostor/viostor.cgi", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "NAS", flag, "/cgi-bin/data/viostor-220/viostor/viostor.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 31) //ip cam
 	{
-        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/check_user.cgi", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/check_user.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 32) //IPC WEB ip cam
 	{
@@ -1777,7 +1778,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	}
 	else if(flag == 34) //Hikvision ip cam
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 35) //EasyCam
 	{
@@ -1785,11 +1786,11 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	}
 	else if(flag == 36) //Panasonic Cam
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 37) //Panasonic Cam
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/view/getuid.cgi", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/view/getuid.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 38) //Foscam
 	{
@@ -1797,11 +1798,11 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	}
 	else if(flag == 39) //EagleEye
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[EagleEye] IP Camera", flag, "/cgi-bin/guest/Video.cgi?", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "[EagleEye] IP Camera", flag, "/cgi-bin/guest/Video.cgi?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 40) //Network Camera VB-C??
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Network Camera VB-C??] IP Camera", flag, "/admin/index.shtml?", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "[Network Camera VB-C??] IP Camera", flag, "/admin/index.shtml?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 41) //AVIOSYS-camera
 	{
@@ -1809,19 +1810,19 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	}
 	else if(flag == 42) //NW_camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[NW_camera] IP Camera", flag, "/cgi-bin/getuid?FILE=indexnw.html", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "[NW_camera] IP Camera", flag, "/cgi-bin/getuid?FILE=indexnw.html", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 43) //NW_camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Micros] IP Camera", flag, "/gui/rem_display.shtml", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "[Micros] IP Camera", flag, "/gui/rem_display.shtml", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 44) //Hikvision ip cam 2
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Hikvision] IP Camera 2", flag, "/ISAPI/Security/userCheck", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "[Hikvision] IP Camera 2", flag, "/ISAPI/Security/userCheck", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 45) //Panasonic ip cam
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 46) //Buffalo disk
 	{
@@ -1841,39 +1842,39 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	}
 	else if (flag == 50) //IP Camera
 	{
-		_specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/app/multi/single.asp", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/app/multi/single.asp", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 20) //AXIS Camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 19) //reecam cameras
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Reecam (network camera)", flag, "/videostream.cgi", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "Reecam (network camera)", flag, "/videostream.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 18) //linksys camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Linksys camera", flag, "/img/main.cgi", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "Linksys camera", flag, "/img/main.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 17) //Real-time IP Camera Monitoring System
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Real-time IP Camera Monitoring System", flag, "/live.htm", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "Real-time IP Camera Monitoring System", flag, "/live.htm", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 11) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Netwave IP Camera", flag, "/videostream.cgi", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "Netwave IP Camera", flag, "/videostream.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 12) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/view/view.shtml?videos=", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/view/view.shtml?videos=", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 13) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/eng/view/indexjava.html", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/eng/view/indexjava.html", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 14) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/rdr.cgi", "Basic Authorization", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/rdr.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 15) //For HFS
 	{
@@ -1882,7 +1883,7 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 		isActive = 1;
 		++AnomC1;
 
-        lps = _BALobby(ps.cookie, ip, p, "/~login", "[NORMAL]", "");
+        lps = _BALobby(ps.cookie, ip, p, "/~login", "[NORMAL]");
         sprintf(log, "[HFS]:<font color=\"#ff6600\">%s :: </font><a href=\"http://%s:%s/\"><span style=\"color: #a1a1a1;\">%s:%s</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">%s Pass: %s:%s</font>",
                 hl, ip, port, ip, port, finalstr, lps.login, lps.pass);
 		
@@ -1910,11 +1911,11 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 	}
 	else if(flag == 1) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, finalstr, flag, pps, "[NORMAL]", cp, recd, "");
+        _specBrute(ps.cookie, ip, p, hl, finalstr, flag, pps, "[NORMAL]", cp, recd);
 	}
 	else if(flag == 101) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, finalstr, flag, pps, "[DIGEST]", cp, recd, buffcpy);
+        _specBrute(ps.cookie, ip, p, hl, finalstr, flag, pps, "[DIGEST]", cp, recd);
 	}
 	else if(flag == 10) 
 	{
@@ -1928,11 +1929,6 @@ int Lexems::_filler(int p, char* buffcpy, char* ip, int recd, Lexems *lx, char *
 
 	return flag;
 }
-
-const char *rbuff1 = "GET ";
-const char *rbuff2 = " HTTP/1.1\r\nHost: ";
-const char *rbuff3 = "\r\nCookie:";
-const char *rbuff4 = "\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: us-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nConnection: close\r\n\r\n";
 
 int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, PathStr *ps, std::vector<std::string> *redirStrLst, char *buff)
 {
@@ -1949,8 +1945,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 	char tempIP[MAX_ADDR_LEN] = {0};
 	strcpy(tempIP, ip);
 	int tempPort = port;
-	char tempPath[1024] = {0};
-	char mes[2048]= {0};
+    char tempPath[1024] = {0};
 
 	if(strstri(str, "https://") != NULL)
 	{
@@ -2002,32 +1997,16 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			strcpy(tempPath, "/");
 		};
 
-		strcpy(mes, rbuff1);
-		if(tempPath[0] != '/') strcat(mes, "/");
-		strcat(mes, tempPath);
-		strcat(mes, rbuff2);
-		strcat(mes, tempIP);
-		if(tempPort != 80){
-			strcat(mes, ":");
-			char tbuff[16] = {0};
-            sprintf(tbuff, "%d", tempPort);
-            strcat(mes, tbuff);
-		}
-		if(strlen(cookie) != 0)
-		{
-			strcat(mes, rbuff3);
-			strcat(mes, cookie);
-		};
-		strcat(mes, rbuff4);
-
+        std::unique_ptr<char[]> nip(new char[strlen(tempIP) + strlen(tempPath) + 1]);
+        sprintf(nip.get(), "%s%s", tempIP, tempPath);
         std::string buffer;
-        int cSz = Connector::nConnect(tempIP, tempPort, buffer);
+        int cSz = Connector::nConnect(nip.get(), tempPort, &buffer);
         if(cSz > -1)
 		{
             strncpy(buff, buffer.c_str(), (cSz < 65535 ? cSz : 65535));
             strcpy(ps->codepage, GetCodePage(buff));
 
-			ls->flag = ContentFilter(cstr.lowerBuff, tempPort, tempIP, ps->codepage);
+            ls->flag = ContentFilter(buff, tempPort, tempIP, ps->codepage);
 			ps->flag = ls->flag;
 
 			if(ls->flag == -1) 
@@ -2058,7 +2037,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 
 			strcat(ps->headr, " -> ");
             strcat(ps->headr, GetTitle(buff));
-            if (ls->_header(tempIP, tempPort, cstr.lowerBuff, ls, ps, redirStrLst, buff) == -1)
+            if (ls->_header(tempIP, tempPort, buff, ls, ps, redirStrLst, buff) == -1)
 			{
 				ps->flag = -1;
 				strcpy(ps->headr, "[IGNR_ADDR]");
@@ -2068,16 +2047,16 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			};
 
 			ps->port = tempPort;
-            if(strlen(buff) < 1)
-			{
-				ps->flag = 3;
-				ls->flag = 3;
-			}
-			else if(cstr.overflow == true) 
-			{
-				ls->flag = 0;
-				ps->flag = 0;
-            };
+//            if(strlen(buff) < 1)
+//			{
+//				ps->flag = 3;
+//				ls->flag = 3;
+//			}
+//			else if(cstr.overflow == true)
+//			{
+//				ls->flag = 0;
+//				ps->flag = 0;
+//            };
 		}
 		else
 		{
@@ -2113,6 +2092,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 					strcpy(tempPath, "/");
 					sz = ptr2 - ptr1 - 7;
 				};
+
 				char tPort[8] = {0};
 				strncpy(tPort, ptr2 + 1, sz < 8 ? sz : 5);
 				tempPort = atoi(tPort);
@@ -2138,32 +2118,16 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			strcpy(tempPath, "/");
 		};
 
-		strcpy(mes, rbuff1);
-		if(tempPath[0] != '/') strcat(mes, "/");
-		strcat(mes, tempPath);
-		strcat(mes, rbuff2);
-		strcat(mes, tempIP);
-		if(tempPort != 80){
-			strcat(mes, ":");
-			char tbuff[16] = {0};
-            sprintf(tbuff, "%d", tempPort);
-            strcat(mes, tbuff);
-		}
-		if(strlen(cookie) != 0)
-		{
-			strcat(mes, rbuff3);
-			strcat(mes, cookie);
-		};
-		strcat(mes, rbuff4);
-
+        std::unique_ptr<char[]> nip(new char[strlen(tempIP) + strlen(tempPath) + 1]);
+        sprintf(nip.get(), "%s%s", tempIP, tempPath);
         std::string buffer;
-        int cSz = Connector::nConnect(tempIP, tempPort, buffer);
+        int cSz = Connector::nConnect(nip.get(), tempPort, &buffer);
         if(cSz > -1)
 		{
-            strncpy(buff, cstr.lowerBuff, (cSz< 65535 ? cSz : 65535));
-			strcpy(ps->codepage, GetCodePage(cstr.lowerBuff));
+            strncpy(buff, buffer.c_str(), (cSz < 65535 ? cSz : 65535));
+            strcpy(ps->codepage, GetCodePage(buff));
 
-			ls->flag = ContentFilter(cstr.lowerBuff, tempPort, tempIP, ps->codepage);
+            ls->flag = ContentFilter(buff, tempPort, tempIP, ps->codepage);
 			ps->flag = ls->flag;
 
 			if(ls->flag == -1) 
@@ -2177,7 +2141,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			if(ls->flag >= 17 || ls->flag == 11 || ls->flag == 12 
 				|| ls->flag == 13 || ls->flag == 14 || ls->flag == 1 || ls->flag == 10) 
 			{
-				strcat(ps->headr, GetTitle(cstr.lowerBuff));
+                strcat(ps->headr, GetTitle(buff));
 				ps->flag = ls->flag;
                 strcpy(ps->path, tempPath);
 				ps->port = tempPort;
@@ -2191,9 +2155,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->port = tempPort;
 				return -2;			
 			};
+
 			strcat(ps->headr, " -> ");
-			strcat(ps->headr, GetTitle(cstr.lowerBuff));		
-			if (ls->_header(tempIP, tempPort, cstr.lowerBuff, ls, ps, redirStrLst, buff) == -1)
+            strcat(ps->headr, GetTitle(buff));
+
+            if (ls->_header(tempIP, tempPort, buff, ls, ps, redirStrLst, buff) == -1)
 			{
 				ps->flag = -1;
 				strcpy(ps->headr, "[IGNR_ADDR]");
@@ -2203,16 +2169,16 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			};
 			ps->port = tempPort;
 
-            if(strlen(buff) < 1)
-			{
-				ps->flag = 3;
-				ls->flag = 3;
-			}
-			else if(cstr.overflow == true) 
-			{
-				ls->flag = 0;
-				ps->flag = 0;
-			};
+//            if(strlen(buff) < 1)
+//			{
+//				ps->flag = 3;
+//				ls->flag = 3;
+//			}
+//			else if(cstr.overflow == true)
+//			{
+//				ls->flag = 0;
+//				ps->flag = 0;
+//			};
 		}
 		else
 		{
@@ -2220,6 +2186,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			ls->flag = -1;
 			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _header::redirect [Dead host].");
 		};
+
 		return -2;
 	}
 	else if(str[0] == '/' || (str[0] == '.' && str[1] == '/') || (str[0] == '.' && str[1] == '.' && str[2] == '/'))
@@ -2228,61 +2195,33 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		else if(str[0] == '.') strcpy(tempPath, str + 1);
 		else strcpy(tempPath, str);
 
-		strcpy(mes, rbuff1);
-		if(tempPath[0] != '/') strcat(mes, "/");
-		strcat(mes, tempPath);
-		strcat(mes, rbuff2);
-		strcat(mes, ip);
-		if(tempPort != 80){
-			strcat(mes, ":");
-			char tbuff[16] = {0};
-            sprintf(tbuff, "%d", tempPort);
-            strcat(mes, tbuff);
-		}
-		if(strlen(cookie) != 0)
+        std::unique_ptr<char[]> nip(new char[strlen(tempIP) + strlen(tempPath) + 1]);
+        sprintf(nip.get(), "%s%s", tempIP, tempPath);
+        std::string buffer;
+        int cSz = Connector::nConnect(nip.get(), tempPort, &buffer);
+        if(cSz > -1)
 		{
-			strcat(mes, rbuff3);
-			strcat(mes, cookie);
-		};
-		strcat(mes, rbuff4);
+            strncpy(buff, buffer.c_str(), (cSz < 65535 ? cSz : 65535));
+            strcpy(ps->codepage, GetCodePage(buff));
 
-		conSTR cstr;
-		cstr.size = 0;
-		cstr.lowerBuff = NULL;
-		int cRes = 0;
-		if(port == 443) cRes = con._EstablishSSLConnection(ip, 443, mes, &cstr);
-		else cRes = con._EstablishConnection(ip, port, mes, &cstr);
-		if(cstr.size < 65535)
-		{
-			strncpy(buff, cstr.lowerBuff, cstr.size);
-		}
-		else
-		{
-			strncpy(buff, cstr.lowerBuff, 65535);
-		};
-		if(cRes > -1)
-		{
-			strcpy(ps->codepage, GetCodePage(cstr.lowerBuff));
-
-			ls->flag = ContentFilter(cstr.lowerBuff, port, ip, ps->codepage);
+            ls->flag = ContentFilter(buff, port, ip, ps->codepage);
 			ps->flag = ls->flag;
 
 			if(ls->flag == -1) 
 			{
 				ps->flag = -1;
 				strcpy(ps->headr, "[IGNR_ADDR]");
-				strcpy(ps->path, tempPath);
-				delete []cstr.lowerBuff;
+                strcpy(ps->path, tempPath);
 
 				return -2;
 			};
+
 			if(ls->flag >= 17 || ls->flag == 11 || ls->flag == 12 
 				|| ls->flag == 13 || ls->flag == 14 || ls->flag == 1 || ls->flag == 10) 
 			{
-				strcat(ps->headr, GetTitle(cstr.lowerBuff));
+                strcat(ps->headr, GetTitle(buff));
 				ps->flag = ls->flag;
-				strcpy(ps->path, tempPath);
-				delete []cstr.lowerBuff;
+                strcpy(ps->path, tempPath);
 				ps->port = port;
 				strcpy(ps->ip, ip);
 
@@ -2294,30 +2233,30 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				ps->port = tempPort;
 				return -2;			
 			};
+
 			strcat(ps->headr, "->");
-			strcat(ps->headr, GetTitle(cstr.lowerBuff));
-			if (ls->_header(tempIP, tempPort, cstr.lowerBuff, ls, ps, redirStrLst, buff) == -1)
+            strcat(ps->headr, GetTitle(buff));
+
+            if (ls->_header(tempIP, tempPort, buff, ls, ps, redirStrLst, buff) == -1)
 			{
 				ps->flag = -1;
 				strcpy(ps->headr, "[IGNR_ADDR]");
-				strcpy(ps->path, tempPath);
-				delete[]cstr.lowerBuff;
+                strcpy(ps->path, tempPath);
 
 				return -1;
 			};
 			ps->port = tempPort;
-			if(strlen(cstr.lowerBuff) < 1)
-			{
-				ps->flag = 3;
-				ls->flag = 3;
-			}
-			else if(cstr.overflow == true) 
-			{
-				ls->flag = 0;
-				ps->flag = 0;
-			};
+//            if(strlen(buff) < 1)
+//			{
+//				ps->flag = 3;
+//				ls->flag = 3;
+//			}
+//			else if(cstr.overflow == true)
+//			{
+//				ls->flag = 0;
+//				ps->flag = 0;
+//			};
 
-			delete []cstr.lowerBuff;
 		}
 		else
 		{
@@ -2328,42 +2267,23 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		return -2;
 	}
 	else if(strlen(str) > 2)
-	{
-		strcpy(tempPath, str);
-		strcpy(mes, rbuff1);
-		if(tempPath[0] != '/') strcat(mes, "/");
-		strcat(mes, tempPath);
-		strcat(mes, rbuff2);
-		strcat(mes, ip);
-		if(tempPort != 80){
-			strcat(mes, ":");
-			char tbuff[16] = {0};
-            sprintf(tbuff, "%d", tempPort);
-            strcat(mes, tbuff);
-		}
-		if(strlen(cookie) != 0)
+    {
+        std::unique_ptr<char[]> nip(new char[strlen(ip) + strlen(str) + 1]);
+        sprintf(nip.get(), "%s%s", ip, str);
+        std::string buffer;
+        int cSz = Connector::nConnect(nip.get(), port, &buffer);
+        if(cSz > -1)
 		{
-			strcat(mes, rbuff3);
-			strcat(mes, cookie);
-		};
-		strcat(mes, rbuff4);
-			
-		conSTR cstr;
-		cstr.size = 0;
-		cstr.lowerBuff = NULL;
-		if(con._EstablishConnection(ip, port, mes, &cstr) != -1)
-		{
-			strncpy(buff, cstr.lowerBuff, (cstr.size < 65535 ? cstr.size : 65535));
-			strcpy(ps->codepage, GetCodePage(cstr.lowerBuff));
+            strncpy(buff, buffer.c_str(),  (cSz < 65535 ? cSz : 65535));
+            strcpy(ps->codepage, GetCodePage(buff));
 
-			ls->flag = ContentFilter(cstr.lowerBuff, port, ip, ps->codepage);
+            ls->flag = ContentFilter(buff, port, ip, ps->codepage);
 			ps->flag = ls->flag;
 			if(ls->flag == -1) 
 			{
 				ps->flag = -1;
 				strcpy(ps->headr, "[IGNR_ADDR]");
-				strcpy(ps->path, tempPath);
-				delete []cstr.lowerBuff;
+                strcpy(ps->path, tempPath);
 
 				return -1;
 			};
@@ -2371,39 +2291,37 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			if(ls->flag >= 17 || ls->flag == 11 || ls->flag == 12 
 				|| ls->flag == 13 || ls->flag == 14 || ls->flag == 1 || ls->flag == 10) 
 			{
-				strcat(ps->headr, GetTitle(cstr.lowerBuff));
+                strcat(ps->headr, GetTitle(buff));
 				ps->flag = ls->flag;
-				strcpy(ps->path, tempPath);
-				delete []cstr.lowerBuff;
+                strcpy(ps->path, tempPath);
 				ps->port = port;
 				strcpy(ps->ip, ip);
 
 				return -2;
 			};
 
-		if(ls->flag == 6)
-		{
-			ps->flag = ls->flag;
-			ps->port = tempPort;
-			return -2;			
-		};
+            if(ls->flag == 6)
+            {
+                ps->flag = ls->flag;
+                ps->port = tempPort;
+                return -2;
+            };
+
 			strcat(ps->headr, " -> ");
-			strcat(ps->headr, GetTitle(cstr.lowerBuff));
-			ls->_header(ip, port, cstr.lowerBuff, ls, ps, redirStrLst, buff);
+            strcat(ps->headr, GetTitle(buff));
+            ls->_header(ip, port, buff, ls, ps, redirStrLst, buff);
 			ps->port = tempPort;
 
-			if(strlen(cstr.lowerBuff) < 1)
-			{
-				ps->flag = 3;
-				ls->flag = 3;
-			}
-			else if(cstr.overflow == true) 
-			{
-				ls->flag = 0;
-				ps->flag = 0;
-			};
-
-			delete []cstr.lowerBuff;
+//            if(strlen(buff) < 1)
+//			{
+//				ps->flag = 3;
+//				ls->flag = 3;
+//			}
+//			else if(cstr.overflow == true)
+//			{
+//				ls->flag = 0;
+//				ps->flag = 0;
+//			};
 		}
 		else
 		{

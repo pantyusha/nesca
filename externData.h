@@ -23,20 +23,22 @@ extern volatile int BA, cons, BrutingThrds, gThreads;
 extern char **loginLst, **passLst, **wfLoginLst, **wfPassLst, **sshlpLst, **GlobalNegatives;
 extern bool trackerOK, __savingBackUpFile, globalScanFlag, MapWidgetOpened,
 	widgetIsHidden, OnlineMsgSentFlag, utfIRCFlag, HTMLDebugMode, gNegDebugMode, 
-	gDebugMode, horLineFlag, gPingNScan, gShuffle;
+    gDebugMode, horLineFlag, gPingNScan, gShuffle,
+BALogSwitched;
 extern int found, indexIP, gMode, 
 	MaxPass, MaxLogin, MaxWFLogin, MaxWFPass, MaxSSHPass,
 	GlobalNegativeSize, isActive, gMaxBrutingThreads,
 	gTimeOut, PieAnomC1, PieSusp, PieBA, PieLowl, PieWF, PieSSH, 
 	gThreadDelay, AnomC1, Filt, Overl, Lowl, Alive, saved, 
     Susp,
-WF,
-offlines, ssh, globalPinger, gPingTimeout, nickFlag, offlineFlag;
+    WF,
+    offlines, ssh, globalPinger, gPingTimeout, nickFlag, offlineFlag;
 extern char trcSrv[256], trcScr[256], trcProxy[128], trcPersKey[32], 
 	ircServer[32], ircPort[32], ircProxy[64], ircProxyPort[8], ircNick[32],
 	trcPort[32], trcSrvPortLine[32], saveStartIP[128], saveEndIP[128],
 	gRange[128], gFirstDom[128], gPorts[65536], endIP2[128], 
-	gVER[16];
+    gVER[16],
+    gProxyIP[64], gProxyPort[8];
 
 struct pl{
 	int loginCounter;

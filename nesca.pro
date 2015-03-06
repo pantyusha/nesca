@@ -35,10 +35,10 @@ SOURCES +=\
     STh.cpp \
     vercheckerthread.cpp \
     finder.cpp \
-    Utils.cpp \
     WebformWorker.cpp \
     Connector.cpp \
-    connector_old.cpp
+    connector_old.cpp \
+    Utils.cpp
 
 
 HEADERS  += ActivityDrawerTh_HorNet.h \

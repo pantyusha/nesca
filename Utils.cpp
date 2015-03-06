@@ -1,11 +1,15 @@
 #include <Utils.h>
 
-template<typename T> int Utils::ci_find_substr(const T& str1,
-                                        const T& str2,
-                                        const std::locale& locale) {
+char *getSystemProxy() {
 
-    auto it = std::search(str1.begin, str1.end, str2.begin, str2.end,
-                          my_equal<typename T::value_type>(locale));
-    if(it != str1.end()) return it - str1.begin();
-    else return -1;
+}
+
+int Utils::getProxyPort() {
+}
+
+char * Utils::getProxy() {
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#else
+    getSystemProxy();
+#endif
 }

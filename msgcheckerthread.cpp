@@ -7,7 +7,7 @@
 void MSGCheckerThread::doEmitionShowNewMsg(QString str)
 {
 	emit mct->showNewMsg(str);
-};
+}
 
 void _getNewMsg()
 {

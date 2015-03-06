@@ -22,7 +22,7 @@
 #include <mainResources.h>
 
 extern Ui::nesca_3Class *ui;
-extern bool widgetIsHidden, IRCLogToggled, BALogSwitched, blinkFlag, disableBlink, debugFileOK, QOSWait,
+extern bool widgetIsHidden, IRCLogToggled, blinkFlag, disableBlink, debugFileOK, QOSWait,
 	connectedToIRC, ME2ScanFlag, QoSScanFlag, VoiceScanFlag, PieStatFlag, proxyEnabledFlag,
 	smBit_8, smBit_7, smBit_6, smBit_5, smBit_4, smBit_3, smBit_2, smBit_1, printDelimiter;
 extern float QoSStep;

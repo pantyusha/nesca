@@ -1,12 +1,12 @@
 #ifndef WEBFORMWORKER_H
 #define WEBFORMWORKER_H
 
-#include <mainResources.h>
-#include <externData.h>
-#include <externFunctions.h>
 #include <Utils.h>
 #include "STh.h"
 #include "Connector.h"
+#include <mainResources.h>
+#include <externData.h>
+#include <externFunctions.h>
 
 class WFClass {
 

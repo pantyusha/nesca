@@ -3,9 +3,9 @@
 
 #include <libssh/libssh.h>
 #include <openssl/ssl.h>
+#include <vector>
 #include <curl/curl.h>
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-#pragma once 
 #include "iostream"
 #include <time.h>
 #include <process.h>
@@ -13,7 +13,6 @@
 #else
 #include <string>
 #include <iostream>
-#include <vector>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -129,12 +128,12 @@ class Lexems
 		
         int _header(char *ip,
                     int port,
-                    char str[],
+                    const char str[],
                     Lexems *l,
                     PathStr *ps,
                     std::vector<std::string> *lst,
                     char *rBuff);
-        int _filler(int p, char *buffcpy, char* ipi, int recd, Lexems *lx, char *hl);
+        int _filler(int p, const char *buffcpy, char* ipi, int recd, Lexems *lx, char *hl);
 		int globalSearchNeg(const char *buffcpy, char *ip, int port);
 	};
 

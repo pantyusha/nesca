@@ -270,10 +270,10 @@ char *_getAttributeValue(char *str, char *val, char *ip, int port)
 	if(ptrStart != NULL)
 	{
 		if(strstri(ptrStart, "qop=auth") != NULL) return "auth";
-		ptrS1End = _findFirst(ptrStart, "\"");
+//		ptrS1End = _findFirst(ptrStart, "\"");
 		if(ptrS1End != NULL)
 		{
-			ptrS2End = _findFirst(ptrS1End + 1, "\"");
+//			ptrS2End = _findFirst(ptrS1End + 1, "\"");
 			if(ptrS2End != NULL)
 			{
 				int sz = ptrS2End - ptrS1End - 1;
@@ -599,7 +599,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			if (strcmp(method, "[DIGEST]") == 0 && strstr(localBuff, "nonce=") != NULL)
 			{
 				ZeroMemory(attribute, sizeof(attribute));
-				strcpy(attribute, _getAttribute(localBuff, "WWW-Authenticate:"));
+//				strcpy(attribute, _getAttribute(localBuff, "WWW-Authenticate:"));
 				ZeroMemory(nonce, sizeof(nonce));
 				strcpy(nonce, _getAttributeValue(attribute, "nonce=", ip, port));
 				ZeroMemory(realm, sizeof(realm));
@@ -888,7 +888,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 			if(strstr(recvBuff, "Set-Cookie:") != NULL)
 			{
 				ZeroMemory(cookie, COOKIE_MAX_SIZE);
-				strncpy(cookie, _getAttribute(recvBuff, "Set-Cookie:"), COOKIE_MAX_SIZE);
+//				strncpy(cookie, _getAttribute(recvBuff, "Set-Cookie:"), COOKIE_MAX_SIZE);
 				cookieLen = strlen(cookie);
 			};
 		};

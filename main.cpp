@@ -1,22 +1,7 @@
 #include "nesca_3.h"
 #include <QApplication>
 #include <qfontdatabase.h>
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-#include <windows.h>
-#endif
 
-//--Fixing _ITERATOR_DEBUG_LEVEL 0!=2
-//#if defined(Q_OS_WIN32)
-//int WINAPI WinMain(HINSTANCE hInstance,
-//  HINSTANCE hPrevInstance, LPSTR lpcmdline, int ncmdshow)
-//{
-//	QApplication a(ncmdshow, (char **)lpcmdline);
-//#else
-//int main(int argc, char *argv[])
-//{
-//	QApplication a(argc, argv);
-//#endif
-//#if defined(Q_OS_WIN32)
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
@@ -37,8 +22,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
-	
-//#endif
+
 nesca_3 *gui = new nesca_3();
 	
 	gui->showNormal();

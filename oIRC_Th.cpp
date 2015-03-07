@@ -549,7 +549,6 @@ void IRCLoop()
 									}
 									else if(strstr(comStr, serverRealName) != NULL && (strstr(comStr, " 433 ") > 0 || strstr(comStr, "Nickname is already") > 0) )
 									{
-
 										QTime time = QTime::currentTime();
 										qsrand((uint)time.msec());
 										ircTh->doEmitChangeRedIRCData("[Nope] Nickname is already in use.");

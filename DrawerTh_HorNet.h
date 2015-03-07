@@ -1,7 +1,6 @@
 #ifndef DRAWERTH_HORNET_H
 #define DRAWERTH_HORNET_H
 
-#pragma once
 #include "nesca_3.h"
 
 class DrawerTh_HorNet : public QThread

@@ -35,8 +35,6 @@ int ver = 100*(100*(date.year()%100) + date.month()) + date.day();
 #define WIDGET_WIDTH 500
 //#define IRC_CHAN "iskopasi_lab01"
 
-
-
 bool utfIRCFlag = true;
 bool HTMLDebugMode = false;
 bool code160 = false;
@@ -151,15 +149,11 @@ QVector<int> vLowlLst;
 QVector<int> vBALst;
 QVector<int> vSSHLst;
 QVector<int> vOvrlLst;
-QVector<QPointF> vect;
 
 QMenu *menuPS;
 
 QVector<QRect> NodeDots;
 QVector<QString> NodeAddrs;
-
-int u = 1;
-
 const nesca_3 *gthis;
 bool BALogSwitched = false;
 bool widgetIsHidden = false;
@@ -171,8 +165,6 @@ QList<QString> PhraseLog;
 bool ME2ScanFlag = true, QoSScanFlag = false, VoiceScanFlag = false, PieStatFlag = false;
 
 Ui::nesca_3Class *ui = new Ui::nesca_3Class;
-
-
 void setSceneArea()
 {
 	delete ui->graphicsVoice;
@@ -192,6 +184,15 @@ void setSceneArea()
 	sceneUpper = new QGraphicsScene();
 	sceneUpper->setSceneRect(0, 0, ui->graphicLog_Upper->width(), ui->graphicLog_Upper->height());
 	sceneGrid->setSceneRect(0, 0, ui->graphicLog_Upper->width(), ui->graphicLog_Upper->height());
+
+	QLinearGradient gradient(0, 0, 0, 94);
+	gradient.setColorAt(0, QColor(255, 0, 0));
+	gradient.setColorAt(0.7, QColor(255, 0, 0));
+	gradient.setColorAt(0.85, QColor(255, 255, 0));
+	gradient.setColorAt(0.9, QColor(0, 255, 0));
+	gradient.setColorAt(1, QColor(255, 255, 255, 60));
+	pen2i.setBrush(gradient);
+	sceneGraph->setItemIndexMethod(QGraphicsScene::NoIndex);
 
 	sceneActivity = new QGraphicsScene();
 	sceneActivityGrid = new QGraphicsScene();
@@ -740,41 +741,44 @@ void nesca_3::slotAddLine(int x1, int y1, int x2, int y2)
 	};
 }
 
+
 void nesca_3::slotAddPolyLine()
 {
-    sceneGraph->setItemIndexMethod(QGraphicsScene::NoIndex);
 	if(ME2ScanFlag)
     {
         QPainterPath path;
-        if(vect.size() > 0)
+		if (DrawerTh_ME2Scanner::polyVect.size() > 0)
         {
-            path.moveTo(vect[0]);
-            for(int i = 1; i < vect.size(); ++i)
+			path.moveTo(DrawerTh_ME2Scanner::polyVect[0]);
+			for (int i = 1; i < DrawerTh_ME2Scanner::polyVect.count(); ++i)
             {
-                path.lineTo(vect[i]);
+				path.lineTo(DrawerTh_ME2Scanner::polyVect[i]);
             };
         };
 
         QGraphicsPathItem* itm = new QGraphicsPathItem(path);
         itm->setPen(pen2i);
-        sceneGraph->addItem(itm);
+		DrawerTh_ME2Scanner::itmList.push_front(itm);
 
-        double uu = 0.0;
-        int vSz = sceneGraph->items().count();
-        for(int i = 0; i < vSz; ++i)
+		int u = 0;
+        double uu = 1.0;
+		for (int i = 0; i < DrawerTh_ME2Scanner::itmList.count(); ++i)
         {
-            sceneGraph->items()[i]->setY(u + i + 1);
-            sceneGraph->items()[i]->setOpacity(0 + uu);
-            uu += 0.027;
-            u += 1;
+			itm = DrawerTh_ME2Scanner::itmList[i];
+			int y = u - i - 1;
+			itm->setY(y);
+			itm->setOpacity(uu);
+			sceneGraph->addItem(itm);
+            uu -= 0.027;
+            u -= 1;
         };
 
-        while(sceneGraph->items().count() > 38)
+		while (DrawerTh_ME2Scanner::itmList.count() > 38)
         {
-            sceneGraph->removeItem(sceneGraph->items().first());
+			sceneGraph->removeItem(DrawerTh_ME2Scanner::itmList[38]);
+			delete DrawerTh_ME2Scanner::itmList[38];
+			DrawerTh_ME2Scanner::itmList.pop_back();
         };
-
-        if(u > 10) u = 1;
 	};
 }
 
@@ -853,7 +857,6 @@ void nesca_3::activateME2ScanScene()
 		ui->PieStatBut->setStyleSheet("color: rgb(130, 130, 130);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(130, 130, 130, 80);");
 
 		sceneUpper->clear();
-
 		sceneGrid->clear();
 		sceneGrid2->clear();
 		sceneGraph->clear();
@@ -873,22 +876,12 @@ void nesca_3::activateME2ScanScene()
 		QoSScanFlag = false;
 		VoiceScanFlag = false;
 		PieStatFlag = false;
-		
-		for(int i = 0; i < sceneGrid->items().size(); ++i)
-		{
-			sceneGrid->removeItem(sceneGrid->items()[i]);
-			sceneGrid->items().clear();
-		};
-		for(int i = 0; i < sceneGrid2->items().size(); ++i)
-		{
-			sceneGrid2->removeItem(sceneGrid2->items()[i]);
-			sceneGrid2->items().clear();
-		};
 
 		if(dtHN->isRunning() == false) 
 		{
 			dtHN->start();
 		};
+
 		if(dtME2->isRunning() == false) 
 		{
 			dtME2->start();
@@ -947,7 +940,7 @@ void nesca_3::activateQoSScanBut()
 		sceneUpper->clear();
 		sceneTextPlacer->clear();
 		sceneVoice->clear();
-		vect.clear();
+		DrawerTh_ME2Scanner::polyVect.clear();
 
 		if(dtQoS->isRunning() == false) dtQoS->start();
 		if(dtGridQoS->isRunning() == false) dtGridQoS->start();
@@ -1869,48 +1862,6 @@ void nesca_3::slotIRCGetTopic(QString str)
 	ui->ircText->append(rData);
 }
 
-//unsigned char jpgHeader[623] = {
-//	0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01, 0x01, 0x01, 0x00, 0x60, 
-//	0x00, 0x60, 0x00, 0x00, 0xFF, 0xDB, 0x00, 0x43, 0x00, 0x02, 0x01, 0x01, 0x02, 0x01, 0x01, 0x02, 
-//	0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x03, 0x05, 0x03, 0x03, 0x03, 0x03, 0x03, 0x06, 0x04, 
-//	0x04, 0x03, 0x05, 0x07, 0x06, 0x07, 0x07, 0x07, 0x06, 0x07, 0x07, 0x08, 0x09, 0x0B, 0x09, 0x08, 
-//	0x08, 0x0A, 0x08, 0x07, 0x07, 0x0A, 0x0D, 0x0A, 0x0A, 0x0B, 0x0C, 0x0C, 0x0C, 0x0C, 0x07, 0x09, 
-//	0x0E, 0x0F, 0x0D, 0x0C, 0x0E, 0x0B, 0x0C, 0x0C, 0x0C, 0xFF, 0xDB, 0x00, 0x43, 0x01, 0x02, 0x02, 
-//	0x02, 0x03, 0x03, 0x03, 0x06, 0x03, 0x03, 0x06, 0x0C, 0x08, 0x07, 0x08, 0x0C, 0x0C, 0x0C, 0x0C, 
-//	0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 
-//	0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 
-//	0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0xFF, 0xC0, 
-//	0x00, 0x11, 0x08, 0x00, 0x64, 0x00, 0x80, 0x03, 0x01, 0x22, 0x00, 0x02, 0x11, 0x01, 0x03, 0x11, 
-//	0x01, 0xFF, 0xC4, 0x00, 0x1F, 0x00, 0x00, 0x01, 0x05, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 
-//	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 
-//	0x0A, 0x0B, 0xFF, 0xC4, 0x00, 0xB5, 0x10, 0x00, 0x02, 0x01, 0x03, 0x03, 0x02, 0x04, 0x03, 0x05, 
-//	0x05, 0x04, 0x04, 0x00, 0x00, 0x01, 0x7D, 0x01, 0x02, 0x03, 0x00, 0x04, 0x11, 0x05, 0x12, 0x21, 
-//	0x31, 0x41, 0x06, 0x13, 0x51, 0x61, 0x07, 0x22, 0x71, 0x14, 0x32, 0x81, 0x91, 0xA1, 0x08, 0x23, 
-//	0x42, 0xB1, 0xC1, 0x15, 0x52, 0xD1, 0xF0, 0x24, 0x33, 0x62, 0x72, 0x82, 0x09, 0x0A, 0x16, 0x17, 
-//	0x18, 0x19, 0x1A, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 
-//	0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 
-//	0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 
-//	0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 
-//	0x9A, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 
-//	0xB8, 0xB9, 0xBA, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xD2, 0xD3, 0xD4, 0xD5, 
-//	0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xF1, 
-//	0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFF, 0xC4, 0x00, 0x1F, 0x01, 0x00, 0x03, 
-//	0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 
-//	0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0xFF, 0xC4, 0x00, 0xB5, 0x11, 0x00, 
-//	0x02, 0x01, 0x02, 0x04, 0x04, 0x03, 0x04, 0x07, 0x05, 0x04, 0x04, 0x00, 0x01, 0x02, 0x77, 0x00, 
-//	0x01, 0x02, 0x03, 0x11, 0x04, 0x05, 0x21, 0x31, 0x06, 0x12, 0x41, 0x51, 0x07, 0x61, 0x71, 0x13, 
-//	0x22, 0x32, 0x81, 0x08, 0x14, 0x42, 0x91, 0xA1, 0xB1, 0xC1, 0x09, 0x23, 0x33, 0x52, 0xF0, 0x15, 
-//	0x62, 0x72, 0xD1, 0x0A, 0x16, 0x24, 0x34, 0xE1, 0x25, 0xF1, 0x17, 0x18, 0x19, 0x1A, 0x26, 0x27, 
-//	0x28, 0x29, 0x2A, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 
-//	0x4A, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 
-//	0x6A, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 
-//	0x89, 0x8A, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 
-//	0xA7, 0xA8, 0xA9, 0xAA, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xC2, 0xC3, 0xC4, 
-//	0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xE2, 
-//	0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 
-//	0xFA, 0xFF, 0xDA, 0x00, 0x0C, 0x03, 0x01, 0x00, 0x02, 0x11, 0x03, 0x11, 0x00, 0x3F, 0x00
-//};
-//
 int c = 1;
 
 void nesca_3::slotSaveImage(QAction *qwe)
@@ -2414,7 +2365,6 @@ void nesca_3::slotIncData(QString ip, QString str)
 	};
 }
 
-#pragma region SM_Buts
 void nesca_3::smReaction()
 {
 	QObject *smB = this->sender();
@@ -2849,7 +2799,6 @@ void nesca_3::changeNSTrackLabel(bool status)
 	else ui->NSTrackStatusLabel->setStyleSheet("background-color: black; border: 1px solid white;");
 }
 
-#pragma region "Signal assignments"
 void nesca_3::ConnectEvrthng()
 {
 	connect ( pbTh, SIGNAL(upd()), this, SLOT(slotPBUpdate()));
@@ -2891,7 +2840,7 @@ void nesca_3::ConnectEvrthng()
 	connect ( ui->startScanButton_4, SIGNAL( clicked() ), this, SLOT( startScanButtonClickedDNS() ) );
 	connect ( ui->shuffle_onoff, SIGNAL(toggled(bool)), this, SLOT(ChangeShuffle(bool)));
 	connect ( ui->trackerOnOff, SIGNAL(toggled(bool)), this, SLOT(ChangeTrackerOK(bool)));
-	connect ( ui->pingingOnOff, SIGNAL( toggled(bool) ), this, SLOT( ChangePingerOK(bool) ) );
+//	connect ( ui->pingingOnOff, SIGNAL( toggled(bool) ), this, SLOT( ChangePingerOK(bool) ) );
 	connect ( ui->debugFileOnOff, SIGNAL( toggled(bool) ), this, SLOT( ChangeDebugFileState(bool) ) );
 	connect ( ui->importThreads, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelThreads_ValueChanged(QString) ) );
 	connect ( ui->threadLine, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelThreads_ValueChanged(QString) ) );
@@ -3107,27 +3056,36 @@ void RestoreSession()
 				};
 			};
 
-           if(strstr(resStr, "[NDBSERVER]:") != NULL) ui->lineTrackerSrv->setText(loadNescaSetup(resStr, "[NDBSERVER]:").simplified());
-           if(strstr(resStr, "[NDBSCRIPT]:") != NULL) ui->lineTrackerScr->setText(loadNescaSetup(resStr, "[NDBSCRIPT]:").simplified());
-           if(strstr(resStr, "[NDBPORT]:") != NULL) ui->trcSrvPortLine->setText(loadNescaSetup(resStr, "[NDBPORT]:").simplified());
-           if(strstr(resStr, "[PING]:") != NULL) ui->pingingOnOff->setText(loadNescaSetup(resStr, "[PING]:").simplified());
-           if(strstr(resStr, "[PING_TO]:") != NULL) ui->PingTO->setText(loadNescaSetup(resStr, "[PING_TO]:").simplified());
-           if(strstr(resStr, "[THREAD_DELAY]:") != NULL) ui->threadDelayBox->setText(loadNescaSetup(resStr, "[THREAD_DELAY]:").simplified());
-           if(strstr(resStr, "[TIMEOUT]:") != NULL) {
-               ui->iptoLine_value->setText(loadNescaSetup(resStr, "[TIMEOUT]:"));
-               ui->iptoLine_value_2->setText(loadNescaSetup(resStr, "[TIMEOUT]:"));
-               ui->iptoLine_value_3->setText(loadNescaSetup(resStr, "[TIMEOUT]:"));
-           }
-           if(strstr(resStr, "[MAXBTHR]:") != NULL) ui->maxBrutingThrBox->setText(loadNescaSetup(resStr, "[MAXBTHR]:").simplified());
-           if(strstr(resStr, "[PERSKEY]:") != NULL) ui->linePersKey->setText(loadNescaSetup(resStr, "[PERSKEY]:").simplified());
-           if(strstr(resStr, "[IRCSERVER]:") != NULL) ui->ircServerBox->setText(loadNescaSetup(resStr, "[IRCSERVER]:").simplified());
-           if(strstr(resStr, "[IRCPORT]:") != NULL) ui->serverPortBox->setText(loadNescaSetup(resStr, "[IRCPORT]:").simplified());
-           if(strstr(resStr, "[IRCPROXY]:") != NULL) ui->ircProxy->setText(loadNescaSetup(resStr, "[IRCPROXY]:").simplified());
-           if(strstr(resStr, "[IRCPROXYPORT]:") != NULL) ui->ircProxyPort->setText(loadNescaSetup(resStr, "[IRCPROXYPORT]:").simplified());
-           if(strstr(resStr, "[SYSTEMPROXYIP]:") != NULL) ui->systemProxyIP->setText(loadNescaSetup(resStr, "[SYSTEMPROXYIP]:").simplified());
-           if(strstr(resStr, "[SYSTEMPROXYPORT]:") != NULL) ui->systemProxyPort->setText(loadNescaSetup(resStr, "[SYSTEMPROXYPORT]:").simplified());
-           if(strstr(resStr, "[IRCNICK]:") != NULL) ui->ircNickBox->setText(loadNescaSetup(resStr, "[IRCNICK]:").simplified());
-           ZeroMemory(resStr, sizeof(resStr));
+			if (strstr(resStr, "[NDBSERVER]:") != NULL) ui->lineTrackerSrv->setText(loadNescaSetup(resStr, "[NDBSERVER]:").simplified());
+			else if (strstr(resStr, "[NDBSCRIPT]:") != NULL) ui->lineTrackerScr->setText(loadNescaSetup(resStr, "[NDBSCRIPT]:").simplified());
+			else if (strstr(resStr, "[NDBPORT]:") != NULL) ui->trcSrvPortLine->setText(loadNescaSetup(resStr, "[NDBPORT]:").simplified());
+			else if (strstr(resStr, "[PING]:") != NULL) {
+				lex = strstr(resStr, "[PING]:") + strlen("[PING]:");
+
+				if (strlen(lex) > 1)
+				{
+					lex[strlen(lex) - 1] = '\0';
+					ui->pingingOnOff->setChecked(strcmp(lex, "true") == 0 ? true : false);
+				};
+			}
+			else if (strstr(resStr, "[PING_TO]:") != NULL) ui->PingTO->setText(loadNescaSetup(resStr, "[PING_TO]:").simplified());
+			else if (strstr(resStr, "[THREAD_DELAY]:") != NULL) ui->threadDelayBox->setText(loadNescaSetup(resStr, "[THREAD_DELAY]:").simplified());
+			else if (strstr(resStr, "[TIMEOUT]:") != NULL) {
+				const QString &tempLex = loadNescaSetup(resStr, "[TIMEOUT]:");
+				ui->iptoLine_value->setText(tempLex);
+				ui->iptoLine_value_2->setText(tempLex);
+				ui->iptoLine_value_3->setText(tempLex);
+			}
+			else if (strstr(resStr, "[MAXBTHR]:") != NULL) ui->maxBrutingThrBox->setText(loadNescaSetup(resStr, "[MAXBTHR]:").simplified());
+			else if (strstr(resStr, "[PERSKEY]:") != NULL) ui->linePersKey->setText(loadNescaSetup(resStr, "[PERSKEY]:").simplified());
+			else if (strstr(resStr, "[IRCSERVER]:") != NULL) ui->ircServerBox->setText(loadNescaSetup(resStr, "[IRCSERVER]:").simplified());
+			else if (strstr(resStr, "[IRCPORT]:") != NULL) ui->serverPortBox->setText(loadNescaSetup(resStr, "[IRCPORT]:").simplified());
+			else if (strstr(resStr, "[IRCPROXY]:") != NULL) ui->ircProxy->setText(loadNescaSetup(resStr, "[IRCPROXY]:").simplified());
+			else if (strstr(resStr, "[IRCPROXYPORT]:") != NULL) ui->ircProxyPort->setText(loadNescaSetup(resStr, "[IRCPROXYPORT]:").simplified());
+			else if (strstr(resStr, "[SYSTEMPROXYIP]:") != NULL) ui->systemProxyIP->setText(loadNescaSetup(resStr, "[SYSTEMPROXYIP]:").simplified());
+			else if (strstr(resStr, "[SYSTEMPROXYPORT]:") != NULL) ui->systemProxyPort->setText(loadNescaSetup(resStr, "[SYSTEMPROXYPORT]:").simplified());
+			else if (strstr(resStr, "[IRCNICK]:") != NULL) ui->ircNickBox->setText(loadNescaSetup(resStr, "[IRCNICK]:").simplified());
+			ZeroMemory(resStr, sizeof(resStr));
 		};
 
 		fclose(resFile);
@@ -3236,13 +3194,7 @@ void _startMsgCheck()
 
 	QTime time = QTime::currentTime();
 	qsrand((uint)time.msec());
-	
-	QLinearGradient gradient(0, 0, 0, 20);
-	gradient.setColorAt(0,		QColor(0,255,0));
-	gradient.setColorAt(0.5,	QColor(100,100,100, 100));
-	gradient.setColorAt(1,		QColor(255,255,255, 60));
-	pen2i.setBrush(gradient);
-	
+		
 	ui->ircNickBox->setText("nsa_" + QString::number(qrand() % 8999 + 1000));
 	
 	char rVer[32] = {0};

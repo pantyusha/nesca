@@ -1,9 +1,17 @@
 #ifndef CONNECTOR_H
 #define CONNECTOR_H
 
-#include <mainResources.h>
 #include <externData.h>
 #include <STh.h>
+#include <Utils.h>
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#include <iphlpapi.h>
+#include <icmpapi.h>
+#pragma comment(lib, "iphlpapi.lib")
+#pragma comment(lib,"curllib.lib")
+#endif
+#include <mainResources.h>
 
 class Connector {
 

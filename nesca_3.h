@@ -1,7 +1,10 @@
 ﻿#ifndef nesca_3_H
 #define nesca_3_H
 
-#pragma once
+//Include windows.h ONLY *after* qdatetime.h
+//Bug: https://bugreports.qt.io/browse/QTBUG-31469
+
+#include <qdatetime.h>
 #include <QMainWindow>
 #include <qapplication.h>
 #include <qgraphicsitem.h>
@@ -12,7 +15,6 @@
 #include <QSystemTrayIcon>
 #include <QtGui/qevent.h>
 #include <qthread.h>
-#include <qdatetime.h>
 #include <qjsonobject.h>
 #include <qjsonvalue.h>
 #include <qjsonarray.h>
@@ -31,7 +33,6 @@ extern char endIP2[128], inputStr[256];
 extern SOCKET lSock;
 
 extern QVector<int> vAlivLst, vAnomLst, vWFLst, vSuspLst, vLowlLst, vBALst, vSSHLst, vOvrlLst, actLst;
-extern QVector<QPointF> vect;
 extern QList<int> lstOfLabels;
 extern QSystemTrayIcon *tray;
 

@@ -1,5 +1,4 @@
 #include <Connector.h>
-#include <Utils.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 int _pingMyTarget(char *ip)
@@ -33,7 +32,6 @@ int _pingMyTarget(char *ip)
         stt->doEmitionRedFoundData("[Pinger] Unable to allocate memory.");
         return 0;
     }
-
 
     dwRetVal = IcmpSendEcho(hIcmpFile, ipaddr, SendData, sizeof(SendData),
         NULL, ReplyBuffer, ReplySize, gPingTimeout*1000);
@@ -196,7 +194,7 @@ int _EstablishSSHConnection(char *host, int port, std::string *buffer, const cha
             if(i == 0) return -2; //Failhit
             BConDec();
             isActive = 0;
-            return 0;
+            return 1;
         }
         else if(res == -2)
         {
@@ -384,18 +382,8 @@ int Connector::_ConnectToPort(char *ip, int port, char *hl)
         ++Alive;
         ++found;
         stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
-
-        conSTR CSTR;
-        CSTR.lowerBuff = new char[size + 1];
-        CSTR.size = size;
-        memcpy(CSTR.lowerBuff, buffer.c_str(), size);
-        memset(CSTR.lowerBuff + size, '\0', 1);
-
         Lexems lx;
-        lx._filler(port, (char *)buffer.c_str(), ip, size, &lx, hl);
-
-        delete []CSTR.lowerBuff;
-        CSTR.lowerBuff = NULL;
+        lx._filler(port, buffer.c_str(), ip, size, &lx, hl);
     };
 
     return 0;

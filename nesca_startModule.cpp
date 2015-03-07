@@ -2282,6 +2282,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 
 int startScan(char* args)
 {
+	curl_global_init(CURL_GLOBAL_ALL);
 	SSL_library_init();
 	OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
 	SSL_load_error_strings();   /* Bring in and register error messages */

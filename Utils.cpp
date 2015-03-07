@@ -1,10 +1,11 @@
 #include <Utils.h>
 
 char *getSystemProxy() {
-
+	return "";
 }
 
 int Utils::getProxyPort() {
+	return 0;
 }
 
 char * Utils::getProxy() {
@@ -12,4 +13,5 @@ char * Utils::getProxy() {
 #else
     getSystemProxy();
 #endif
+	return "";
 }

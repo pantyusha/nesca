@@ -11,9 +11,9 @@ struct my_equal {
     my_equal( const locale loc ) : loc_(loc) {}
     bool operator()(charT ch1, charT ch2) {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-		return toupper(ch1) == toupper(ch2);
+        return tolower(ch1) == tolower(ch2);
 #else
-		return toupper(ch1, loc_) == toupper(ch2, loc_);
+        return tolower(ch1, loc_) == tolower(ch2, loc_);
 #endif
     }
 private:
@@ -27,6 +27,17 @@ public:
                                             const T& str2,
                                             const locale& loc = locale()) {
 
+        auto it = std::search(str1.begin(), str1.end(), str2.begin(), str2.end(),
+                              my_equal<typename T::value_type>(loc));
+        if(it != str1.end()) return it - str1.begin();
+        else return -1;
+    }
+
+    template<typename T> static int ci_find_substr(const T& str1,
+                                            const char* str2c,
+                                            const locale& loc = locale()) {
+
+        std::string str2 = std::string(str2c);
         auto it = std::search(str1.begin(), str1.end(), str2.begin(), str2.end(),
                               my_equal<typename T::value_type>(loc));
         if(it != str1.end()) return it - str1.begin();

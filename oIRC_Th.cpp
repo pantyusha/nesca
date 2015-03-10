@@ -77,7 +77,6 @@ QString GetNickColor(char *sn)
 	QString nickBGColorStr = hexNick.mid(hexNick.size() - 6, hexNick.size());
 
     int nickColor = nickColorStr.toUInt(NULL, 16);
-    int dim = QString::number(nickColor).length();
 		
 	nickColor += (7*origLen + nickColor*6 + 123456 - hln*hln*hln*hln + (int)(str[0].toLatin1())*123);
 	nickColorStr.setNum(nickColor, 16);
@@ -187,6 +186,7 @@ char *GetServerName(char *buff)
 	char *temp1 = NULL;
 	int sz = 0;
 	char name[128] = {0};
+
 	if(strstr(buff, " ") != NULL)
 	{
 		temp1 = strstr(buff, " ");

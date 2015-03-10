@@ -10,7 +10,7 @@ class DrawerTh_ME2Scanner : public QThread
 	Q_OBJECT
 
 public:
-	static QList<QGraphicsPathItem*> itmList;
+    static QList<QGraphicsPathItem*> itmList;
 	static QVector<QPointF> polyVect;
 
 	static void doEmitionAddPolyLine();

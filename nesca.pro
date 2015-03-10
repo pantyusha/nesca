@@ -9,6 +9,8 @@ QT       += core gui multimedia
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
+QMAKE_CFLAGS += -Wno-write-strings
+QMAKE_CXXFLAGS += -Wno-write-strings
 
 TARGET = nesca
 TEMPLATE = app

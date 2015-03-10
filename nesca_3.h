@@ -52,7 +52,7 @@ public:
 	void newListItem(QString str);
 	static int perc;
 private:
-
+    int savedTabIndex;
 protected:
 	bool eventFilter(QObject* obj, QEvent *event);
 	void run();
@@ -79,6 +79,7 @@ protected:
 		void slotAppendIRCNick(QString str);
 		void slotShowNicks();
 		void slotBlinkMessage();
+        void slotTabChanged(int index);
 		void IPScanSeq();
 		void DNSScanSeq();
 		void ImportScanSeq();
@@ -87,7 +88,7 @@ protected:
 		void slotOutData(QString ip, QString str);
 		void slotIncData(QString ip, QString str);
 		void slotShowServerMsg(QString str);
-		void slotSaveImage(QAction *qwe);
+        void slotSaveImage();
 		void slotUpdatePie();
 		void slotClearLogs();
 		void slotRestartIRC();

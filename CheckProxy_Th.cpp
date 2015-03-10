@@ -80,14 +80,12 @@ void CheckProxyLogic()
 					)
 				{
 					
-
 		chPTh->doEmitChangeRawIRCDataOut(QString::fromLocal8Bit("GET / HTTP/1.1\r\nHost: 2ip.ru\r\n\r\n"));
 
 					send(pSock, "GET / HTTP/1.1\r\nHost: 2ip.ru\r\n\r\n", strlen("GET / HTTP/1.1\r\nHost: 2ip.ru\r\n\r\n"), 0);
 					ZeroMemory(precvBuff, sizeof(precvBuff));
 					while(recv(pSock, precvBuff, sizeof(precvBuff), 0) > 0) 
 					{
-						
 
 		chPTh->doEmitChangeRawIRCDataInc(QString::fromLocal8Bit(precvBuff));
 
@@ -103,8 +101,6 @@ void CheckProxyLogic()
 							&& strstr(precvBuff, "gateway timeout") == NULL
 							)
 						{
-
-
 							chPTh->doEmitChangeGreenIRCData("[OK] Success! Now using " + QString(ircProxy) + ":" + QString(ircProxyPort) + ".");
 
 							proxyEnabledFlag = 1;

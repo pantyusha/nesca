@@ -1,16 +1,11 @@
-#pragma once
 #include "DrawerTh_QoSScanner.h"
 #include "STh.h"
 #include "externData.h"
 
-int tMax;
-
 void DrawerTh_QoSScanner::run()
 {
 	while(QoSScanFlag)
-	{
-		tMax = 0;
-		
+    {
 		if(stt->isRunning() == true && widgetIsHidden == false && tray->isVisible() == false && QOSWait == false) 
 		{
 			lstOfLabels.clear();
@@ -19,15 +14,13 @@ void DrawerTh_QoSScanner::run()
 			lstOfLabels.append(WF);
 			lstOfLabels.append(Susp);
 			lstOfLabels.append(Lowl);
-			lstOfLabels.append((int)BA);
+            lstOfLabels.append(BA);
 			lstOfLabels.append(Overl);
 			lstOfLabels.append(ssh);
 			
 			QList<int> lstOfLabelsCopy = lstOfLabels;
-			qSort(lstOfLabelsCopy.begin(), lstOfLabelsCopy.end(), qGreater<float>());
-			int curVal = lstOfLabelsCopy[0];
-			if(curVal > MaxDataVal) MaxDataVal = curVal;
-			if(curVal > tMax) tMax = curVal;
+            qSort(lstOfLabelsCopy.begin(), lstOfLabelsCopy.end(), qGreater<float>());
+            if(lstOfLabelsCopy[0] > MaxDataVal) MaxDataVal = lstOfLabelsCopy[0];
 			
 			dtQoS->doEmitionAddLine();
 		}
@@ -56,9 +49,9 @@ void DrawerTh_QoSScanner::run()
 		ssh = 0;
 		msleep(2000);
 	};
-};
+}
 
 void DrawerTh_QoSScanner::doEmitionAddLine()
 {
 	emit dtQoS->sAddLine();
-};
+}

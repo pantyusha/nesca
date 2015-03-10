@@ -187,7 +187,7 @@ int globalSearchNeg(const char *buffcpy, char *ip, int port)
 	char negWord[256] = {0};
     for(int i = 0; i < GlobalNegativeSize; ++i)
 	{
-        if(!globalScanFlag) break;
+        if(!globalScanFlag) return -1;
 
 			strcpy(negWord, GlobalNegatives[i]);
 			if(strstr(buffcpy, negWord) != NULL) 
@@ -213,10 +213,8 @@ int globalSearchNeg(const char *buffcpy, char *ip, int port)
 				return -1;
 			};
 
-
 		ZeroMemory(negWord, 256);
 	};
-    return -1;
 }
 
 int globalSearchPrnt(const char *buffcpy)
@@ -335,7 +333,8 @@ int sharedDetector(char * ip, int port, const char *buffcpy) {
 
     if(globalSearchNeg(buffcpy, ip, port) == -1)                                                                                                    return -1;
     if(globalSearchPrnt(buffcpy) == -1)																					                            return -1;
-    if(strstr(buffcpy, "<form ") != NULL && strstr(buffcpy, "302 found") == NULL)                                                                   return 10;
+    //if(strstr(buffcpy, "<form ") != NULL && strstr(buffcpy, "302 found") == NULL)                                                                   return 10;
+	//nic.sucks, ...
 
     return -2;
 }
@@ -2687,11 +2686,13 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 					};
 				};
 
-				if(std::find(redirStrLst->begin(), redirStrLst->end(), redirStr) == redirStrLst->end()) 
-				{		
-					redirStrLst->push_back(redirStr);
-					return redirectReconnect(ps->cookie, ip, port, redirStr, l, ps, redirStrLst, rBuff);
-				} return -1;
+				if (redirStr[0] != '#') {
+					if (std::find(redirStrLst->begin(), redirStrLst->end(), redirStr) == redirStrLst->end())
+					{
+						redirStrLst->push_back(redirStr);
+						return redirectReconnect(ps->cookie, ip, port, redirStr, l, ps, redirStrLst, rBuff);
+					} return -1;
+				}
 				return -2;
 			};
 		}

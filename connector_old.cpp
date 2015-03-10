@@ -218,7 +218,7 @@ void _baSSLWorker(char *ip, char *request, char *rvBuff)
 				if(SSL_connect(ssl))
 				{
 					SSL_write(ssl, request, strlen(request));
-					if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
+					if(MapWidgetOpened) stt->doEmitionAddOutData(QString(request));
 
 					char tempBuff[128] = {0};
 					int x = 1;
@@ -465,7 +465,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 
 				if(send(sock, hRqst, strlen(hRqst), 0) != SOCKET_ERROR) {
 
-					if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(hRqst));
+					if(MapWidgetOpened) stt->doEmitionAddOutData(QString(hRqst));
 					ZeroMemory(headerMsg, REQUEST_MAX_SIZE);
 					int x = 1;
 					int xx = 0;
@@ -722,7 +722,7 @@ lopaStr _BABrute(char *cookie, char *ip, int port, char *pathT, char *method)
 
 					if (send(sock, request, strlen(request), 0) != SOCKET_ERROR)
 					{
-						if (MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
+						if (MapWidgetOpened) stt->doEmitionAddOutData(QString(request));
 						dataSz = 0;
 						ZeroMemory(recvBuff2, sizeof(recvBuff2));
 						ZeroMemory(recvBuff, sizeof(recvBuff));
@@ -1084,7 +1084,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 						strcat(request, "\r\n");
 						if(send(sockFTP, request, strlen(request), 0) != SOCKET_ERROR)
 						{
-							if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
+							if(MapWidgetOpened) stt->doEmitionAddOutData(QString(request));
 							Activity += strlen(request);
 
 							ZeroMemory(request, sizeof(request));
@@ -1128,7 +1128,7 @@ lopaStr _FTPBrute(char *ip, int port, PathStr *ps)
 							strcat(request, "\r\n");
 							if(send(sockFTP, request, strlen(request), 0) != SOCKET_ERROR)
 							{
-								if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
+								if(MapWidgetOpened) stt->doEmitionAddOutData(QString(request));
 
 								Activity += strlen(request);
 								ZeroMemory(request, sizeof(request));
@@ -1396,7 +1396,7 @@ int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int
 		}
 		else 
 		{
-			if(MapWidgetOpened) stt->doEmitionAddOutData(QString(ip), QString(request));
+			if(MapWidgetOpened) stt->doEmitionAddOutData(QString(request));
 			int x = 1;
 			int xx = 0;
 			ZeroMemory(recvBuff2, sizeof(recvBuff2));

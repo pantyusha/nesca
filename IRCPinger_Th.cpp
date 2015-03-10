@@ -1,4 +1,3 @@
-#pragma once
 #include "IRCPinger_Th.h"
 #include "externData.h"
 

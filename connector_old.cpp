@@ -224,7 +224,7 @@ void _baSSLWorker(char *ip, char *request, char *rvBuff)
 					int x = 1;
 					int xx = 0;
 
-					ZeroMemory(rvBuff, sizeof(rvBuff));
+                    ZeroMemory(rvBuff, sizeof(*rvBuff));
 					while(xx < 512)
 					{
 						x = SSL_read(ssl, tempBuff, sizeof(tempBuff));

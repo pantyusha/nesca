@@ -4,11 +4,12 @@
 void ActivityDrawerTh_HorNet::doEmitDrawActivityLine(QString data)
 {
 	emit adtHN->sDrawActivityLine(data);
-};
+}
+
 void ActivityDrawerTh_HorNet::doEmitDrawGrid()
 {
 	emit adtHN->sDrawGrid();
-};
+}
 
 void makeActLine(int val)
 {
@@ -18,7 +19,8 @@ void makeActLine(int val)
 		actLst.pop_front();
 		actLst.push_back(val);
 	};
-};
+}
+
 void ActivityDrawerTh_HorNet::run()
 {
 	adtHN->doEmitDrawGrid();
@@ -34,4 +36,4 @@ void ActivityDrawerTh_HorNet::run()
 		Activity = 0;
 		msleep(130);
 	};
-};
+}

@@ -1,5 +1,4 @@
-﻿#pragma once
-#include "STh.h"
+﻿#include "STh.h"
 #include "mainResources.h"
 #include "externData.h"
 #include "externFunctions.h"
@@ -31,8 +30,11 @@ int isActive = 0;
 int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSSHPass = 0;
 int ipsstart[4], ipsend[4], 
 	overallPorts, flCounter, octet[4];
-unsigned char **ipsstartfl = NULL, **ipsendfl = NULL, **starterIP = NULL;
+int BA = 0;
 int gPingTimeout = 1;
+unsigned int Activity = 0;
+
+unsigned char **ipsstartfl = NULL, **ipsendfl = NULL, **starterIP = NULL;
 double ips = 0;
 char top_level_domain[128] = {0};
 char endIP2[128] = {0};
@@ -54,10 +56,9 @@ char metaETA[256] = {0};
 char metaOffline[256] = {0};
 bool ErrLogFirstTime = true;
 bool gPingNScan = false;
-unsigned long long gTargets = 0, gTargetsOverall = 1, targets, Activity = 0;
+long long unsigned int gTargets = 0, gTargetsOverall = 1, targets;
 volatile int gThreads;
 volatile int cons = 0;
-volatile int BA = 0;
 volatile int BrutingThrds = 0;
 volatile int threads = 20;
 
@@ -148,11 +149,10 @@ __asm
         lock inc cons;
     };
 #else
-    asm("lock incl cons");
+    asm("lock; incl cons");
 #endif
-	
-	stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
-	
+
+    stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
 }
 
 void ConDec()
@@ -165,19 +165,18 @@ void ConDec()
             lock dec cons;
         };
 #else
-        asm("lock decl cons");
+        asm("lock; decl cons");
 #endif
 
 	};
 	
 	stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
-	
 }
 
 void _SaveBackupToFile()
 {
 	char saveStr[512] = {0};
-	char saveBuffer[65536] = {0};
+    char saveBuffer[4096] = {0};
 	char endStr[128] = {0};
 
 	if(gMode == 0 || gMode == 1)
@@ -189,24 +188,24 @@ void _SaveBackupToFile()
 		else 
 		{
 			if(strstr(endIP2, "-") != NULL) strcpy(endStr, strstr(endIP2, "-"));
-			else if(strstr(endIP2, "/") != NULL) strcpy(endStr, strstr(endIP2, "/"));
+            else if(strstr(endIP2, "/") != NULL) strcpy(endStr, strstr(endIP2, "/"));
 			else
 			{
-				char temp[512] = {0};
-				strncpy(temp, endIP2, 512);
-				strcat(endIP2, "-");
-				strcat(endIP2, temp);
-				strcpy(endStr, strstr(endIP2, "-"));
+                char temp[512] = {0};
+                strncpy(temp, endIP2, 512);
+                strcat(endIP2, "-");
+                strcat(endIP2, temp);
+                strcpy(endStr, strstr(endIP2, "-"));
 			};
 		};
 
-		if(strlen(endIP2) > 0)
+        if(strlen(endStr) > 0)
 		{
 			strcpy(saveStr, "[SESSION]:");
 			strcat(saveStr, std::to_string(gMode).c_str());
 			strcat(saveStr, " ");
 			if(gMode == 0) strcat(saveStr, saveStartIP);
-			strcat(saveStr, endStr);
+            strcat(saveStr, endStr);
 			if(gMode == 1)
 			{
 				strcat(saveStr, " ");
@@ -363,7 +362,7 @@ void _SaveBackupToFile()
         ZeroMemory(saveStr, sizeof(saveStr));
 
 		strcpy(saveStr, "[PERSKEY]:");
-		strcat(saveStr, trcPersKey);
+        strncat(saveStr, trcPersKey, 32);
 		strcat(saveStr, "\n");
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
@@ -379,7 +378,8 @@ void _SaveBackupToFile()
 
 		ZeroMemory(saveStr, strlen(saveStr));
 		ZeroMemory(saveBuffer, strlen(saveBuffer));
-};
+}
+
 void _saver()	
 {
 	while(globalScanFlag)
@@ -447,7 +447,7 @@ void *_tracker()
 			if(globalScanFlag == false && jsonArr->size() == 0) break;
 			char rBuffT[250000] = {0};
 			char *msg = new char[4096];
-			ZeroMemory(msg, sizeof(msg));
+            ZeroMemory(msg, sizeof(*msg));
 			char ndbServer[64] = {0};
 			char ndbScriptT[64] = {0};
 			char ndbScript[64] = {0};
@@ -646,15 +646,15 @@ void *_tracker()
 							delete []msg;
 							msg = 0;
 						};
+
 						msg = new char[r.size() + 1024];
-						ZeroMemory(msg, sizeof(msg));
+                        ZeroMemory(msg, sizeof(*msg));
 
 						strcpy(msg, "POST /");
 						strcat(msg, ndbScript);
 						strcat(msg, " HTTP/1.1\r\nHost: ");
 						strcat(msg, ndbServer);
 						strcat(msg, "\r\nContent-Type: application/json\r\nAccept-Encoding: application/json\r\nContent-Length: ");
-
 						strcat(msg, std::to_string(r.size()).c_str());
 						strcat(msg, "\r\nConnection: close\r\n\r\n");
 
@@ -775,11 +775,12 @@ void *_tracker()
 
 						ZeroMemory(msgR, sizeof(msgR));			
 						ZeroMemory(rBuffT, sizeof(rBuffT));			
-						ZeroMemory(msg, sizeof(msg));
+                        ZeroMemory(msg, sizeof(*msg));
+
 						if(msg != NULL) 
 						{
-							delete []msg;
-							msg = 0;
+                            delete msg;
+                            msg = NULL;
 						};
 
 						CSSOCKET(sock);
@@ -788,9 +789,7 @@ void *_tracker()
 				};
 			}
 			else
-			{
-				CSSOCKET(sock);
-
+            {
 				stt->doEmitionRedFoundData("[NS-Track] -Balancer replied with invalid string.");
 				SaveErrorLog("NS-Track", msg, rBuffT);
 			};
@@ -887,7 +886,6 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[])
 //	return res;
 //}
 
-//Connector con;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 void _connect(void* ss)
 #else
@@ -899,7 +897,9 @@ void *_connect(void* ss)
     strcpy(ip, ((ST*)ss)->argv);
 	//char hostLog[256] = {0};
 	//strcpy(hostLog, GetHost(ip));
-	delete []ss;
+    delete (ST*)ss;
+
+    ConInc();
 
 	for(int i = 0; i <= overallPorts; ++i)
 	{
@@ -910,7 +910,7 @@ void *_connect(void* ss)
 	ConDec();
 }
 
-void targetAndIPWriter(unsigned long int target, char *buff)
+void targetAndIPWriter(long long unsigned int target, char *buff)
 {
 	char curIPBuff[256] = {0}, targetNPers[32] = {0}, dbuffer[32] = {0};
 	strcpy(metaIPDNS, buff);
@@ -1211,7 +1211,7 @@ void ReadUTF8(FILE* nFile, char *cp)
 #endif
 				int sz = res.size();
 				GlobalNegatives[i] = new char[sz + 1];
-				ZeroMemory(GlobalNegatives[i], sizeof(GlobalNegatives[i]));
+                ZeroMemory(GlobalNegatives[i], sizeof(*GlobalNegatives[i]));
 				memcpy(GlobalNegatives[i], toLowerStr(res.c_str()).c_str(), sz - 1);
 				memset(GlobalNegatives[i] + sz - 1, '\0', 1);
 				++i;
@@ -1226,7 +1226,7 @@ void ReadUTF8(FILE* nFile, char *cp)
 #endif
 				int sz = res.size();
 				GlobalNegatives[i] = new char[sz + 1];
-				ZeroMemory(GlobalNegatives[i], sizeof(GlobalNegatives[i]));
+                ZeroMemory(GlobalNegatives[i], sizeof(*GlobalNegatives[i]));
 				memcpy(GlobalNegatives[i], toLowerStr(res.c_str()).c_str(), sz);
 				memset(GlobalNegatives[i] + sz, '\0', 1);
 				++i;
@@ -2075,7 +2075,7 @@ int ParseArgs(int argc, char *argv[])
 	};
 
 	char *argString = new char [s + 1];
-	ZeroMemory(argString, sizeof(argString));
+    ZeroMemory(argString, sizeof(*argString));
 
 	for(int i = 1; i <= argc - 1; i++)
 	{
@@ -2162,7 +2162,7 @@ int ParseArgs(int argc, char *argv[])
 		strcpy(gPorts, "--DEFAULT");
 	};
 
-	ZeroMemory(argString, sizeof(argString));
+    ZeroMemory(argString, sizeof(*argString));
 
 	delete[] argString;
 
@@ -2187,7 +2187,8 @@ int _getChunkCount(char *data)
 	int firstPos = _getPos(data[1]);
 	int secondPos = _getPos(data[2]);
 	return secondPos - firstPos + 1;
-};
+}
+
 int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 {
 	if(strstr(mask, "[") != NULL)
@@ -2226,12 +2227,14 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 		{
 			ZeroMemory(maskEnd, sizeof(maskEnd));
 		};
+
 		char maskSaver[128] = {0};
 		if(firstPos != -1 && secondPos != -1)
 		{
 			for(int i = firstPos; i <= secondPos; ++i)
 			{
 				if(globalScanFlag == false) break;
+
 				strcpy(maskSaver, saveMask);
 				strcat(maskSaver, maskEntry);
 				chunk[1] = charAll[i];
@@ -2241,20 +2244,23 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 				strcat(maskRes, maskEnd);
 
 				if(_GetDNSFromMask(maskRes, maskSaver, maskEnd) == -1) return -1;
+
 				ZeroMemory(maskSaver, sizeof(maskSaver));	
 				ZeroMemory(maskRes, sizeof(maskRes));	
 			};
 		};
 	}
 	else
-	{
-#pragma region DNS-SCAN
+    {
 		if(globalScanFlag == false) return 0;
+
 		strcpy(endIP2, saveMask);
         st = new ST();
 		ZeroMemory(st->argv, sizeof(st->argv));
 		ZeroMemory(iip, sizeof(iip));
-		while(cons >= gThreads) Sleep(300);
+
+        while(cons >= gThreads && globalScanFlag) Sleep(300);
+
 		strcpy(iip, mask);
 		strcpy(saveStartIP, iip);
 		strcat(iip, top_level_domain);
@@ -2265,7 +2271,6 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 
 		targetAndIPWriter(--gTargets, st->argv);
 
-		ConInc();
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 		if(globalScanFlag) _beginthread( (void(*)(void*))_connect, 0, st );
 #else
@@ -2375,7 +2380,10 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 						   tAddr.s_addr = i;
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-						   ipVec.push_back(std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1));
+                           ipVec.push_back(std::to_string(tAddr.S_un.S_un_b.s_b4)
+                                           + "." + std::to_string(tAddr.S_un.S_un_b.s_b3)
+                                           + "." + std::to_string(tAddr.S_un.S_un_b.s_b2)
+                                           + "." + std::to_string(tAddr.S_un.S_un_b.s_b1));
 #else
                            tAddr.s_addr = ntohl(tAddr.s_addr);
                            const char *ipStr = inet_ntoa(tAddr);
@@ -2390,14 +2398,14 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
                                    st = new ST();
 								   ZeroMemory(st->argv, sizeof(st->argv));
 
-								   while (cons >= gThreads) Sleep(500);
+                                   while (cons >= gThreads && globalScanFlag) Sleep(500);
 								   ++indexIP;
 								   strcpy(st->argv, ipVec[0].c_str());
 								   strcpy(saveStartIP, ipVec[0].c_str());
 								   ipVec.erase(ipVec.begin());
 
-								   targetAndIPWriter(gTargets--, st->argv);
-								   ConInc();
+                                   targetAndIPWriter(gTargets--, st->argv);
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 								   _beginthread((void(*)(void*))_connect, 0, st);
 #else
@@ -2419,20 +2427,23 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
                             st = new ST();
 							ZeroMemory(st->argv, sizeof(st->argv));
 							ZeroMemory(res, sizeof(res));
-							while (cons >= gThreads) Sleep(500);
+                            while (cons >= gThreads && globalScanFlag) Sleep(500);
 							++indexIP;
 
                             tAddr.s_addr = i;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-                           strcpy(res, (std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1)).c_str());
+                           strcpy(res, (std::to_string(tAddr.S_un.S_un_b.s_b4)
+                                        + "." + std::to_string(tAddr.S_un.S_un_b.s_b3)
+                                        + "." + std::to_string(tAddr.S_un.S_un_b.s_b2)
+                                        + "." + std::to_string(tAddr.S_un.S_un_b.s_b1)).c_str());
 #else
                            strcpy(res, inet_ntoa(tAddr));
 #endif
 							strcpy(st->argv, res);
 							strcpy(saveStartIP, res);
 
-							targetAndIPWriter(gTargets--, st->argv);
-							ConInc();
+                            targetAndIPWriter(gTargets--, st->argv);
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 							_beginthread((void(*)(void*))_connect, 0, st);
 #else
@@ -2442,75 +2453,8 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 							Sleep(gThreadDelay);
 						}
 						break;
+            }
 		}
-		}
-
-		/*int eor0 = 0, eor1 = 0, eor2 = 0, eor3 = 0;
-		stt->doEmitionChangeStatus("Scanning...");
-		sockstruct *st = NULL;
-		while ((eor0 == 0 || eor1 == 0 || eor2 == 0 || eor3 == 0 ) && globalScanFlag)			
-		{
-			if(globalScanFlag == false) break;
-			while(ipsstart[0] < 256 && eor0 == 0)
-			{
-				if(ipsstart[0] == ipsend[0]) eor0 = 1;
-				if(globalScanFlag == false) break;
-				while(ipsstart[1] < 256 && eor1 == 0)
-				{
-					if(ipsstart[1] == ipsend[1] && eor0 == 1) eor1 = 1;
-					if(globalScanFlag == false) break;
-					while(ipsstart[2] < 256 && eor2 == 0)
-					{
-						if(ipsstart[2] == ipsend[2] && eor1 == 1) eor2 = 1;
-						if(globalScanFlag == false) break;
-						while(ipsstart[3] < 256 && eor3 == 0)
-						{
-							if(globalScanFlag == false) break;
-							st = new sockstruct();
-							ZeroMemory(st->argv, sizeof(st->argv));
-							ZeroMemory(res, sizeof(res));
-							while(cons >= gThreads) Sleep(300);
-							if(ipsstart[3] == ipsend[3] && eor2 == 1) eor3 = 1;
-							++indexIP;
-
-							strcat(res, std::to_string(ipsstart[0]).c_str());
-							strcat(res, ".");
-							strcat(res, std::to_string(ipsstart[1]).c_str());
-							strcat(res, ".");
-							strcat(res, std::to_string(ipsstart[2]).c_str());
-							strcat(res, ".");
-							strcat(res, std::to_string(ipsstart[3]).c_str());
-							
-							strcpy(st->argv, res);
-							strcpy(saveStartIP, res);
-
-							targetAndIPWriter(gTargets--, st->argv);
-							ConInc();
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-							_beginthread( (void(*)(void*))_connect, 0, st );
-#else
-							pthread_t thrc;
-							pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
-#endif
-							Sleep(gThreadDelay);
-							++ipsstart[3];
-						};
-						ipsstart[3] = 0;
-						++ipsstart[2];
-					};
-					ipsstart[3] = 0;
-					ipsstart[2] = 0;
-					++ipsstart[1];
-				};
-				ipsstart[3] = 0;
-				ipsstart[2] = 0;
-				ipsstart[1] = 0;
-				++ipsstart[0];
-			};
-			ipsstart[3] = 0;
-			ipsstart[2] = 0;
-			ipsstart[1] = 0;
-		};*/
 	}
 	else if(gMode == 1 )
 	{
@@ -2641,13 +2585,15 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		{
 			dnsCounter *= _getChunkCount(dnsPtr1);
 			dnsPtr1 = strstr(dnsPtr1 + 1, "[");
-		};
+        };
+
 		gTargets = dnsCounter;
 		gTargetsOverall = gTargets;
 		stt->doEmitionYellowFoundData("Starting DNS-scan...");
 		stt->doEmitionChangeStatus("Scanning...");
 		
-		if(_GetDNSFromMask(dataEntry, "", dataEntry) == -1) 
+        int y = _GetDNSFromMask(dataEntry, "", dataEntry);
+        if(y == -1)
 		{
 			stt->doEmitionRedFoundData("DNS-Mode error");
 		};
@@ -2734,14 +2680,14 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
                                        st = new ST();
 									   ZeroMemory(st->argv, sizeof(st->argv));
 
-									   while (cons >= gThreads) Sleep(500);
+                                       while (cons >= gThreads && globalScanFlag) Sleep(500);
 									   ++indexIP;
 									   strcpy(st->argv, ipVec[0].c_str());
 									   strcpy(saveStartIP, ipVec[0].c_str());
 									   ipVec.erase(ipVec.begin());
 
-									   targetAndIPWriter(gTargets--, st->argv);
-									   ConInc();
+                                       targetAndIPWriter(gTargets--, st->argv);
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 									   _beginthread((void(*)(void*))_connect, 0, st);
 #else
@@ -2762,7 +2708,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
                                 st = new ST();
 								ZeroMemory(st->argv, sizeof(st->argv));
 								ZeroMemory(res, sizeof(res));
-								while (cons >= gThreads) Sleep(500);
+                                while (cons >= gThreads && globalScanFlag) Sleep(500);
 								++indexIP;
 
 								tAddr.s_addr = i;
@@ -2775,7 +2721,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 								strcpy(saveStartIP, res);
 
 								targetAndIPWriter(gTargets--, st->argv);
-								ConInc();
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 								_beginthread((void(*)(void*))_connect, 0, st);
 #else
@@ -2785,88 +2731,14 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 								Sleep(gThreadDelay);
 
 							}
-							break;
-							/*int eor0 = 0, eor1 = 0, eor2 = 0, eor3 = 0;
-							while ((eor0 == 0 || eor1 == 0 || eor2 == 0 || eor3 == 0) && globalScanFlag)
-							{
-								if (globalScanFlag == false) break;
-								while (ipsstartfl[gC][0] < 256 && eor0 == 0)
-								{
-									if (globalScanFlag == false) break;
-									if (ipsstartfl[gC][0] == ipsendfl[gC][0]) eor0 = 1;
-									while (ipsstartfl[gC][1] < 256 && eor1 == 0)
-									{
-										if (globalScanFlag == false) break;
-										if (ipsstartfl[gC][1] == ipsendfl[gC][1] && eor0 == 1) eor1 = 1;
-										while (ipsstartfl[gC][2] < 256 && eor2 == 0)
-										{
-											if (globalScanFlag == false) break;
-											if (ipsstartfl[gC][2] == ipsendfl[gC][2] && eor1 == 1) eor2 = 1;
-											while (ipsstartfl[gC][3] < 256 && eor3 == 0)
-											{
-												if (globalScanFlag == false) break;
-												st = new sockstruct();
-												ZeroMemory(st->argv, sizeof(st->argv));
-												ZeroMemory(res, sizeof(res));
-
-												while (cons >= gThreads) Sleep(300);
-
-												if (ipsstartfl[gC][3] == ipsendfl[gC][3] && eor2 == 1) eor3 = 1;
-
-												++indexIP;
-
-												strcat(res, std::to_string(ipsstartfl[gC][0]).c_str());
-												strcat(res, ".");
-												strcat(res, std::to_string(ipsstartfl[gC][1]).c_str());
-												strcat(res, ".");
-												strcat(res, std::to_string(ipsstartfl[gC][2]).c_str());
-												strcat(res, ".");
-												strcat(res, std::to_string(ipsstartfl[gC][3]).c_str());
-
-												strcpy(st->argv, res);
-												strcpy(saveStartIP, res);
-
-												targetAndIPWriter(gTargets--, st->argv);
-
-												ConInc();
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-												_beginthread((void(*)(void*))_connect, 0, st);
-#else
-												pthread_t thrc;
-												pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
-#endif
-												Sleep(gThreadDelay);
-												if (ipsstartfl[gC][3] == 255) break;
-												if (ipsstartfl[gC][3] <= ipsendfl[gC][3]) ++ipsstartfl[gC][3];
-											};
-											ipsstartfl[gC][3] = 0;
-											if (ipsstartfl[gC][2] == 255) break;
-											if (ipsstartfl[gC][2] <= ipsendfl[gC][2]) ++ipsstartfl[gC][2];
-										};
-										ipsstartfl[gC][3] = 0;
-										ipsstartfl[gC][2] = 0;
-										if (ipsstartfl[gC][1] == 255) break;
-										if (ipsstartfl[gC][1] <= ipsendfl[gC][1]) ++ipsstartfl[gC][1];
-									};
-									ipsstartfl[gC][3] = 0;
-									ipsstartfl[gC][2] = 0;
-									ipsstartfl[gC][1] = 0;
-									if (ipsstartfl[gC][0] == 255) break;
-									if (ipsstartfl[gC][0] <= ipsendfl[gC][0]) ++ipsstartfl[gC][0];
-								};
-								ipsstartfl[gC][3] = 0;
-								ipsstartfl[gC][2] = 0;
-								ipsstartfl[gC][1] = 0;
-							};*/
-			};
+                            break;
+                };
 			}
 		}
 	}
 	else
 	{
-
 		stt->doEmitionRedFoundData("Wrong parameters.");
-
 	};
 
 	Sleep(gTimeOut + 1);
@@ -2875,15 +2747,16 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 	stt->doEmitionChangeStatus("Stopping...");
 	
 	
-	while(cons > 0 || isActive == 1 || jsonArr->size() > 0) Sleep(2000);
+    while(cons > 0 || isActive == 1 || jsonArr->size() > 0) {
+        Sleep(2000);
+    };
 
 	nCleanup();
 	
 	stt->doEmitionGreenFoundData("Done. Saved: " + QString::number(saved) + "; Alive: " + QString::number(found) + ".");
 	stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
 	stt->doEmitionChangeStatus("Idle");
-	stt->doEmitionKillSttThread();
-	
+    stt->doEmitionKillSttThread();
 }
 
 void nCleanup(){

@@ -1,6 +1,4 @@
-﻿#pragma region Decls
-#pragma once
-#include <QGridLayout>
+﻿#include <QGridLayout>
 #include <QFileDialog>
 #include "nesca_3.h"
 #include "CheckKey_Th.h"
@@ -73,7 +71,7 @@ char trcSrvPortLine[32] = {0};
 char trcProxy[128] = {0};
 char trcSrv[256] = {0};
 char trcScr[256] = {0};
-char trcPersKey[32] = {0};
+char trcPersKey[64] = {0};
 char gProxyIP[64] = {0};
 char gProxyPort[8] = {0};
 
@@ -704,7 +702,7 @@ void nesca_3::slotQoSAddLine()
 	fnt.setFamily("Eurostile");
 	fnt.setPixelSize(10);
 
-	QGraphicsTextItem *item = sceneUpper->addText("Max = " + QString(std::to_string(MaxDataVal).c_str()), fnt);
+    QGraphicsTextItem *item = sceneUpper->addText("Max = " + QString::number(MaxDataVal), fnt);
 	item->setX(215);
 	item->setDefaultTextColor(Qt::white);
 	QOSWait = false;
@@ -747,38 +745,39 @@ void nesca_3::slotAddPolyLine()
 	if(ME2ScanFlag)
     {
         QPainterPath path;
-		if (DrawerTh_ME2Scanner::polyVect.size() > 0)
+        if (DrawerTh_ME2Scanner::polyVect.count() > 0)
         {
-			path.moveTo(DrawerTh_ME2Scanner::polyVect[0]);
+            path.moveTo(DrawerTh_ME2Scanner::polyVect[0]);
 			for (int i = 1; i < DrawerTh_ME2Scanner::polyVect.count(); ++i)
             {
-				path.lineTo(DrawerTh_ME2Scanner::polyVect[i]);
+                path.lineTo(DrawerTh_ME2Scanner::polyVect[i]);
             };
         };
 
         QGraphicsPathItem* itm = new QGraphicsPathItem(path);
         itm->setPen(pen2i);
-		DrawerTh_ME2Scanner::itmList.push_front(itm);
+        sceneGraph->addItem(itm);
+        DrawerTh_ME2Scanner::itmList.push_front(itm);
 
 		int u = 0;
         double uu = 1.0;
 		for (int i = 0; i < DrawerTh_ME2Scanner::itmList.count(); ++i)
         {
-			itm = DrawerTh_ME2Scanner::itmList[i];
 			int y = u - i - 1;
-			itm->setY(y);
-			itm->setOpacity(uu);
-			sceneGraph->addItem(itm);
+            itm = DrawerTh_ME2Scanner::itmList[i];
+            itm->setY(y);
+            itm->setOpacity(uu);
             uu -= 0.027;
             u -= 1;
         };
 
-		while (DrawerTh_ME2Scanner::itmList.count() > 38)
+        while (DrawerTh_ME2Scanner::itmList.count() > 38)
         {
-			sceneGraph->removeItem(DrawerTh_ME2Scanner::itmList[38]);
-			delete DrawerTh_ME2Scanner::itmList[38];
-			DrawerTh_ME2Scanner::itmList.pop_back();
+            sceneGraph->removeItem(DrawerTh_ME2Scanner::itmList[38]);
+            delete DrawerTh_ME2Scanner::itmList[38];
+            DrawerTh_ME2Scanner::itmList.pop_back();
         };
+
 	};
 }
 
@@ -1292,6 +1291,10 @@ void nesca_3::slotBlinkMessage()
 	};
 }
 
+void nesca_3::slotTabChanged(int index){
+    if(index < 2) savedTabIndex = index;
+}
+
 void nesca_3::ChangeDispalyMode()
 {
 	if(widgetIsHidden == false && tray->isVisible() == false)
@@ -1341,8 +1344,8 @@ void nesca_3::switchToJobMode()
 
 void nesca_3::CheckProxy()
 {
-	saveOptions();
-	_SaveBackupToFile();
+    saveOptions();
+
 	QStringList qsl;
 	if(ui->ircProxy->text().contains(":"))
 	{
@@ -1371,8 +1374,6 @@ void nesca_3::slotIRCOfflined()
 
 void nesca_3::ConnectToIRCServer()
 {
-	saveOptions();
-	_SaveBackupToFile();
 	QStringList qsl;
 	if(ui->ircServerBox->text().contains(":"))
 	{
@@ -1381,14 +1382,15 @@ void nesca_3::ConnectToIRCServer()
 		ui->ircServerBox->setText(qsl[0]);
 		ui->serverPortBox->setText(qsl[1]);
 	};
+
 	if(ui->ircProxy->text().contains(":"))
 	{
 		qsl = ui->ircProxy->text().split(":");
 
 		ui->ircProxy->setText(qsl[0]);
 		ui->ircProxyPort->setText(qsl[1]);
-	};
-	saveOptions();
+    };
+
 	if(ui->ircServerBox->text() != "")
 	{
 		if(ui->serverPortBox->text() != "")
@@ -1445,6 +1447,8 @@ void nesca_3::ConnectToIRCServer()
 		ui->ircText->append("<span style=\"color:red;background-color:#313131;\">No IRC server specified!</span>");
 
 	};
+
+    saveOptions();
 }
 
 void nesca_3::ChangeIRCRawLog()
@@ -1475,8 +1479,8 @@ void nesca_3::ChangeNick()
 void nesca_3::CheckPersKey()
 {
 	emitIfOK = -1;
-	saveOptions();
-	_SaveBackupToFile();
+    saveOptions();
+
 	if(!chKTh->isRunning()) 
 	{	
 		stt->doEmitionYellowFoundData("[Key check] Starting checker-thread...");
@@ -1491,8 +1495,8 @@ void nesca_3::CheckPersKey()
 void nesca_3::CheckPersKey(int val = -1)
 {
 	emitIfOK = val;
-	saveOptions();
-	_SaveBackupToFile();
+    saveOptions();
+
 	if(!chKTh->isRunning()) 
 	{	
         stt->doEmitionYellowFoundData("[Key check] Starting checker-thread...");
@@ -1595,6 +1599,17 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 		};
         return false;
 	}
+    else if (obj == qwm)
+    {
+        ///TODO: raise parent window with qwm
+//        if(event->type() == QEvent::MouseButtonPress)
+//        {
+//           Qt::WindowFlags eFlags = windowFlags ();
+//           eFlags |= Qt::WindowStaysOnTopHint;
+//           setWindowFlags(eFlags);
+//           return true;
+//        };
+    }
 	else
 	{
 		if (event->type() == QEvent::KeyPress)
@@ -1864,7 +1879,7 @@ void nesca_3::slotIRCGetTopic(QString str)
 
 int c = 1;
 
-void nesca_3::slotSaveImage(QAction *qwe)
+void nesca_3::slotSaveImage()
 {
 	QObject *smB = this->sender();
 	int ci = ui->tabMainWidget->currentIndex();
@@ -1916,7 +1931,7 @@ void nesca_3::slotSaveImage(QAction *qwe)
 		}
 		else
 		{
-			QString fn = QString::number(QT.msec()) + "_" + (PieStatFlag ? "PieStat" : "QOS") + "_" + (ci == 0 ? ui->ipLine->text() : ui->lineEditStartIPDNS->text()) + ".png";
+            QString fn = QString::number(QT.msec()) + "_" + (PieStatFlag ? "PieStat" : "QoS") + "_" + (ci == 0 ? ui->ipLine->text() : ui->lineEditStartIPDNS->text()) + ".png";
 
 			QPixmap pixmap(ui->graphicLog->width(), ui->graphicLog->height());
 			QPainter painter(&pixmap);
@@ -1949,7 +1964,7 @@ void PieStatView::contextMenuEvent(QContextMenuEvent *event)
 	menuPS->addAction("Save image.");
 	menuPS->popup(event->globalPos());
 
-	connect(menuPS, SIGNAL(triggered(QAction *)), gthis, SLOT(slotSaveImage(QAction *)));
+    connect(menuPS, SIGNAL(triggered()), gthis, SLOT(slotSaveImage()));
 }
 
 QLabel *msgLbl;
@@ -2043,7 +2058,8 @@ void nesca_3::slotShowDataflow()
 		MapWidgetOpened = true;
 		ui->DataflowModeBut->setStyleSheet("background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(0, 214, 0, 40);color: rgb(0, 214, 0);");
 		qwm = new QWidget();
-		qwm->setWindowFlags(Qt::FramelessWindowHint|Qt::SubWindow);
+        qwm->setWindowFlags(Qt::FramelessWindowHint|Qt::SubWindow);
+        qwm->installEventFilter(this);
 		qwm->setStyleSheet(
 			"background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255));"
 			"border: 1px solid #616161;");
@@ -2186,22 +2202,26 @@ void nesca_3::slotOutData(QString ip, QString str)
 	{
 		_rOutPath.indexIn(str);
 		QString prot = _rOutPath.cap(0);
-		if(prot.size() > 0) str.replace(prot, " <font color=\"Turquoise\">" + prot + "</font> ");
+        if(prot.size() > 0) str.replace(prot, "<font color=\"Turquoise\">" + prot + "</font>");
 		_rOutHost.indexIn(str);
 		prot = _rOutHost.cap(1);
-		if(prot.size() > 0) str.replace(prot, " <font color=\"Turquoise\">" + prot + "</font> ");
+        if(prot.size() > 0) str.replace(prot, "<font color=\"Turquoise\">" + prot + "</font>");
+        str.replace("HTTP ", "<font color=\"GoldenRod\">HTTP </font>");
 		str.replace("GET ", "<font color=\"GoldenRod\">GET </font>");
 		str.replace("POST ", "<font color=\"GoldenRod\">POST </font>");
 		str.replace("Host: ", "<font color=\"GoldenRod\">Host: </font>");
-		str.replace("Cookie: ", "<font color=\"GoldenRod\">Cookie: </font>");
-		str.replace("Accept:", "<font color=\"GoldenRod\">Accept:</font>");
+        str.replace("Cookie: ", "<font color=\"GoldenRod\">Cookie: </font>");
 		str.replace("Accept-Language:", "<font color=\"GoldenRod\">Accept-Language:</font>");
 		str.replace("Accept-Charset:", "<font color=\"GoldenRod\">Accept-Charset:</font>");
 		str.replace("Accept-Encoding:", "<font color=\"GoldenRod\">Accept-Encoding:</font>");
-		str.replace("User-Agent:", "<font color=\"GoldenRod\">User-Agent:</font>");
+        str.replace("Accept:", "<font color=\"GoldenRod\">Accept:</font>");
+        str.replace("User-Agent:", "<font color=\"GoldenRod\">User-Agent:</font>");
+        str.replace("Proxy-Connection:", "<font color=\"GoldenRod\">Proxy-Connection:</font>");
 		str.replace("Connection:", "<font color=\"GoldenRod\">Connection:</font>");
 		str.replace("Content-Length:", "<font color=\"GoldenRod\">Content-Length:</font>");
-		str.replace("Authorization:", "<font color=\"GoldenRod\">Authorization:</font>");
+        str.replace("Authorization:", "<font color=\"GoldenRod\">Authorization:</font>");
+        str.replace("X-Nescav3:", "<font color=\"GoldenRod\">X-Nescav3:</font>");
+
 		_rOutProt.indexIn(str);
 		prot = _rOutProt.cap(0);
 		if(prot.size() > 0) str.replace(prot, "<font color=\"GoldenRod\">" + prot + "</font>");
@@ -2251,13 +2271,11 @@ void nesca_3::slotIncData(QString ip, QString str)
 					str.replace(tagRes, "<font color=\"GoldenRod\">" + tagRes + "</font>");
 				};
 				tStr.replace(tagRes, "");
-			};
-			str.replace("HTTP/1.1", "<font color=\"GoldenRod\">HTTP/1.1</font>");
+            };
+            str.replace("HTTP/1.0", "<font color=\"GoldenRod\">HTTP/1.0</font>");
+            str.replace("HTTP/1.1", "<font color=\"GoldenRod\">HTTP/1.1</font>");
 			str.replace("\r\n", "<br>");
 			RecvData->append("<font color=\"#F0FFFF\">[" + ip + "]</font><br>[HEAD]<br>" + str + "<hr><br>");
-
-
-
 
 			_rIncTags1.setMinimal(true);
 			_rIncInnerTags.setMinimal(true);
@@ -2930,6 +2948,72 @@ void nesca_3::ConnectEvrthng()
 	connect ( vsTh, SIGNAL(sDrawTextPlacers()), this, SLOT(slotDrawTextPlacers()));
 	connect ( psTh, SIGNAL(sUpdatePie()), this, SLOT(slotUpdatePie()) );
 	connect ( irc_nmb, SIGNAL(sBlinkMessage()), this, SLOT(slotBlinkMessage()) );
+    connect ( ui->tabMainWidget, SIGNAL(currentChanged(int)), this, SLOT(slotTabChanged(int)) );
+}
+
+void nesca_3::saveOptions()
+{
+    ZeroMemory(saveStartIP, sizeof(saveStartIP));
+    ZeroMemory(endIP2, sizeof(endIP2));
+    ZeroMemory(top_level_domain, sizeof(top_level_domain));
+    ZeroMemory(gPorts, sizeof(gPorts));
+
+    if(savedTabIndex == 0)
+    {
+        gMode = 0;
+        gThreads = ui->threadLine->text().toInt();
+        int indexof = ui->ipLine->text().indexOf("-");
+
+        if(indexof > 0)
+        {
+            strncpy(saveStartIP, ui->ipLine->text().toLocal8Bit().data(), indexof);
+            if(ui->ipLine->text().indexOf("/") < 0) strcpy(endIP2, ui->ipLine->text().toLocal8Bit().data());
+        }
+        else
+        {
+            if(ui->ipLine->text().indexOf("/") < 0)
+            {
+                strcpy(endIP2, ui->ipLine->text().toLocal8Bit().data());
+                strcat(endIP2, "-");
+                strcat(endIP2, ui->ipLine->text().toLocal8Bit().data());
+            }
+            else
+            {
+                strncpy(saveStartIP, ui->ipLine->text().toLocal8Bit().data(), ui->ipLine->text().indexOf("/"));
+            };
+        };
+
+        strncpy(gPorts, ("-p" + ui->portLine->text()).toLocal8Bit().data(), 65536);
+        gPorts[ui->lineEditPort->text().size()] = '\0';
+    }
+    else if(savedTabIndex == 1)
+    {
+        gMode = 1;
+        gThreads = ui->lineEditThread->text().toInt();
+
+        strcpy(saveStartIP, ui->lineEditStartIPDNS->text().toLocal8Bit().data());
+        strcpy(endIP2, ui->lineEditStartIPDNS->text().toLocal8Bit().data());
+        strcpy(top_level_domain, ui->lineILVL->text().toLocal8Bit().data());
+        strncpy(gPorts, ("-p" + ui->lineEditPort->text()).toLocal8Bit().data(), 65536);
+        gPorts[ui->lineEditPort->text().size()] = '\0';
+    };
+
+    strcpy(trcSrv, ui->lineTrackerSrv->text().toLocal8Bit().data());
+    strcpy(trcScr, ui->lineTrackerScr->text().toLocal8Bit().data());
+    strncpy(trcPersKey, ui->linePersKey->text().toLocal8Bit().data(), 32);
+    memset(trcPersKey + 32, '\0', 1);
+    strcpy(trcSrvPortLine, ui->trcSrvPortLine->text().toLocal8Bit().data());
+    strcpy(ircServer, ui->ircServerBox->text().toLocal8Bit().data());
+    strcpy(ircPort, ui->serverPortBox->text().toLocal8Bit().data());
+    strcpy(ircProxy, ui->ircProxy->text().toLocal8Bit().data());
+    strcpy(ircProxyPort, ui->ircProxyPort->text().toLocal8Bit().data());
+    strcpy(ircNick, ui->ircNickBox->text().toLocal8Bit().data());
+    strncpy(gProxyIP, ui->systemProxyIP->text().toLocal8Bit().data(), 64);
+    gProxyIP[ui->systemProxyIP->text().size()] = '\0';
+    strncpy(gProxyPort, ui->systemProxyPort->text().toLocal8Bit().data(), 8);
+    gProxyPort[ui->systemProxyPort->text().size()] = '\0';
+
+    _SaveBackupToFile();
 }
 
 QString loadNescaSetup(char *resStr, char *option) {
@@ -3001,12 +3085,17 @@ void RestoreSession()
 				}
 				else if(gMode == 1)
 				{
-					ui->lineEditStartIPDNS->setText(QString(lex));
+                    QString qLex(lex);
+                    qLex.replace("[az]", "\\l");
+                    qLex.replace("[0z]", "\\w");
+                    qLex.replace("[09]", "\\d");
+                    ui->lineEditStartIPDNS->setText(qLex);
 					lex = strtok(NULL, " ");
 					strcpy(gFirstDom, lex);
 
 					lex = strtok(NULL, " ");
-					gThreads = atoi(lex);
+                    gThreads = atoi(lex);
+
 					ui->lineEditThread->setText(QString(lex));
 					ui->lineILVL->setText(QString(gFirstDom));
 					ui->tabMainWidget->setCurrentIndex(1);
@@ -3072,9 +3161,11 @@ void RestoreSession()
 			else if (strstr(resStr, "[THREAD_DELAY]:") != NULL) ui->threadDelayBox->setText(loadNescaSetup(resStr, "[THREAD_DELAY]:").simplified());
 			else if (strstr(resStr, "[TIMEOUT]:") != NULL) {
 				const QString &tempLex = loadNescaSetup(resStr, "[TIMEOUT]:");
-				ui->iptoLine_value->setText(tempLex);
-				ui->iptoLine_value_2->setText(tempLex);
-				ui->iptoLine_value_3->setText(tempLex);
+                if(tempLex.toInt() > 0) {
+                    ui->iptoLine_value->setText(tempLex);
+                    ui->iptoLine_value_2->setText(tempLex);
+                    ui->iptoLine_value_3->setText(tempLex);
+                }
 			}
 			else if (strstr(resStr, "[MAXBTHR]:") != NULL) ui->maxBrutingThrBox->setText(loadNescaSetup(resStr, "[MAXBTHR]:").simplified());
 			else if (strstr(resStr, "[PERSKEY]:") != NULL) ui->linePersKey->setText(loadNescaSetup(resStr, "[PERSKEY]:").simplified());
@@ -3090,7 +3181,7 @@ void RestoreSession()
 
 		fclose(resFile);
 
-		stt->doEmitionGreenFoundData("Previous session restored.");
+        stt->doEmitionGreenFoundData("Previous session loaded.");
 	};
 }
 
@@ -3176,8 +3267,8 @@ void _startMsgCheck()
 	this->hide();
 
 	gthis = this;
-	ui->setupUi(this);
-	ui->widgetIRC->installEventFilter(this);
+    ui->setupUi(this);
+    ui->widgetIRC->installEventFilter(this);
 	ui->shoutBox->installEventFilter(this);
 	setSomeStyleArea();
 	ui->IRCModeChangerBut->setVisible(false);
@@ -3208,8 +3299,7 @@ void _startMsgCheck()
 
 	CreateVerFile();
 
-	RestoreSession();
-	saveOptions();
+    RestoreSession();
 
 	PhraseLog.push_back("");
 	CreateMsgPopupWidget();
@@ -3315,84 +3405,6 @@ void nesca_3::ChangePingerOK(bool val)
 void nesca_3::ChangeDebugFileState(bool val)
 {
 	debugFileOK = val;
-}
-
-void nesca_3::saveOptions()
-{
-	int ci = ui->tabMainWidget->currentIndex();
-
-	if(ci == 0) 
-	{
-		ZeroMemory(saveStartIP, sizeof(saveStartIP));
-		ZeroMemory(endIP2, sizeof(endIP2));
-		ZeroMemory(top_level_domain, sizeof(top_level_domain));
-		ZeroMemory(gPorts, sizeof(gPorts));
-		gMode = 0;
-		gThreads = ui->threadLine->text().toInt();
-		int indexof = ui->ipLine->text().indexOf("-");
-		if(indexof > 0) 
-		{
-			strncpy(saveStartIP, ui->ipLine->text().toLocal8Bit().data(), indexof); 
-			if(ui->ipLine->text().indexOf("/") < 0) strcpy(endIP2, ui->ipLine->text().toLocal8Bit().data()); 
-		}
-		else 
-		{
-			if(ui->ipLine->text().indexOf("/") < 0) 
-			{
-				strcpy(saveStartIP, ui->ipLine->text().toLocal8Bit().data());
-				strcpy(endIP2, ui->ipLine->text().toLocal8Bit().data()); 
-				strcat(endIP2, "-"); 
-				strcat(endIP2, ui->ipLine->text().toLocal8Bit().data()); 
-			}
-			else
-			{
-				strncpy(saveStartIP, ui->ipLine->text().toLocal8Bit().data(), ui->ipLine->text().indexOf("/")); 
-			};
-		};
-
-		strncpy(gPorts, ("-p" + ui->portLine->text()).toLocal8Bit().data(), 65536);
-	}
-	else if(ci == 1) 
-	{
-		ZeroMemory(saveStartIP, sizeof(saveStartIP));
-		ZeroMemory(endIP2, sizeof(endIP2));
-		ZeroMemory(top_level_domain, sizeof(top_level_domain));
-		ZeroMemory(gPorts, sizeof(gPorts));
-		gMode = 1;
-		gThreads = ui->lineEditThread->text().toInt();
-		int indexof = ui->lineEditStartIPDNS->text().indexOf("/");
-		if(indexof > 0)
-		{
-			strncpy(saveStartIP, ui->lineEditStartIPDNS->text().toLocal8Bit().data(), indexof); 
-			strcpy(endIP2, ui->lineEditStartIPDNS->text().toLocal8Bit().data()); 
-		}
-		else
-		{
-			strcpy(saveStartIP, ui->lineEditStartIPDNS->text().toLocal8Bit().data()); 
-			strcpy(endIP2, ui->lineEditStartIPDNS->text().toLocal8Bit().data()); 
-			strcat(endIP2, "/"); 
-			strcat(endIP2, ui->lineEditStartIPDNS->text().toLocal8Bit().data()); 
-		};
-		
-		strcpy(top_level_domain, ui->lineILVL->text().toLocal8Bit().data()); 
-		
-		strncpy(gPorts, ("-p" + ui->lineEditPort->text()).toLocal8Bit().data(), 65536);
-	};
-
-	strcpy(trcSrv, ui->lineTrackerSrv->text().toLocal8Bit().data());
-	strcpy(trcScr, ui->lineTrackerScr->text().toLocal8Bit().data());
-	strncpy(trcPersKey, ui->linePersKey->text().toLocal8Bit().data(), 32);
-	strcpy(trcSrvPortLine, ui->trcSrvPortLine->text().toLocal8Bit().data());
-
-	strcpy(ircServer, ui->ircServerBox->text().toLocal8Bit().data());
-	strcpy(ircPort, ui->serverPortBox->text().toLocal8Bit().data());
-	strcpy(ircProxy, ui->ircProxy->text().toLocal8Bit().data());
-	strcpy(ircProxyPort, ui->ircProxyPort->text().toLocal8Bit().data());
-	strcpy(ircNick, ui->ircNickBox->text().toLocal8Bit().data());
-    strncpy(gProxyIP, ui->systemProxyIP->text().toLocal8Bit().data(), 64);
-    strncpy(gProxyPort, ui->systemProxyPort->text().toLocal8Bit().data(), 8);
-
-    _SaveBackupToFile();
 }
 
 void nesca_3::STTTerminate()
@@ -3571,7 +3583,8 @@ void nesca_3::logoLabelClicked()
 
 void nesca_3::ChangeLabelTO_ValueChanged(QString str)
 {
-	gTimeOut = str.toInt();
+    int gto = str.toInt();
+    gTimeOut = gto > 0 ? gto : 1;
 }
 
 void nesca_3::ChangeLabelThreads_ValueChanged(QString str)
@@ -3722,8 +3735,7 @@ void nesca_3::appendDefaultIRCTextOut(QString str)
 void nesca_3::appendDefaultIRCText(bool pm, bool hlflag, QString str, QString senderNick)
 {
 	bool thisIsUrl = false;
-	
-#pragma region Color-handler
+
 	int pos = 0;
 	QString colRes;
 	while ((pos = colr.indexIn(str, pos)) != -1) 
@@ -3735,8 +3747,6 @@ void nesca_3::appendDefaultIRCText(bool pm, bool hlflag, QString str, QString se
 		thisIsUrl = true;
 	};
 
-
-#pragma region Bold-handler
 	int posBold = 0;
 	QString boldRes;
 	boldr.setMinimal(true);
@@ -3750,8 +3760,6 @@ void nesca_3::appendDefaultIRCText(bool pm, bool hlflag, QString str, QString se
 		thisIsUrl = true;
 	};
 
-
-#pragma region underline-handler
 	int posUnder = 0;
 	QString underRes;
 	under.setMinimal(true);
@@ -3765,8 +3773,6 @@ void nesca_3::appendDefaultIRCText(bool pm, bool hlflag, QString str, QString se
 		thisIsUrl = true;
 	};
 
-	
-#pragma region link-handler
 	r.indexIn(str);
 	QString link = r.cap(0);
 	if(link.size() != 0) 

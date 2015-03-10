@@ -31,7 +31,7 @@
 #include <cstring>
 
 #define ZeroMemory(Destination,Length) memset((Destination),0,(Length))
-#define Sleep(secs) usleep((secs)*1000)
+#define Sleep(msecs) usleep((msecs)*1000)
 #define WSAGetLastError() errno
 #define closesocket(sock) ::close((sock))
 
@@ -133,8 +133,13 @@ class Lexems
                     PathStr *ps,
                     std::vector<std::string> *lst,
                     char *rBuff);
-        int _filler(int p, const char *buffcpy, char* ipi, int recd, Lexems *lx, char *hl);
-		int globalSearchNeg(const char *buffcpy, char *ip, int port);
+
+        int _filler(int p,
+                    const char *buffcpy,
+                    char* ipi,
+                    int recd,
+                    Lexems *lx,
+                    char *hl);
 	};
 
 
@@ -143,16 +148,39 @@ class Connector_old
 	public:
 		int _Updater();
 		
-		lopaStr _FTPLobby(char *ip, int port, PathStr *ps);
-		lopaStr _BALobby(char *cookie, char *ip, int port, char *path, char *method, char *data);
-		lopaStr _WFLobby(char *cookie, char *ip, int port, char *methodVal, char *actionVal, char *userVal, char *passVal, char *formVal);
-		lopaStr _IPCameraBLobby(char *ip, int port, char *SPEC);
-        int _SSHLobby(char *ip, int port, std::string *buffer);
+        lopaStr _FTPLobby(char *ip,
+                          int port,
+                          PathStr *ps);
+
+        lopaStr _BALobby(char *cookie,
+                         char *ip,
+                         int port,
+                         char *path,
+                         char *method,
+                         char *data);
+
+        lopaStr _WFLobby(char *cookie,
+                         char *ip,
+                         int port,
+                         char *methodVal,
+                         char *actionVal,
+                         char *userVal,
+                         char *passVal,
+                         char *formVal);
+
+        lopaStr _IPCameraBLobby(char *ip,
+                                int port,
+                                char *SPEC);
+
+        int _SSHLobby(char *ip,
+                      int port,
+                      std::string *buffer);
 		
-        //int _EstablishConnection(char *ip, int port, char *request, conSTR *cstr, int force = 0);
-        //int _EstablishSSLConnection(char *ip, int port, char *request, conSTR *cstr);
         void _Connect(void *s);
-        int _ConnectToPort(char *ip, int port, char *hl);
+
+        int _ConnectToPort(char *ip,
+                           int port,
+                           char *hl);
 	};
 
 

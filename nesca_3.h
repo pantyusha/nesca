@@ -85,7 +85,7 @@ protected:
 		void ImportScanSeq();
 		void smReaction();
 		void slotShowDataflow();
-		void slotOutData(QString ip, QString str);
+		void slotOutData(QString str);
 		void slotIncData(QString ip, QString str);
 		void slotShowServerMsg(QString str);
         void slotSaveImage();

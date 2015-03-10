@@ -1599,9 +1599,9 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 		};
         return false;
 	}
-    else if (obj == qwm)
-    {
-        ///TODO: raise parent window with qwm
+//    else if (obj == qwm)
+//    {
+//        ///TODO: raise parent window with qwm
 //        if(event->type() == QEvent::MouseButtonPress)
 //        {
 //           Qt::WindowFlags eFlags = windowFlags ();
@@ -1609,7 +1609,7 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 //           setWindowFlags(eFlags);
 //           return true;
 //        };
-    }
+//    }
 	else
 	{
 		if (event->type() == QEvent::KeyPress)
@@ -2196,7 +2196,7 @@ void nesca_3::slotShowNicks()
 QRegExp _rOutProt(" HTTP/1.\\d+");
 QRegExp _rOutPath(" /(\\w|\\.|,|/|:|-|_|\\?|!|\\@|#|\\$|%|\\^|&|\\*|\\(|\\)|=|\\+|<|>|;|:|\"|'|~|\\[|\\])* ");
 QRegExp _rOutHost("Host: ((\\w|\\d|\\.|:|/)*)\\r\\n");
-void nesca_3::slotOutData(QString ip, QString str)
+void nesca_3::slotOutData(QString str)
 {
 	if(SendData != NULL) 
 	{
@@ -2227,7 +2227,7 @@ void nesca_3::slotOutData(QString ip, QString str)
 		if(prot.size() > 0) str.replace(prot, "<font color=\"GoldenRod\">" + prot + "</font>");
 		str.replace("\r\n", "<br>");
 
-		SendData->append("<font color=\"#F0FFFF\">[" + ip + "]</font><br>" + str + "<hr><br>");
+		SendData->append("<br>" + str + "<hr><br>");
 	};
 }
 
@@ -2892,7 +2892,7 @@ void nesca_3::ConnectEvrthng()
 	connect ( stt, SIGNAL(startScanDNS()), this, SLOT(DNSScanSeq()));
 	connect ( stt, SIGNAL(startScanImport()), this, SLOT(ImportScanSeq()));
 	connect ( stt, SIGNAL(sIncData(QString, QString)), this, SLOT(slotIncData(QString, QString)));
-	connect ( stt, SIGNAL(sOutData(QString, QString)), this, SLOT(slotOutData(QString, QString)));
+	connect ( stt, SIGNAL(sOutData(QString)), this, SLOT(slotOutData(QString)));
 	connect ( stt, SIGNAL(changeDebugFoundData(QString)), this, SLOT(appendDebugText(QString)));
 	connect ( stt, SIGNAL(changeYellowFoundData(QString)), this, SLOT(appendNotifyText(QString)));
 	connect ( stt, SIGNAL(changeRedFoundData(QString)), this, SLOT(appendErrText(QString)));

@@ -17,6 +17,7 @@ extern void getSubStr(char *src, char *startStr, char *endStr, char *dest, int s
 extern void getSubStrEx(char *src, char *startStr, char *endStr, char *dest, int szDest);
 extern std::string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage);
 extern void _SaveBackupToFile();
+extern char *_findFirst(const char *str, char *delim);
 //extern int nConnect(char *ip, int port, std::string *buffer);
 
 

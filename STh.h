@@ -18,7 +18,7 @@ public:
 	static void doEmitionStartScanDNS();
 	static void doEmitionStartScanImport();
 	static void doEmitionAddIncData(QString ip, QString str);
-	static void doEmitionAddOutData(QString ip, QString str);
+	static void doEmitionAddOutData(QString str);
 	static void doEmition_BAGreenData(QString str);
 	static void doEmition_BARedData(QString str);
 	static void doEmitionIPRANGE(QString str);
@@ -62,7 +62,7 @@ public: signals: void changeStatus(QString);
 public: signals: void changeTargetsLeft(QString);
 public: signals: void killSttThread();
 public: signals: void sIncData(QString, QString);
-public: signals: void sOutData(QString, QString);
+public: signals: void sOutData(QString);
 
 protected:
 	void run();

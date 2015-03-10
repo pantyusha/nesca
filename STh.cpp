@@ -20,9 +20,9 @@ void STh::doEmitionAddIncData(QString(ip), QString str)
 {
 	emit stt->sIncData(ip, str);
 };
-void STh::doEmitionAddOutData(QString ip, QString str)
+void STh::doEmitionAddOutData( QString str)
 {
-	emit stt->sOutData(ip, str);
+	emit stt->sOutData(str);
 };
 void STh::doEmitionIPRANGE(QString str)
 {

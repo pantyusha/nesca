@@ -231,17 +231,10 @@ int my_trace(CURL *handle, curl_infotype type,
              char *data, size_t size,
              void *userp)
 {
-  struct data *config = (struct data *)userp;
-  const char *text;
-  (void)handle; /* prevent compiler warning */
-
   switch (type) {
   case CURLINFO_HEADER_OUT:
-      if(MapWidgetOpened) stt->doEmitionAddOutData(QString("size"), QString(data));
-      cout<<"Data: "<<data<<endl;
-    //fprintf(stderr, "== Info: %s", data);
-  default: /* in case a new one is introduced to shock us */
-    return 0;
+	  data[strstr(data, "\r\n\r\n") - data] = '\0';
+	  stt->doEmitionAddOutData(QString(data));
   }
 
   return 0;
@@ -258,15 +251,16 @@ int Connector::nConnect(const char *ip, const int port, std::string *buffer,
                         const std::vector<std::string> *customHeaders){
 
     CURL *curl = curl_easy_init();
-    struct data config;
-
-    config.trace_ascii = 1; /* enable ascii tracing */
 
     if (curl)
     {
-        curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
-        curl_easy_setopt(curl, CURLOPT_DEBUGDATA, &config);
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+		if (MapWidgetOpened) {
+			struct data config;
+			config.trace_ascii = 1; /* enable ascii tracing */
+			curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
+			curl_easy_setopt(curl, CURLOPT_DEBUGDATA, &config);
+			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+		}
         curl_easy_setopt(curl, CURLOPT_URL, ip);
         curl_easy_setopt(curl, CURLOPT_PORT, port);
         curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0");

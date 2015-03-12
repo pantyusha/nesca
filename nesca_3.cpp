@@ -3018,7 +3018,8 @@ void nesca_3::saveOptions()
 
 QString loadNescaSetup(char *resStr, char *option) {
 
-    char *lex = NULL;
+    char *lex = NULL
+            ;
     if(strstr(resStr, option) != NULL)
     {
         lex = strstr(resStr, option) + strlen(option);
@@ -3029,6 +3030,7 @@ QString loadNescaSetup(char *resStr, char *option) {
             return QString(lex);
         } return "";
     }
+
     return "";
 }
 void RestoreSession()
@@ -3196,7 +3198,7 @@ void CreateVerFile()
 	};
 }
 
-char *GetVer()
+char GetVer()
 {
 	int dver = 0;
     int tver = 0;
@@ -3236,14 +3238,10 @@ char *GetVer()
 	tver *= 10;
 	tver += __TIME__[4] - 48;
 
-	char db[32] = {0};
-	char tb[32] = {0};
-	sprintf(db, "%X", dver);
-	strcat(db, "-");
-	sprintf(tb, "%X", tver);
-	strcat(db, tb);
+    char db[32] = {0};
+    sprintf(db, "%X-%X", dver, tver);
 
-	return db;
+    return *db;
 }
 
 void nesca_3::slotShowRedVersion()
@@ -3288,19 +3286,16 @@ void _startMsgCheck()
 		
 	ui->ircNickBox->setText("nsa_" + QString::number(qrand() % 8999 + 1000));
 	
-	char rVer[32] = {0};
-	strcpy(rVer, GetVer());
-	QString QVER = QString(rVer);
-	QByteArray ba = QVER.toLatin1();
-	strcpy(gVER, ba.data());
+    const char &rVer = GetVer();
+    QString QVER((const char *)rVer);
+    QVER += QString(rVer + 1);
+    strcpy(gVER, QVER.toLatin1().data());
 	ui->logoLabel->setToolTip("v3-" + QVER);
 	ui->logoLabel->setStyleSheet("color:white; border: none;background-color:black;");
 	ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
 
 	CreateVerFile();
-
     RestoreSession();
-
 	PhraseLog.push_back("");
 	CreateMsgPopupWidget();
 

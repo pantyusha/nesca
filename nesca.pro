@@ -40,7 +40,9 @@ SOURCES +=\
     WebformWorker.cpp \
     Connector.cpp \
     connector_old.cpp \
-    Utils.cpp
+    Utils.cpp \
+    BruteUtils.cpp \
+    BasicAuth.cpp
 
 
 HEADERS  += ActivityDrawerTh_HorNet.h \
@@ -67,7 +69,9 @@ HEADERS  += ActivityDrawerTh_HorNet.h \
     vercheckerthread.h \
     Utils.h \
     WebformWorker.h \
-    Connector.h
+    Connector.h \
+    BasicAuth.h \
+    BruteUtils.h
 
 FORMS    += nesca_3.ui
 

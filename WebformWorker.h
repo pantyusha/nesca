@@ -2,13 +2,13 @@
 #define WEBFORMWORKER_H
 
 #include <Utils.h>
-#include "STh.h"
 #include "Connector.h"
 #include <mainResources.h>
-#include <externData.h>
 #include <externFunctions.h>
+#include <BruteUtils.h>
+#include "STh.h"
 
-class WFClass {
+class WFClass : BruteUtils {
 
 private: static bool active;
     int passCounter = 1;

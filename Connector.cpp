@@ -173,7 +173,7 @@ int _EstablishSSHConnection(char *host, int port, std::string *buffer, const cha
     char pass[32] = {0};
     char temp[64] = {0};
     isActive = 1;
-    BConInc();
+    BruteUtils::BConInc();
     int sz = 0;
     char *ptr1 = 0;
     int res = -1;
@@ -192,19 +192,19 @@ int _EstablishSSHConnection(char *host, int port, std::string *buffer, const cha
         if(res == 0)
         {
             if(i == 0) return -2; //Failhit
-            BConDec();
+            BruteUtils::BConDec();
             isActive = 0;
             return 1;
         }
         else if(res == -2)
         {
-            BConDec();
+            BruteUtils::BConDec();
             isActive = 0;
             return -2;
         };
         Sleep(500);
     };
-    BConDec();
+    BruteUtils::BConDec();
     isActive = 0;
     return -1;
 }

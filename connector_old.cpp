@@ -1,5 +1,4 @@
-﻿#pragma once
-#include "STh.h"
+﻿#include "STh.h"
 #include <libssh/libssh.h>
 #include <sstream>
 #include <openssl/md5.h>
@@ -8,6 +7,7 @@
 #include "externData.h"
 #include <openssl/err.h>
 #include <Utils.h>
+#include <BruteUtils.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 #include <iphlpapi.h>
@@ -28,38 +28,6 @@ int _countFTPDirectories(char *recvBuff){
 		dirPtr = strstr(dirPtr + 1, "\n");
 	};
 	return dirCounter;
-}
-
-void BConInc()
-{
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-__asm
-    {
-        lock inc BrutingThrds;
-    };
-#else
-    asm("lock incl BrutingThrds");
-#endif
-
-	stt->doEmitionChangeBA(QString::number(BrutingThrds));
-}
-
-void BConDec()
-{
-	if(BrutingThrds > 0)
-	{
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-    __asm
-        {
-            lock dec BrutingThrds;
-        };
-#else
-        asm("lock decl BrutingThrds");
-#endif
-	}
-
-	stt->doEmitionChangeBA(QString::number(BrutingThrds));
-
 }
 
 bool debugWriteWait = false;
@@ -904,9 +872,9 @@ lopaStr _BALobby(char *cookie, char *ip, int port, char *path, char *method)
 {
 	while(BrutingThrds >= gMaxBrutingThreads) Sleep(700);
 	
-	BConInc();
+    BruteUtils::BConInc();
 	lopaStr res = _BABrute(cookie, ip, port, path, method);
-	BConDec();
+    BruteUtils::BConDec();
 	
 	return res;
 }
@@ -1338,9 +1306,9 @@ lopaStr _FTPLobby(char *ip, int port, PathStr *ps)
 	ZeroMemory(lps.pass, sizeof(lps.pass));
 	ZeroMemory(lps.other, sizeof(lps.other));
 
-	BConInc();
+    BruteUtils::BConInc();
 	lps = _FTPBrute(ip, port, ps);
-	BConDec();
+    BruteUtils::BConDec();
 	
 	return lps;
 }
@@ -1744,9 +1712,9 @@ lopaStr _IPCameraBLobby(char *ip, int port, char *SPEC)
 {
 	while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
-	BConInc();
+    BruteUtils::BConInc();
 	lopaStr res = _IPCameraBrute(ip, port, SPEC);
-	BConDec();
+    BruteUtils::BConDec();
 	
 	return res;
 }

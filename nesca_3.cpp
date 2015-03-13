@@ -1574,12 +1574,14 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 		};
         return false;
 	}
-	else if (obj == ui->widgetIRC)
+    else if (obj == qwm)
 	{
-		if(MapWidgetOpened)
-		{
-			qwm->raise();
-		};
+        //auto qwe = event->type();
+        if(MapWidgetOpened && event->type() == QEvent::WindowActivate)
+        {
+            //qwm->raise();
+            this->raise();
+        };
 		if (event->type() == QEvent::KeyPress)
 		{
 			QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
@@ -1598,18 +1600,7 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
             return true;
 		};
         return false;
-	}
-//    else if (obj == qwm)
-//    {
-//        ///TODO: raise parent window with qwm
-//        if(event->type() == QEvent::MouseButtonPress)
-//        {
-//           Qt::WindowFlags eFlags = windowFlags ();
-//           eFlags |= Qt::WindowStaysOnTopHint;
-//           setWindowFlags(eFlags);
-//           return true;
-//        };
-//    }
+    }
 	else
 	{
 		if (event->type() == QEvent::KeyPress)
@@ -1628,7 +1619,11 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 			privateMsgFlag = false;	
 			event->accept();
             return true;
-		};
+        }
+        else if(MapWidgetOpened && event->type() == QEvent::WindowActivate)
+        {
+            qwm->raise();
+        };
         return false;
 	};
 }
@@ -2057,7 +2052,7 @@ void nesca_3::slotShowDataflow()
 	{
 		MapWidgetOpened = true;
 		ui->DataflowModeBut->setStyleSheet("background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(0, 214, 0, 40);color: rgb(0, 214, 0);");
-		qwm = new QWidget();
+        qwm = new QWidget();
         qwm->setWindowFlags(Qt::FramelessWindowHint|Qt::SubWindow);
         qwm->installEventFilter(this);
 		qwm->setStyleSheet(
@@ -3198,7 +3193,7 @@ void CreateVerFile()
 	};
 }
 
-char GetVer()
+const char *GetVer()
 {
 	int dver = 0;
     int tver = 0;
@@ -3241,7 +3236,7 @@ char GetVer()
     char db[32] = {0};
     sprintf(db, "%X-%X", dver, tver);
 
-    return *db;
+    return std::string(db).c_str();
 }
 
 void nesca_3::slotShowRedVersion()
@@ -3262,9 +3257,8 @@ void _startMsgCheck()
 	nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
 {
 	setWindowFlags			( Qt::FramelessWindowHint );
-	this->hide();
 
-	gthis = this;
+    gthis = this;
     ui->setupUi(this);
     ui->widgetIRC->installEventFilter(this);
 	ui->shoutBox->installEventFilter(this);
@@ -3275,7 +3269,7 @@ void _startMsgCheck()
 	ui->rVerLabel->hide();
 	setSceneArea();
 		
-	tray = new QSystemTrayIcon(QIcon(":/nesca_3/Z:/nesca.ico"), this);
+    tray = new QSystemTrayIcon(QIcon(":/nesca_3/nesca.ico"), this);
 	tray->hide();
 
 	SetValidators();
@@ -3286,9 +3280,8 @@ void _startMsgCheck()
 		
 	ui->ircNickBox->setText("nsa_" + QString::number(qrand() % 8999 + 1000));
 	
-    const char &rVer = GetVer();
-    QString QVER((const char *)rVer);
-    QVER += QString(rVer + 1);
+    const char *rVer = GetVer();
+    QString QVER(rVer);
     strcpy(gVER, QVER.toLatin1().data());
 	ui->logoLabel->setToolTip("v3-" + QVER);
 	ui->logoLabel->setStyleSheet("color:white; border: none;background-color:black;");

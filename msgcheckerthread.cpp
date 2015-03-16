@@ -22,9 +22,9 @@ void _getNewMsg()
     if(buffer.size() > 0)
 	{
         if(Utils::ci_find_substr(buffer, std::string("\r\n\r\n")) != -1
-                && Utils::ci_find_substr(buffer, std::string("HTTP/1.1 404 Not Found")) == -1
-                && Utils::ci_find_substr(buffer, std::string("HTTP/1.1 502 Bad Gateway")) == -1
-                && Utils::ci_find_substr(buffer, std::string("HTTP/1.1 400 Bad Request")) == -1
+                && Utils::ci_find_substr(buffer, std::string("404 Not Found")) == -1
+                && Utils::ci_find_substr(buffer, std::string("502 Bad Gateway")) == -1
+                && Utils::ci_find_substr(buffer, std::string("400 Bad Request")) == -1
                 && Utils::ci_find_substr(buffer, std::string("\r\n\r\nEmpty")) == -1
                 )
         {
@@ -41,7 +41,7 @@ void MSGCheckerThread::run()
 {
 	for(;;)
 	{
-		Sleep(60000);
-		_getNewMsg();
+        Sleep(60000);
+        if(strlen(trcPersKey) != 0) _getNewMsg();
 	};
 }

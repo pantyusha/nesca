@@ -4,6 +4,8 @@
 #include "externData.h"
 #include "WebformWorker.h"
 #include "Connector.h"
+#include "BasicAuth.h"
+#include "FTPAuth.h"
 #include <memory>
 
 char* strstri(const char *_Str, const char *_SubStr)
@@ -404,7 +406,8 @@ int ContentFilter(const char *buff, int port, char *ip, char *cp)
 	else return -1;
 }
 
-void fillGlobalLogData(char *ip, char *hostname, char *port, const char *sz, char *title, char *login, char *pass, char *comment, char *cdpg, char *clss)
+void fillGlobalLogData(char *ip, char *hostname, char *port, const char *sz, char *title,
+                       const char *login, const char *pass, char *comment, char *cdpg, char *clss)
 {
 	if(trackerOK == true)
 	{
@@ -648,7 +651,6 @@ void fputsf(char *text, int flag, char *msg)
 			fputs (topBuff, file);
 		};
  
-
 		int innerCounter = 0;
 		while(fOpened) 
 		{
@@ -658,7 +660,7 @@ void fputsf(char *text, int flag, char *msg)
 				break;
 			};
 			++innerCounter;
-			Sleep((rand() % 300 + 60));
+            Sleep((rand() % 100 + 60));
 		};
 		fOpened = true;
 		fputs (string, file);
@@ -793,35 +795,19 @@ void putInFile(int flag, char *ip, char *port, int recd, char *finalstr, char *h
 	ZeroMemory(msg, strlen(msg));
 }
 
-void _specFillerBA(char *hl, char *ip, char *port, char *finalstr, char *login, char *pass, int flag)
+void _specFillerBA(char *hl, char *ip, char *port, char *finalstr, const char *login, const char *pass, int flag)
 {
-	char log[512] = {0};
+    char log[512] = {0};
 	
 	++PieBA;
-	
-	strcpy(log, "[BA]:");
-	strcat(log, "<span id=\"hostSpan\"><a href=\"http://");
-	if(strcmp(login, "NULL") != 0 && strcmp(pass, "NULL") != 0) {
-		strcat(log, login);
-		strcat(log, ":");
-		strcat(log, pass);
-		strcat(log, "@");
-	}
-	strcat(log, ip);
-	strcat(log, port);
-	strcat(log, "\"><font color=MediumSeaGreen>");
-	if(strcmp(login, "NULL") != 0 && strcmp(pass, "NULL") != 0) {
-		strcat(log, login);
-		strcat(log, ":");
-		strcat(log, pass);
-		strcat(log, "@");
-	}
-	strcat(log, ip);
-	strcat(log, port);
-	strcat(log, "</font></a></span> T: <font color=GoldenRod>");
-	strcat(log, finalstr);
-	strcat(log, "</font>");
-	strcat(log, "\n");
+    if(strcmp(login, "NULL") != 0 && strcmp(pass, "NULL") != 0)
+    {
+        sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"http://%s:%s@%s%s\"><font color=MediumSeaGreen>%s:%s@%s%s</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+                login, pass, ip, port, login, pass, ip, port, finalstr);
+    } else {
+        sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"http://%s%s\"><font color=MediumSeaGreen>%s%s</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+                ip, port, ip, port, finalstr);
+    }
 
 	stt->doEmitionFoundData(QString::fromLocal8Bit(log));
 
@@ -1039,10 +1025,8 @@ void _getInputVal(std::vector<std::string> inputVec, char *buff, char *key)
 	};
 }
 
-void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path, char *comment, char *tclass, char *cp, int recd, char *title)
+void _specWFBrute(char *ip, int port, char *hl, const char *buff, int flag, char *path, char *comment, char *tclass, char *cp, int recd, char *title)
 {
-	char cookie[1024] = {0};
-
 	if(strstr(buff, "VER_CODE") != NULL || strstri(buff, "captcha") != NULL)
 	{
 		if(gNegDebugMode)
@@ -1050,8 +1034,7 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 			stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Ignoring: Captcha detected.");
 		};
 		return;
-	};
-	isActive = 1;
+    };
 
 	char methodVal[128] = {0};
 	char actionVal[512] = {0};
@@ -1208,8 +1191,7 @@ void _specWFBrute(char *ip, int port, char *hl, char *buff, int flag, char *path
 			///fillGlobalLogData(ip, hl, tport, std::to_string(recd).c_str(), title, "", "", "UnknownWebform", cp, tclass);
 			///putInFile(flag, ip, tport, recd, title, hl, cp);
 		};
-	};
-	isActive = 0;
+    };
 }
 
 void _specWEBIPCAMBrute(char *ip, int port, char *hl, char *finalstr, int flag, char *comment, char *cp, int recd, char *SPEC)
@@ -1231,19 +1213,18 @@ void _specWEBIPCAMBrute(char *ip, int port, char *hl, char *finalstr, int flag, 
 	};
 }
 
-void _specBrute(char *cookie, char *ip, int port, char *hl, char *finalstr, int flag, char *path, char *comment, char *cp, int recd)
+void _specBrute(char *cookie, char *ip, int port,
+                char *hl, char *finalstr, int flag,
+                char *path, char *comment, char *cp, int recd)
 {
-	isActive = 1;
-	lopaStr lps;
-	ZeroMemory(lps.login, sizeof(lps.login));
-	ZeroMemory(lps.pass, sizeof(lps.pass));
-	ZeroMemory(lps.other, sizeof(lps.other));
 	char temp[64] = {0};
     char tport[32] = {0};
     sprintf(tport, ":%d", port);
 
-    if(strcmp(comment, "[DIGEST]") == 0) lps = _BALobby(cookie, ip, port, path, "[DIGEST]");
-    else lps = _BALobby(cookie, ip, port, path, "[NORMAL]");
+    const lopaStr &lps = BA::_BALobby((string(ip) + string(path)).c_str(), port);
+
+    //if(strcmp(comment, "[DIGEST]") == 0) lps = _BALobby(cookie, ip, port, path, "[DIGEST]");
+    //else lps = _BALobby(cookie, ip, port, path, "[NORMAL]");
 
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
@@ -1435,11 +1416,6 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 		return -1;
 	};
 
-	lopaStr lps;
-	ZeroMemory(lps.login, sizeof(lps.login));
-	ZeroMemory(lps.pass, sizeof(lps.pass));
-	ZeroMemory(lps.other, sizeof(lps.other));
-
 	PathStr ps;
 	ps.port = p;
 	strcpy(ps.ip, ip);
@@ -1458,15 +1434,13 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 	strcpy(ps.headr, GetTitle(buffcpy));
 	ps.flag = flag;
 
-	char pps[256] = {0};
-	strcpy(pps, "/");
+    char baPath[256] = {0};
+    strcpy(baPath, "/");
 	
-	std::vector<std::string> redirStrLst;
-	char rBuff[65536] = {0};
-	strncpy(rBuff, buffcpy, 65535);
+    std::vector<std::string> redirStrLst;
 	if(flag == 0 || flag == 3 || flag == 7 )
 	{
-		int rh = _header(ip, p, buffcpy, lx, &ps, &redirStrLst, rBuff);
+        int rh = _header(ip, p, buffcpy, lx, &ps, &redirStrLst);
 		strcpy(cp, ps.codepage);
 		if (rh == -1) return -1;
 		if(rh <= -2) 
@@ -1478,7 +1452,7 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 		};
 		
 		int sz = strlen(ps.path);
-		strncpy(pps, ps.path, (sz < 256 ? sz : 256));
+        strncpy(baPath, ps.path, (sz < 256 ? sz : 256));
 	}
 	else
 	{
@@ -1492,21 +1466,10 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 
 	if(flag == 16) 
     {
-		isActive = 1;
-
 		char log[2048] = {0};
 		char logEmit[2048] = {0};
 
-//		strcpy(logEmit, "[FTP]:");
-//		strcpy(log, "[FTP]:<font color=\"#0f62e2\">");
-//		strcat(log, ip);
-//		strcat(log, ":");
-//		strcat(log, port);
-//		strcat(log, "</font>");
-//		strcat(log, "; Received: ");
-//		strncat(log, std::to_string(recd).c_str(), 100);
-				
-        lps = _FTPLobby(ip, p, &ps);
+        const lopaStr &lps = FTPA::_FTPLobby(ip, p, &ps);
 
 		if(strstr(lps.other, "ROUTER") != NULL)
 		{
@@ -1517,47 +1480,11 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
             sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> <font color=\"#43EC00\"><a href=\"http://%s/\" style=\"color:#43EC00;\">[ROUTER]</a></font>",
                     lps.login, lps.pass, ip, lps.login, lps.pass, ip, ip);
 
-//			strcat(log, "<a href=\"ftp://");
-//			strcat(log, lps.login);
-//			strcat(log, ":");
-//			strcat(log, lps.pass);
-//			strcat(log, "@");
-//			strcat(log, ip);
-//			strcat(log, "/\"><span style=\"color: #ff6600;\">ftp://");
-//			strcat(log, lps.login);
-//			strcat(log, ":");
-//			strcat(log, lps.pass);
-//			strcat(log, "@");
-//			strcat(log, ip);
-//			strcat(log, "</span></a> <font color=\"#43EC00\"><a href=\"http://");
-//			strcat(log, ip);
-//			strcat(log, "\" style=\"color:#43EC00;\">[ROUTER]</a></font>");
-//			strcat(log, ps.headr);
-
-//			strcat(logEmit, "<a href=\"ftp://");
-//			strcat(logEmit, lps.login);
-//			strcat(logEmit, ":");
-//			strcat(logEmit, lps.pass);
-//			strcat(logEmit, "@");
-//			strcat(logEmit, ip);
-//			strcat(logEmit, "/\"><span style=\"color: #ff6600;\">ftp://");
-//			strcat(logEmit, lps.login);
-//			strcat(logEmit, ":");
-//			strcat(logEmit, lps.pass);
-//			strcat(logEmit, "@");
-//			strcat(logEmit, ip);
-//			strcat(logEmit, "</span></a> <font color=\"#43EC00\"><a href=\"http://");
-//			strcat(logEmit, ip);
-//			strcat(logEmit, "/\" style=\"color:#43EC00;\">[ROUTER]</a></font>");
-			
             fputsf (log, flag, "FTP");
 	
 			fillGlobalLogData(ip, hl, port, std::to_string(recd).c_str(), "[FTP service]", lps.login, lps.pass, "Router FTP detected.", cp, "FTP");
-			
-
-			
+						
 			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
-
 		}
 		else if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 		{
@@ -1567,37 +1494,6 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
                     ip, port, recd, lps.login, lps.pass, ip, lps.login, lps.pass, ip, ps.headr);
             sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> (F:%d)",
                     lps.login, lps.pass, ip, lps.login, lps.pass, ip, ps.directoryCount);
-
-//			strcat(log, "<a href=\"ftp://");
-//			strcat(log, lps.login);
-//			strcat(log, ":");
-//			strcat(log, lps.pass);
-//			strcat(log, "@");
-//			strcat(log, ip);
-//			strcat(log, "/\"><span style=\"color: #ff6600;\">ftp://");
-//			strcat(log, lps.login);
-//			strcat(log, ":");
-//			strcat(log, lps.pass);
-//			strcat(log, "@");
-//			strcat(log, ip);
-//			strcat(log, "</span></a>");
-//			strcat(log, ps.headr);
-
-//			strcat(logEmit, "<a href=\"ftp://");
-//			strcat(logEmit, lps.login);
-//			strcat(logEmit, ":");
-//			strcat(logEmit, lps.pass);
-//			strcat(logEmit, "@");
-//			strcat(logEmit, ip);
-//			strcat(logEmit, "/\"><span style=\"color: #ff6600;\">ftp://");
-//			strcat(logEmit, lps.login);
-//			strcat(logEmit, ":");
-//			strcat(logEmit, lps.pass);
-//			strcat(logEmit, "@");
-//			strcat(logEmit, ip);
-//			strcat(logEmit, "</span></a> (F:");
-//			strcat(logEmit, std::to_string(ps.directoryCount).c_str());
-//			strcat(logEmit, ")");
 
             fputsf(log, flag, "FTP");
 	
@@ -1769,60 +1665,39 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
         _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/rdr.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 15) //For HFS
-	{
-		char temp[64] = {0};
+    {
         char log[512] = {0};
-		isActive = 1;
 		++AnomC1;
 
-        lps = _BALobby(ps.cookie, ip, p, "/~login", "[NORMAL]");
+        const lopaStr &lps = BA::_BALobby((string(ip) + "/~login").c_str(), p);
         sprintf(log, "[HFS]:<font color=\"#ff6600\">%s :: </font><a href=\"http://%s:%s/\"><span style=\"color: #a1a1a1;\">%s:%s</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">%s Pass: %s:%s</font>",
                 hl, ip, port, ip, port, finalstr, lps.login, lps.pass);
-		
-//		strcpy(log, "[HFS]:<font color=\"#ff6600\">");
-//		strcat(log, hl);
-//		strcat(log, " :: </font><a href=\"http://");
-//		strcat(log, ip);
-//		strcat(log, ":");
-//		strcat(log, port);
-//		strcat(log, "/\"><span style=\"color: #a1a1a1;\">");
-//		strcat(log, ip);
-//		strcat(log, ":");
-//		strcat(log, port);
-//		strcat(log, "</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">");
-//		strcat(log, finalstr);
-//		strcat(log, " Pass: ");
-//		strcat(log, lps.login);
-//		strcat(log, ":");
-//		strcat(log, lps.pass);
-//		strcat(log, "</font>");
+
 		fillGlobalLogData(ip, hl, port, std::to_string(recd).c_str(), finalstr, lps.login, lps.pass, "HFS-FTP", cp, "Basic Authorization");
         fputsf (log , flag, "HFS");
-		stt->doEmitionFoundData(QString::fromLocal8Bit(log));
-		ZeroMemory(temp, sizeof(temp));
+        stt->doEmitionFoundData(QString::fromLocal8Bit(log));
 	}
 	else if(flag == 1) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, finalstr, flag, pps, "[NORMAL]", cp, recd);
+        _specBrute(ps.cookie, ip, p, hl, finalstr, flag, baPath, "[NORMAL]", cp, recd);
 	}
 	else if(flag == 101) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, finalstr, flag, pps, "[DIGEST]", cp, recd);
+        _specBrute(ps.cookie, ip, p, hl, finalstr, flag, baPath, "[DIGEST]", cp, recd);
 	}
 	else if(flag == 10) 
 	{
-		_specWFBrute(ip, p, hl, rBuff, flag, pps, "Web Form", "Web Form", cp, recd, finalstr);
+        _specWFBrute(ip, p, hl, buffcpy, flag, baPath, "Web Form", "Web Form", cp, recd, finalstr);
 	}
 	else 
 	{
 		putInFile(flag, ip, port, recd, finalstr, hl, cp);
 	};
 
-
 	return flag;
 }
 
-int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, PathStr *ps, std::vector<std::string> *redirStrLst, char *buff)
+int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, PathStr *ps, std::vector<std::string> *redirStrLst)
 {
 	if(ls->iterationCount++ == 5)
 	{	
@@ -1893,12 +1768,12 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
         sprintf(nip.get(), "%s%s", tempIP, tempPath);
         std::string buffer;
         int cSz = Connector::nConnect(nip.get(), tempPort, &buffer);
-        if(cSz > -1)
-		{
-            strncpy(buff, buffer.c_str(), (cSz < 65535 ? cSz : 65535));
-            strcpy(ps->codepage, GetCodePage(buff));
 
-            ls->flag = ContentFilter(buff, tempPort, tempIP, ps->codepage);
+        if(cSz > -1)
+        {
+            strcpy(ps->codepage, GetCodePage(buffer.c_str()));
+
+            ls->flag = ContentFilter(buffer.c_str(), tempPort, tempIP, ps->codepage);
 			ps->flag = ls->flag;
 
 			if(ls->flag == -1) 
@@ -1908,10 +1783,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 
 				return -1;
 			};
+
 			if(ls->flag >= 17 || ls->flag == 11 || ls->flag == 12 
 				|| ls->flag == 13 || ls->flag == 14 || ls->flag == 1 || ls->flag == 10) 
 			{
-                strcat(ps->headr, GetTitle(buff));
+                strcat(ps->headr, GetTitle(buffer.c_str()));
 				ps->flag = ls->flag;
 				strcpy(ps->path, tempPath);
 				ps->port = tempPort;
@@ -1919,6 +1795,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 
 				return -2;
 			};
+
 			if(ls->flag == 6)
 			{
 				ps->flag = ls->flag;
@@ -1927,8 +1804,9 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			};
 
 			strcat(ps->headr, " -> ");
-            strcat(ps->headr, GetTitle(buff));
-            if (ls->_header(tempIP, tempPort, buff, ls, ps, redirStrLst, buff) == -1)
+            strcat(ps->headr, GetTitle(buffer.c_str()));
+
+            if (ls->_header(tempIP, tempPort, buffer.c_str(), ls, ps, redirStrLst) == -1)
 			{
 				ps->flag = -1;
                 strcpy(ps->path, tempPath);
@@ -1936,17 +1814,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				return -1;
 			};
 
-			ps->port = tempPort;
-//            if(strlen(buff) < 1)
-//			{
-//				ps->flag = 3;
-//				ls->flag = 3;
-//			}
-//			else if(cstr.overflow == true)
-//			{
-//				ls->flag = 0;
-//				ps->flag = 0;
-//            };
+            ps->port = tempPort;
 		}
 		else
 		{
@@ -1962,14 +1830,17 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 		tempPort = 80;
 		char *ptr1 = strstri(str, "http://");
 		char *ptr2 = _findFirst(str + 7, ":/?");
+
 		if(ptr2 != NULL)
 		{
 			int sz = ptr2 - ptr1 - 7;
 			ZeroMemory(tempIP, MAX_ADDR_LEN);
 			strncpy(tempIP, ptr1 + 7, sz < 128 ? sz : 128);
+
 			if(ptr2[0] == ':')
 			{
 				char *ptrPath = strstr(ptr2, "/");
+
 				if(ptrPath != NULL)
 				{
 					sz = ptrPath - ptr2 - 1;
@@ -2012,12 +1883,12 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
         sprintf(nip.get(), "%s%s", tempIP, tempPath);
         std::string buffer;
         int cSz = Connector::nConnect(nip.get(), tempPort, &buffer);
-        if(cSz > -1)
-		{
-            strncpy(buff, buffer.c_str(), (cSz < 65535 ? cSz : 65535));
-            strcpy(ps->codepage, GetCodePage(buff));
 
-            ls->flag = ContentFilter(buff, tempPort, tempIP, ps->codepage);
+        if(cSz > -1)
+        {
+            strcpy(ps->codepage, GetCodePage(buffer.c_str()));
+
+            ls->flag = ContentFilter(buffer.c_str(), tempPort, tempIP, ps->codepage);
 			ps->flag = ls->flag;
 
 			if(ls->flag == -1) 
@@ -2027,10 +1898,11 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 
 				return -1;
 			};
+
 			if(ls->flag >= 17 || ls->flag == 11 || ls->flag == 12 
 				|| ls->flag == 13 || ls->flag == 14 || ls->flag == 1 || ls->flag == 10) 
 			{
-                strcat(ps->headr, GetTitle(buff));
+                strcat(ps->headr, GetTitle(buffer.c_str()));
 				ps->flag = ls->flag;
                 strcpy(ps->path, tempPath);
 				ps->port = tempPort;
@@ -2038,6 +1910,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 
 				return -2;
 			};
+
 			if(ls->flag == 6)
 			{
 				ps->flag = ls->flag;
@@ -2046,9 +1919,9 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			};
 
 			strcat(ps->headr, " -> ");
-            strcat(ps->headr, GetTitle(buff));
+            strcat(ps->headr, GetTitle(buffer.c_str()));
 
-            if (ls->_header(tempIP, tempPort, buff, ls, ps, redirStrLst, buff) == -1)
+            if (ls->_header(tempIP, tempPort, buffer.c_str(), ls, ps, redirStrLst) == -1)
 			{
 				ps->flag = -1;
                 strcpy(ps->path, tempPath);
@@ -2056,17 +1929,6 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				return -1;
 			};
 			ps->port = tempPort;
-
-//            if(strlen(buff) < 1)
-//			{
-//				ps->flag = 3;
-//				ls->flag = 3;
-//			}
-//			else if(cstr.overflow == true)
-//			{
-//				ls->flag = 0;
-//				ps->flag = 0;
-//			};
 		}
 		else
 		{
@@ -2087,12 +1949,12 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
         sprintf(nip.get(), "%s%s", tempIP, tempPath);
         std::string buffer;
         int cSz = Connector::nConnect(nip.get(), tempPort, &buffer);
-        if(cSz > -1)
-		{
-            strncpy(buff, buffer.c_str(), (cSz < 65535 ? cSz : 65535));
-            strcpy(ps->codepage, GetCodePage(buff));
 
-            ls->flag = ContentFilter(buff, port, ip, ps->codepage);
+        if(cSz > -1)
+        {
+            strcpy(ps->codepage, GetCodePage(buffer.c_str()));
+
+            ls->flag = ContentFilter(buffer.c_str(), port, ip, ps->codepage);
 			ps->flag = ls->flag;
 
 			if(ls->flag == -1) 
@@ -2106,7 +1968,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			if(ls->flag >= 17 || ls->flag == 11 || ls->flag == 12 
 				|| ls->flag == 13 || ls->flag == 14 || ls->flag == 1 || ls->flag == 10) 
 			{
-                strcat(ps->headr, GetTitle(buff));
+                strcat(ps->headr, GetTitle(buffer.c_str()));
 				ps->flag = ls->flag;
                 strcpy(ps->path, tempPath);
 				ps->port = port;
@@ -2122,9 +1984,9 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			};
 
 			strcat(ps->headr, "->");
-            strcat(ps->headr, GetTitle(buff));
+            strcat(ps->headr, GetTitle(buffer.c_str()));
 
-            if (ls->_header(tempIP, tempPort, buff, ls, ps, redirStrLst, buff) == -1)
+            if (ls->_header(tempIP, tempPort, buffer.c_str(), ls, ps, redirStrLst) == -1)
 			{
 				ps->flag = -1;
                 strcpy(ps->path, tempPath);
@@ -2132,17 +1994,6 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 				return -1;
 			};
 			ps->port = tempPort;
-//            if(strlen(buff) < 1)
-//			{
-//				ps->flag = 3;
-//				ls->flag = 3;
-//			}
-//			else if(cstr.overflow == true)
-//			{
-//				ls->flag = 0;
-//				ps->flag = 0;
-//			};
-
 		}
 		else
 		{
@@ -2158,13 +2009,14 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
         sprintf(nip.get(), "%s%s", ip, str);
         std::string buffer;
         int cSz = Connector::nConnect(nip.get(), port, &buffer);
-        if(cSz > -1)
-		{
-            strncpy(buff, buffer.c_str(),  (cSz < 65535 ? cSz : 65535));
-            strcpy(ps->codepage, GetCodePage(buff));
 
-            ls->flag = ContentFilter(buff, port, ip, ps->codepage);
+        if(cSz > -1)
+        {
+            strcpy(ps->codepage, GetCodePage(buffer.c_str()));
+
+            ls->flag = ContentFilter(buffer.c_str(), port, ip, ps->codepage);
 			ps->flag = ls->flag;
+
 			if(ls->flag == -1) 
 			{
 				ps->flag = -1;
@@ -2176,7 +2028,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 			if(ls->flag >= 17 || ls->flag == 11 || ls->flag == 12 
 				|| ls->flag == 13 || ls->flag == 14 || ls->flag == 1 || ls->flag == 10) 
 			{
-                strcat(ps->headr, GetTitle(buff));
+                strcat(ps->headr, GetTitle(buffer.c_str()));
 				ps->flag = ls->flag;
                 strcpy(ps->path, tempPath);
 				ps->port = port;
@@ -2193,20 +2045,9 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
             };
 
 			strcat(ps->headr, " -> ");
-            strcat(ps->headr, GetTitle(buff));
-            ls->_header(ip, port, buff, ls, ps, redirStrLst, buff);
+            strcat(ps->headr, GetTitle(buffer.c_str()));
+            ls->_header(ip, port, buffer.c_str(), ls, ps, redirStrLst);
 			ps->port = tempPort;
-
-//            if(strlen(buff) < 1)
-//			{
-//				ps->flag = 3;
-//				ls->flag = 3;
-//			}
-//			else if(cstr.overflow == true)
-//			{
-//				ls->flag = 0;
-//				ps->flag = 0;
-//			};
 		}
 		else
 		{
@@ -2284,7 +2125,7 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 						sz = ptrQuoteTemp - ptrQuote1 + 1;
 					}
 					char *tempBuff = new char[sz + 1];
-					ZeroMemory(tempBuff, sizeof(tempBuff));
+                    ZeroMemory(tempBuff, sizeof(*tempBuff));
 					strncpy(tempBuff, ptrQuote1 + 1, sz);
 					memset(tempBuff + sz, 0, 1);
 					char delim[2] = {0};
@@ -2365,7 +2206,7 @@ void _getJSCookie(char *dataBuff, const char *str, char *ip, int port)
 	};
 }
 
-int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps, std::vector<std::string> *redirStrLst, char *rBuff)
+int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps, std::vector<std::string> *redirStrLst)
 {
 	std::string redirectStr = "";
 	if(strstr(str, "Set-Cookie:") != NULL) strncpy(ps->cookie, _getAttribute(str, "Set-Cookie:"), COOKIE_MAX_SIZE);
@@ -2455,7 +2296,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 					if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 					{
 						redirStrLst->push_back(redirectStr);
-						redirectReconnect(ps->cookie, ip, port, linkPtr, l, ps, redirStrLst, rBuff);
+                        redirectReconnect(ps->cookie, ip, port, linkPtr, l, ps, redirStrLst);
 					};
 				};
 				delete []scriptContainer;
@@ -2506,7 +2347,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 					if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 					{
 						redirStrLst->push_back(redirectStr);
-						return redirectReconnect(ps->cookie, ip, port, linkPtr, l, ps, redirStrLst, rBuff);
+                        return redirectReconnect(ps->cookie, ip, port, linkPtr, l, ps, redirStrLst);
 					} return -1;
 				};
 				delete []scriptContainer;
@@ -2620,7 +2461,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 							if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 							{
 								redirStrLst->push_back(redirectStr);
-								return redirectReconnect(ps->cookie, ip, port, lol, l, ps, redirStrLst, rBuff);
+                                return redirectReconnect(ps->cookie, ip, port, lol, l, ps, redirStrLst);
 							};
 						}
 						else
@@ -2690,7 +2531,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 					if (std::find(redirStrLst->begin(), redirStrLst->end(), redirStr) == redirStrLst->end())
 					{
 						redirStrLst->push_back(redirStr);
-						return redirectReconnect(ps->cookie, ip, port, redirStr, l, ps, redirStrLst, rBuff);
+                        return redirectReconnect(ps->cookie, ip, port, redirStr, l, ps, redirStrLst);
 					} return -1;
 				}
 				return -2;

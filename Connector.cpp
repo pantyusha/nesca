@@ -172,7 +172,6 @@ int _EstablishSSHConnection(char *host, int port, std::string *buffer, const cha
     char login[32] = {0};
     char pass[32] = {0};
     char temp[64] = {0};
-    isActive = 1;
     BruteUtils::BConInc();
     int sz = 0;
     char *ptr1 = 0;
@@ -193,19 +192,16 @@ int _EstablishSSHConnection(char *host, int port, std::string *buffer, const cha
         {
             if(i == 0) return -2; //Failhit
             BruteUtils::BConDec();
-            isActive = 0;
             return 1;
         }
         else if(res == -2)
         {
             BruteUtils::BConDec();
-            isActive = 0;
             return -2;
         };
         Sleep(500);
     };
     BruteUtils::BConDec();
-    isActive = 0;
     return -1;
 }
 
@@ -232,9 +228,11 @@ int my_trace(CURL *handle, curl_infotype type,
              void *userp)
 {
   switch (type) {
-  case CURLINFO_HEADER_OUT:
-	  data[strstr(data, "\r\n\r\n") - data] = '\0';
-	  stt->doEmitionAddOutData(QString(data));
+      case CURLINFO_HEADER_OUT: {
+          data[strstr(data, "\r\n\r\n") - data] = '\0';
+          stt->doEmitionAddOutData(QString(data));
+          break;
+      }
   }
 
   return 0;
@@ -248,22 +246,25 @@ static size_t nWriteCallback(void *contents, size_t size, size_t nmemb, void *us
 
 int Connector::nConnect(const char *ip, const int port, std::string *buffer,
                         const char *postData,
-                        const std::vector<std::string> *customHeaders){
-
+                        const std::vector<std::string> *customHeaders,
+                        const std::string *lpString){
+    buffer->clear();
     CURL *curl = curl_easy_init();
+    curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 0L);
 
     if (curl)
     {
 		if (MapWidgetOpened) {
 			struct data config;
 			config.trace_ascii = 1; /* enable ascii tracing */
-			curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
-			curl_easy_setopt(curl, CURLOPT_DEBUGDATA, &config);
-			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+            curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
+            curl_easy_setopt(curl, CURLOPT_DEBUGDATA, &config);
+            curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 		}
         curl_easy_setopt(curl, CURLOPT_URL, ip);
         curl_easy_setopt(curl, CURLOPT_PORT, port);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0");
+        curl_easy_setopt(curl, CURLOPT_USERAGENT,
+                         "Mozilla/5.0 (X11; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0");
         curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
         curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -296,14 +297,19 @@ int Connector::nConnect(const char *ip, const int port, std::string *buffer,
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
         }
 
+        if(lpString != NULL) {
+            curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY);
+            curl_easy_setopt(curl, CURLOPT_USERPWD, lpString);
+        };
+
         curl_easy_perform(curl);
-        if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
         curl_easy_cleanup(curl);
     } else {
         stt->doEmitionRedFoundData("Curl error.");
         return -1;
     };
 
+    if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
     return buffer->size();
 }
 int Connector::_ConnectToPort(char *ip, int port, char *hl)

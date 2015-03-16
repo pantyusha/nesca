@@ -131,8 +131,7 @@ class Lexems
                     const char str[],
                     Lexems *l,
                     PathStr *ps,
-                    std::vector<std::string> *lst,
-                    char *rBuff);
+                    std::vector<std::string> *lst);
 
         int _filler(int p,
                     const char *buffcpy,
@@ -148,16 +147,16 @@ class Connector_old
 	public:
 		int _Updater();
 		
-        lopaStr _FTPLobby(char *ip,
-                          int port,
-                          PathStr *ps);
+//        lopaStr _FTPLobby(char *ip,
+//                          int port,
+//                          PathStr *ps);
 
-        lopaStr _BALobby(char *cookie,
-                         char *ip,
-                         int port,
-                         char *path,
-                         char *method,
-                         char *data);
+//        lopaStr _BALobby(char *cookie,
+//                         char *ip,
+//                         int port,
+//                         char *path,
+//                         char *method,
+//                         char *data);
 
         lopaStr _WFLobby(char *cookie,
                          char *ip,
@@ -185,5 +184,5 @@ class Connector_old
 
 
 extern lopaStr _IPCameraBLobby(char *ip, int port, char *SPEC);
-extern lopaStr _BALobby(char *cookie, char *ip, int port, char *path, char *method);
-extern lopaStr _FTPLobby(char *ip, int port, PathStr *ps);
+//extern lopaStr _BALobby(char *cookie, char *ip, int port, char *path, char *method);
+//extern lopaStr _FTPLobby(char *ip, int port, PathStr *ps);

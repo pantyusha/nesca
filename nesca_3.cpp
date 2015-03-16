@@ -739,7 +739,6 @@ void nesca_3::slotAddLine(int x1, int y1, int x2, int y2)
 	};
 }
 
-
 void nesca_3::slotAddPolyLine()
 {
 	if(ME2ScanFlag)
@@ -2216,6 +2215,7 @@ void nesca_3::slotOutData(QString str)
 		str.replace("Content-Length:", "<font color=\"GoldenRod\">Content-Length:</font>");
         str.replace("Authorization:", "<font color=\"GoldenRod\">Authorization:</font>");
         str.replace("X-Nescav3:", "<font color=\"GoldenRod\">X-Nescav3:</font>");
+        str.replace("Referer:", "<font color=\"GoldenRod\">Referer:</font>");
 
 		_rOutProt.indexIn(str);
 		prot = _rOutProt.cap(0);
@@ -2241,7 +2241,7 @@ QRegExp _rIncRN("\r\n(_|-|=|.*)*:");
 void nesca_3::slotIncData(QString ip, QString str)
 {
 	if(RecvData != NULL)
-	{
+    {
 		QStringList headNbody = str.split("\r\n\r\n");
 		QString tStr;
 		QString tagRes;
@@ -2540,8 +2540,7 @@ void nesca_3::IPScanSeq()
 		if(ui->portLine->text() != "")
 		{
 			ui->labelParsed_Value->setText("0/0");
-			stopFirst = false;
-			saveOptions();
+            stopFirst = false;
 			ui->tabMainWidget->setTabEnabled(1, false);
 			ui->tabMainWidget->setTabEnabled(2, false);
 
@@ -2637,8 +2636,7 @@ void nesca_3::DNSScanSeq()
 				ui->lineILVL->setText(topLevelDomainStr);
 			};
 
-			stopFirst = false;
-			saveOptions();
+            stopFirst = false;
 
 			ui->tabMainWidget->setTabEnabled(0, false);
 			ui->tabMainWidget->setTabEnabled(2, false);

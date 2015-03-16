@@ -27,7 +27,7 @@ extern bool trackerOK, __savingBackUpFile, globalScanFlag, MapWidgetOpened,
 BALogSwitched;
 extern int found, indexIP, gMode, 
 	MaxPass, MaxLogin, MaxWFLogin, MaxWFPass, MaxSSHPass,
-	GlobalNegativeSize, isActive, gMaxBrutingThreads,
+    GlobalNegativeSize, gMaxBrutingThreads,
 	gTimeOut, PieAnomC1, PieSusp, PieBA, PieLowl, PieWF, PieSSH, 
 	gThreadDelay, AnomC1, Filt, Overl, Lowl, Alive, saved, 
     Susp,

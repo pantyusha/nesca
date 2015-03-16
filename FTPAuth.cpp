@@ -1,6 +1,8 @@
-#include <BasicAuth.h>
+#include "FTPAuth.h"
 
-bool BA::checkOutput(const string *buffer) {
+bool FTPA::checkOutput(const string *buffer) {
+    //Login or password incorrect!
+
     if(Utils::ci_find_substr(*buffer, "200 ok") != -1 ||
             Utils::ci_find_substr(*buffer, "http/1.0 200") != -1 ||
             Utils::ci_find_substr(*buffer, "http/1.1 200") != -1
@@ -12,7 +14,7 @@ bool BA::checkOutput(const string *buffer) {
     return false;
 }
 
-lopaStr BA::_BABrute(const char *ip, const int port) {
+lopaStr FTPA::_FTPBrute(const char *ip, const int port, const PathStr *ps) {
     string buffer;
     string lpString;
     lopaStr lps;
@@ -22,10 +24,15 @@ lopaStr BA::_BABrute(const char *ip, const int port) {
 
     strcpy(lps.login, "UNKNOWN");
 
-    for(int i = 0; i < MaxLogin; ++i) {
+    for(int i = 0; i < MaxLogin; ++i)
+    {
         if(!globalScanFlag) return lps;
-        for (int j = 0; j < MaxPass; ++j) {
-            if (!globalScanFlag) return lps;
+        if(strlen(loginLst[i]) <= 1) continue;
+
+        for(int j = 0; j < MaxPass; ++j)
+        {
+            if(!globalScanFlag) return lps;
+            if(strlen(passLst[j]) <= 1) continue;
 
             lpString = string(loginLst[i]) + ":" + string(passLst[j]);
 
@@ -44,13 +51,12 @@ lopaStr BA::_BABrute(const char *ip, const int port) {
     return lps;
 }
 
-lopaStr BA::_BALobby(const char *ip, const int port)
-{
+lopaStr FTPA::_FTPLobby(const char *ip, const int port, const PathStr *ps){
     while(BrutingThrds >= gMaxBrutingThreads) Sleep(700);
 
     BruteUtils::BConInc();
-    const lopaStr &res = _BABrute(ip, port);
+    const lopaStr &lps = _FTPBrute(ip, port, ps);
     BruteUtils::BConDec();
 
-    return res;
+    return lps;
 }

@@ -26,7 +26,6 @@ int ipCounter = 0;
 int mode;
 int found = 0, indexIP = 1;
 int gMode;
-int isActive = 0;
 int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSSHPass = 0;
 int ipsstart[4], ipsend[4], 
 	overallPorts, flCounter, octet[4];
@@ -187,7 +186,7 @@ void _SaveBackupToFile()
 		}
 		else 
 		{
-			if(strstr(endIP2, "-") != NULL) strcpy(endStr, strstr(endIP2, "-"));
+            if(strstr(endIP2, "-") != NULL) strcpy(endStr, endIP2);//strcpy(endStr, strstr(endIP2, "-"));
             else if(strstr(endIP2, "/") != NULL) strcpy(endStr, strstr(endIP2, "/"));
 			else
 			{
@@ -203,8 +202,7 @@ void _SaveBackupToFile()
 		{
 			strcpy(saveStr, "[SESSION]:");
 			strcat(saveStr, std::to_string(gMode).c_str());
-			strcat(saveStr, " ");
-			if(gMode == 0) strcat(saveStr, saveStartIP);
+            strcat(saveStr, " ");
             strcat(saveStr, endStr);
 			if(gMode == 1)
 			{
@@ -2602,8 +2600,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 	{
 		if (flCounter == 0)
 		{
-			stt->doEmitionRedFoundData("Empty IP list.");
-			isActive = 0;
+            stt->doEmitionRedFoundData("Empty IP list.");
 			globalScanFlag = false;
 			stt->doEmitionKillSttThread();
 
@@ -2747,7 +2744,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 	stt->doEmitionChangeStatus("Stopping...");
 	
 	
-    while(cons > 0 || isActive == 1 || jsonArr->size() > 0) {
+    while(cons > 0 || jsonArr->size() > 0) {
         Sleep(2000);
     };
 

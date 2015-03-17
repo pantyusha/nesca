@@ -4,10 +4,6 @@
 #include "externFunctions.h"
 #include "Connector.h"
 
-typedef struct {
-    char argv[MAX_ADDR_LEN];
-} ST;
-
 ST *st = NULL;
 
 QJsonArray *jsonArr = new QJsonArray();
@@ -910,29 +906,21 @@ void *_connect(void* ss)
 
 void targetAndIPWriter(long long unsigned int target, char *buff)
 {
-	char curIPBuff[256] = {0}, targetNPers[32] = {0}, dbuffer[32] = {0};
-	strcpy(metaIPDNS, buff);
-	char b[32] = {0};
-	sprintf(b, "%Lu", target);
-	strcpy(targetNPers, b);
-	strcpy(metaTargets, targetNPers);
-	if(gTargetsOverall != 0) sprintf(dbuffer, "%.1f", (100 - target/(double)gTargetsOverall * 100));
-	else strcpy(dbuffer, "0");
-	strcat(targetNPers, " (");
-	strcat(targetNPers, dbuffer);
-	strcat(targetNPers, "%)");
-	strcpy(metaPercent, dbuffer);
+    char curIPBuff[256] = {0}, targetNPers[32] = {0};
 
-	strcpy(curIPBuff, "--->");
-	strcat(curIPBuff, buff);
-		
-		
-		stt->doEmitionIPRANGE(QString(curIPBuff));
-		stt->doEmitionTargetsLeft(QString(targetNPers));
-		
+    strcpy(metaIPDNS, buff);
+    sprintf(targetNPers, "%Lu (%.1f%%)",
+            target, (gTargetsOverall != 0 ? (100 - target/(double)gTargetsOverall * 100) : 0));
+    sprintf(metaTargets, "%Lu", target);
+    sprintf(metaPercent, "%.1f",
+            (gTargetsOverall != 0 ? (100 - target/(double)gTargetsOverall * 100) : 0));
+    sprintf(curIPBuff, "--->%s", buff);
+
+    stt->doEmitionIPRANGE(QString(curIPBuff));
+    stt->doEmitionTargetsLeft(QString(targetNPers));
 }
 
-void _passLoginFapper()
+void _passLoginLoader()
 {
 	MaxLogin = 0;
 	MaxPass = 0;
@@ -985,10 +973,8 @@ void _passLoginFapper()
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
+        stt->doEmitionGreenFoundData("Password list loaded (" + QString::number(MaxPass) + " entries)");
 	
-		stt->doEmitionGreenFoundData("Password list loaded (" + QString(std::to_string(MaxPass).c_str()) + " entries)");
-	
-
 		i = 0;
 
 		while(fgets(buffFG, 32, loginList) != NULL)
@@ -999,20 +985,16 @@ void _passLoginFapper()
 			else strncat(loginLst[i++], buffFG, strlen(buffFG));
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
-
 		
-		stt->doEmitionGreenFoundData("Login list loaded (" + QString(std::to_string(MaxLogin).c_str()) + " entries)");
+        stt->doEmitionGreenFoundData("Login list loaded (" + QString::number(MaxLogin) + " entries)");
 		
-
 		fclose(loginList);
 		fclose(passList);
 	} 
 	else 
-	{
-		
+    {
 		stt->doEmitionRedFoundData("No password/login list found");
-		stt->doEmitionKillSttThread();
-		
+        stt->doEmitionKillSttThread();
 	};
 
 	MaxWFLogin = 0;
@@ -1066,8 +1048,7 @@ void _passLoginFapper()
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
-	
-		stt->doEmitionGreenFoundData("WFPassword list loaded (" + QString(std::to_string(MaxWFPass).c_str()) + " entries)");
+        stt->doEmitionGreenFoundData("WFPassword list loaded (" + QString::number(MaxWFPass) + " entries)");
 	
 		i = 0;
 
@@ -1080,7 +1061,7 @@ void _passLoginFapper()
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
-		stt->doEmitionGreenFoundData("WFLogin list loaded (" + QString(std::to_string(MaxWFLogin).c_str()) + " entries)");
+        stt->doEmitionGreenFoundData("WFLogin list loaded (" + QString::number(MaxWFLogin) + " entries)");
         fclose(wfPassList);
         fclose(wfLoginList);
 	} 
@@ -1123,7 +1104,7 @@ void _passLoginFapper()
 			ZeroMemory(buffFG, sizeof(buffFG));
 		};
 
-		stt->doEmitionGreenFoundData("SSH Password list loaded (" + QString(std::to_string(MaxSSHPass).c_str()) + " entries)");
+        stt->doEmitionGreenFoundData("SSH Password list loaded (" + QString::number(MaxSSHPass) + " entries)");
 	
 		fclose(sshlpList);
 	} 
@@ -1133,9 +1114,9 @@ void _passLoginFapper()
 		stt->doEmitionKillSttThread();
 	};
 	
-    stt->doEmitionYellowFoundData("BA: ~" + QString(std::to_string(MaxLogin * MaxPass/gTimeOut/60).c_str())
-                                  + "; WF: ~" + QString(std::to_string(MaxWFLogin * MaxWFPass/gTimeOut/60).c_str())
-                                  + "; SSH: ~" + QString(std::to_string(MaxSSHPass/gTimeOut/60).c_str()));
+    stt->doEmitionYellowFoundData("BA: ~" + QString::number(MaxLogin * MaxPass/gTimeOut/60)
+                                  + "; WF: ~" + QString::number(MaxWFLogin * MaxWFPass/gTimeOut/60)
+                                  + "; SSH: ~" + QString::number(MaxSSHPass/gTimeOut/60));
 }
 
 void ReadUTF8(FILE* nFile, char *cp)
@@ -1292,7 +1273,7 @@ std::string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage)
 #endif
 	return res;
 }
-void _NegativeFapper()
+void _NegativeLoader()
 {
     FILE *nFile = fopen("negatives.txt", "rb");
 
@@ -1369,10 +1350,8 @@ void CheckMaskBits(char *res, int index)
 	}
 	else
 	{
-
-				stt->doEmitionRedFoundData("[CheckMaskBits] Cannot parse IP list");
-				stt->doEmitionKillSttThread();
-
+        stt->doEmitionRedFoundData("[CheckMaskBits] Cannot parse IP list");
+        stt->doEmitionKillSttThread();
 	};
 }
 
@@ -2275,7 +2254,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 		if(globalScanFlag)
 		{
 			pthread_t thrc;
-			pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st );
+            pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st );
 		};
 #endif
 		Sleep(gThreadDelay);
@@ -2307,11 +2286,11 @@ int startScan(char* args)
 	ZeroMemory(ipsend, sizeof(ipsend));
 		
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	CreateDirectory(L"./result_files", NULL);
+    CreateDirectory(L(RESULT_DIR_NAME), NULL);
 #else
     struct stat str = {0};
-    if (stat("./result_files", &str) == -1) {
-		mkdir("./result_files", 0700);
+    if (stat(RESULT_DIR_NAME, &str) == -1) {
+        mkdir(RESULT_DIR_NAME, 0700);
 	}
 #endif
 
@@ -2329,8 +2308,7 @@ int startScan(char* args)
 	mode = gMode;
 	int resInit = fInit(gMode, gRange);
 	if(resInit == -1 ) 
-	{
-		
+    {
 		stt->doEmitionRedFoundData("[Error] fInit failure");
 		stt->doEmitionKillSttThread();
 		
@@ -2340,8 +2318,8 @@ int startScan(char* args)
 stt->doEmitionIPRANGE(QString(saveEndIP));
 stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
-	_passLoginFapper();
-	_NegativeFapper();
+    _passLoginLoader();
+    _NegativeLoader();
 	
 	char res[256] = {0};
 	if (gMode == 0)
@@ -2446,7 +2424,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 							_beginthread((void(*)(void*))_connect, 0, st);
 #else
 							pthread_t thrc;
-							pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
+                            pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
 #endif
 							Sleep(gThreadDelay);
 						}
@@ -2467,10 +2445,10 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		if(trackerOK) 
 		{
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-		if(trackerOK) _beginthread( (void(*)(void*))_tracker, 0, NULL );
+        _beginthread( (void(*)(void*))_tracker, 0, NULL );
 #else
 		pthread_t thrt;
-		if(trackerOK) pthread_create(&thrt, NULL, (void *(*)(void*))&_tracker, NULL);
+        pthread_create(&thrt, NULL, (void *(*)(void*))&_tracker, NULL);
 #endif
 		};
 
@@ -2482,11 +2460,10 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		pthread_create(&thrtt, NULL, (void *(*)(void*))&_timer, NULL);
 #endif
 
-
 	char dataEntry[1024] = {0};
-
 	int innerCounter = 0;
 	int sz = strlen(saveEndIP);
+
 	for(int i = 0; i < sz; ++i)
 	{
 		if(saveEndIP[i] == '\\')

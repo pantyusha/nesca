@@ -2190,6 +2190,8 @@ void nesca_3::slotShowNicks()
 QRegExp _rOutProt(" HTTP/1.\\d+");
 QRegExp _rOutPath(" /(\\w|\\.|,|/|:|-|_|\\?|!|\\@|#|\\$|%|\\^|&|\\*|\\(|\\)|=|\\+|<|>|;|:|\"|'|~|\\[|\\])* ");
 QRegExp _rOutHost("Host: ((\\w|\\d|\\.|:|/)*)\\r\\n");
+QRegExp qrp("\\n(.+):");
+
 void nesca_3::slotOutData(QString str)
 {
 	if(SendData != NULL) 
@@ -2203,19 +2205,8 @@ void nesca_3::slotOutData(QString str)
         str.replace("HTTP ", "<font color=\"GoldenRod\">HTTP </font>");
 		str.replace("GET ", "<font color=\"GoldenRod\">GET </font>");
 		str.replace("POST ", "<font color=\"GoldenRod\">POST </font>");
-		str.replace("Host: ", "<font color=\"GoldenRod\">Host: </font>");
-        str.replace("Cookie: ", "<font color=\"GoldenRod\">Cookie: </font>");
-		str.replace("Accept-Language:", "<font color=\"GoldenRod\">Accept-Language:</font>");
-		str.replace("Accept-Charset:", "<font color=\"GoldenRod\">Accept-Charset:</font>");
-		str.replace("Accept-Encoding:", "<font color=\"GoldenRod\">Accept-Encoding:</font>");
-        str.replace("Accept:", "<font color=\"GoldenRod\">Accept:</font>");
-        str.replace("User-Agent:", "<font color=\"GoldenRod\">User-Agent:</font>");
-        str.replace("Proxy-Connection:", "<font color=\"GoldenRod\">Proxy-Connection:</font>");
-		str.replace("Connection:", "<font color=\"GoldenRod\">Connection:</font>");
-		str.replace("Content-Length:", "<font color=\"GoldenRod\">Content-Length:</font>");
-        str.replace("Authorization:", "<font color=\"GoldenRod\">Authorization:</font>");
-        str.replace("X-Nescav3:", "<font color=\"GoldenRod\">X-Nescav3:</font>");
-        str.replace("Referer:", "<font color=\"GoldenRod\">Referer:</font>");
+        str.replace(qrp, "<br><font color=\"GoldenRod\">\\1:</font>");
+        str.replace(QRegExp("(ftp:.+@)"), "<font color=\"Crimson\">\\1</font>");
 
 		_rOutProt.indexIn(str);
 		prot = _rOutProt.cap(0);
@@ -3009,13 +3000,12 @@ void nesca_3::saveOptions()
     _SaveBackupToFile();
 }
 
-QString loadNescaSetup(char *resStr, char *option) {
+QString loadNescaSetup(const char *resStr, const char *option) {
 
-    char *lex = NULL
-            ;
+    char *lex = NULL;
     if(strstr(resStr, option) != NULL)
     {
-        lex = strstr(resStr, option) + strlen(option);
+        lex = (char*)(strstr(resStr, option) + strlen(option));
 
         if(strlen(lex) > 1)
         {
@@ -3025,6 +3015,12 @@ QString loadNescaSetup(char *resStr, char *option) {
     }
 
     return "";
+}
+void setUIText(char *field, QLineEdit *qle, const char *resStr) {
+    if (strstr(resStr, field) != NULL) {
+        QString intermediateString = loadNescaSetup(resStr, field).simplified();
+        intermediateString.length() > 0 ? qle->setText(intermediateString) : (void)NULL;
+    }
 }
 void RestoreSession()
 {
@@ -3039,8 +3035,7 @@ void RestoreSession()
 		while(fgets(resStr, 128, resFile) != NULL)
 		{
 			if(strstr(resStr, "[SESSION]:") != NULL)
-			{
-				
+            {
 				lex = strtok(strstr(resStr, "[SESSION]:") + strlen("[SESSION]:"), " ");
 				gMode = atoi(lex);
 				lex = strtok(NULL, " ");
@@ -3140,38 +3135,39 @@ void RestoreSession()
 				};
 			};
 
-			if (strstr(resStr, "[NDBSERVER]:") != NULL) ui->lineTrackerSrv->setText(loadNescaSetup(resStr, "[NDBSERVER]:").simplified());
-			else if (strstr(resStr, "[NDBSCRIPT]:") != NULL) ui->lineTrackerScr->setText(loadNescaSetup(resStr, "[NDBSCRIPT]:").simplified());
-			else if (strstr(resStr, "[NDBPORT]:") != NULL) ui->trcSrvPortLine->setText(loadNescaSetup(resStr, "[NDBPORT]:").simplified());
-			else if (strstr(resStr, "[PING]:") != NULL) {
-				lex = strstr(resStr, "[PING]:") + strlen("[PING]:");
+            setUIText("[NDBSERVER]:", ui->lineTrackerSrv, resStr);
+            setUIText("[NDBSCRIPT]:", ui->lineTrackerScr, resStr);
+            setUIText("[NDBPORT]:", ui->trcSrvPortLine, resStr);
+            if (strstr(resStr, "[PING]:") != NULL) {
+                lex = strstr(resStr, "[PING]:") + strlen("[PING]:");
 
-				if (strlen(lex) > 1)
-				{
-					lex[strlen(lex) - 1] = '\0';
-					ui->pingingOnOff->setChecked(strcmp(lex, "true") == 0 ? true : false);
-				};
-			}
-			else if (strstr(resStr, "[PING_TO]:") != NULL) ui->PingTO->setText(loadNescaSetup(resStr, "[PING_TO]:").simplified());
-			else if (strstr(resStr, "[THREAD_DELAY]:") != NULL) ui->threadDelayBox->setText(loadNescaSetup(resStr, "[THREAD_DELAY]:").simplified());
-			else if (strstr(resStr, "[TIMEOUT]:") != NULL) {
-				const QString &tempLex = loadNescaSetup(resStr, "[TIMEOUT]:");
+                if (strlen(lex) > 1)
+                {
+                    lex[strlen(lex) - 1] = '\0';
+                    ui->pingingOnOff->setChecked(strcmp(lex, "true") == 0 ? true : false);
+                };
+            }
+            setUIText("[PING_TO]:", ui->PingTO, resStr);
+            setUIText("[THREAD_DELAY]:", ui->threadDelayBox, resStr);
+            if (strstr(resStr, "[TIMEOUT]:") != NULL) {
+                const QString &tempLex = loadNescaSetup(resStr, "[TIMEOUT]:");
                 if(tempLex.toInt() > 0) {
                     ui->iptoLine_value->setText(tempLex);
                     ui->iptoLine_value_2->setText(tempLex);
                     ui->iptoLine_value_3->setText(tempLex);
                 }
-			}
-			else if (strstr(resStr, "[MAXBTHR]:") != NULL) ui->maxBrutingThrBox->setText(loadNescaSetup(resStr, "[MAXBTHR]:").simplified());
-			else if (strstr(resStr, "[PERSKEY]:") != NULL) ui->linePersKey->setText(loadNescaSetup(resStr, "[PERSKEY]:").simplified());
-			else if (strstr(resStr, "[IRCSERVER]:") != NULL) ui->ircServerBox->setText(loadNescaSetup(resStr, "[IRCSERVER]:").simplified());
-			else if (strstr(resStr, "[IRCPORT]:") != NULL) ui->serverPortBox->setText(loadNescaSetup(resStr, "[IRCPORT]:").simplified());
-			else if (strstr(resStr, "[IRCPROXY]:") != NULL) ui->ircProxy->setText(loadNescaSetup(resStr, "[IRCPROXY]:").simplified());
-			else if (strstr(resStr, "[IRCPROXYPORT]:") != NULL) ui->ircProxyPort->setText(loadNescaSetup(resStr, "[IRCPROXYPORT]:").simplified());
-			else if (strstr(resStr, "[SYSTEMPROXYIP]:") != NULL) ui->systemProxyIP->setText(loadNescaSetup(resStr, "[SYSTEMPROXYIP]:").simplified());
-			else if (strstr(resStr, "[SYSTEMPROXYPORT]:") != NULL) ui->systemProxyPort->setText(loadNescaSetup(resStr, "[SYSTEMPROXYPORT]:").simplified());
-			else if (strstr(resStr, "[IRCNICK]:") != NULL) ui->ircNickBox->setText(loadNescaSetup(resStr, "[IRCNICK]:").simplified());
-			ZeroMemory(resStr, sizeof(resStr));
+            }
+            setUIText("[MAXBTHR]:", ui->maxBrutingThrBox, resStr);
+            setUIText("[PERSKEY]:", ui->linePersKey, resStr);
+            setUIText("[IRCSERVER]:", ui->ircServerBox, resStr);
+            setUIText("[IRCPORT]:", ui->serverPortBox, resStr);
+            setUIText("[IRCPROXY]:", ui->ircProxy, resStr);
+            setUIText("[IRCPROXYPORT]:", ui->ircProxyPort, resStr);
+            setUIText("[SYSTEMPROXYIP]:", ui->systemProxyIP, resStr);
+            setUIText("[SYSTEMPROXYPORT]:", ui->systemProxyPort, resStr);
+            setUIText("[IRCNICK]:", ui->ircNickBox, resStr);
+
+            ZeroMemory(resStr, sizeof(resStr));
 		};
 
 		fclose(resFile);
@@ -3203,11 +3199,11 @@ const char *GetVer()
 	
 	if(__DATE__[0] == 'J' && __DATE__[1] == 'a') dver += 1;
 	else if(__DATE__[0] == 'F') dver += 2;
-	else if(__DATE__[0] == 'M' && __DATE__[1] == 'a' && __DATE__[2] == 'r') dver += 3;
+    else if(__DATE__[0] == 'M' && __DATE__[2] == 'r') dver += 3;
 	else if(__DATE__[0] == 'A' && __DATE__[1] == 'p') dver += 4;
-	else if(__DATE__[0] == 'M' && __DATE__[1] == 'a' && __DATE__[2] == 'y') dver += 5;
-	else if(__DATE__[0] == 'J' && __DATE__[1] == 'u' && __DATE__[2] == 'n') dver += 6;
-	else if(__DATE__[0] == 'J' && __DATE__[1] == 'u' && __DATE__[2] == 'l') dver += 7;
+    else if(__DATE__[0] == 'M' && __DATE__[2] == 'y') dver += 5;
+    else if(__DATE__[0] == 'J' && __DATE__[2] == 'n') dver += 6;
+    else if(__DATE__[0] == 'J' && __DATE__[2] == 'l') dver += 7;
 	else if(__DATE__[0] == 'A' && __DATE__[1] == 'u') dver += 8;
 	else if(__DATE__[0] == 'S') dver += 9;
 	else if(__DATE__[0] == 'O') dver += 10;
@@ -3300,16 +3296,15 @@ void _startMsgCheck()
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	WSADATA wsda;
 	if (WSAStartup(0x0101, &wsda)) 
-	{
-		
+    {
 		stt->doEmitionRedFoundData("WSAStartup failed.");
-		stt->doEmitionKillSttThread();
-		
+        stt->doEmitionKillSttThread();
 	};
 #endif
 
 	_startVerCheck();
-	_startMsgCheck();
+    _startMsgCheck();
+    qrp.setMinimal(true);
 }
 
 void nesca_3::playFcknSound()

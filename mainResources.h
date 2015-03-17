@@ -86,6 +86,11 @@ typedef int					BOOL;
 #define MAX_ADDR_LEN 128
 #define TITLE_MAX_SIZE 512
 #define COOKIE_MAX_SIZE 1024
+#define RESULT_DIR_NAME "./result_files-" __DATE__
+
+typedef struct {
+    char argv[MAX_ADDR_LEN];
+} ST;
 
 struct PathStr{
 	char codepage[32];

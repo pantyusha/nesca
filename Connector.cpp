@@ -176,6 +176,7 @@ int _EstablishSSHConnection(char *host, int port, std::string *buffer, const cha
     int sz = 0;
     char *ptr1 = 0;
     int res = -1;
+
     for(int i = 0; i < MaxSSHPass; ++i)
     {
         if(globalScanFlag == false) break;
@@ -188,6 +189,7 @@ int _EstablishSSHConnection(char *host, int port, std::string *buffer, const cha
         ZeroMemory(login, sizeof(login));
         ZeroMemory(pass, sizeof(pass));
         ZeroMemory(temp, sizeof(temp));
+
         if(res == 0)
         {
             if(i == 0) return -2; //Failhit
@@ -199,6 +201,7 @@ int _EstablishSSHConnection(char *host, int port, std::string *buffer, const cha
             BruteUtils::BConDec();
             return -2;
         };
+
         Sleep(500);
     };
     BruteUtils::BConDec();
@@ -227,12 +230,10 @@ int my_trace(CURL *handle, curl_infotype type,
              char *data, size_t size,
              void *userp)
 {
-  switch (type) {
-      case CURLINFO_HEADER_OUT: {
-          data[strstr(data, "\r\n\r\n") - data] = '\0';
-          stt->doEmitionAddOutData(QString(data));
-          break;
-      }
+  if (type == CURLINFO_HEADER_OUT) {
+    Activity += strlen(data);
+    data[strstr(data, "\r\n\r\n") - data] = '\0';
+    stt->doEmitionAddOutData(QString(data));
   }
 
   return 0;
@@ -251,6 +252,7 @@ int Connector::nConnect(const char *ip, const int port, std::string *buffer,
     buffer->clear();
     CURL *curl = curl_easy_init();
     curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 0L);
+    int res = 0;
 
     if (curl)
     {
@@ -299,10 +301,11 @@ int Connector::nConnect(const char *ip, const int port, std::string *buffer,
 
         if(lpString != NULL) {
             curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY);
-            curl_easy_setopt(curl, CURLOPT_USERPWD, lpString);
-        };
+            //curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, TRUE);
+            curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
+        };//
 
-        curl_easy_perform(curl);
+        if(curl_easy_perform(curl) != CURLE_OK) return -1;
         curl_easy_cleanup(curl);
     } else {
         stt->doEmitionRedFoundData("Curl error.");
@@ -310,8 +313,11 @@ int Connector::nConnect(const char *ip, const int port, std::string *buffer,
     };
 
     if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
+
+    Activity += buffer->size();
     return buffer->size();
 }
+
 int Connector::_ConnectToPort(char *ip, int port, char *hl)
 {
     if(gPingNScan)

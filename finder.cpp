@@ -456,15 +456,15 @@ int __checkFileExistence(int flag)
 {
 	char fileName[64] = {0};
 
-	if(flag == 666 || flag == 350) strcpy(fileName, "./result_files/STRANGE_ERROR.html");
-	else if(flag == -22) strcpy(fileName, "./result_files/ssh.html");
-	else if(flag == 0 || flag == 15 || flag == -10) strcpy(fileName, "./result_files/strange.html");
-	else if(flag == 3) strcpy(fileName, "./result_files/other.html");
-	else if(flag == 7) strcpy(fileName, "./result_files/low_loads.html");
-	else if(flag == 10) strcpy(fileName, "./result_files/LoginForms.html");
-	else if(flag == 16) strcpy(fileName, "./result_files/FTP.html");
+    if(flag == 666 || flag == 350) strcpy(fileName, "./"RESULT_DIR_NAME"/STRANGE_ERROR.html");
+    else if(flag == -22) strcpy(fileName, "./"RESULT_DIR_NAME"/ssh.html");
+    else if(flag == 0 || flag == 15 || flag == -10) strcpy(fileName, "./"RESULT_DIR_NAME"/strange.html");
+    else if(flag == 3) strcpy(fileName, "./"RESULT_DIR_NAME"/other.html");
+    else if(flag == 7) strcpy(fileName, "./"RESULT_DIR_NAME"/low_loads.html");
+    else if(flag == 10) strcpy(fileName, "./"RESULT_DIR_NAME"/LoginForms.html");
+    else if(flag == 16) strcpy(fileName, "./"RESULT_DIR_NAME"/FTP.html");
 	else if(flag >= 17 || flag == 11 || flag == 12 
-		|| flag == 13 || flag == 14 || flag == 1) strcpy(fileName, "./result_files/Basicauth.html");
+        || flag == 13 || flag == 14 || flag == 1) strcpy(fileName, "./"RESULT_DIR_NAME"/Basicauth.html");
 
 	FILE *f = fopen(fileName, "r");
 	if(f == NULL) return true;
@@ -493,39 +493,39 @@ void fputsf(char *text, int flag, char *msg)
 	if(flag == 0 || flag == 15 || flag == -10) 
 	{
 		if(ftsAnom) ftsAnom				= __checkFileExistence(flag);
-		file = fopen("./result_files/strange.html", "a");
+        file = fopen("./"RESULT_DIR_NAME"/strange.html", "a");
 	}
 	else if(flag == 3) 
 	{
 		if(ftsOther) ftsOther			= __checkFileExistence(flag);
-		file = fopen("./result_files/other.html", "a");
+        file = fopen("./"RESULT_DIR_NAME"/other.html", "a");
 	}
 	else if(flag == -22) 
 	{
 		if(ftsSSH) ftsSSH				= __checkFileExistence(flag);
-		file = fopen("./result_files/SSH.html", "a");
+        file = fopen("./"RESULT_DIR_NAME"/SSH.html", "a");
 	}
 	else if(flag == 7) 
 	{
 		if(ftsLL) ftsLL					= __checkFileExistence(flag);
-		file = fopen("./result_files/low_loads.html", "a");
+        file = fopen("./"RESULT_DIR_NAME"/low_loads.html", "a");
 	}
 	else if(flag == 10) 
 	{
 		if(ftsLF) ftsLF					= __checkFileExistence(flag);
-		file = fopen("./result_files/LoginForms.html", "a");
+        file = fopen("./"RESULT_DIR_NAME"/LoginForms.html", "a");
 	}
 	else if(flag == 16) 
 	{
 		if(ftsFTP) ftsFTP				= __checkFileExistence(flag);
-		file = fopen("./result_files/FTP.html", "a");
+        file = fopen("./"RESULT_DIR_NAME"/FTP.html", "a");
 	}
 	else if(flag >= 17 || flag == 11 || flag == 12 
 		|| flag == 13 || flag == 14 || flag == 1
 		) 
 	{
 		if(ftsBA) ftsBA					= __checkFileExistence(flag);
-		file = fopen("./result_files/Basicauth.html", "a");
+        file = fopen("./"RESULT_DIR_NAME"/Basicauth.html", "a");
 	}
 	else
 	{
@@ -1718,7 +1718,8 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 	{
 		tempPort = 443;
 		char *ptr1 = strstri(str, "https://");
-		char *ptr2 = _findFirst(str + 8, ":/?");
+        char *ptr2 = _findFirst(ptr1 + 8, ":/?");
+
 		if(ptr2 != NULL)
 		{
 			int sz = ptr2 - ptr1 - 8;
@@ -1829,7 +1830,7 @@ int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, P
 	{
 		tempPort = 80;
 		char *ptr1 = strstri(str, "http://");
-		char *ptr2 = _findFirst(str + 7, ":/?");
+        char *ptr2 = _findFirst(ptr1 + 7, ":/?");
 
 		if(ptr2 != NULL)
 		{
@@ -2259,6 +2260,73 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 	if(strstri(str, "top.htm?currenttime") != NULL 
 		|| strstri(str, "top.htm?") != NULL
 		)												strcat(finalstr, " [?][SecCam detected]");
+
+    if(strstri(str, "http-equiv=\"refresh\"") != NULL
+        || strstri(str, "http-equiv=refresh") != NULL
+        || strstri(str, "http-equiv='refresh'") != NULL
+        )
+    {
+        char *temp = NULL;
+        char *strTmp = NULL;
+
+        if(strstri(str, "http-equiv=\"refresh\"") != NULL) strTmp = strstri(str, "http-equiv=\"refresh\"");
+        else if(strstri(str, "http-equiv=refresh") != NULL) strTmp = strstri(str, "http-equiv=refresh");
+        else if(strstri(str, "http-equiv='refresh'") != NULL) strTmp = strstri(str, "http-equiv='refresh'");
+
+        if(strstri(strTmp, "url=") != NULL )
+        {
+            if((int)(strstri(strTmp, "url=") - strTmp) < 100)
+            {
+                temp = strstri(strTmp, "url=");
+
+                char *temp2 = NULL, temp3[128] = {0};
+                int sz = 0;
+
+                if(temp[4] == '"' || temp[4] == '\'' || temp[4] == ' ' || temp[4] == '\n' || temp[4] == '\r')
+                {
+                    temp2 = _findFirst(temp + 6, " \n>\"'");
+                    if(temp2 != NULL)
+                    {
+                        sz = (int)(temp2 - temp) - 5;
+                        strncpy(temp3, (char*)(temp + 5), (sz < 128 ? sz : 127));
+                    };
+                }
+                else
+                {
+                    temp2 = _findFirst(temp + 4, " \n>\"'");
+                    if(temp2 != NULL)
+                    {
+                        sz = (int)(temp2 - temp) - 4;
+                        strncpy(temp3, (char*)(temp + 4), sz < 128 ? sz : 127);
+                    };
+                };
+                if(strstri(temp3, "http://") == NULL && strstri(temp3, "https://") == NULL)
+                {
+                    if(temp3[0] != '.')
+                    {
+                        if(temp3[0] != '/')
+                        {
+                            char temp4[128] = {0};
+                            strcpy(temp4, "/");
+                            strncat(temp4, temp3, 127);
+                            strncpy(temp3, temp4, 128);
+                        };
+                    };
+                };
+                redirectStr = std::string(temp3);
+                if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end())
+                {
+                    redirStrLst->push_back(redirectStr);
+                    return redirectReconnect(ps->cookie, ip, port, temp3, l, ps, redirStrLst);
+                } return -1;
+                strcat(ps->headr, " ");
+                return -2;
+            };
+            strcat(ps->headr, finalstr);
+            strcat(ps->headr, " ");
+            return 0;
+        };
+    };
 
 	if(strstri(str, "<script") != NULL)
 	{

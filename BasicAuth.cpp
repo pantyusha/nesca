@@ -23,7 +23,6 @@ lopaStr BA::_BABrute(const char *ip, const int port) {
     strcpy(lps.login, "UNKNOWN");
 
     for(int i = 0; i < MaxLogin; ++i) {
-        if(!globalScanFlag) return lps;
         for (int j = 0; j < MaxPass; ++j) {
             if (!globalScanFlag) return lps;
 
@@ -31,7 +30,7 @@ lopaStr BA::_BABrute(const char *ip, const int port) {
 
             Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString);
 
-            if(checkOutput(&buffer) != 0) {
+            if(checkOutput(&buffer)) {
                 strcpy(lps.login, loginLst[i]);
                 strcpy(lps.pass, passLst[j]);
                 return lps;
@@ -44,13 +43,12 @@ lopaStr BA::_BABrute(const char *ip, const int port) {
     return lps;
 }
 
-lopaStr BA::_BALobby(const char *ip, const int port)
-{
-    while(BrutingThrds >= gMaxBrutingThreads) Sleep(700);
+lopaStr BA::_BALobby(const char *ip, const int port) {
+    while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
     BruteUtils::BConInc();
-    const lopaStr &res = _BABrute(ip, port);
+    const lopaStr &lps = _BABrute(ip, port);
     BruteUtils::BConDec();
 
-    return res;
+    return lps;
 }

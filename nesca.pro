@@ -43,7 +43,8 @@ SOURCES +=\
     Utils.cpp \
     BruteUtils.cpp \
     BasicAuth.cpp \
-    FTPAuth.cpp
+    FTPAuth.cpp \
+    Threader.cpp
 
 
 HEADERS  += ActivityDrawerTh_HorNet.h \
@@ -73,7 +74,8 @@ HEADERS  += ActivityDrawerTh_HorNet.h \
     Connector.h \
     BasicAuth.h \
     BruteUtils.h \
-    FTPAuth.h
+    FTPAuth.h \
+    Threader.h
 
 FORMS    += nesca_3.ui
 

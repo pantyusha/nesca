@@ -3,10 +3,7 @@
 bool FTPA::checkOutput(const string *buffer) {
     //Login or password incorrect!
 
-    if(Utils::ci_find_substr(*buffer, "200 ok") != -1 ||
-            Utils::ci_find_substr(*buffer, "http/1.0 200") != -1 ||
-            Utils::ci_find_substr(*buffer, "http/1.1 200") != -1
-            ) {
+    if(Utils::ci_find_substr(*buffer, "230") != -1) {
 
         return true;
     }
@@ -36,9 +33,9 @@ lopaStr FTPA::_FTPBrute(const char *ip, const int port, const PathStr *ps) {
 
             lpString = string(loginLst[i]) + ":" + string(passLst[j]);
 
-            Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString);
+            Connector::nConnect((string("ftp://") + string(ip)).c_str(), port, &buffer, NULL, NULL, &lpString);
 
-            if(checkOutput(&buffer) != 0) {
+            if(checkOutput(&buffer)) {
                 strcpy(lps.login, loginLst[i]);
                 strcpy(lps.pass, passLst[j]);
                 return lps;
@@ -51,8 +48,8 @@ lopaStr FTPA::_FTPBrute(const char *ip, const int port, const PathStr *ps) {
     return lps;
 }
 
-lopaStr FTPA::_FTPLobby(const char *ip, const int port, const PathStr *ps){
-    while(BrutingThrds >= gMaxBrutingThreads) Sleep(700);
+lopaStr FTPA::_FTPLobby(const char *ip, const int port, const PathStr *ps) {
+    while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
     BruteUtils::BConInc();
     const lopaStr &lps = _FTPBrute(ip, port, ps);

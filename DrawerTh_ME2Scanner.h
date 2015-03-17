@@ -1,7 +1,7 @@
 #ifndef DRAWERTH_ME2SCANNER_H
 #define DRAWERTH_ME2SCANNER_H
 
-#define ME2YPOS 100
+#define ME2YPOS 97
 #define ME2GRADPOS 10
 #include "STh.h"
 

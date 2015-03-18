@@ -3,8 +3,10 @@
 #include "externData.h"
 #include "externFunctions.h"
 #include "Connector.h"
+#include "Threader.h"
+#include <thread>
 
-ST *st = NULL;
+//ST *st = NULL;
 
 QJsonArray *jsonArr = new QJsonArray();
 
@@ -880,31 +882,99 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[])
 //	return res;
 //}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+//void _connect(int ss)
+//#else
+//void _connect(int ss)
+//#endif
+//{
+//    while(globalScanFlag) {
+//        while(Threader::threadPool[ss] == NULL) {
+//            if(!globalScanFlag) return;
+//            Sleep(10);
+//        }
+
+//        ++ipCounter;
+//        //char ip[MAX_ADDR_LEN] = {0};
+//        //strcpy(ip, Threader::threadPool[ss]);
+//        //char hostLog[256] = {0};
+//        //strcpy(hostLog, GetHost(ip));
+//        //delete Threader::threadPool[ss];
+
+//        ConInc();
+
+//        for(int i = 0; i <= overallPorts; ++i)
+//        {
+//            if(globalScanFlag == false) break;
+//            //if(Connector::_ConnectToPort( ip, portArr[i], "" ) == -2) break;
+//            //if(Connector::_ConnectToPort( Threader::threadPool[ss], portArr[i], "" ) == -2) break;
+//        };
+
+//        ConDec();
+
+//        Threader::threadPool[ss] = NULL;
+//    }
+//}
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-void _connect(void* ss)
+void _connect(char* ip)
 #else
-void *_connect(void* ss)
+void _connect(char* ip)
 #endif
-{	
-	++ipCounter;
-	char ip[MAX_ADDR_LEN] = {0};
-    strcpy(ip, ((ST*)ss)->argv);
-	//char hostLog[256] = {0};
-	//strcpy(hostLog, GetHost(ip));
-    delete (ST*)ss;
+{
+        ++ipCounter;
+        ConInc();
 
-    ConInc();
+        for(int i = 0; i <= overallPorts; ++i)
+        {
+            if(globalScanFlag == false) break;
+            if(Connector::_ConnectToPort( ip, portArr[i], "" ) == -2) break;
+        };
 
-	for(int i = 0; i <= overallPorts; ++i)
-	{
-		if(globalScanFlag == false) break;		
-        if(Connector::_ConnectToPort( ip, portArr[i], "" ) == -2) break;
-	};
-
-	ConDec();
+        ConDec();
 }
 
-void targetAndIPWriter(long long unsigned int target, char *buff)
+void targetAndIPWriter(long long unsigned int target, const char *buff)
 {
     char curIPBuff[256] = {0}, targetNPers[32] = {0};
 
@@ -1585,7 +1655,7 @@ int fInit(int InitMode, char *gR)
 
 				if(ipsend[i] > 255) 
 				{
-					stt->doEmitionRedFoundData("[Error] Incorrect range.");
+                    stt->doEmitionRedFoundData("[Error] Incorrect range.");
 					stt->doEmitionKillSttThread();
 					return -1;
 				};
@@ -1605,7 +1675,7 @@ int fInit(int InitMode, char *gR)
 			)
 			) 
 		{
-			stt->doEmitionRedFoundData("[Error] Incorrect range.");
+            stt->doEmitionRedFoundData("[Error] Incorrect range.");
 			stt->doEmitionKillSttThread();
 			return -1;
 		};
@@ -2229,14 +2299,14 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 	}
 	else
     {
-		if(globalScanFlag == false) return 0;
 
 		strcpy(endIP2, saveMask);
-        st = new ST();
-		ZeroMemory(st->argv, sizeof(st->argv));
+        //st = new ST();
+        //ZeroMemory(st->argv, sizeof(st->argv));
 		ZeroMemory(iip, sizeof(iip));
 
         while(cons >= gThreads && globalScanFlag) Sleep(300);
+        if(globalScanFlag == false) return 0;
 
 		strcpy(iip, mask);
 		strcpy(saveStartIP, iip);
@@ -2244,19 +2314,24 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 
 		++indexIP;
 
-		strcpy(st->argv, iip);
+        char res[256] = {0};
+        strcpy(res, iip);
 
-		targetAndIPWriter(--gTargets, st->argv);
+        targetAndIPWriter(--gTargets, res);
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-		if(globalScanFlag) _beginthread( (void(*)(void*))_connect, 0, st );
-#else
-		if(globalScanFlag)
-		{
-			pthread_t thrc;
-            pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st );
-		};
-#endif
+//        std::thread thr(_connect, res);
+//        thr.detach();
+
+        //Threader::fireThread(st);
+//#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+//		if(globalScanFlag) _beginthread( (void(*)(void*))_connect, 0, st );
+//#else
+//		if(globalScanFlag)
+//		{
+//			pthread_t thrc;
+//            pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st );
+//		};
+//#endif
 		Sleep(gThreadDelay);
 
 	};
@@ -2268,6 +2343,8 @@ int startScan(char* args)
 	SSL_library_init();
 	OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
 	SSL_load_error_strings();   /* Bring in and register error messages */
+
+//    Threader::createThreadPool(gThreads, (void* (*)(int))_connect);
 
 	horLineFlag = false;
 	flCounter = 0;
@@ -2309,7 +2386,7 @@ int startScan(char* args)
 	int resInit = fInit(gMode, gRange);
 	if(resInit == -1 ) 
     {
-		stt->doEmitionRedFoundData("[Error] fInit failure");
+        stt->doEmitionRedFoundData("[Error] fInit failure");
 		stt->doEmitionKillSttThread();
 		
 		return -1;
@@ -2350,11 +2427,11 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 					   struct in_addr tAddr;
 
 					   for (unsigned long i = ip1; i <= ip2; ++i) {
+
 						   if (globalScanFlag == false) break;
                            unsigned long offset = ip2 - i;
 
-						   tAddr.s_addr = i;
-
+                           tAddr.s_addr = i;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
                            ipVec.push_back(std::to_string(tAddr.S_un.S_un_b.s_b4)
                                            + "." + std::to_string(tAddr.S_un.S_un_b.s_b3)
@@ -2362,32 +2439,28 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
                                            + "." + std::to_string(tAddr.S_un.S_un_b.s_b1));
 #else
                            tAddr.s_addr = ntohl(tAddr.s_addr);
-                           const char *ipStr = inet_ntoa(tAddr);
-                           ipVec.push_back((char*)ipStr);
+                           ipVec.push_back(inet_ntoa(tAddr));
 #endif
 						   if (ipVec.size() >= (offset < 1000 ? offset : 1000)) {
 
 							   std::random_shuffle(ipVec.begin(), ipVec.end());
 							   while (ipVec.size() != 0) {
 
-								   if (globalScanFlag == false) goto haters_gonna_hate_IPM;
-                                   st = new ST();
-								   ZeroMemory(st->argv, sizeof(st->argv));
-
                                    while (cons >= gThreads && globalScanFlag) Sleep(500);
-								   ++indexIP;
-								   strcpy(st->argv, ipVec[0].c_str());
-								   strcpy(saveStartIP, ipVec[0].c_str());
+                                   if (globalScanFlag == false) goto haters_gonna_hate_IPM;
+                                   //st = new ST();
+                                   //ZeroMemory(st->argv, MAX_ADDR_LEN);
+                                   ++indexIP;
+                                   //strcpy(st->argv, ipVec[0].c_str());
+                                   strcpy(res, ipVec[0].c_str());
+                                   strcpy(saveStartIP, res);
 								   ipVec.erase(ipVec.begin());
 
-                                   targetAndIPWriter(gTargets--, st->argv);
+                                   targetAndIPWriter(gTargets--, res);
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-								   _beginthread((void(*)(void*))_connect, 0, st);
-#else
-								   pthread_t thrc;
-								   pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
-#endif
+                                   std::thread thr(_connect, res);
+                                   thr.detach();
+                                   //Threader::fireThread(res);
 								   Sleep(gThreadDelay);
 							   }
 						   }
@@ -2398,12 +2471,13 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		}
 		case false: {
 						struct in_addr tAddr;
-						for (unsigned long i = ip1; i <= ip2; ++i) {
-							if (globalScanFlag == false) break;
-                            st = new ST();
-							ZeroMemory(st->argv, sizeof(st->argv));
-							ZeroMemory(res, sizeof(res));
+                        for (unsigned long i = ip1; i <= ip2; ++i) {
+
                             while (cons >= gThreads && globalScanFlag) Sleep(500);
+                            if (globalScanFlag == false) break;
+                            //st = new ST();
+                            //ZeroMemory(st->argv, sizeof(st->argv));
+                            ZeroMemory(res, sizeof(res));
 							++indexIP;
 
                             tAddr.s_addr = i;
@@ -2413,19 +2487,19 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
                                         + "." + std::to_string(tAddr.S_un.S_un_b.s_b2)
                                         + "." + std::to_string(tAddr.S_un.S_un_b.s_b1)).c_str());
 #else
+                           tAddr.s_addr = ntohl(tAddr.s_addr);
                            strcpy(res, inet_ntoa(tAddr));
 #endif
-							strcpy(st->argv, res);
+                            //strcpy(st->argv, res);
 							strcpy(saveStartIP, res);
 
-                            targetAndIPWriter(gTargets--, st->argv);
+                            targetAndIPWriter(gTargets--, res);
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-							_beginthread((void(*)(void*))_connect, 0, st);
-#else
-							pthread_t thrc;
-                            pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
-#endif
+//                            std::thread thr(_connect, res);
+//                            thr.detach();
+
+                            //Threader::fireThread(st);
+
 							Sleep(gThreadDelay);
 						}
 						break;
@@ -2578,7 +2652,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		if (flCounter == 0)
 		{
             stt->doEmitionRedFoundData("Empty IP list.");
-			globalScanFlag = false;
+            globalScanFlag = false;
 			stt->doEmitionKillSttThread();
 
 			return -1;
@@ -2626,8 +2700,8 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 			strcat(metaRange, ".");
 			strcat(metaRange, std::to_string(ipsendfl[gC][3]).c_str());
 			
-			unsigned long ip1 = (ipsstartfl[gC][0] * 16777216) + (ipsstartfl[gC][1] * 65536) + (ipsstartfl[gC][2] * 256) + ipsstartfl[gC][3];
-			unsigned long ip2 = (ipsendfl[gC][0] * 16777216) + (ipsendfl[gC][1] * 65536) + (ipsendfl[gC][2] * 256) + ipsendfl[gC][3];
+            unsigned long ip1 = (ipsstartfl[gC][0] * 16777216) + (ipsstartfl[gC][1] * 65536) + (ipsstartfl[gC][2] * 256) + ipsstartfl[gC][3];
+            unsigned long ip2 = (ipsendfl[gC][0] * 16777216) + (ipsendfl[gC][1] * 65536) + (ipsendfl[gC][2] * 256) + ipsendfl[gC][3];
 
 			switch (gShuffle) {
 			case true: {
@@ -2635,39 +2709,37 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 						   struct in_addr tAddr;
 
 						   for (unsigned long i = ip1; i <= ip2; ++i) {
+
 							   if (globalScanFlag == false) break;
-							   int offset = ip2 - i;
+                               unsigned long offset = ip2 - i;
 
                                tAddr.s_addr = i;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-                           ipVec.push_back(std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1));
+                                ipVec.push_back(std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1));
 #else
-                           ipVec.push_back(inet_ntoa(tAddr));
+                                tAddr.s_addr = ntohl(tAddr.s_addr);
+                                ipVec.push_back(inet_ntoa(tAddr));
 #endif
 							   if (ipVec.size() >= (offset < 1000 ? offset : 1000)) {
 
 								   std::random_shuffle(ipVec.begin(), ipVec.end());
 								   while (ipVec.size() != 0) {
 
-									   if (globalScanFlag == false) goto haters_gonna_hate_IM;
-
-                                       st = new ST();
-									   ZeroMemory(st->argv, sizeof(st->argv));
-
                                        while (cons >= gThreads && globalScanFlag) Sleep(500);
+                                       if (globalScanFlag == false) goto haters_gonna_hate_IM;
+                                       //st = new ST();
+                                       //ZeroMemory(st->argv, MAX_ADDR_LEN);
 									   ++indexIP;
-									   strcpy(st->argv, ipVec[0].c_str());
-									   strcpy(saveStartIP, ipVec[0].c_str());
+                                       strcpy(res, ipVec[0].c_str());
+                                       strcpy(saveStartIP, res);
 									   ipVec.erase(ipVec.begin());
 
-                                       targetAndIPWriter(gTargets--, st->argv);
+                                       targetAndIPWriter(gTargets--, res);
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-									   _beginthread((void(*)(void*))_connect, 0, st);
-#else
-									   pthread_t thrc;
-									   pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
-#endif
+//                                       std::thread thr(_connect, res);
+//                                       thr.detach();
+
+                                       //Threader::fireThread(st);
 									   Sleep(gThreadDelay);
 								   }
 							   }
@@ -2677,33 +2749,33 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 			}
 			case false: {
 							struct in_addr tAddr;
-							for (unsigned long i = ip1; i <= ip2; ++i) {
-								if (globalScanFlag == false) break;
-                                st = new ST();
-								ZeroMemory(st->argv, sizeof(st->argv));
-								ZeroMemory(res, sizeof(res));
+                            for (unsigned long i = ip1; i <= ip2; ++i) {
+
                                 while (cons >= gThreads && globalScanFlag) Sleep(500);
+                                if (globalScanFlag == false) break;
+                                //st = new ST();
+                                //ZeroMemory(st->argv, sizeof(st->argv));
+                                ZeroMemory(res, sizeof(res));
 								++indexIP;
 
-								tAddr.s_addr = i;
+                                tAddr.s_addr = i;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
                                 strcpy(res, (std::to_string(tAddr.S_un.S_un_b.s_b4) + "." + std::to_string(tAddr.S_un.S_un_b.s_b3) + "." + std::to_string(tAddr.S_un.S_un_b.s_b2) + "." + std::to_string(tAddr.S_un.S_un_b.s_b1)).c_str());
 #else
+                                tAddr.s_addr = ntohl(tAddr.s_addr);
                                 strcpy(res, inet_ntoa(tAddr));
 #endif
-								strcpy(st->argv, res);
+                                //strcpy(st->argv, res);
 								strcpy(saveStartIP, res);
 
-								targetAndIPWriter(gTargets--, st->argv);
+                                targetAndIPWriter(gTargets--, res);
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-								_beginthread((void(*)(void*))_connect, 0, st);
-#else
-								pthread_t thrc;
-								pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st);
-#endif
+//                                std::thread thr(_connect, res);
+//                                thr.detach();
+
+                                //Threader::fireThread(st);
+
 								Sleep(gThreadDelay);
-
 							}
                             break;
                 };
@@ -2724,8 +2796,6 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
     while(cons > 0 || jsonArr->size() > 0) {
         Sleep(2000);
     };
-
-	nCleanup();
 	
 	stt->doEmitionGreenFoundData("Done. Saved: " + QString::number(saved) + "; Alive: " + QString::number(found) + ".");
 	stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
@@ -2734,6 +2804,8 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 }
 
 void nCleanup(){
+    Threader::cleanUp();
+
 	if(loginLst != NULL)
 	{
 		for(int i = 0; i < MaxLogin; ++i) delete []loginLst[i];

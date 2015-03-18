@@ -88,10 +88,6 @@ typedef int					BOOL;
 #define COOKIE_MAX_SIZE 1024
 #define RESULT_DIR_NAME "./result_files-" __DATE__
 
-typedef struct {
-    char argv[MAX_ADDR_LEN];
-} ST;
-
 struct PathStr{
 	char codepage[32];
 	char headr[TITLE_MAX_SIZE];

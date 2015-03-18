@@ -26,6 +26,7 @@
 #include "progressbardrawer.h"
 #include "externFunctions.h"
 #include "externData.h"
+#include "Threader.h"
 
 QDate date = QDate::currentDate();
 int ver = 100*(100*(date.year()%100) + date.month()) + date.day();
@@ -3571,6 +3572,7 @@ void nesca_3::ChangeLabelTO_ValueChanged(QString str)
 void nesca_3::ChangeLabelThreads_ValueChanged(QString str)
 {
 	gThreads = str.toInt();
+    //Threader::recreateThreadPool(gThreads);
 }
 
 void nesca_3::PingTO_ChangeValue(QString str)

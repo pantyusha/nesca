@@ -2,29 +2,28 @@
 #define THREADER_H
 
 #include <mainResources.h>
+#include <externData.h>
 #include <thread>
-
-//typedef struct {
-//    char argv[MAX_ADDR_LEN] = {0};
-//} ST;
+#include <chrono>
+#include <future>
+#include <mutex>
+#include <condition_variable>
 
 class Threader {
 
 private:
-    static int threadPoolSize;
-    static void* lFunc;
 public:
     static std::vector<char *> threadPool;
-    static bool mayRun;
+    static int threadId;
+    static std::condition_variable cv;
+    static std::vector<bool> readyPool;
 
 private:
-    static int getFree();
     static int getFreeDataSlotId();
     static int getFreeThreadId();
 public:
-    static void recreateThreadPool(int poolSize);
-    static void createThreadPool(int poolSize, void *func(int));
-    static void fireThread(char *st);
+    static void fireThread(char *st,
+                           void* func(int,std::condition_variable*));
     static void cleanUp();
 };
 

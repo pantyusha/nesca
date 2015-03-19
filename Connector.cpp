@@ -252,17 +252,16 @@ int Connector::nConnect(const char *ip, const int port, std::string *buffer,
     buffer->clear();
     CURL *curl = curl_easy_init();
     curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 0L);
-    int res = 0;
 
     if (curl)
     {
-		if (MapWidgetOpened) {
-			struct data config;
-			config.trace_ascii = 1; /* enable ascii tracing */
+        if (MapWidgetOpened) {
+            struct data config;
+            config.trace_ascii = 1; /* enable ascii tracing */
             curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
             curl_easy_setopt(curl, CURLOPT_DEBUGDATA, &config);
             curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-		}
+        }
         curl_easy_setopt(curl, CURLOPT_URL, ip);
         curl_easy_setopt(curl, CURLOPT_PORT, port);
         curl_easy_setopt(curl, CURLOPT_USERAGENT,
@@ -277,6 +276,8 @@ int Connector::nConnect(const char *ip, const int port, std::string *buffer,
         if(strlen(gProxyIP) != 0 && (proxyPort > 0 && proxyPort < 65535)) {
             curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
             curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
+        } else {
+            curl_easy_setopt(curl, CURLOPT_PROXY, "");
         }
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
@@ -303,10 +304,15 @@ int Connector::nConnect(const char *ip, const int port, std::string *buffer,
             curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY);
             //curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, TRUE);
             curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
-        };//
+        };
 
-        if(curl_easy_perform(curl) != CURLE_OK) return -1;
-        curl_easy_cleanup(curl);
+        if(curl_easy_perform(curl) == CURLE_OK) {
+            curl_easy_cleanup(curl);
+        } else {
+            curl_easy_cleanup(curl);
+            return -1;
+        }
+
     } else {
         stt->doEmitionRedFoundData("Curl error.");
         return -1;
@@ -334,14 +340,14 @@ int Connector::_ConnectToPort(char *ip, int port, char *hl)
     if(port == 22) size = _SSHLobby(ip, port, &buffer);
     else size = nConnect(ip, port, &buffer);
 
-    if(size > 0)
-    {
-        ++Alive;
-        ++found;
-        stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
-        Lexems lx;
-        lx._filler(port, buffer.c_str(), ip, size, &lx, hl);
-    };
+//    if(size > 0)
+//    {
+//        ++Alive;
+//        ++found;
+//        stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
+//        Lexems lx;
+//        lx._filler(port, buffer.c_str(), ip, size, &lx, hl);
+//    };
 
     return 0;
 }

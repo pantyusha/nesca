@@ -6,8 +6,6 @@
 #include "Threader.h"
 #include <thread>
 
-//ST *st = NULL;
-
 QJsonArray *jsonArr = new QJsonArray();
 
 bool gShuffle = true;
@@ -811,183 +809,81 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[])
 	return gTargets;
 }
 
-//#include <sys/types.h>
-//#include <stdio.h>
-//#include <signal.h>
-//#include <adns.h>
-//char *GetHost(char *ip)
-//{
-//	char res[256] = {0};
-//	adns_state ads = NULL;
-//	adns_init(&ads, adns_if_nosigpipe, 0);
-//
-//	adns_query aquery = 0;
-//	adns_answer* answer = NULL;
-//	sockaddr_in sockAddr;  
-//	sockAddr.sin_family = AF_INET;
-//	sockAddr.sin_addr.S_un.S_addr = inet_addr(ip);
-//
-//	adns_submit_reverse(ads, 
-//		(struct sockaddr *)&sockAddr, 
-//		(adns_rrtype)adns_r_ptr, 
-//		(adns_queryflags)adns_qf_quoteok_anshost, 
-//		NULL, 
-//		&aquery);
-//	adns_wait(ads, &aquery, &answer, NULL); 
-//	
-//	if(answer->status == adns_s_ok)
-//	{
-//		strncpy(res, (const char*)answer->rrs.bytes, 256);
-//	};
-//
-//	adns_finish(ads);
-//	//struct hostent *result;
-//	//unsigned long addr = inet_addr(ip);
-//	//result = gethostbyaddr((char*)&addr, sizeof(addr), AF_INET);
-//	return res;
-//
-//#pragma region Reverse-ip
-//	//struct hostent *result;
-//	//unsigned long addr = inet_addr(ip);
-//	//result = gethostbyaddr((char*)&addr, sizeof(addr), AF_INET);
-//	//char res[256] = {0};
-//
-//	//if( result == NULL ) 
-//	//{
-//	//	strcpy(res, "");
-//	//} 
-//	//else 
-//	//{
-//	//	if( result->h_name == NULL ) 
-//	//	{
-//	//		strcpy(res, "");
-//	//	}
-//	//	else 
-//	//	{
-//	//		strcpy(res, "Hostname: ");
-//	//		//if(result->h_length != NULL) strcat(res, std::to_string(result->h_length).c_str());
-//	//		//strcat(res, " ");
-//	//		//if(result->h_name != NULL) strcat(res, (result->h_name));
-//	//		//strcat(res, ":");
-//	//		if(result->h_addr_list[0] != NULL) 
-//	//		{
-//	//			int sz = strlen((result->h_addr_list[0] + 4));
-//	//			if(sz > 200) stt->doEmitionYellowFoundData("[LOL] Very long host detected [<a href=\"http://" + QString(ip) + "/\">" + QString(ip) + "</a>]");
-//	//			strncpy(res, (result->h_addr_list[0] + 4), sz < 256 ? sz : 256);
-//	//		};
-//	//	};
-//	//};
-//
-//
-//	return res;
-//}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 //void _connect(int ss)
 //#else
-//void _connect(int ss)
+//void _connect(char *ip)
 //#endif
 //{
-//    while(globalScanFlag) {
-//        while(Threader::threadPool[ss] == NULL) {
-//            if(!globalScanFlag) return;
-//            Sleep(10);
-//        }
-
 //        ++ipCounter;
-//        //char ip[MAX_ADDR_LEN] = {0};
-//        //strcpy(ip, Threader::threadPool[ss]);
-//        //char hostLog[256] = {0};
-//        //strcpy(hostLog, GetHost(ip));
-//        //delete Threader::threadPool[ss];
 
 //        ConInc();
 
 //        for(int i = 0; i <= overallPorts; ++i)
 //        {
 //            if(globalScanFlag == false) break;
-//            //if(Connector::_ConnectToPort( ip, portArr[i], "" ) == -2) break;
-//            //if(Connector::_ConnectToPort( Threader::threadPool[ss], portArr[i], "" ) == -2) break;
+//            if(Connector::_ConnectToPort( ip, portArr[i], "" ) == -2) break;
 //        };
 
 //        ConDec();
-
-//        Threader::threadPool[ss] = NULL;
-//    }
 //}
 
+std::mutex m;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-void _connect(char* ip)
+void _connect(int ss)
 #else
-void _connect(char* ip)
+void _connect(int ss, std::condition_variable *cv)
 #endif
 {
+    //std::chrono::duration<int, std::milli> duration(200);
+    while(globalScanFlag) {
+//        std::future<int> f2 = Threader::threadPool[ss];
+//        f2.wait();
+        std::unique_lock<std::mutex> lk(m);
+        cv->wait(lk, [ss]{return Threader::readyPool[ss];});
+//        while(Threader::threadPool[ss] == NULL) {
+//            if(!globalScanFlag) return;
+//            std::this_thread::sleep_for(duration);
+//        }
+//        if(Threader::threadPool[ss] == (char*)-1) {
+//            --Threader::threadId;
+//            return;
+//        }
+
         ++ipCounter;
+
         ConInc();
 
         for(int i = 0; i <= overallPorts; ++i)
         {
             if(globalScanFlag == false) break;
-            if(Connector::_ConnectToPort( ip, portArr[i], "" ) == -2) break;
+            if(Connector::_ConnectToPort( Threader::threadPool[ss], portArr[i], "" ) == -2) break;
         };
 
         ConDec();
+        Threader::readyPool[ss] = false;
+        Threader::threadPool[ss] = NULL;
+        lk.unlock();
+    }
 }
 
-void targetAndIPWriter(long long unsigned int target, const char *buff)
+void targetAndIPWriter(long long unsigned int target, const char *ip)
 {
-    char curIPBuff[256] = {0}, targetNPers[32] = {0};
+    char targetNPers[32] = {0};
+    float percent = (gTargetsOverall != 0 ? (100 - target/(double)gTargetsOverall * 100) : 0);
 
-    strcpy(metaIPDNS, buff);
+    stt->doEmitionIPRANGE(QString(ip));
+    strcpy(metaIPDNS, ip);
+
     sprintf(targetNPers, "%Lu (%.1f%%)",
-            target, (gTargetsOverall != 0 ? (100 - target/(double)gTargetsOverall * 100) : 0));
+            target,
+            percent);
+    stt->doEmitionTargetsLeft(QString(targetNPers));
+
     sprintf(metaTargets, "%Lu", target);
     sprintf(metaPercent, "%.1f",
-            (gTargetsOverall != 0 ? (100 - target/(double)gTargetsOverall * 100) : 0));
-    sprintf(curIPBuff, "--->%s", buff);
-
-    stt->doEmitionIPRANGE(QString(curIPBuff));
-    stt->doEmitionTargetsLeft(QString(targetNPers));
+            percent);
 }
 
 void _passLoginLoader()
@@ -2300,9 +2196,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 	else
     {
 
-		strcpy(endIP2, saveMask);
-        //st = new ST();
-        //ZeroMemory(st->argv, sizeof(st->argv));
+        strcpy(endIP2, saveMask);
 		ZeroMemory(iip, sizeof(iip));
 
         while(cons >= gThreads && globalScanFlag) Sleep(300);
@@ -2319,21 +2213,8 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder)
 
         targetAndIPWriter(--gTargets, res);
 
-//        std::thread thr(_connect, res);
-//        thr.detach();
-
-        //Threader::fireThread(st);
-//#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-//		if(globalScanFlag) _beginthread( (void(*)(void*))_connect, 0, st );
-//#else
-//		if(globalScanFlag)
-//		{
-//			pthread_t thrc;
-//            pthread_create(&thrc, NULL, (void *(*)(void*))&_connect, st );
-//		};
-//#endif
+        Threader::fireThread(res, (void* (*)(int,std::condition_variable*))_connect);
 		Sleep(gThreadDelay);
-
 	};
 }
 
@@ -2343,8 +2224,6 @@ int startScan(char* args)
 	SSL_library_init();
 	OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
 	SSL_load_error_strings();   /* Bring in and register error messages */
-
-//    Threader::createThreadPool(gThreads, (void* (*)(int))_connect);
 
 	horLineFlag = false;
 	flCounter = 0;
@@ -2358,6 +2237,7 @@ int startScan(char* args)
 	overallPorts = 0;
 	found = 0;
 	indexIP = 0;
+
 	ZeroMemory(octet, sizeof(octet));
 	ZeroMemory(ipsstart, sizeof(ipsstart));
 	ZeroMemory(ipsend, sizeof(ipsend));
@@ -2392,8 +2272,8 @@ int startScan(char* args)
 		return -1;
 	};
 
-stt->doEmitionIPRANGE(QString(saveEndIP));
-stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
+    stt->doEmitionIPRANGE(QString(saveEndIP));
+    stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
     _passLoginLoader();
     _NegativeLoader();
@@ -2408,8 +2288,7 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 		pthread_create(&thrs, NULL, (void *(*)(void*))&_saver, NULL);
 #endif
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-		if (trackerOK) _beginthread((void(*)(void*))_tracker, 0, NULL);
-		Sleep(50);
+        if (trackerOK) _beginthread((void(*)(void*))_tracker, 0, NULL);
 		_beginthread((void(*)(void*))_timer, 0, NULL);
 #else
 		pthread_t thrt;
@@ -2448,19 +2327,15 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
                                    while (cons >= gThreads && globalScanFlag) Sleep(500);
                                    if (globalScanFlag == false) goto haters_gonna_hate_IPM;
-                                   //st = new ST();
-                                   //ZeroMemory(st->argv, MAX_ADDR_LEN);
+                                   ZeroMemory(res, sizeof(res));
                                    ++indexIP;
-                                   //strcpy(st->argv, ipVec[0].c_str());
                                    strcpy(res, ipVec[0].c_str());
                                    strcpy(saveStartIP, res);
 								   ipVec.erase(ipVec.begin());
-
                                    targetAndIPWriter(gTargets--, res);
-
-                                   std::thread thr(_connect, res);
-                                   thr.detach();
-                                   //Threader::fireThread(res);
+                                   //std::thread workerThread(_connect, res);
+                                   //workerThread.detach();
+                                   Threader::fireThread(res, (void* (*)(int,std::condition_variable*))_connect);
 								   Sleep(gThreadDelay);
 							   }
 						   }
@@ -2475,8 +2350,6 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
                             while (cons >= gThreads && globalScanFlag) Sleep(500);
                             if (globalScanFlag == false) break;
-                            //st = new ST();
-                            //ZeroMemory(st->argv, sizeof(st->argv));
                             ZeroMemory(res, sizeof(res));
 							++indexIP;
 
@@ -2490,16 +2363,9 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
                            tAddr.s_addr = ntohl(tAddr.s_addr);
                            strcpy(res, inet_ntoa(tAddr));
 #endif
-                            //strcpy(st->argv, res);
 							strcpy(saveStartIP, res);
-
                             targetAndIPWriter(gTargets--, res);
-
-//                            std::thread thr(_connect, res);
-//                            thr.detach();
-
-                            //Threader::fireThread(st);
-
+                            Threader::fireThread(res, (void* (*)(int,std::condition_variable*))_connect);
 							Sleep(gThreadDelay);
 						}
 						break;
@@ -2727,19 +2593,14 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
                                        while (cons >= gThreads && globalScanFlag) Sleep(500);
                                        if (globalScanFlag == false) goto haters_gonna_hate_IM;
-                                       //st = new ST();
-                                       //ZeroMemory(st->argv, MAX_ADDR_LEN);
-									   ++indexIP;
+                                       ZeroMemory(res, sizeof(res));
+                                       ++indexIP;
                                        strcpy(res, ipVec[0].c_str());
                                        strcpy(saveStartIP, res);
 									   ipVec.erase(ipVec.begin());
 
                                        targetAndIPWriter(gTargets--, res);
-
-//                                       std::thread thr(_connect, res);
-//                                       thr.detach();
-
-                                       //Threader::fireThread(st);
+                                       Threader::fireThread(res, (void* (*)(int,std::condition_variable*))_connect);
 									   Sleep(gThreadDelay);
 								   }
 							   }
@@ -2753,8 +2614,6 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
                                 while (cons >= gThreads && globalScanFlag) Sleep(500);
                                 if (globalScanFlag == false) break;
-                                //st = new ST();
-                                //ZeroMemory(st->argv, sizeof(st->argv));
                                 ZeroMemory(res, sizeof(res));
 								++indexIP;
 
@@ -2765,16 +2624,9 @@ stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
                                 tAddr.s_addr = ntohl(tAddr.s_addr);
                                 strcpy(res, inet_ntoa(tAddr));
 #endif
-                                //strcpy(st->argv, res);
 								strcpy(saveStartIP, res);
-
                                 targetAndIPWriter(gTargets--, res);
-
-//                                std::thread thr(_connect, res);
-//                                thr.detach();
-
-                                //Threader::fireThread(st);
-
+                                Threader::fireThread(res, (void* (*)(int,std::condition_variable*))_connect);
 								Sleep(gThreadDelay);
 							}
                             break;

@@ -102,13 +102,13 @@ void MakePolygonLine(int gWidth)
             };
 		}
 
-        if(xtx > 234 && xtx < 269)
+        if(xtx > 234 && xtx < 278)
 		{
             qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - Alive * 2 - fact7 : ME2YPOS);
 
 			if(Alive > 0) 
 			{
-                if(xtx < 252 ) fact7+=1;
+                if(xtx < 261 ) fact7+=1;
                 else fact7-=1;
             };
 		};

@@ -2531,6 +2531,7 @@ void nesca_3::IPScanSeq()
 	{
 		if(ui->portLine->text() != "")
 		{
+            saveOptions();
 			ui->labelParsed_Value->setText("0/0");
             stopFirst = false;
 			ui->tabMainWidget->setTabEnabled(1, false);
@@ -2614,6 +2615,7 @@ void nesca_3::DNSScanSeq()
 	{
 		if(ui->lineEditPort->text() != "")
 		{
+            saveOptions();
 			ui->labelParsed_Value->setText("0/0");
 			if(ui->lineEditStartIPDNS->text().indexOf(".") > 0)
 			{
@@ -2670,6 +2672,7 @@ void nesca_3::ImportScanSeq()
 	else fileName = importFileName;
 	if(fileName != "")
 	{
+        saveOptions();
 		ui->tabMainWidget->setTabEnabled(0, false);
 		ui->tabMainWidget->setTabEnabled(1, false);
 
@@ -3571,8 +3574,7 @@ void nesca_3::ChangeLabelTO_ValueChanged(QString str)
 
 void nesca_3::ChangeLabelThreads_ValueChanged(QString str)
 {
-	gThreads = str.toInt();
-    //Threader::recreateThreadPool(gThreads);
+    gThreads = str.toInt();
 }
 
 void nesca_3::PingTO_ChangeValue(QString str)

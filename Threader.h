@@ -4,26 +4,21 @@
 #include <mainResources.h>
 #include <externData.h>
 #include <thread>
-#include <chrono>
-#include <future>
 #include <mutex>
 #include <condition_variable>
+#include <queue>
 
 class Threader {
 
-private:
 public:
-    static std::vector<char *> threadPool;
     static int threadId;
+    static std::mutex m;
+    static bool ready;
     static std::condition_variable cv;
-    static std::vector<bool> readyPool;
+    static std::queue<std::string> ipQueue;
 
-private:
-    static int getFreeDataSlotId();
-    static int getFreeThreadId();
 public:
-    static void fireThread(char *st,
-                           void* func(int,std::condition_variable*));
+    static void fireThread(std::string ip, void *func(void));
     static void cleanUp();
 };
 

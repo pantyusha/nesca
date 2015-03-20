@@ -61,7 +61,7 @@ int _pingMyTarget(char *ip)
     };
 }
 #else
-int _pingMyTarget(char *ip)
+int _pingMyTarget(const char *ip)
 {
     FILE *pipe = popen(("ping -w " + std::to_string(gPingTimeout) + " " + ip).c_str(), "r");
     if(!pipe) {
@@ -85,7 +85,7 @@ int _pingMyTarget(char *ip)
 }
 #endif
 
-int _sshConnect(char *user, char *pass, char *host, int port)
+int _sshConnect(char *user, char *pass, const char *host, int port)
 {
     char hostStr[128] = {0};
     ZeroMemory(hostStr, sizeof(hostStr));
@@ -133,7 +133,7 @@ int _sshConnect(char *user, char *pass, char *host, int port)
     return 0;
 }
 
-char _get_ssh_banner(char *ip, int port)
+char _get_ssh_banner(const char *ip, int port)
 {
     char recvBuff[256] = {0};
     std::string buffer;
@@ -149,7 +149,7 @@ char _get_ssh_banner(char *ip, int port)
     return *recvBuff;
 }
 
-int check_ssh_pass(char *user, char *pass, char *userPass, char *host, int port, std::string *buffer, const char *banner)
+int check_ssh_pass(char *user, char *pass, char *userPass, const char *host, int port, std::string *buffer, const char *banner)
 {
     int res = -1;
     if(BALogSwitched) stt->doEmitionBAData("Probing SSH: " + QString(user) + ":" + QString(pass) + "@" + QString(host) + ":" + QString::number(port));
@@ -167,7 +167,7 @@ int check_ssh_pass(char *user, char *pass, char *userPass, char *host, int port,
     return res;
 }
 
-int _EstablishSSHConnection(char *host, int port, std::string *buffer, const char *banner)
+int _EstablishSSHConnection(const char* host, int port, std::string *buffer, const char *banner)
 {
     char login[32] = {0};
     char pass[32] = {0};
@@ -210,12 +210,12 @@ int _EstablishSSHConnection(char *host, int port, std::string *buffer, const cha
 
 QString strIP;
 QString strPort;
-int Connector::_SSHLobby(char *ip, int port, std::string *buffer)
+int Connector::_SSHLobby(std::string ip, int port, std::string *buffer)
 {
-    const char &banner = _get_ssh_banner(ip, port);
+    const char &banner = _get_ssh_banner(ip.c_str(), port);
     if(strlen(&banner) > 0)
     {
-        return _EstablishSSHConnection(ip, port, buffer, &banner);
+        return _EstablishSSHConnection(ip.c_str(), port, buffer, &banner);
     };
     return -1;
 }
@@ -245,7 +245,7 @@ static size_t nWriteCallback(void *contents, size_t size, size_t nmemb, void *us
     return size * nmemb;
 }
 
-int Connector::nConnect(const char *ip, const int port, std::string *buffer,
+int Connector::nConnect(const char* ip, const int port, std::string *buffer,
                         const char *postData,
                         const std::vector<std::string> *customHeaders,
                         const std::string *lpString){
@@ -306,7 +306,8 @@ int Connector::nConnect(const char *ip, const int port, std::string *buffer,
             curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
         };
 
-        if(curl_easy_perform(curl) == CURLE_OK) {
+        //if(curl_easy_perform(curl) == CURLE_OK) {
+        if(1) {
             curl_easy_cleanup(curl);
         } else {
             curl_easy_cleanup(curl);
@@ -324,11 +325,11 @@ int Connector::nConnect(const char *ip, const int port, std::string *buffer,
     return buffer->size();
 }
 
-int Connector::_ConnectToPort(char *ip, int port, char *hl)
+int Connector::_ConnectToPort(string ip, int port, char *hl)
 {
     if(gPingNScan)
     {
-        if(_pingMyTarget(ip) == 0)
+        if(_pingMyTarget(ip.c_str()) == 0)
         {
             return -2;
         };
@@ -337,8 +338,8 @@ int Connector::_ConnectToPort(char *ip, int port, char *hl)
     std::string buffer;
     int size = 0;
 
-    if(port == 22) size = _SSHLobby(ip, port, &buffer);
-    else size = nConnect(ip, port, &buffer);
+    if(port == 22) size = _SSHLobby(ip.c_str(), port, &buffer);
+    else size = nConnect(ip.c_str(), port, &buffer);
 
 //    if(size > 0)
 //    {

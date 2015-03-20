@@ -58,6 +58,7 @@ int nickFlag;
 int offlineFlag;
 bool OnlineMsgSentFlag = false;
 int globalPinger = 0;
+int nesca_3::savedTabIndex = 0;
 
 bool dFlag = false;
 bool startFlag = false;
@@ -745,10 +746,10 @@ void nesca_3::slotAddPolyLine()
 	if(ME2ScanFlag)
     {
         QPainterPath path;
-        if (DrawerTh_ME2Scanner::polyVect.count() > 0)
+        if (DrawerTh_ME2Scanner::polyVect.size() > 0)
         {
             path.moveTo(DrawerTh_ME2Scanner::polyVect[0]);
-			for (int i = 1; i < DrawerTh_ME2Scanner::polyVect.count(); ++i)
+            for (int i = 1; i < DrawerTh_ME2Scanner::polyVect.size(); ++i)
             {
                 path.lineTo(DrawerTh_ME2Scanner::polyVect[i]);
             };
@@ -761,7 +762,7 @@ void nesca_3::slotAddPolyLine()
 
 		int u = 0;
         double uu = 1.0;
-		for (int i = 0; i < DrawerTh_ME2Scanner::itmList.count(); ++i)
+        for (int i = 0; i < DrawerTh_ME2Scanner::itmList.size(); ++i)
         {
 			int y = u - i - 1;
             itm = DrawerTh_ME2Scanner::itmList[i];
@@ -771,7 +772,7 @@ void nesca_3::slotAddPolyLine()
             u -= 1;
         };
 
-        while (DrawerTh_ME2Scanner::itmList.count() > 38)
+        while (DrawerTh_ME2Scanner::itmList.size() > 38)
         {
             sceneGraph->removeItem(DrawerTh_ME2Scanner::itmList[38]);
             delete DrawerTh_ME2Scanner::itmList[38];
@@ -2939,9 +2940,7 @@ void nesca_3::ConnectEvrthng()
     connect ( ui->tabMainWidget, SIGNAL(currentChanged(int)), this, SLOT(slotTabChanged(int)) );
 }
 
-void nesca_3::saveOptions()
-{
-    ZeroMemory(saveStartIP, sizeof(saveStartIP));
+void _LoadPersInfoToLocalVars(int savedTabIndex) {
     ZeroMemory(endIP2, sizeof(endIP2));
     ZeroMemory(top_level_domain, sizeof(top_level_domain));
     ZeroMemory(gPorts, sizeof(gPorts));
@@ -2950,12 +2949,16 @@ void nesca_3::saveOptions()
     {
         gMode = 0;
         gThreads = ui->threadLine->text().toInt();
-        int indexof = ui->ipLine->text().indexOf("-");
+        QString targetLine = ui->ipLine->text();
 
-        if(indexof > 0)
+        if(ui->ipLine->text().indexOf("-") > 0)
         {
-            strncpy(saveStartIP, ui->ipLine->text().toLocal8Bit().data(), indexof);
-            if(ui->ipLine->text().indexOf("/") < 0) strcpy(endIP2, ui->ipLine->text().toLocal8Bit().data());
+            if(ui->ipLine->text().indexOf("/") < 0) {
+                QList<QString> splittedTargetLine = targetLine.split("-");
+                strcpy(currentIP, splittedTargetLine[0].toLocal8Bit().data());
+                strcpy(finalIP, splittedTargetLine[1].toLocal8Bit().data());
+                strcpy(endIP2, ui->ipLine->text().toLocal8Bit().data());
+            }
         }
         else
         {
@@ -2964,10 +2967,6 @@ void nesca_3::saveOptions()
                 strcpy(endIP2, ui->ipLine->text().toLocal8Bit().data());
                 strcat(endIP2, "-");
                 strcat(endIP2, ui->ipLine->text().toLocal8Bit().data());
-            }
-            else
-            {
-                strncpy(saveStartIP, ui->ipLine->text().toLocal8Bit().data(), ui->ipLine->text().indexOf("/"));
             };
         };
 
@@ -2979,7 +2978,6 @@ void nesca_3::saveOptions()
         gMode = 1;
         gThreads = ui->lineEditThread->text().toInt();
 
-        strcpy(saveStartIP, ui->lineEditStartIPDNS->text().toLocal8Bit().data());
         strcpy(endIP2, ui->lineEditStartIPDNS->text().toLocal8Bit().data());
         strcpy(top_level_domain, ui->lineILVL->text().toLocal8Bit().data());
         strncpy(gPorts, ("-p" + ui->lineEditPort->text()).toLocal8Bit().data(), 65536);
@@ -3000,7 +2998,11 @@ void nesca_3::saveOptions()
     gProxyIP[ui->systemProxyIP->text().size()] = '\0';
     strncpy(gProxyPort, ui->systemProxyPort->text().toLocal8Bit().data(), 8);
     gProxyPort[ui->systemProxyPort->text().size()] = '\0';
+}
 
+void nesca_3::saveOptions()
+{
+    _LoadPersInfoToLocalVars(savedTabIndex);
     _SaveBackupToFile();
 }
 
@@ -3175,7 +3177,7 @@ void RestoreSession()
 		};
 
 		fclose(resFile);
-
+        _LoadPersInfoToLocalVars(nesca_3::savedTabIndex);
         stt->doEmitionGreenFoundData("Previous session loaded.");
 	};
 }

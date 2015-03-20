@@ -50,9 +50,10 @@ public:
 	void ChangeLabelIpRange_Value(QString str);
 	void ChangeLabelIPS_Value(QString str);
 	void newListItem(QString str);
-	static int perc;
-private:
-    int savedTabIndex;
+
+public:
+    static int perc;
+    static int savedTabIndex;
 protected:
 	bool eventFilter(QObject* obj, QEvent *event);
 	void run();
@@ -129,7 +130,7 @@ protected:
 		void logoLabelClicked();
 		void startScanButtonClicked();
 		void startScanButtonClickedDNS();
-		void saveOptions();
+        void saveOptions();
 		void ChangeTrackerOK(bool val);
 		void ChangeShuffle(bool val);
 		void ChangeLabelThreads_ValueChanged(QString);

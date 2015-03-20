@@ -1,43 +1,29 @@
 #include <Threader.h>
 
-std::vector<char*> Threader::threadPool;
-std::vector<std::condition_variable*> cvPool;
-std::vector<bool> Threader::readyPool;
 int Threader::threadId = 0;
+std::mutex Threader::m;
+bool Threader::ready = false;
+std::condition_variable Threader::cv;
+std::queue<std::string> Threader::ipQueue;
 
-int Threader::getFreeDataSlotId() {
-    int tps = threadPool.size();
-    for(int i = 0; i != (gThreads > tps ? tps : gThreads); ++i) {
-        if(threadPool[i] == NULL) return i;
-    }
-    return -1;
-}
+void Threader::fireThread(std::string ip, void *func(void)) {
 
-int Threader::getFreeThreadId() {
-    int res;
-    while((res = getFreeDataSlotId()) < 0) Sleep(50);
-    return res;
-}
-
-void Threader::fireThread(char *res, void *func(int,std::condition_variable*)) {
+    ipQueue.push(ip);
     if(threadId < gThreads) {
-        threadPool.push_back(res);
-        std::condition_variable cv;
-        cvPool.push_back(&cv);
-        std::thread workerThread(func, threadId++, &cv);
+        ++threadId;
+        std::thread workerThread(func);
         workerThread.detach();
-        readyPool.push_back(true);
-        cv.notify_one();
-    } else {
-        int id = getFreeThreadId();
-        threadPool[id] = res;
-        readyPool[id] = true;
-        cvPool[id]->notify_one();
     }
+
+    std::unique_lock<std::mutex> lk(m);
+    ready = true;
+    Threader::cv.notify_one();
+    Sleep(gThreadDelay);
 }
 
+//std::queue<std::string> empty;
 void Threader::cleanUp() {
+    //std::swap( ipQueue, empty );
+    ipQueue = {};
     threadId = 0;
-    threadPool.clear();
-    cvPool.clear();
 }

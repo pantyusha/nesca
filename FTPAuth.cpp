@@ -19,6 +19,7 @@ lopaStr FTPA::_FTPBrute(const char *ip, const int port, PathStr *ps) {
 
     strcpy(lps.login, "UNKNOWN");
 	int res = 0;
+	int passCounter = 0;
 
     for(int i = 0; i < MaxLogin; ++i)
     {
@@ -41,8 +42,12 @@ lopaStr FTPA::_FTPBrute(const char *ip, const int port, PathStr *ps) {
 				ps->directoryCount = std::count(buffer.begin(), buffer.end(), '\n');
 				return lps;
 			};
-			
-            Sleep(70);
+
+			if (BALogSwitched) stt->doEmitionBAData("FTP: " + QString(ip) + ":" + QString::number(port) +
+				"; l/p: " + QString(loginLst[i]) + ":" + QString(passLst[j]) + ";	- Progress: (" +
+				QString::number((++passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
+
+            Sleep(100);
         }
     }
 

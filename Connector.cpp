@@ -325,17 +325,23 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 					return -2;
 				}
 				else if (res == 13) {
-					stt->doEmitionFoundData("Unknown ftp: (" + QString::number(res) + ") " + 
+					stt->doEmitionFoundData("Unknown ftp. (" + QString::number(res) + ") " + 
 						QString(ip) + ":" + QString::number(port));
 					return -2;
 				} else if (res == 8) {
-					stt->doEmitionFoundData("Strange ftp reply: (" + 
+					stt->doEmitionFoundData("Strange ftp repl. (" + 
 						QString::number(res) + ") " + QString(ip) + 
 						":" + QString::number(port));
 					return -2;
 				}
 				else if (res == 6) {
 					stt->doEmitionFoundData("Couldn't resolve host. (" +
+						QString::number(res) + ") " + QString(ip) +
+						":" + QString::number(port));
+					return -2;
+				}
+				else if (res == 18) {
+					stt->doEmitionFoundData("Inappropriate file size. (" +
 						QString::number(res) + ") " + QString(ip) +
 						":" + QString::number(port));
 					return -2;

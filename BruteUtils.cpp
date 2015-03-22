@@ -1,9 +1,10 @@
-#include <BruteUtils.h>
+#include "BruteUtils.h"
 #include "STh.h"
 #include "externData.h"
 
 void BruteUtils::BConInc()
 {
+	++BA;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 __asm
     {
@@ -31,5 +32,4 @@ void BruteUtils::BConDec()
     }
 
     stt->doEmitionChangeBA(QString::number(BrutingThrds));
-
 }

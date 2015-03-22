@@ -21,7 +21,7 @@
 #include <qtextcodec.h>
 #include <qjsondocument.h>
 #include <libssh/libssh.h>
-#include <mainResources.h>
+#include "mainResources.h"
 
 extern Ui::nesca_3Class *ui;
 extern bool widgetIsHidden, IRCLogToggled, blinkFlag, disableBlink, debugFileOK, QOSWait,
@@ -89,7 +89,7 @@ protected:
 		void slotOutData(QString str);
 		void slotIncData(QString ip, QString str);
 		void slotShowServerMsg(QString str);
-        void slotSaveImage();
+		void slotSaveImage(QAction *qwe);
 		void slotUpdatePie();
 		void slotClearLogs();
 		void slotRestartIRC();

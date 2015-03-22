@@ -746,19 +746,20 @@ void nesca_3::slotAddPolyLine()
 	if(ME2ScanFlag)
     {
         QPainterPath path;
-        if (DrawerTh_ME2Scanner::polyVect.size() > 0)
+        if (DrawerTh_ME2Scanner::vecSize > 0)
         {
             path.moveTo(DrawerTh_ME2Scanner::polyVect[0]);
-            for (int i = 1; i < DrawerTh_ME2Scanner::polyVect.size(); ++i)
+			for (int i = 1; i < DrawerTh_ME2Scanner::vecSize; ++i)
             {
                 path.lineTo(DrawerTh_ME2Scanner::polyVect[i]);
             };
         };
-
+		
         QGraphicsPathItem* itm = new QGraphicsPathItem(path);
         itm->setPen(pen2i);
         sceneGraph->addItem(itm);
-        DrawerTh_ME2Scanner::itmList.push_front(itm);
+		DrawerTh_ME2Scanner::itmList.push_front(itm);
+		DrawerTh_ME2Scanner::polyVect.clear();
 
 		int u = 0;
         double uu = 1.0;
@@ -778,7 +779,6 @@ void nesca_3::slotAddPolyLine()
             delete DrawerTh_ME2Scanner::itmList[38];
             DrawerTh_ME2Scanner::itmList.pop_back();
         };
-
 	};
 }
 
@@ -1484,7 +1484,7 @@ void nesca_3::CheckPersKey()
 
 	if(!chKTh->isRunning()) 
 	{	
-		stt->doEmitionYellowFoundData("[Key check] Starting checker-thread...");
+		stt->doEmitionYellowFoundData("[Key check] Starting checker thread...");
 		chKTh->start();
 	}
 	else
@@ -1500,7 +1500,7 @@ void nesca_3::CheckPersKey(int val = -1)
 
 	if(!chKTh->isRunning()) 
 	{	
-        stt->doEmitionYellowFoundData("[Key check] Starting checker-thread...");
+        stt->doEmitionYellowFoundData("[Key check] Starting checker thread...");
 		chKTh->start();
 	}
 	else
@@ -1875,7 +1875,7 @@ void nesca_3::slotIRCGetTopic(QString str)
 
 int c = 1;
 
-void nesca_3::slotSaveImage()
+void nesca_3::slotSaveImage(QAction *qwe)
 {
 	QObject *smB = this->sender();
 	int ci = ui->tabMainWidget->currentIndex();
@@ -1960,7 +1960,7 @@ void PieStatView::contextMenuEvent(QContextMenuEvent *event)
 	menuPS->addAction("Save image.");
 	menuPS->popup(event->globalPos());
 
-    connect(menuPS, SIGNAL(triggered()), gthis, SLOT(slotSaveImage()));
+	connect(menuPS, SIGNAL(triggered(QAction *)), gthis, SLOT(slotSaveImage(QAction *)));
 }
 
 QLabel *msgLbl;
@@ -3158,9 +3158,9 @@ void RestoreSession()
             if (strstr(resStr, "[TIMEOUT]:") != NULL) {
                 const QString &tempLex = loadNescaSetup(resStr, "[TIMEOUT]:");
                 if(tempLex.toInt() > 0) {
-                    ui->iptoLine_value->setText(tempLex);
-                    ui->iptoLine_value_2->setText(tempLex);
-                    ui->iptoLine_value_3->setText(tempLex);
+                    ui->iptoLine_value->setText(tempLex.simplified());
+					ui->iptoLine_value_2->setText(tempLex.simplified());
+					ui->iptoLine_value_3->setText(tempLex.simplified());
                 }
             }
             setUIText("[MAXBTHR]:", ui->maxBrutingThrBox, resStr);
@@ -3236,7 +3236,7 @@ const char *GetVer()
     char db[32] = {0};
     sprintf(db, "%X-%X", dver, tver);
 
-    return std::string(db).c_str();
+    return db;
 }
 
 void nesca_3::slotShowRedVersion()
@@ -3280,9 +3280,8 @@ void _startMsgCheck()
 		
 	ui->ircNickBox->setText("nsa_" + QString::number(qrand() % 8999 + 1000));
 	
-    const char *rVer = GetVer();
-    QString QVER(rVer);
-    strcpy(gVER, QVER.toLatin1().data());
+	strcpy(gVER, GetVer());
+	QString QVER(gVER);
 	ui->logoLabel->setToolTip("v3-" + QVER);
 	ui->logoLabel->setStyleSheet("color:white; border: none;background-color:black;");
 	ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
@@ -3304,7 +3303,7 @@ void _startMsgCheck()
 	if (WSAStartup(0x0101, &wsda)) 
     {
 		stt->doEmitionRedFoundData("WSAStartup failed.");
-        stt->doEmitionKillSttThread();
+		qApp->quit();
 	};
 #endif
 
@@ -3343,8 +3342,7 @@ void nesca_3::mouseMoveEvent(QMouseEvent * event)
 
 void nesca_3::exitButtonClicked()
 {
-	globalScanFlag = false;
-	stt->terminate();
+	STTTerminate();
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	WSACleanup();
 #endif
@@ -3399,12 +3397,10 @@ void nesca_3::STTTerminate()
 	importFileName = "";
 	startFlag = false;
 	globalScanFlag = false;
-
-	stt->terminate();
+	nCleanup();
 
 	while(__savingBackUpFile) Sleep(100);
 
-	nCleanup();
 	ui->tabMainWidget->setTabEnabled(0, true);
 	ui->tabMainWidget->setTabEnabled(1, true);
 	ui->tabMainWidget->setTabEnabled(2, true);
@@ -3419,6 +3415,7 @@ void nesca_3::STTTerminate()
 	ui->startScanButton_4->setText("Start");
 	ui->importButton->setText("Import&&Scan");
 	ui->labelStatus_Value->setText("Idle");
+	stt->terminate();
 }
 
 bool dfLocked = false;

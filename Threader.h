@@ -1,8 +1,8 @@
 #ifndef THREADER_H
 #define THREADER_H
 
-#include <mainResources.h>
-#include <externData.h>
+#include "mainResources.h"
+#include "externData.h"
 #include <thread>
 #include <mutex>
 #include <condition_variable>

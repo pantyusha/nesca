@@ -1,10 +1,11 @@
 #include "DrawerTh_ME2Scanner.h"
 #include "STh.h"
 #include "externData.h"
-#include <WebformWorker.h>
+#include "WebformWorker.h"
 
 QList<QGraphicsPathItem*> DrawerTh_ME2Scanner::itmList;
 QVector<QPointF> DrawerTh_ME2Scanner::polyVect;
+int DrawerTh_ME2Scanner::vecSize;
 
 void DrawerTh_ME2Scanner::doEmitDrawTextPlacers()
 {
@@ -16,9 +17,9 @@ void DrawerTh_ME2Scanner::doEmitionAddPolyLine()
 	emit dtME2->sAddPolyLine();
 }
 
-void MakePolygonLine(int gWidth)
+int MakePolygonLine(int gWidth)
 {
-	DrawerTh_ME2Scanner::polyVect.clear();
+	while (!DrawerTh_ME2Scanner::polyVect.empty()) Sleep(100);
     int x = 0;
     int tx = 0;
 	int xtx = 0;
@@ -127,6 +128,7 @@ void MakePolygonLine(int gWidth)
 	Susp = 0;
 
 	DrawerTh_ME2Scanner::polyVect.append(QPointF(gWidth, ME2YPOS));
+	return DrawerTh_ME2Scanner::polyVect.size();
 }
 
 void DrawerTh_ME2Scanner::run()
@@ -139,7 +141,7 @@ void DrawerTh_ME2Scanner::run()
 		if (widgetIsHidden == false && tray->isVisible() == false)
 		{
 			if (itmList.count() < 39) {
-				MakePolygonLine(gWidth);
+				vecSize = MakePolygonLine(gWidth);
 				dtME2->doEmitionAddPolyLine();
 			}
 		}

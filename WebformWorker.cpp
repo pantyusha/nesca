@@ -1,4 +1,4 @@
-#include <WebformWorker.h>
+#include "WebformWorker.h"
 
 bool WFClass::active = false;
 
@@ -49,7 +49,7 @@ lopaStr WFClass::parseResponse(const char *ip,
     else return result;
 }
 
-lopaStr WFClass::doGetCheck(char *ip,
+lopaStr WFClass::doGetCheck(const char *ip,
                                   int port,
                                   char *actionVal,
                                   char *userVal,
@@ -92,7 +92,7 @@ lopaStr WFClass::doGetCheck(char *ip,
     return result;
 }
 
-lopaStr WFClass::doPostCheck(char *ip,
+lopaStr WFClass::doPostCheck(const char *ip,
                                    int port,
                                    char *actionVal,
                                    char *userVal,
@@ -137,7 +137,7 @@ lopaStr WFClass::doPostCheck(char *ip,
     return result;
 }
 
-lopaStr WFClass::_WFBrute( char *ip,
+lopaStr WFClass::_WFBrute( const char *ip,
                                 int port,
                                 char *methodVal,
                                 char *actionVal,

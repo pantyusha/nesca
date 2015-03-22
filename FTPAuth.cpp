@@ -1,8 +1,6 @@
 #include "FTPAuth.h"
 
 bool FTPA::checkOutput(const string *buffer) {
-    //Login or password incorrect!
-
     if(Utils::ci_find_substr(*buffer, "230") != -1) {
 
         return true;
@@ -11,7 +9,7 @@ bool FTPA::checkOutput(const string *buffer) {
     return false;
 }
 
-lopaStr FTPA::_FTPBrute(const char *ip, const int port, const PathStr *ps) {
+lopaStr FTPA::_FTPBrute(const char *ip, const int port, PathStr *ps) {
     string buffer;
     string lpString;
     lopaStr lps;
@@ -20,6 +18,7 @@ lopaStr FTPA::_FTPBrute(const char *ip, const int port, const PathStr *ps) {
     ZeroMemory(lps.other, sizeof(lps.other));
 
     strcpy(lps.login, "UNKNOWN");
+	int res = 0;
 
     for(int i = 0; i < MaxLogin; ++i)
     {
@@ -32,15 +31,17 @@ lopaStr FTPA::_FTPBrute(const char *ip, const int port, const PathStr *ps) {
             if(strlen(passLst[j]) <= 1) continue;
 
             lpString = string(loginLst[i]) + ":" + string(passLst[j]);
-
-            Connector::nConnect((string("ftp://") + string(ip)).c_str(), port, &buffer, NULL, NULL, &lpString);
-
-            if(checkOutput(&buffer)) {
-                strcpy(lps.login, loginLst[i]);
-                strcpy(lps.pass, passLst[j]);
-                return lps;
-            };
-
+			
+			res = Connector::nConnect((string("ftp://") + string(ip)).c_str(), port, &buffer, NULL, NULL, &lpString);
+			if (res == -2) return lps;
+			else if (res != -1) {
+				if (!globalScanFlag) return lps;
+				strcpy(lps.login, loginLst[i]);
+				strcpy(lps.pass, passLst[j]);
+				ps->directoryCount = std::count(buffer.begin(), buffer.end(), '\n');
+				return lps;
+			};
+			
             Sleep(70);
         }
     }
@@ -48,7 +49,7 @@ lopaStr FTPA::_FTPBrute(const char *ip, const int port, const PathStr *ps) {
     return lps;
 }
 
-lopaStr FTPA::_FTPLobby(const char *ip, const int port, const PathStr *ps) {
+lopaStr FTPA::_FTPLobby(const char *ip, const int port, PathStr *ps) {
     while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
     BruteUtils::BConInc();

@@ -1,19 +1,19 @@
 #ifndef WEBFORMWORKER_H
 #define WEBFORMWORKER_H
 
-#include <Utils.h>
+#include "Utils.h"
 #include "Connector.h"
-#include <mainResources.h>
-#include <externFunctions.h>
-#include <BruteUtils.h>
+#include "mainResources.h"
+#include "externFunctions.h"
+#include "BruteUtils.h"
 #include "STh.h"
 
 class WFClass : BruteUtils {
 
 private: static bool active;
     int passCounter = 1;
-    lopaStr doGetCheck(char *ip, int port, char *actionVal, char *userVal, char *passVal, char *formVal);
-    lopaStr doPostCheck(char *ip, int port, char *actionVal, char *userVal, char *passVal, char *formVal);
+    lopaStr doGetCheck(const char *ip, int port, char *actionVal, char *userVal, char *passVal, char *formVal);
+	lopaStr doPostCheck(const char *ip, int port, char *actionVal, char *userVal, char *passVal, char *formVal);
     lopaStr parseResponse(const char *ip, const int port, const std::string *buffer, const char* formVal,
                           const int *iIndex,
                           const int *jIndex);
@@ -35,7 +35,7 @@ public:
         BConDec();
     }
 
-    lopaStr _WFBrute(char *ip,
+    lopaStr _WFBrute(const char *ip,
                                 int port,
                                 char *methodVal,
                                 char *actionVal,

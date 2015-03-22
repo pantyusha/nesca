@@ -5,9 +5,9 @@
 #include "mainResources.h"
 #include "externFunctions.h"
 #include "externData.h"
-#include <openssl/err.h>
-#include <Utils.h>
-#include <BruteUtils.h>
+#include "openssl/err.h"
+#include "Utils.h"
+#include "BruteUtils.h"
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 #include <iphlpapi.h>
@@ -334,7 +334,7 @@ char *_makeDigestResponse(
 	return (char*)responseMD5;
 }
 
-int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int passCounter, char *type, std::vector<char*> negVector)
+int _webLoginSeq(char *request, char *login, char *pass, const char *ip, int port, int passCounter, char *type, std::vector<char*> negVector)
 {
 	char recvBuff[256] = {0};
 	char recvBuff2[4096] = {0};
@@ -427,7 +427,7 @@ int _webLoginSeq(char *request, char *login, char *pass, char *ip, int port, int
 	return 0;
 }
 
-lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
+lopaStr _IPCameraBrute(const char *ip, int port, char *SPEC)
 {
 	lopaStr lps;
 	ZeroMemory(lps.login, sizeof(lps.login));
@@ -486,6 +486,7 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 		negVector.push_back("РРјСЏ РёР»Рё РїР°СЂРѕР»СЊ РЅРµРІРµСЂРЅС‹Рµ!");
 		negVector.push_back("Р’РѕР·РІСЂР°С‚");
 		negVector.push_back("HTTP/1.0 302 Found");
+		negVector.push_back("is incorrect");
 	}
 	else
 	{
@@ -726,7 +727,7 @@ lopaStr _IPCameraBrute(char *ip, int port, char *SPEC)
 	return lps;
 }
 
-lopaStr _IPCameraBLobby(char *ip, int port, char *SPEC)
+lopaStr _IPCameraBLobby(const char *ip, int port, char *SPEC)
 {
 	while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 

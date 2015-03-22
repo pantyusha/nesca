@@ -36,6 +36,7 @@ lopaStr BA::_BABrute(const char *ip, const int port) {
     ZeroMemory(lps.login, sizeof(lps.login));
     ZeroMemory(lps.pass, sizeof(lps.pass));
     ZeroMemory(lps.other, sizeof(lps.other));
+	int passCounter = 0;
 
     strcpy(lps.login, "UNKNOWN");
 
@@ -52,6 +53,10 @@ lopaStr BA::_BABrute(const char *ip, const int port) {
                 strcpy(lps.pass, passLst[j]);
                 return lps;
             };
+
+			if (BALogSwitched) stt->doEmitionBAData("FTP: " + QString(ip) + ":" + QString::number(port) + 
+				"; l/p: " + QString(loginLst[i]) + ":" + QString(passLst[j]) + ";	- Progress: (" + 
+				QString::number((++passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
 
             Sleep(100);
         }

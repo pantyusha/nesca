@@ -1,15 +1,15 @@
 #ifndef BASICAUTH_H
 #define BASICAUTH_H
 
-#include <Connector.h>
-#include <BruteUtils.h>
-#include <Utils.h>
-#include <externData.h>
-#include <mainResources.h>
+#include "Connector.h"
+#include "BruteUtils.h"
+#include "Utils.h"
+#include "externData.h"
+#include "mainResources.h"
 
-class BA : BruteUtils{
+class BA {
 private:
-    static bool checkOutput(const string *buffer);
+	static bool checkOutput(const string *buffer, const char *ip, const int port);
     static lopaStr _BABrute(const char *ip, const int port);
 
 public:

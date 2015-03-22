@@ -4,7 +4,6 @@ root
 123456
 12345
 
- 
 cisco
 super
 meinsm
@@ -22,6 +21,8 @@ telecom
 dreambox
 master
 Admin
-Root
 guest
 backup
+cgadmin
+0000
+1111

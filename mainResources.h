@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "base64.h"
 
 #include <libssh/libssh.h>
@@ -103,8 +103,8 @@ struct PathStr{
 };
 
 struct lopaStr{
-    char login[128];
-    char pass[32];
+	char login[128];
+	char pass[32];
 	char other[128];
 };
 
@@ -115,78 +115,78 @@ struct conSTR{
 };
 
 class Lexems
+{
+public:
+	int iterationCount, flag;
+
+	Lexems()
 	{
-	public:
-		int iterationCount, flag;
+		iterationCount = 0;
+		flag = 0;
+	}
 
-		Lexems()
-		{
-			iterationCount = 0;
-			flag = 0;
-        }
+	~Lexems()
+	{
+		iterationCount = 0;
+	}
 
-		~Lexems()
-		{
-			iterationCount = 0;
-        }
-		
-        int _header(char *ip,
-                    int port,
-                    const char str[],
-                    Lexems *l,
-                    PathStr *ps,
-                    std::vector<std::string> *lst);
+	int _header(char *ip,
+		int port,
+		const char str[],
+		Lexems *l,
+		PathStr *ps,
+		std::vector<std::string> *lst);
 
-        int _filler(int p,
-                    const char *buffcpy,
-                    char* ipi,
-                    int recd,
-                    Lexems *lx,
-                    char *hl);
-	};
+	int _filler(int port,
+		const char *buffcpy,
+		char* ip,
+		int recd,
+		Lexems *lx,
+		char *hl);
+};
 
 
 class Connector_old
-	{
-	public:
-		int _Updater();
-		
-//        lopaStr _FTPLobby(char *ip,
-//                          int port,
-//                          PathStr *ps);
+{
+public:
+	int _Updater();
 
-//        lopaStr _BALobby(char *cookie,
-//                         char *ip,
-//                         int port,
-//                         char *path,
-//                         char *method,
-//                         char *data);
+	//        lopaStr _FTPLobby(char *ip,
+	//                          int port,
+	//                          PathStr *ps);
 
-        lopaStr _WFLobby(char *cookie,
-                         char *ip,
-                         int port,
-                         char *methodVal,
-                         char *actionVal,
-                         char *userVal,
-                         char *passVal,
-                         char *formVal);
+	//        lopaStr _BALobby(char *cookie,
+	//                         char *ip,
+	//                         int port,
+	//                         char *path,
+	//                         char *method,
+	//                         char *data);
 
-        lopaStr _IPCameraBLobby(char *ip,
-                                int port,
-                                char *SPEC);
+	lopaStr _WFLobby(char *cookie,
+		char *ip,
+		int port,
+		char *methodVal,
+		char *actionVal,
+		char *userVal,
+		char *passVal,
+		char *formVal);
 
-        int _SSHLobby(char *ip,
-                      int port,
-                      std::string *buffer);
-		
-        void _Connect(void *s);
+	lopaStr _IPCameraBLobby(char *ip,
+		int port,
+		char *SPEC);
 
-        int _ConnectToPort(char *ip,
-                           int port,
-                           char *hl);
-	};
+	int _SSHLobby(char *ip,
+		int port,
+		std::string *buffer);
+
+	void _Connect(void *s);
+
+	int _ConnectToPort(char *ip,
+		int port,
+		char *hl);
+};
 
 
-extern lopaStr _IPCameraBLobby(char *ip, int port, char *SPEC);
+extern lopaStr _IPCameraBLobby(const char *ip, int port, char *SPEC);
 //extern lopaStr _BALobby(char *cookie, char *ip, int port, char *path, char *method);
 //extern lopaStr _FTPLobby(char *ip, int port, PathStr *ps);

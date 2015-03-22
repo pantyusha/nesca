@@ -3,8 +3,8 @@
 #include "STh.h"
 #include "externData.h"
 #include "externFunctions.h"
-#include <Connector.h>
-#include <Utils.h>
+#include "Connector.h"
+#include "Utils.h"
 
 void getSubStrEx(const char *src, char *startStr, char *endStr, char *dest, int szDest)
 {

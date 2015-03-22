@@ -1,7 +1,7 @@
-#include <Connector.h>
+#include "Connector.h"
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-int _pingMyTarget(char *ip)
+int _pingMyTarget(const char *ip)
 {
     HANDLE hIcmpFile;
     unsigned long ipaddr = INADDR_NONE;
@@ -231,9 +231,9 @@ int my_trace(CURL *handle, curl_infotype type,
              void *userp)
 {
   if (type == CURLINFO_HEADER_OUT) {
-    Activity += strlen(data);
-    data[strstr(data, "\r\n\r\n") - data] = '\0';
-    stt->doEmitionAddOutData(QString(data));
+	  data[size] = '\0';
+	  Activity += strlen(data);
+	  stt->doEmitionAddOutData(QString(data));
   }
 
   return 0;
@@ -284,7 +284,6 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut);
 
         if(postData != NULL) {
-
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
         };
 
@@ -300,29 +299,61 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
         }
 
-        if(lpString != NULL) {
-            curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY);
-            //curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, TRUE);
-            curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
-        };
-
-        //if(curl_easy_perform(curl) == CURLE_OK) {
-        if(1) {
-            curl_easy_cleanup(curl);
-        } else {
-            curl_easy_cleanup(curl);
-            return -1;
-        }
-
+		if (lpString != NULL) {
+			curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY);
+			curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, TRUE);
+			curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
+		}; 
+		
+		int res = curl_easy_perform(curl);
+		curl_easy_cleanup(curl);
+		
+		if (res == CURLE_OK || 
+			(port == 21 && buffer->size() > 0)) {
+			if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
+			Activity += buffer->size();
+			return buffer->size();
+		} else {
+			if (res != 28 &&
+				res != 7 &&
+				res != 67 &&
+				res != 52 &&
+				res != 55 &&
+				res != 56) {
+				if (res == 5) {
+					stt->doEmitionRedFoundData("Couldn't resolve proxy. The given proxy host could not be resolved. ");
+					return -2;
+				}
+				else if (res == 13) {
+					stt->doEmitionFoundData("Unknown ftp: (" + QString::number(res) + ") " + 
+						QString(ip) + ":" + QString::number(port));
+					return -2;
+				} else if (res == 8) {
+					stt->doEmitionFoundData("Strange ftp reply: (" + 
+						QString::number(res) + ") " + QString(ip) + 
+						":" + QString::number(port));
+					return -2;
+				}
+				else if (res == 6) {
+					stt->doEmitionFoundData("Couldn't resolve host. (" +
+						QString::number(res) + ") " + QString(ip) +
+						":" + QString::number(port));
+					return -2;
+				}
+				else stt->doEmitionRedFoundData("CURL error: (" + QString::number(res) + ") " + 
+					QString(ip) + ":" + QString::number(port));
+			}
+			++offlines;
+			return -1;
+		}
     } else {
         stt->doEmitionRedFoundData("Curl error.");
         return -1;
-    };
+	};
 
-    if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
-
-    Activity += buffer->size();
-    return buffer->size();
+	if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
+	Activity += buffer->size();
+	return buffer->size();
 }
 
 int Connector::_ConnectToPort(string ip, int port, char *hl)
@@ -338,17 +369,17 @@ int Connector::_ConnectToPort(string ip, int port, char *hl)
     std::string buffer;
     int size = 0;
 
-    if(port == 22) size = _SSHLobby(ip.c_str(), port, &buffer);
+	if (port == 22) size = _SSHLobby(ip.c_str(), port, &buffer);
     else size = nConnect(ip.c_str(), port, &buffer);
 
-//    if(size > 0)
-//    {
-//        ++Alive;
-//        ++found;
-//        stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
-//        Lexems lx;
-//        lx._filler(port, buffer.c_str(), ip, size, &lx, hl);
-//    };
+    if(size > 0)
+    {
+        ++Alive;
+        ++found;
+        stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
+        Lexems lx;
+        lx._filler(port, buffer.c_str(), (char*)ip.c_str(), size, &lx, hl);
+    };
 
     return 0;
 }

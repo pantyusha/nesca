@@ -16,6 +16,7 @@ passwd
 qwerty
 meinsm
 monitor
+user
 test
 sysadm
 admin123
@@ -24,6 +25,7 @@ Admin
 12344321
 toor
 qwerty123
+1q2w3e4r
 987654321
 system
 telecom
@@ -45,6 +47,7 @@ administrator
 sys
 guest
 backup
-Fujiyama
 fujiyama
 super
+P@ssw0rd
+passw0rd

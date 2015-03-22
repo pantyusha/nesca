@@ -1,4 +1,4 @@
-#include <Threader.h>
+#include "Threader.h"
 
 int Threader::threadId = 0;
 std::mutex Threader::m;
@@ -8,22 +8,23 @@ std::queue<std::string> Threader::ipQueue;
 
 void Threader::fireThread(std::string ip, void *func(void)) {
 
-    ipQueue.push(ip);
+
+	std::unique_lock<std::mutex> lk(m);
+	ipQueue.push(ip);
     if(threadId < gThreads) {
         ++threadId;
         std::thread workerThread(func);
         workerThread.detach();
     }
 
-    std::unique_lock<std::mutex> lk(m);
     ready = true;
     Threader::cv.notify_one();
     Sleep(gThreadDelay);
 }
 
-//std::queue<std::string> empty;
 void Threader::cleanUp() {
-    //std::swap( ipQueue, empty );
-    ipQueue = {};
+	std::unique_lock<std::mutex> lk(m);
+	lk.unlock();
+	lk.release();
     threadId = 0;
 }

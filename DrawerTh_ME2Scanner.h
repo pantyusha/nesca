@@ -10,6 +10,7 @@ class DrawerTh_ME2Scanner : public QThread
 	Q_OBJECT
 
 public:
+	static int vecSize;
     static QList<QGraphicsPathItem*> itmList;
 	static QVector<QPointF> polyVect;
 

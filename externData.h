@@ -43,7 +43,7 @@ extern unsigned int Activity;
 extern char trcSrv[256], trcScr[256], trcProxy[128], trcPersKey[64],
 	ircServer[32], ircPort[32], ircProxy[64], ircProxyPort[8], ircNick[32],
     trcPort[32], trcSrvPortLine[32], saveEndIP[128],
-	gRange[128], gFirstDom[128], gPorts[65536], endIP2[128], 
+    gRange[128], gFirstDom[128], gPorts[65536],
     gVER[16],
     gProxyIP[64], gProxyPort[8],
     currentIP[MAX_ADDR_LEN],

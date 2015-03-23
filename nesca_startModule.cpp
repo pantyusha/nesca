@@ -245,71 +245,57 @@ void _SaveBackupToFile()
 		ZeroMemory(saveStr, sizeof(saveStr));
 	};
 
-		strcpy(saveStr, "[NDBSERVER]:");
-		strcat(saveStr, trcSrv);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[NDBSERVER]:%s\n", trcSrv);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[NDBSCRIPT]:");
-		strcat(saveStr, trcScr);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[NDBSCRIPT]:%s\n", trcScr);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[NDBPORT]:");
-		strcat(saveStr, trcSrvPortLine);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[NDBPORT]:%s\n", trcSrvPortLine);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[PROXY]:");
-		strcat(saveStr, trcProxy);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[PROXY]:%s\n", trcProxy);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[PROXYPORT]:");
-		strcat(saveStr, trcPort);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[PROXYPORT]:%s\n", trcPort);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[IRCSERVER]:");
-		strcat(saveStr, ircServer);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[IRCSERVER]:%s\n", ircServer);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[IRCPORT]:");
-		strcat(saveStr, ircPort);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[IRCPORT]:%s\n", ircPort);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[IRCPROXY]:");
-		strcat(saveStr, ircProxy);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[IRCPROXY]:%s\n", ircProxy);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[IRCPROXYPORT]:");
-		strcat(saveStr, ircProxyPort);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[IRCPROXYPORT]:%s\n", ircProxyPort);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[IRCNICK]:");
-		strcat(saveStr, ircNick);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[IRCNICK]:%s\n", ircNick);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
-		
-		strcpy(saveStr, "[PING]:");
-		strcat(saveStr, gPingNScan ? "true" : "false");
-		strcat(saveStr, "\n");
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+
+        sprintf(saveStr, "[PING]:%s\n", gPingNScan ? "true" : "false");
+        strcat(saveBuffer, saveStr);
+        ZeroMemory(saveStr, sizeof(saveStr));
+
+        sprintf(saveStr, "[SHUFFLE]:%s\n", gShuffle ? "true" : "false");
+        strcat(saveBuffer, saveStr);
+        ZeroMemory(saveStr, sizeof(saveStr));
+
+        sprintf(saveStr, "[NSTRACK]:%s\n", trackerOK ? "true" : "false");
+        strcat(saveBuffer, saveStr);
+        ZeroMemory(saveStr, sizeof(saveStr));
 
         sprintf(saveStr, "[PING_TO]: %d\n", gPingTimeout);
 		strcat(saveBuffer, saveStr);

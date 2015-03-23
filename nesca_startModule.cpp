@@ -189,21 +189,7 @@ void _SaveBackupToFile()
 
         if(strlen(endStr) > 0)
 		{
-			strcpy(saveStr, "[SESSION]:");
-			strcat(saveStr, std::to_string(gMode).c_str());
-            strcat(saveStr, " ");
-            strcat(saveStr, endStr);
-			if(gMode == 1)
-			{
-				strcat(saveStr, " ");
-				strcat(saveStr, top_level_domain);
-			};
-			strcat(saveStr, " ");
-			strcat(saveStr, std::to_string(gThreads).c_str());
-			strcat(saveStr, " ");
-			strcat(saveStr, gPorts);
-
-			strcat(saveStr, "\n");
+            sprintf(saveStr, "[SESSION]:%d %s %s %d %s\n", gMode, endStr, (gMode ? top_level_domain : ""), gThreads, gPorts);
 			strcat(saveBuffer, saveStr);
 			ZeroMemory(saveStr, sizeof(saveStr));
 		};
@@ -232,15 +218,7 @@ void _SaveBackupToFile()
 			else stt->doEmitionRedFoundData("[_saver] Cannot open file.");
 		};
 
-		strcpy(saveStr, "[SESSION]:");
-		strcat(saveStr, std::to_string(gMode).c_str());
-		strcat(saveStr, " RESTORE_IMPORT_SESSION");
-		strcat(saveStr, " ");
-		strcat(saveStr, std::to_string(gThreads).c_str());
-		strcat(saveStr, " ");
-		strcat(saveStr, gPorts);
-
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[SESSION]:%d RESTORE_IMPORT_SESSION %d %s\n", gMode, gThreads, gPorts);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 	};
@@ -804,11 +782,13 @@ inline void progressOutput(long long unsigned int target) {
 void verboseProgress(long long unsigned int target, const char *ip) {
 
     stt->doEmitionIPRANGE(QString(ip));
+    strcpy(currentIP, ip);
     progressOutput(target);
 }
-void verboseProgressDNS(long long unsigned int target, const char *ip, const char *TLD) {
+void verboseProgressDNS(long long unsigned int target, const char *ip, const char *TLD, const char *mask) {
 
     stt->doEmitionIPRANGE(QString(ip) + QString(TLD));
+    strcpy(currentIP, mask);
     progressOutput(target);
 }
 
@@ -2071,9 +2051,8 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
         while(cons >= gThreads && globalScanFlag) Sleep(300);
         if(!globalScanFlag) return 0;
 
-        string res = string(mask);
-		verboseProgressDNS(--gTargets, res.c_str(), top_level_domain);
-        res += string(top_level_domain);
+        verboseProgressDNS(--gTargets, mask, top_level_domain, saveMask);
+        string res = string(mask) + string(top_level_domain);
 
 		++indexIP;
 

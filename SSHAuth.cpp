@@ -94,6 +94,10 @@ int SSHBrute(const char* host, int port, std::string *buffer, const char *banner
         if(!globalScanFlag) break;
         strcpy(temp, sshlpLst[i]);
         ptr1 = strstr(temp, ":");
+		if (ptr1 == NULL) {
+			stt->doEmitionRedFoundData("[SSH]Wrong format: " + QString(temp));
+			return -1;
+		}
         sz = ptr1 - temp;
         strncpy(login, temp, sz);
         strcpy(pass, ptr1 + 1);

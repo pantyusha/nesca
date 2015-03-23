@@ -86,12 +86,8 @@ OTHER_FILES += \
     nesca_3.rc
 
 
-unix|win32: LIBS += -lssl
-
 unix|win32: LIBS += -lssh
 
 unix|win32: LIBS += -lcrypto
-
-unix|win32: LIBS += -lpthread
 
 unix|win32: LIBS += -lcurl

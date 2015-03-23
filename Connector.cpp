@@ -301,7 +301,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 
 		if (lpString != NULL) {
 			curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY);
-			curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, TRUE);
+            curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, 1L);
 			curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
 		}; 
 		

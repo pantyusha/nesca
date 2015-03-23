@@ -1,68 +1,6 @@
 ﻿#include "STh.h"
-#include <libssh/libssh.h>
-#include <sstream>
-#include <openssl/md5.h>
-#include "mainResources.h"
-#include "externFunctions.h"
 #include "externData.h"
-#include "openssl/err.h"
-#include "Utils.h"
 #include "BruteUtils.h"
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-#include <iphlpapi.h>
-#include <icmpapi.h>
-#pragma comment(lib, "iphlpapi.lib")
-#endif
-int gMaxBrutingThreads = 200;
-fd_set write_fs;
-
-
-int _countFTPDirectories(char *recvBuff){
-	if(strcmp(recvBuff, "dummy\r\n") == 0) return 0;
-	int dirCounter = 0;
-	if(recvBuff[strlen(recvBuff) - 1] != '\n') strcat(recvBuff, "\n");
-	char *dirPtr = strstr(recvBuff, "\n");
-	while(dirPtr != NULL){
-		++dirCounter;
-		dirPtr = strstr(dirPtr + 1, "\n");
-	};
-	return dirCounter;
-}
-
-bool debugWriteWait = false;
-void _DebugWriteHTMLToFile(char *request, char *buff)
-{
-	while(debugWriteWait) Sleep(50);
-	debugWriteWait = true;
-	FILE *df = fopen("./debugData.txt", "a");
-
-	if(df != NULL)
-	{
-		fputs(request, df);
-		fputs("==========================\n", df);
-		fputs(buff, df);
-		fputs("\n==========================\n==========================\n\n", df);
-		fclose(df);
-	}
-	else
-	{
-		stt->doEmitionRedFoundData("[DEBUG] Cannot open debugData.txt");
-	};
-	debugWriteWait = false;
-}
-
-unsigned char tl(unsigned char d)
-{
-	if(d >= 192 && d <= 223)
-    {
-        return (unsigned char)(d + 32);
-	}
-	else 
-	{
-		return tolower(d);
-	};
-}
 
 int recvWT( 
 	int Socket, 
@@ -90,250 +28,6 @@ int recvWT(
 		return(n) ; /* trouble */ 
 }
 
-std::string toLowerStr(const char *str)
-{
-    if(str != NULL) {
-        int tsz = strlen(str);
-        char *strr = new char[tsz+1];
-        ZeroMemory(strr, tsz);
-
-        for (int i = 0; i < tsz; i++)
-        {
-            strr[i] = tl(str[i]);
-        };
-
-        memset(strr + tsz, '\0', 1);
-
-        std::string tstr = std::string(strr);
-        delete []strr;
-        return tstr;
-    } else return "";
-}
-
-int OpenConnection(SOCKET *sock, const char *hostname, int port)
-{   
-	struct hostent *host;
-	struct sockaddr_in addr;
-	if(strlen(hostname) == 0) 
-	{
-		return -1;
-	};
-	if(port < 0 || port > 65535) 
-	{
-		return -1;
-	};
-
-	if ( (host = gethostbyname(hostname)) == NULL )
-	{
-		++offlines;
-		if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(hostname) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(hostname) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _connection: Bad IP.");
-		return -1;
-	};
-	*sock = socket(PF_INET, SOCK_STREAM, 0);
-	ZeroMemory(&addr, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(port);
-	addr.sin_addr.s_addr = *(long*)(host->h_addr);
-	if ( connect(*sock, (struct sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR )
-	{
-		++offlines;
-		CSSOCKET(*sock);
-		return -1;
-	};
-	return 0;
-}
-
-void _baSSLWorker(char *ip, char *request, char *rvBuff)
-{
-	const SSL_METHOD *method = SSLv3_client_method();  /* Create new client-method instance */
-	SSL_CTX *ctx = SSL_CTX_new(method);   /* Create new context */
-
-	if(ctx != NULL)
-	{
-		SOCKET sock;
-		SSL_CTX_set_timeout(ctx, gTimeOut);
-		int result = OpenConnection(&sock, ip, 443);
-		if(result >= 0)
-		{
-			SSL *ssl = NULL;
-			ssl = SSL_new(ctx);      /* create new SSL connection state */
-			if(ssl != NULL)
-			{
-				SSL_set_fd(ssl, sock);    /* attach the socket descriptor */
-				if(SSL_connect(ssl))
-				{
-					SSL_write(ssl, request, strlen(request));
-					if(MapWidgetOpened) stt->doEmitionAddOutData(QString(request));
-
-					char tempBuff[128] = {0};
-					int x = 1;
-					int xx = 0;
-
-                    ZeroMemory(rvBuff, sizeof(*rvBuff));
-					while(xx < 512)
-					{
-						x = SSL_read(ssl, tempBuff, sizeof(tempBuff));
-						if(x <= 0) break;
-						Activity += x;
-						xx += x;
-						strncat(rvBuff, tempBuff, x);
-						ZeroMemory(tempBuff, sizeof(tempBuff));
-					};
-
-					if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(rvBuff));
-					if(HTMLDebugMode) _DebugWriteHTMLToFile(request, rvBuff);
-				};
-				SSL_shutdown(ssl);
-				SSL_free(ssl);
-				CSSOCKET(sock);
-				SSL_CTX_free(ctx);        /* release context */
-				return;
-			};
-		};		
-		CSSOCKET(sock);
-		SSL_CTX_free(ctx);        /* release context */
-	}
-	else
-	{
-		char buff1[512] = {0};
-		char buff2[512] = {0};
-		
-		ERR_error_string(ERR_peek_error(), buff1);
-		ERR_error_string(ERR_peek_last_error(), buff2);
-		stt->doEmitionRedFoundData(QString(ip) + " SSL(InitCTX) 1:" + QString(buff1) + " 2:" + QString(buff2));
-	};
-}
-
-char *_getAttributeValue(char *str, char *val, char *ip, int port)
-{
-	char res[1024] = {0};
-	char *ptrStart = NULL; 
-	char *ptrS1End = NULL;
-	char *ptrS2End = NULL;
-
-	ptrStart = strstri(str, val);
-	if(ptrStart != NULL)
-	{
-		if(strstri(ptrStart, "qop=auth") != NULL) return "auth";
-		ptrS1End = _findFirst(ptrStart, "\"");
-		if(ptrS1End != NULL)
-		{
-			ptrS2End = _findFirst(ptrS1End + 1, "\"");
-			if(ptrS2End != NULL)
-			{
-				int sz = ptrS2End - ptrS1End - 1;
-
-				if(sz != 0 && sz < 1024) strncpy(res, ptrS1End + 1, sz);
-				else return "";
-
-				return res;
-			}
-			else
-			{
-				stt->doEmitionRedFoundData("[_getAttributeValue] Error retrieving value: \"" + QString(val) + "\" IP:<a style=\"color:#819121;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" + QString(ip) + ":" + QString::number(port) + "</a>");
-				return "";				
-			};
-		}
-		else
-		{
-			stt->doEmitionRedFoundData("[_getAttributeValue] Error retrieving value: \"" + QString(val) + "\" IP:<a style=\"color:#919121;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" + QString(ip) + ":" + QString::number(port) + "</a>");
-			return "";				
-		};
-	}
-	else
-	{
-		stt->doEmitionRedFoundData("[_getAttributeValue] Error retrieving value: \"" + QString(val) + "\" IP:<a style=\"color:#819121;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" + QString(ip) + ":" + QString::number(port) + "</a>");
-		return "";
-	};
-}
-
-#define HASHLEN 16
-typedef char HASH[HASHLEN];
-#define HASHHEXLEN 32
-typedef char HASHHEX[HASHHEXLEN+1];
-#define IN
-#define OUT
-void CvtHex(
-    IN HASH Bin,
-    OUT HASHHEX Hex
-    )
-{
-    unsigned short i;
-    unsigned char j;
-
-    for (i = 0; i < HASHLEN; i++) {
-        j = (Bin[i] >> 4) & 0xf;
-        if (j <= 9)
-            Hex[i*2] = (j + '0');
-         else
-            Hex[i*2] = (j + 'a' - 10);
-        j = Bin[i] & 0xf;
-        if (j <= 9)
-            Hex[i*2+1] = (j + '0');
-         else
-            Hex[i*2+1] = (j + 'a' - 10);
-    };
-    Hex[HASHHEXLEN] = '\0';
-};
-char *_makeDigestResponse(
-	char *login, 
-	char *realm, 
-	char *pass, 
-	char *path, 
-	char *nonce,
-	char *pszNonceCount,
-	char *pszCNonce,
-	char *pszQop
-	)
-{
-	char HA1[MD5_DIGEST_LENGTH];
-	char HA2[MD5_DIGEST_LENGTH];
-	char HA1Data[512] = {0};
-	char HA2Data[512] = {0};
-
-	strcpy(HA1Data, login);
-	strcat(HA1Data, ":");
-	strcat(HA1Data, realm);
-	strcat(HA1Data, ":");
-	strcat(HA1Data, pass);
-
-	strcpy(HA2Data, "GET:");
-	strcat(HA2Data, path);
-
-	MD5((unsigned char*) HA1Data, strlen(HA1Data), (unsigned char*)HA1);
-	MD5((unsigned char*) HA2Data, strlen(HA2Data), (unsigned char*)HA2);
-
-	char responseData[512] = {0};
-	char *HA1MD5 = new char[64];
-	char *HA2MD5 = new char[64];
-	ZeroMemory(HA1MD5, 64);
-	ZeroMemory(HA2MD5, 64);
-
-	CvtHex(HA1, HA1MD5);
-	strcpy(responseData, HA1MD5);
-	strcat(responseData, ":");
-	strcat(responseData, nonce);
-	strcat(responseData, ":");
-	if (*pszQop != NULL) {
-		strcat(responseData, pszNonceCount);
-		strcat(responseData, ":");
-		strcat(responseData, pszCNonce);
-		strcat(responseData, ":");
-		strcat(responseData, pszQop);
-		strcat(responseData, ":");
-      };
-	CvtHex(HA2, HA2MD5);
-	strcat(responseData, HA2MD5);
-	delete []HA1MD5;
-	delete []HA2MD5;
-
-	char response[MD5_DIGEST_LENGTH];
-	MD5((unsigned char*) responseData, strlen(responseData), (unsigned char*)response);
-	char responseMD5[64] = {0};
-	CvtHex(response, responseMD5);
-	return (char*)responseMD5;
-}
-
 int _webLoginSeq(char *request, char *login, char *pass, const char *ip, int port, int passCounter, char *type, std::vector<char*> negVector)
 {
 	char recvBuff[256] = {0};
@@ -348,17 +42,11 @@ int _webLoginSeq(char *request, char *login, char *pass, const char *ip, int por
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ip);  
 	else if(host=gethostbyname (ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];  
-	else 
-	{
-		return -1;
-	};
+    else return -1;
 #else
 	if(inet_addr(ip) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ip);  
     else if(host=gethostbyname(ip)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
-	else 
-	{
-		return -1;
-	};
+    else return -1;
 #endif
 	sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 	int cCode = connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr));
@@ -498,13 +186,13 @@ lopaStr _IPCameraBrute(const char *ip, int port, char *SPEC)
 
 	for(int i = 0; i < MaxLogin; i++)
 	{
-		if(globalScanFlag == false) break;
+        if(!globalScanFlag) break;
 		if(strcmp(loginLst[i], " ") == 0) continue;
 		ZeroMemory(login, sizeof(login));
 		strcpy(login, loginLst[i]);
 		for(int j = 0; j < MaxPass; j++)
 		{
-			if(globalScanFlag == false) break;
+            if(!globalScanFlag) break;
 			if(strcmp(passLst[j], " ") == 0) continue;
 			
 			ZeroMemory(pass, sizeof(pass));
@@ -513,197 +201,55 @@ lopaStr _IPCameraBrute(const char *ip, int port, char *SPEC)
 			ZeroMemory(request, sizeof(request));
 			if(strcmp(SPEC, "IPC") == 0)
 			{
-				strcpy(request, "GET /login.xml?user=");
-				strcat(request, login);
-				strcat(request, "&usr=");
-				strcat(request, login);
-				strcat(request, "&password=");
-				strcat(request, pass);
-				strcat(request, "&pwd=");
-				strcat(request, pass);
-				strcat(request, " HTTP/1.1\r\nHost: ");
-				strcat(request, ip);				
-				if(port != 80){
-					strcat(request, ":");
-					char tbuff[16] = {0};
-                    sprintf(tbuff, "%d", port);
-                    strcat(request, tbuff);
-				};
-				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
-			}
+                sprintf(request, "GET /login.xml?user=%s&usr=%s&password=%s&pwd=%s HTTP/1.1\r\nHost: %s:%d\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n",
+                        login, login, pass, pass, ip, port);
+            }
 			else if(strcmp(SPEC, "GEO") == 0)
 			{
-				strcpy(request, "GET /Login.cgi?username=");
-				strcat(request, login);
-				strcat(request, "&password=");
-				strcat(request, pass);
-				strcat(request, " HTTP/1.1\r\nHost: ");
-				strcat(request, ip);
-				if(port != 80){
-					strcat(request, ":");
-					char tbuff[16] = {0};
-                    sprintf(tbuff, "%d", port);
-                    strcat(request, tbuff);
-				};
-				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
-			}
+                sprintf(request, "GET /Login.cgi?username=%s&password=%s HTTP/1.1\r\nHost: %s:%d\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n",
+                        login, pass, ip, port);
+            }
 			else if(strcmp(SPEC, "EasyCam") == 0)
 			{
-				strcpy(request, "GET /login.xml?user=");
-				strcat(request, login);
-				strcat(request, "&usr=");
-				strcat(request, login);
-				strcat(request, "&password=");
-				strcat(request, pass);
-				strcat(request, "&pwd=");
-				strcat(request, pass);
-				strcat(request, " HTTP/1.1\r\nHost: ");
-				strcat(request, ip);
-				if(port != 80){
-					strcat(request, ":");
-					char tbuff[16] = {0};
-                    sprintf(tbuff, "%d", port);
-                    strcat(request, tbuff);
-				};
-				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
-			}
+                sprintf(request, "GET /login.xml?user=%s&usr=%s&password=%s&pwd=%s HTTP/1.1\r\nHost: %s:%d\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n",
+                        login, login, pass, pass, ip, port);
+            }
 			else if(strcmp(SPEC, "Foscam") == 0)
 			{
-				strcpy(request, "GET /cgi-bin/CGIProxy.fcgi?usr=");
-				strcat(request, login);
-				strcat(request, "&pwd=");
-				strcat(request, pass);
-				strcat(request, "&cmd=logIn&usrName=");
-				strcat(request, login);
-				strcat(request, "&pwd=");
-				strcat(request, pass);
-				strcat(request, " HTTP/1.1\r\nHost: ");
-				strcat(request, ip);
-				if(port != 80){
-					strcat(request, ":");
-					char tbuff[16] = {0};
-                    sprintf(tbuff, "%d", port);
-                    strcat(request, tbuff);
-				};
-				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
-			}
+                sprintf(request, "GET /cgi-bin/CGIProxy.fcgi?usr=%s&pwd=%s&cmd=logIn&usrName=%s&pwd=%s HTTP/1.1\r\nHost: %s:%d\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n",
+                        login, pass, login, pass, ip, port);
+            }
 			else if(strcmp(SPEC, "AVIOSYS") == 0)
 			{
-				strcpy(request, "GET /check_user.html?UserName=");
-				strcat(request, login);
-				strcat(request, "&PassWord=");
-				strcat(request, pass);
-				strcat(request, " HTTP/1.1\r\nHost: ");
-				strcat(request, ip);
-				if(port != 80){
-					strcat(request, ":");
-					char tbuff[16] = {0};
-                    sprintf(tbuff, "%d", port);
-                    strcat(request, tbuff);
-				};
-				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
-			}
+                sprintf(request, "GET /check_user.html?UserName=%s&PassWord=%s HTTP/1.1\r\nHost: %s:%d\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n",
+                        login, pass, ip, port);
+            }
 			else if(strcmp(SPEC, "BUFFALO") == 0)
-			{
-				strcpy(request, "POST /rpc/login HTTP/1.1\r\nHost: ");
-				strcat(request, ip);
-				if(port != 80){
-					strcat(request, ":");
-					char tbuff[16] = {0};
-                    sprintf(tbuff, "%d", port);
-                    strcat(request, tbuff);
-				};
-				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: keep-alive");
-				int loginLength = strlen(login);
-				int passLength = strlen(pass);
-				int sz = loginLength + passLength + strlen("user=&password=");
-				char *passString = new char[sz + 1];
-				ZeroMemory(passString, sizeof(passString));
-				strcpy(passString, "user=");
-				strcat(passString, login);
-				strcat(passString, "&password=");
-				strcat(passString, pass);
-				strcat(request, "\r\nContent-Length: ");
-				char tempBuff[16] = {0};
-                sprintf(tempBuff, "%d", sz);
-                strcat(request, tempBuff);
-				strcat(request, "\r\n\r\n");
-				strcat(request, passString);
-				delete []passString;
+            {
+                int sz = strlen(login) + strlen(pass) + strlen("user=&password=");
+
+                sprintf(request, "POST /rpc/login HTTP/1.1\r\nHost: %s:%d\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: keep-alive\r\nContent-Length: %d\r\n\r\nuser=%s&password=%s",
+                        ip, port, sz, login, pass);
+
 			}
 			else if(strcmp(SPEC, "DVS") == 0)
-			{
-				strcpy(request, "POST /login HTTP/1.1\r\nHost: ");
-				strcat(request, ip);
-				if(port != 80){
-					strcat(request, ":");
-                    char tbuff[16] = {0};
-                    sprintf(tbuff, "%d", port);
-                    strcat(request, tbuff);
-				};
-				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: keep-alive");
-				int loginLength = strlen(login);
-				int passLength = strlen(pass);
-				int sz = loginLength + passLength + strlen("langs=en&user=&password=&submit=+Login+");
-				char *passString = new char[sz + 1];
-				ZeroMemory(passString, sizeof(passString));
-				strcpy(passString, "langs=en&user=");
-				strcat(passString, login);
-				strcat(passString, "&password=");
-				strcat(passString, pass);
-				strcat(passString, "&submit=+Login+");
-				strcat(request, "\r\nContent-Length: ");
-				char tempBuff[16] = {0};
-                sprintf(tempBuff, "%d", sz);
-                strcat(request, tempBuff);
-				strcat(request, "\r\n\r\n");
-				strcat(request, passString);
-				delete []passString;
+            {
+                int sz = strlen(login) + strlen(pass) + strlen("langs=en&user=&password=&submit=+Login+");
+
+                sprintf(request, "POST /login HTTP/1.1\r\nHost: %s:%d\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: keep-alive\r\nContent-Length: %d\r\n\r\nlangs=en&user=%s&password=%s&submit=+Login+",
+                        ip, port, sz, login, pass);
 			}
 			else if(strcmp(SPEC, "IPCAM") == 0)
-			{
-				strcpy(request, "GET /cgi-bin/hi3510/checkuser.cgi?&-name=");
-				strcat(request, login);
-				strcat(request, "&-passwd=");
-				strcat(request, pass);
-				strcat(request, "&-time=1416767330831 HTTP/1.1\r\nHost: ");
-				strcat(request, ip);
-				if(port != 80){
-					strcat(request, ":");
-					char tbuff[16] = {0};
-                    sprintf(tbuff, "%d", port);
-                    strcat(request, tbuff);
-				};
-				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n");
-			
+            {
+                sprintf(request, "GET /cgi-bin/hi3510/checkuser.cgi?&-name=%s&-passwd=%s&-time=1416767330831 HTTP/1.1\r\nHost: %s:%d\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: close\r\n\r\n",
+                     login, pass, ip, port);
 			}
 			else if(strcmp(SPEC, "IEORFOREFOX") == 0)
 			{
-				strcpy(request, "POST /logincheck.rsp?type=1 HTTP/1.1\r\nHost: ");
-				strcat(request, ip);
-				if(port != 80){
-					strcat(request, ":");
-					char tbuff[16] = {0};
-                    sprintf(tbuff, "%d", port);
-                    strcat(request, tbuff);
-				};
-				strcat(request, "\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: keep-alive");
-				int loginLength = strlen(login);
-				int passLength = strlen(pass);
-				int sz = loginLength + passLength + strlen("username=&userpwd=");
-				char *passString = new char[sz + 1];
-				ZeroMemory(passString, sizeof(passString));
-				strcpy(passString, "username=");
-				strcat(passString, login);
-				strcat(passString, "&userpwd=");
-				strcat(passString, pass);
-				strcat(request, "\r\nContent-Length: ");
-				char tempBuff[16] = {0};
-                sprintf(tempBuff, "%d", sz);
-                strcat(request, tempBuff);
-				strcat(request, "\r\n\r\n");
-				strcat(request, passString);
-				delete []passString;
+                int sz = strlen(login) + strlen(pass) + strlen("username=&userpwd=");
+
+                sprintf(request, "POST /logincheck.rsp?type=1 HTTP/1.1\r\nHost: %s:%d\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; us; rv:1.9.0.11) Gecko/2009060308 Ubuntu/9.04 (jaunty) Firefox/3.0.11\r\nAccept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1\r\nAccept-Language: en-US,ru;q=0.9,en;q=0.8\r\nAccept-Charset: iso-8859-1, utf-8, utf-16, *;q=0.1\r\nAccept-Encoding: text, identity, *;q=0\r\nConnection: keep-alive\r\nContent-Length: %d\r\n\r\nusername=%s&userpwd=%s",
+                        ip, port, sz, login, pass);
 			};
 
 			int res = _webLoginSeq(request, login, pass, ip, port, passCounter, SPEC, negVector);

@@ -9,7 +9,7 @@ bool FTPA::checkOutput(const string *buffer) {
     return false;
 }
 
-lopaStr FTPA::_FTPBrute(const char *ip, const int port, PathStr *ps) {
+lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
     string buffer;
     string lpString;
     lopaStr lps;
@@ -54,11 +54,11 @@ lopaStr FTPA::_FTPBrute(const char *ip, const int port, PathStr *ps) {
     return lps;
 }
 
-lopaStr FTPA::_FTPLobby(const char *ip, const int port, PathStr *ps) {
+lopaStr FTPA::FTPLobby(const char *ip, const int port, PathStr *ps) {
     while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
     BruteUtils::BConInc();
-    const lopaStr &lps = _FTPBrute(ip, port, ps);
+    const lopaStr &lps = FTPBrute(ip, port, ps);
     BruteUtils::BConDec();
 
     return lps;

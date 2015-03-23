@@ -47,7 +47,6 @@ bool smBit_5 = false;
 bool smBit_6 = false;
 bool smBit_7 = false;
 bool smBit_8 = false;
-bool debugFileOK = false;
 bool privateMsgFlag = false;
 
 char inputStr[256] = {0};
@@ -2846,9 +2845,7 @@ void nesca_3::ConnectEvrthng()
 	connect ( ui->startScanButton_3, SIGNAL( clicked() ), this, SLOT( startScanButtonClicked() ) );
 	connect ( ui->startScanButton_4, SIGNAL( clicked() ), this, SLOT( startScanButtonClickedDNS() ) );
 	connect ( ui->shuffle_onoff, SIGNAL(toggled(bool)), this, SLOT(ChangeShuffle(bool)));
-	connect ( ui->trackerOnOff, SIGNAL(toggled(bool)), this, SLOT(ChangeTrackerOK(bool)));
-//	connect ( ui->pingingOnOff, SIGNAL( toggled(bool) ), this, SLOT( ChangePingerOK(bool) ) );
-	connect ( ui->debugFileOnOff, SIGNAL( toggled(bool) ), this, SLOT( ChangeDebugFileState(bool) ) );
+    connect ( ui->trackerOnOff, SIGNAL(toggled(bool)), this, SLOT(ChangeTrackerOK(bool)));
 	connect ( ui->importThreads, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelThreads_ValueChanged(QString) ) );
 	connect ( ui->threadLine, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelThreads_ValueChanged(QString) ) );
 	connect ( ui->PingTO, SIGNAL( textChanged(QString) ), this, SLOT( PingTO_ChangeValue(QString) ) );
@@ -2969,7 +2966,7 @@ void _LoadPersInfoToLocalVars(int savedTabIndex) {
         };
 
         strncpy(gPorts, ("-p" + ui->portLine->text()).toLocal8Bit().data(), 65536);
-        gPorts[ui->lineEditPort->text().size()] = '\0';
+        gPorts[ui->lineEditPort->text().length() + 2] = '\0';
     }
     else if(savedTabIndex == 1)
     {
@@ -2979,7 +2976,7 @@ void _LoadPersInfoToLocalVars(int savedTabIndex) {
         strcpy(currentIP, ui->lineEditStartIPDNS->text().toLocal8Bit().data());
         strcpy(top_level_domain, ui->lineILVL->text().toLocal8Bit().data());
         strncpy(gPorts, ("-p" + ui->lineEditPort->text()).toLocal8Bit().data(), 65536);
-        gPorts[ui->lineEditPort->text().size()] = '\0';
+        gPorts[ui->lineEditPort->text().length() + 2] = '\0';
     };
 
     strcpy(trcSrv, ui->lineTrackerSrv->text().toLocal8Bit().data());
@@ -3398,19 +3395,9 @@ void nesca_3::ChangePingerOK(bool val)
 {
 	ui->PingTO->setEnabled(val);
 	gPingNScan = val;
-	if(val == false)
-	{
-		ui->PingTO->setStyleSheet("color: rgb(116, 116, 116);background-color: rgb(56, 56, 56);border:none;");
-	}
-	else
-	{
-		ui->PingTO->setStyleSheet("color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;");
-	};
-}
 
-void nesca_3::ChangeDebugFileState(bool val)
-{
-	debugFileOK = val;
+    if(val == false) ui->PingTO->setStyleSheet("color: rgb(116, 116, 116);background-color: rgb(56, 56, 56);border:none;");
+    else ui->PingTO->setStyleSheet("color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;");
 }
 
 void nesca_3::STTTerminate()
@@ -3437,38 +3424,6 @@ void nesca_3::STTTerminate()
 	ui->importButton->setText("Import&&Scan");
 	ui->labelStatus_Value->setText("Idle");
 	stt->terminate();
-}
-
-bool dfLocked = false;
-void writeDebugFile(QString str)
-{
-	while(dfLocked) Sleep(10);
-	QDate qd;
-	char b[8] = {0};
-	char fn[64] = {0};
-	strcpy(fn, "./output_");
-    sprintf(b, "%d", qd.currentDate().day());
-    strcat(fn, b);
-	strcat(fn, "_");
-    sprintf(b, "%d", qd.currentDate().month());
-    strcat(fn, b);
-	strcat(fn, "_");
-    sprintf(b, "%d", qd.currentDate().year());
-    strcat(fn, b);
-	strcat(fn, ".txt");
-
-	FILE *df = fopen(fn, "a");
-	if(df != NULL)
-	{
-		dfLocked = true;
-		fputs(str.toLocal8Bit().data(), df);
-		fclose(df);
-		dfLocked = false;
-	}
-	else
-	{
- 		stt->doEmitionRedFoundData("[DEBUG: Cannot open " + QString(fn) + "]");
-	};
 }
 
 void nesca_3::startScanButtonClicked()
@@ -3624,8 +3579,7 @@ void nesca_3::appendGreenBAData(QString str)
 
 void nesca_3::appendDefaultText(QString str)
 {
-	ui->dataText->append("<p style=\"color: #a1a1a1;\">[" + QTime::currentTime().toString() + "] " + str + "</p>");
-	if(debugFileOK) writeDebugFile(str + "\n");
+    ui->dataText->append("<p style=\"color: #a1a1a1;\">[" + QTime::currentTime().toString() + "] " + str + "</p>");
 }
 
 void nesca_3::appendErrText(QString str)
@@ -3639,26 +3593,22 @@ void nesca_3::appendErrText(QString str)
 		stt->doEmitionIPS("0");
 		ui->startScanButton_3->setText("Start");
 		stt->terminate();
-	};
-	if(debugFileOK) writeDebugFile(str + "\n");
+    };
 }
 
 void nesca_3::appendOKText(QString str)
 {
-	ui->dataText->append("<span style=\"color:#06ff00;\">[" + QTime::currentTime().toString() + "][OK] " + str + "</span>");
-	if(debugFileOK) writeDebugFile(str + "\n");
+    ui->dataText->append("<span style=\"color:#06ff00;\">[" + QTime::currentTime().toString() + "][OK] " + str + "</span>");
 }
 
 void nesca_3::appendNotifyText(QString str)
 {
-	ui->dataText->append("<span style=\"color:#efe100;\">[" + QTime::currentTime().toString() + "][*] " + str + "</span>");
-	if(debugFileOK) writeDebugFile(str + "\n");
+    ui->dataText->append("<span style=\"color:#efe100;\">[" + QTime::currentTime().toString() + "][*] " + str + "</span>");
 }
 
 void nesca_3::appendDebugText(QString str)
 {
-	ui->dataText->append("<span style=\"color:#0084ff;\">[DEBUG] " + str + "</span>");
-	if(debugFileOK) writeDebugFile(str + "\n");
+    ui->dataText->append("<span style=\"color:#0084ff;\">[DEBUG] " + str + "</span>");
 }
 
 

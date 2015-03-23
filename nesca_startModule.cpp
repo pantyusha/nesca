@@ -204,7 +204,13 @@ void _SaveBackupToFile()
 			FILE *savingFile = fopen("tempIPLst.bk", "w");
 			if (savingFile != NULL)
 			{
-				for(int tCounter = gC; tCounter < flCounter; ++tCounter)
+				sprintf(ipRange, "%s-%d.%d.%d.%d\n",
+					currentIP,
+					ipsendfl[gC][0], ipsendfl[gC][1], ipsendfl[gC][2], ipsendfl[gC][3]);
+				fputs(ipRange, savingFile);
+
+				ZeroMemory(ipRange, sizeof(ipRange));
+				for(int tCounter = gC + 1; tCounter < flCounter; ++tCounter)
                 {
                     sprintf(ipRange, "%d.%d.%d.%d-%d.%d.%d.%d\n",
 						ipsstartfl[tCounter][0], ipsstartfl[tCounter][1], ipsstartfl[tCounter][2], ipsstartfl[tCounter][3],

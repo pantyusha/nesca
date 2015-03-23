@@ -36,4 +36,7 @@ result_files-*
 *.LOCAL.*
 *.REMOTE.*
 *.BASE.*
-
+*.o
+nesca
+moc_*
+*~

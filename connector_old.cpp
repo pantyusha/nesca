@@ -143,66 +143,66 @@ int OpenConnection(SOCKET *sock, const char *hostname, int port)
 	return 0;
 }
 
-void _baSSLWorker(char *ip, char *request, char *rvBuff)
-{
-	const SSL_METHOD *method = SSLv3_client_method();  /* Create new client-method instance */
-	SSL_CTX *ctx = SSL_CTX_new(method);   /* Create new context */
+//void _baSSLWorker(char *ip, char *request, char *rvBuff)
+//{
+//	const SSL_METHOD *method = SSLv3_client_method();  /* Create new client-method instance */
+//	SSL_CTX *ctx = SSL_CTX_new(method);   /* Create new context */
 
-	if(ctx != NULL)
-	{
-		SOCKET sock;
-		SSL_CTX_set_timeout(ctx, gTimeOut);
-		int result = OpenConnection(&sock, ip, 443);
-		if(result >= 0)
-		{
-			SSL *ssl = NULL;
-			ssl = SSL_new(ctx);      /* create new SSL connection state */
-			if(ssl != NULL)
-			{
-				SSL_set_fd(ssl, sock);    /* attach the socket descriptor */
-				if(SSL_connect(ssl))
-				{
-					SSL_write(ssl, request, strlen(request));
-					if(MapWidgetOpened) stt->doEmitionAddOutData(QString(request));
+//	if(ctx != NULL)
+//	{
+//		SOCKET sock;
+//		SSL_CTX_set_timeout(ctx, gTimeOut);
+//		int result = OpenConnection(&sock, ip, 443);
+//		if(result >= 0)
+//		{
+//			SSL *ssl = NULL;
+//			ssl = SSL_new(ctx);      /* create new SSL connection state */
+//			if(ssl != NULL)
+//			{
+//				SSL_set_fd(ssl, sock);    /* attach the socket descriptor */
+//				if(SSL_connect(ssl))
+//				{
+//					SSL_write(ssl, request, strlen(request));
+//					if(MapWidgetOpened) stt->doEmitionAddOutData(QString(request));
 
-					char tempBuff[128] = {0};
-					int x = 1;
-					int xx = 0;
+//					char tempBuff[128] = {0};
+//					int x = 1;
+//					int xx = 0;
 
-                    ZeroMemory(rvBuff, sizeof(*rvBuff));
-					while(xx < 512)
-					{
-						x = SSL_read(ssl, tempBuff, sizeof(tempBuff));
-						if(x <= 0) break;
-						Activity += x;
-						xx += x;
-						strncat(rvBuff, tempBuff, x);
-						ZeroMemory(tempBuff, sizeof(tempBuff));
-					};
+//                    ZeroMemory(rvBuff, sizeof(*rvBuff));
+//					while(xx < 512)
+//					{
+//						x = SSL_read(ssl, tempBuff, sizeof(tempBuff));
+//						if(x <= 0) break;
+//						Activity += x;
+//						xx += x;
+//						strncat(rvBuff, tempBuff, x);
+//						ZeroMemory(tempBuff, sizeof(tempBuff));
+//					};
 
-					if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(rvBuff));
-					if(HTMLDebugMode) _DebugWriteHTMLToFile(request, rvBuff);
-				};
-				SSL_shutdown(ssl);
-				SSL_free(ssl);
-				CSSOCKET(sock);
-				SSL_CTX_free(ctx);        /* release context */
-				return;
-			};
-		};		
-		CSSOCKET(sock);
-		SSL_CTX_free(ctx);        /* release context */
-	}
-	else
-	{
-		char buff1[512] = {0};
-		char buff2[512] = {0};
+//					if(MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(rvBuff));
+//					if(HTMLDebugMode) _DebugWriteHTMLToFile(request, rvBuff);
+//				};
+//				SSL_shutdown(ssl);
+//				SSL_free(ssl);
+//				CSSOCKET(sock);
+//				SSL_CTX_free(ctx);        /* release context */
+//				return;
+//			};
+//		};
+//		CSSOCKET(sock);
+//		SSL_CTX_free(ctx);        /* release context */
+//	}
+//	else
+//	{
+//		char buff1[512] = {0};
+//		char buff2[512] = {0};
 		
-		ERR_error_string(ERR_peek_error(), buff1);
-		ERR_error_string(ERR_peek_last_error(), buff2);
-		stt->doEmitionRedFoundData(QString(ip) + " SSL(InitCTX) 1:" + QString(buff1) + " 2:" + QString(buff2));
-	};
-}
+//		ERR_error_string(ERR_peek_error(), buff1);
+//		ERR_error_string(ERR_peek_last_error(), buff2);
+//		stt->doEmitionRedFoundData(QString(ip) + " SSL(InitCTX) 1:" + QString(buff1) + " 2:" + QString(buff2));
+//	};
+//}
 
 char *_getAttributeValue(char *str, char *val, char *ip, int port)
 {

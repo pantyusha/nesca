@@ -27,6 +27,7 @@ int ipsstart[4], ipsend[4],
 	overallPorts, flCounter, octet[4];
 int BA = 0;
 int gPingTimeout = 1;
+int gMaxBrutingThreads = 200;
 unsigned int Activity = 0;
 
 unsigned char **ipsstartfl = NULL, **ipsendfl = NULL, **starterIP = NULL;
@@ -715,6 +716,38 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[]) {
 	//unsigned long gTargets = ip2 - ip1;
 
 	return gTargets;
+}
+
+unsigned char tl(unsigned char d)
+{
+    if(d >= 192 && d <= 223)
+    {
+        return (unsigned char)(d + 32);
+    }
+    else
+    {
+        return tolower(d);
+    };
+}
+
+std::string toLowerStr(const char *str)
+{
+    if(str != NULL) {
+        int tsz = strlen(str);
+        char *strr = new char[tsz+1];
+        ZeroMemory(strr, tsz);
+
+        for (int i = 0; i < tsz; i++)
+        {
+            strr[i] = tl(str[i]);
+        };
+
+        memset(strr + tsz, '\0', 1);
+
+        std::string tstr = std::string(strr);
+        delete []strr;
+        return tstr;
+    } else return "";
 }
 
 void _connect() {

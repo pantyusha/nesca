@@ -2187,6 +2187,11 @@ void nesca_3::changeNSTrackLabel(bool status)
 	else ui->NSTrackStatusLabel->setStyleSheet("background-color: black; border: 1px solid white;");
 }
 
+void nesca_3::onLinkClicked(QUrl link)
+{
+	QDesktopServices::openUrl(link);
+}
+
 void nesca_3::ConnectEvrthng()
 {
 	connect ( pbTh, SIGNAL(upd()), this, SLOT(slotPBUpdate()));

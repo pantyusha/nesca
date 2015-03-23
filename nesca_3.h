@@ -61,6 +61,7 @@ protected:
 	QString GetSSLContent(QString str);
 	void SSLConnect(QString str);
 	protected slots:
+		void onLinkClicked(QUrl);
 		void MaxBrutingThr_ChangeValue(QString str);
 		void ThreadDelay_ChangeValue(QString val);
 		void ChangePingerOK(bool val);

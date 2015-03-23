@@ -109,7 +109,7 @@ int MakePolygonLine(int gWidth)
 
 			if(Alive > 0) 
 			{
-                if(xtx < 261 ) fact7+=1;
+                if(xtx < 254 ) fact7+=1;
                 else fact7-=1;
             };
 		};

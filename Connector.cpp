@@ -329,7 +329,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 						QString(ip) + ":" + QString::number(port));
 					return -2;
 				} else if (res == 8) {
-					stt->doEmitionFoundData("Strange ftp repl. (" + 
+					stt->doEmitionFoundData("Strange ftp reply. (" + 
 						QString::number(res) + ") " + QString(ip) + 
 						":" + QString::number(port));
 					return -2;

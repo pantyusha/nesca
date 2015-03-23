@@ -2724,7 +2724,7 @@ void nesca_3::slotShowServerMsg(QString str)
 
 void nesca_3::DNSLine_ValueChanged()
 {
-	if(globalScanFlag == 0) ui->startScanButton_4->setText("Start");	
+    if(!globalScanFlag) ui->startScanButton_4->setText("Start");
 }
 
 void nesca_3::slotRestoreDefPorts()

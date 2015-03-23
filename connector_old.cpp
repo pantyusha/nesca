@@ -498,13 +498,13 @@ lopaStr _IPCameraBrute(const char *ip, int port, char *SPEC)
 
 	for(int i = 0; i < MaxLogin; i++)
 	{
-		if(globalScanFlag == false) break;
+        if(!globalScanFlag) break;
 		if(strcmp(loginLst[i], " ") == 0) continue;
 		ZeroMemory(login, sizeof(login));
 		strcpy(login, loginLst[i]);
 		for(int j = 0; j < MaxPass; j++)
 		{
-			if(globalScanFlag == false) break;
+            if(!globalScanFlag) break;
 			if(strcmp(passLst[j], " ") == 0) continue;
 			
 			ZeroMemory(pass, sizeof(pass));

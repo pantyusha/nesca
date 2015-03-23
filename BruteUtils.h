@@ -1,6 +1,8 @@
 #ifndef BRUTEUTILS_H
 #define BRUTEUTILS_H
 
+#include "externData.h"
+
 class BruteUtils {
 
 public:

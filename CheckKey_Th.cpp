@@ -1,5 +1,4 @@
 #include "CheckKey_Th.h"
-#include "CheckProxy_Th.h"
 #include "STh.h"
 #include "externData.h"
 #include "externFunctions.h"

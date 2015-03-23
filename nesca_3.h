@@ -24,8 +24,8 @@
 #include "mainResources.h"
 
 extern Ui::nesca_3Class *ui;
-extern bool widgetIsHidden, IRCLogToggled, blinkFlag, disableBlink, QOSWait,
-	connectedToIRC, ME2ScanFlag, QoSScanFlag, VoiceScanFlag, PieStatFlag, proxyEnabledFlag,
+extern bool widgetIsHidden, blinkFlag, disableBlink, QOSWait,
+    ME2ScanFlag, QoSScanFlag, VoiceScanFlag, PieStatFlag, proxyEnabledFlag,
 	smBit_8, smBit_7, smBit_6, smBit_5, smBit_4, smBit_3, smBit_2, smBit_1, printDelimiter;
 extern float QoSStep;
 extern int MaxDataVal;
@@ -67,18 +67,7 @@ protected:
 		void changeNSTrackLabel(bool status);
 		void slotPBUpdate();
         void DNSLine_ValueChanged();
-		void slotChangeCPModeToUTF();
-		void slotChangeCPModeTo1251();
         void slotShowRedVersion();
-		void ChangeTopic();
-		void slotIRCGetTopic(QString str);
-		void slotIRCOfflined();
-		void slotUnhidePopup(QString str, QString senderNick);
-		void slotItemClicked(QListWidgetItem* wi);
-		void slotClearNickList();
-		void slotAppendIRCNick(QString str);
-		void slotShowNicks();
-		void slotBlinkMessage();
         void slotTabChanged(int index);
 		void IPScanSeq();
 		void DNSScanSeq();
@@ -90,22 +79,13 @@ protected:
 		void slotShowServerMsg(QString str);
 		void slotSaveImage(QAction *qwe);
 		void slotUpdatePie();
-		void slotClearLogs();
-		void slotRestartIRC();
+        void slotClearLogs();
 		void slotDrawVoiceGrid(int factor);
-		void slotDrawTextPlacers();
-		void onLinkClicked(QUrl link);
+        void slotDrawTextPlacers();
 		void CheckPersKey();
 		void CheckPersKey(int val);
-		void slotRestoreDefPorts();
-		void ChangeNick();
-		void setNickBox(QString str);
-		void SaySmthng();
-		void ChangeIRCRawLog();
-		void switchToJobMode();
-		void ConnectToIRCServer();
-		void CheckProxy();
-		void ChangeDispalyMode();
+        void slotRestoreDefPorts();
+        void switchToJobMode();
 		void switchDataFields();
 		void importAndScan();
 		void slotQoSAddGrid();
@@ -139,18 +119,10 @@ protected:
 		void appendOKText(QString str);
 		void appendDebugText(QString str);
 		void appendNotifyText(QString str);
-		void appendDefaultText(QString str);
-		void appendRedIRCText(QString str);
-		void appendGreenIRCText(QString str);
-		void appendYellowIRCText(QString str);
-        void appendDefaultIRCText(bool, bool, QString str, QString s);
-		void appendDefaultIRCTextOut(QString str);
-		void appendDefaultIRCRawTextInc(QString str);
-		void appendDefaultIRCRawTextOut(QString str);
+        void appendDefaultText(QString str);
 		void appendGreenBAData(QString str);
 		void appendRedBAData(QString str);
-		void STTTerminate();
-		void playFcknSound();
+        void STTTerminate();
 private:
 	QPoint dragPosition;
 };
@@ -199,8 +171,7 @@ protected:
         {
 			if(switchWindows)
 			{
-				switchWindows = false;
-				emit ui->IRCModeBut->clicked();
+                switchWindows = false;
 			};
         }
 

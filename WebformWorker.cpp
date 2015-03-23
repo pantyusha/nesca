@@ -62,10 +62,10 @@ lopaStr WFClass::doGetCheck(const char *ip,
 
     for(int i = 0; i < MaxWFLogin; ++i)
     {
-        if(globalScanFlag == false) break;
+        if(!globalScanFlag) break;
         for(int j = firstCycle; j < MaxWFPass; ++j)
         {
-            if(globalScanFlag == false) break;
+            if(!globalScanFlag) break;
 
             int rSize = strlen(ip) + strlen(actionVal) + strlen(userVal) + strlen(wfLoginLst[i]) + strlen(passVal) + strlen(wfPassLst[j]) + 4;
 
@@ -105,10 +105,10 @@ lopaStr WFClass::doPostCheck(const char *ip,
 
     for(int i = 0; i < MaxWFLogin; ++i)
     {
-        if(globalScanFlag == false) break;
+        if(!globalScanFlag) break;
         for(int j = firstCycle; j < MaxWFPass; ++j)
         {
-            if(globalScanFlag == false) break;
+            if(!globalScanFlag) break;
 
             int rSize = strlen(ip) + strlen(actionVal) + strlen(userVal) + strlen(wfLoginLst[i]) + strlen(passVal) + strlen(wfPassLst[j]) + 4;
 

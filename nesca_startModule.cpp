@@ -408,7 +408,7 @@ void _tracker() {
     while(true) {
         while(!trackerOK) Sleep(1000);
 
-        if(globalScanFlag == false && jsonArr->size() == 0) break;
+        if(!globalScanFlag && jsonArr->size() == 0) break;
         char rBuffT[250000] = {0};
         char *msg = new char[4096];
         ZeroMemory(msg, sizeof(*msg));
@@ -563,7 +563,7 @@ void _tracker() {
 
             while(true)
             {
-                if(globalScanFlag == false && jsonArr->size() == 0) break;
+                if(!globalScanFlag && jsonArr->size() == 0) break;
                 if(!trackerOK) {
                     Sleep(1000);
                     continue;
@@ -797,7 +797,7 @@ void _connect() {
 			ConInc();
 			for (int i = 0; i <= overallPorts; ++i)
 			{
-				if (globalScanFlag == false) break;
+                if (!globalScanFlag) break;
 				if (Connector::_ConnectToPort(ip, portArr[i], "") == -2) break;
 			};
 			ConDec();
@@ -813,8 +813,8 @@ void verboseProgress(long long unsigned int target, const char *ip) {
     stt->doEmitionIPRANGE(QString(ip));
     strcpy(currentIP, ip);
 
-    //sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
-    //stt->doEmitionTargetsLeft(QString(targetNPers));
+    sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
+    stt->doEmitionTargetsLeft(QString(targetNPers));
 
     sprintf(metaTargets, "%Lu", target);
     sprintf(metaPercent, "%.1f",
@@ -828,8 +828,8 @@ void verboseProgressDNS(long long unsigned int target, const char *ip, const cha
 	stt->doEmitionIPRANGE(QString(ip) + QString(TLD));
 	strcpy(currentIP, ip);
 
-	//sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
-	//stt->doEmitionTargetsLeft(QString(targetNPers));
+    sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
+    stt->doEmitionTargetsLeft(QString(targetNPers));
 
 	sprintf(metaTargets, "%Lu", target);
 	sprintf(metaPercent, "%.1f",
@@ -2069,17 +2069,14 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 		int szMask = strlen(mask);
 		int szOffset = startPosition + 2;
 		if(szMask != szOffset) strcpy(maskEnd, strstr(mask, "]") + 1);
-		else
-		{
-			ZeroMemory(maskEnd, sizeof(maskEnd));
-		};
+        else ZeroMemory(maskEnd, sizeof(maskEnd));;
 
 		char maskSaver[128] = {0};
 		if(firstPos != -1 && secondPos != -1)
 		{
 			for(int i = firstPos; i <= secondPos; ++i)
 			{
-				if(globalScanFlag == false) break;
+                if(!globalScanFlag) break;
 
 				strcpy(maskSaver, saveMask);
 				strcat(maskSaver, maskEntry);
@@ -2101,7 +2098,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
         strcpy(endIP2, saveMask);
 
         while(cons >= gThreads && globalScanFlag) Sleep(300);
-        if(globalScanFlag == false) return 0;
+        if(!globalScanFlag) return 0;
 
         string res = string(mask);
 		verboseProgressDNS(--gTargets, res.c_str(), top_level_domain);
@@ -2193,7 +2190,7 @@ int startScan(char* args) {
 
 					   for (unsigned long i = ip1; i <= ip2; ++i) {
 
-						   if (globalScanFlag == false) break;
+                           if (!globalScanFlag) break;
 						   unsigned long offset = ip2 - i;
 
 						   tAddr.s_addr = ntohl(i);
@@ -2206,7 +2203,7 @@ int startScan(char* args) {
 							   while (ipVec.size() != 0) {
 
 								   while (cons >= gThreads && globalScanFlag) Sleep(500);
-								   if (globalScanFlag == false) goto haters_gonna_hate_IPM;
+                                   if (!globalScanFlag) goto haters_gonna_hate_IPM;
 
 								   ++indexIP;
 								   std::string res = ipVec[0];
@@ -2227,7 +2224,7 @@ int startScan(char* args) {
 						for (unsigned long i = ip1; i <= ip2; ++i) {
 
 							while (cons >= gThreads && globalScanFlag) Sleep(500);
-							if (globalScanFlag == false) break;
+                            if (!globalScanFlag) break;
 
 							std::string res = "";
 							++indexIP;
@@ -2400,7 +2397,7 @@ int startScan(char* args) {
 
 						   for (unsigned long i = ip1; i <= ip2; ++i) {
 
-							   if (globalScanFlag == false) break;
+                               if (!globalScanFlag) break;
 							   unsigned long offset = ip2 - i;
 
 							   tAddr.s_addr = ntohl(i);
@@ -2413,7 +2410,7 @@ int startScan(char* args) {
 								   while (ipVec.size() != 0) {
 
 									   while (cons >= gThreads && globalScanFlag) Sleep(500);
-									   if (globalScanFlag == false) goto haters_gonna_hate_IM;
+                                       if (!globalScanFlag) goto haters_gonna_hate_IM;
 
 									   ++indexIP;
 									   std::string res = ipVec[0];
@@ -2433,7 +2430,7 @@ int startScan(char* args) {
 							for (unsigned long i = ip1; i <= ip2; ++i) {
 
 								while (cons >= gThreads && globalScanFlag) Sleep(500);
-								if (globalScanFlag == false) break;
+                                if (!globalScanFlag) break;
 
 								++indexIP;
 

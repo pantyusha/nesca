@@ -179,7 +179,7 @@ int _EstablishSSHConnection(const char* host, int port, std::string *buffer, con
 
     for(int i = 0; i < MaxSSHPass; ++i)
     {
-        if(globalScanFlag == false) break;
+        if(!globalScanFlag) break;
         strcpy(temp, sshlpLst[i]);
         ptr1 = strstr(temp, ":");
         sz = ptr1 - temp;

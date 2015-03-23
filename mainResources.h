@@ -150,17 +150,6 @@ class Connector_old
 public:
 	int _Updater();
 
-	//        lopaStr _FTPLobby(char *ip,
-	//                          int port,
-	//                          PathStr *ps);
-
-	//        lopaStr _BALobby(char *cookie,
-	//                         char *ip,
-	//                         int port,
-	//                         char *path,
-	//                         char *method,
-	//                         char *data);
-
 	lopaStr _WFLobby(char *cookie,
 		char *ip,
 		int port,
@@ -187,5 +176,3 @@ public:
 
 
 extern lopaStr _IPCameraBLobby(const char *ip, int port, char *SPEC);
-//extern lopaStr _BALobby(char *cookie, char *ip, int port, char *path, char *method);
-//extern lopaStr _FTPLobby(char *ip, int port, PathStr *ps);

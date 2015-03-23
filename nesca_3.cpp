@@ -3126,16 +3126,23 @@ void RestoreSession()
 
 					PortString.replace("\n", "");
 
-					ui->lineEditPort->setText(PortString);
-					ui->portLine->setText(PortString);
-					ui->importPorts->setText(PortString);
+                    if(PortString.length() > 0) {
+                        ui->lineEditPort->setText(PortString);
+                        ui->portLine->setText(PortString);
+                        ui->importPorts->setText(PortString);
+                    } else {
+                        ui->lineEditPort->setText(PORTSET);
+                        ui->portLine->setText(PORTSET);
+                        ui->importPorts->setText(PORTSET);
+                    }
 					
 					delete []fPorts;
 				}
 				else
-				{
-					ui->lineEditPort->setText(PORTSET);
-					ui->portLine->setText(PORTSET);
+                {
+                    ui->lineEditPort->setText(PORTSET);
+                    ui->portLine->setText(PORTSET);
+                    ui->importPorts->setText(PORTSET);
 				};
 			};
 
@@ -3150,6 +3157,22 @@ void RestoreSession()
                     lex[strlen(lex) - 1] = '\0';
                     ui->pingingOnOff->setChecked(strcmp(lex, "true") == 0 ? true : false);
                 };
+            } else if (strstr(resStr, "[SHUFFLE]:") != NULL) {
+                lex = strstr(resStr, "[SHUFFLE]:") + strlen("[SHUFFLE]:");
+
+                if (strlen(lex) > 1)
+                {
+                    lex[strlen(lex) - 1] = '\0';
+                    ui->shuffle_onoff->setChecked(strcmp(lex, "true") == 0 ? true : false);
+                };
+            } else if (strstr(resStr, "[NSTRACK]:") != NULL) {
+                lex = strstr(resStr, "[NSTRACK]:") + strlen("[NSTRACK]:");
+
+                if (strlen(lex) > 1)
+                {
+                    lex[strlen(lex) - 1] = '\0';
+                    ui->trackerOnOff->setChecked(strcmp(lex, "true") == 0 ? true : false);
+                };
             }
             setUIText("[PING_TO]:", ui->PingTO, resStr);
             setUIText("[THREAD_DELAY]:", ui->threadDelayBox, resStr);
@@ -3157,8 +3180,8 @@ void RestoreSession()
                 const QString &tempLex = loadNescaSetup(resStr, "[TIMEOUT]:");
                 if(tempLex.toInt() > 0) {
                     ui->iptoLine_value->setText(tempLex.simplified());
-					ui->iptoLine_value_2->setText(tempLex.simplified());
-					ui->iptoLine_value_3->setText(tempLex.simplified());
+                    ui->iptoLine_value_2->setText(tempLex.simplified());
+                    ui->iptoLine_value_3->setText(tempLex.simplified());
                 }
             }
             setUIText("[MAXBTHR]:", ui->maxBrutingThrBox, resStr);

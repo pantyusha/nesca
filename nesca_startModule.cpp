@@ -243,26 +243,6 @@ void _SaveBackupToFile()
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[IRCSERVER]:%s\n", ircServer);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
-
-        sprintf(saveStr, "[IRCPORT]:%s\n", ircPort);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
-
-        sprintf(saveStr, "[IRCPROXY]:%s\n", ircProxy);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
-
-        sprintf(saveStr, "[IRCPROXYPORT]:%s\n", ircProxyPort);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
-
-        sprintf(saveStr, "[IRCNICK]:%s\n", ircNick);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
-
         sprintf(saveStr, "[PING]:%s\n", gPingNScan ? "true" : "false");
         strcat(saveBuffer, saveStr);
         ZeroMemory(saveStr, sizeof(saveStr));

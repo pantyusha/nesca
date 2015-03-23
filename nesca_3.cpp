@@ -3,9 +3,6 @@
 #include "nesca_3.h"
 #include "CheckKey_Th.h"
 #include "DrawerTh_QoSScanner.h"
-#include "oIRC_Th.h"
-#include "IRCPinger_Th.h"
-#include "CheckProxy_Th.h"
 #include "STh.h"
 #include "msgcheckerthread.h"
 #include "vercheckerthread.h"
@@ -32,9 +29,7 @@ QDate date = QDate::currentDate();
 int ver = 100*(100*(date.year()%100) + date.month()) + date.day();
 #define VER 130706
 #define WIDGET_WIDTH 500
-//#define IRC_CHAN "iskopasi_lab01"
 
-bool utfIRCFlag = true;
 bool HTMLDebugMode = false;
 bool code160 = false;
 bool gDebugMode = false;
@@ -62,11 +57,6 @@ int nesca_3::savedTabIndex = 0;
 bool dFlag = false;
 bool startFlag = false;
 bool trackerOK = true;
-char ircServer[32] = {0};
-char ircPort[32] = {0};
-char ircProxy[64] = {0};
-char ircProxyPort[8] = {0};
-char ircNick[32] = {0};
 char trcPort[32] = {0};
 char trcSrvPortLine[32] = {0};
 char trcProxy[128] = {0};
@@ -85,18 +75,14 @@ DrawerTh_HorNet *dtHN = new DrawerTh_HorNet();
 DrawerTh_ME2Scanner *dtME2 = new DrawerTh_ME2Scanner();
 DrawerTh_QoSScanner *dtQoS = new DrawerTh_QoSScanner();
 DrawerTh_GridQoSScanner *dtGridQoS = new DrawerTh_GridQoSScanner();
-CheckProxy_Th *chPTh = new CheckProxy_Th();
-IRCPinger_Th *ircPTh = new IRCPinger_Th();
-oIRC_Th *ircTh = new oIRC_Th();
 CheckKey_Th *chKTh = new CheckKey_Th();
 ActivityDrawerTh_HorNet *adtHN = new ActivityDrawerTh_HorNet();
 DrawerTh_VoiceScanner *vsTh = new DrawerTh_VoiceScanner();
-IRC_NMBlinker *irc_nmb = new IRC_NMBlinker();
+//IRC_NMBlinker *irc_nmb = new IRC_NMBlinker();
 PieStat *psTh = new PieStat();
 ProgressbarDrawer *pbTh = new ProgressbarDrawer();
 
 bool MapWidgetOpened = false;
-bool connectedToIRC = false;
 bool globalScanFlag;
 float QoSStep = 1;
 int MaxDataVal = 1;
@@ -117,8 +103,6 @@ QSystemTrayIcon *tray;
 	QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
 
 QWidget *qwm;
-QString globalIRCText;
-QString globalIRCRaw;
 PopupMsgWidget *msgWdgt;
 
 QPen rpen(QColor(255, 0, 0, 190), 0.1, Qt::DotLine);
@@ -158,7 +142,6 @@ bool BALogSwitched = false;
 bool widgetIsHidden = false;
 bool blinkFlag = false;
 bool printDelimiter = false;
-bool IRCLogToggled = true;
 int PhraseIndex = 0;
 QList<QString> PhraseLog;
 bool ME2ScanFlag = true, QoSScanFlag = false, VoiceScanFlag = false, PieStatFlag = false;
@@ -235,34 +218,6 @@ void setButtonStyleArea()
 		" #checkKeyBut:hover{"
 		"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
 		"color: #1efd00;"
-		"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-		"}"
-		);
-
-	ui->IRCConnectBut->setStyleSheet(
-		" #IRCConnectBut {"
-		"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-		"color: #919191;"
-		"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-		"}"
-
-		" #IRCConnectBut:hover{"
-		"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-		"color: #D1D1D1;"
-		"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-		"}"
-		);
-
-	ui->IRCCheckProxyBut->setStyleSheet(
-		" #IRCCheckProxyBut {"
-		"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-		"color: #bfb800;"
-		"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-		"}"
-
-		" #IRCCheckProxyBut:hover{"
-		"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-		"color: #e9e100;"
 		"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
 		"}"
 		);
@@ -472,9 +427,7 @@ void SetValidators()
 	validator = new QRegExpValidator(QRegExp("(\\w|-|\\.)+((\\w|-|\\.)+)+"), NULL);
 	ui->lineILVL->setValidator(validator);
 
-	validator = new QRegExpValidator(QRegExp("\\d{1,5}"), NULL);
-	ui->serverPortBox->setValidator(validator);
-	ui->ircProxyPort->setValidator(validator);
+    validator = new QRegExpValidator(QRegExp("\\d{1,5}"), NULL);
 	ui->trcSrvPortLine->setValidator(validator);
 	
 	validator = new QRegExpValidator(QRegExp("[a-zA-Z0-9]{32}"), NULL);
@@ -723,11 +676,6 @@ void nesca_3::slotQoSAddGrid()
 		th += fact;
 		sceneGrid->addLine(0, th, gWidth, th, rpen);
 	};
-}
-
-void nesca_3::setNickBox(QString str)
-{
-	ui->ircNickBox->setText(str);
 }
 
 void nesca_3::slotAddLine(int x1, int y1, int x2, int y2)
@@ -1275,205 +1223,39 @@ void nesca_3::switchDataFields()
 	};
 }
 
-void nesca_3::slotBlinkMessage()
-{
-	if(blinkFlag) 
-	{
-		blinkFlag = false;
-		ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");	
-		ui->IRCModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
-	}
-	else 
-	{
-		blinkFlag = true;
-		ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 255);background-color: rgba(2, 2, 2, 0);");	
-		ui->IRCModeBut->setStyleSheet("color: rgb(255, 0, 0);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 0, 0, 255);");
-	};
-}
+//void nesca_3::slotBlinkMessage()
+//{
+//	if(blinkFlag)
+//	{
+//		blinkFlag = false;
+//		ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
+//		ui->IRCModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
+//	}
+//	else
+//	{
+//		blinkFlag = true;
+//		ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 255);background-color: rgba(2, 2, 2, 0);");
+//		ui->IRCModeBut->setStyleSheet("color: rgb(255, 0, 0);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 0, 0, 255);");
+//	};
+//}
 
 void nesca_3::slotTabChanged(int index){
     if(index < 2) savedTabIndex = index;
 }
 
-void nesca_3::ChangeDispalyMode()
-{
-	if(widgetIsHidden == false && tray->isVisible() == false)
-	{
-		ui->IRCModeChangerBut->setVisible(true);
-		blinkFlag = false;
-		widgetIsHidden = true;
-		ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");	
-		ui->JobModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
-		ui->IRCModeBut->setStyleSheet("background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(0, 214, 0, 40);color: rgb(0, 214, 0);");
-		ui->widgetJOB->setGeometry(QRect(500, 44, 500, 730));
-		ui->widgetIRC->setStyleSheet("background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255));");
-		ui->widgetIRC->setGeometry(QRect(1, 44, 498, 730));
-		ui->shoutBox->setFocus();
-		QWidget::activateWindow();
-		msgWdgt->hide();
-	}
-	else
-	{
-		ui->IRCModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
-		ui->IRCModeChangerBut->setVisible(false);
-		disableBlink = false;
-		blinkFlag = true;
-		widgetIsHidden = false;
-		printDelimiter = true;
-		ui->widgetIRC->setGeometry(QRect(500, 44, 500, 730));
-	};
-}
-
 void nesca_3::switchToJobMode()
 {
 	if(ui->widgetJOB->geometry().x() == 500)
-	{
-		ui->widgetIRC->setGeometry(QRect(500, 44, 500, 730));
-		ui->IRCModeChangerBut->setVisible(false);
+    {
 		widgetIsHidden = false;
 		ui->widgetJOB->setGeometry(QRect(1, 44, 498, 730));
 		ui->JobModeBut->setStyleSheet("background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(0, 214, 0, 40);color: rgb(0, 214, 0);");
-		ui->IRCModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
-	}
+    }
 	else
 	{
 		ui->widgetJOB->setGeometry(QRect(500, 44, 500, 730));
 		ui->JobModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
 	};
-}
-
-void nesca_3::CheckProxy()
-{
-    saveOptions();
-
-	QStringList qsl;
-	if(ui->ircProxy->text().contains(":"))
-	{
-		qsl = ui->ircProxy->text().split(":");
-
-		ui->ircProxy->setText(qsl[0]);
-		ui->ircProxyPort->setText(qsl[1]);
-	};
-
-	chPTh->doEmitChangeYellowIRCData("Checking " + ui->ircProxy->text() + ":" + ui->ircProxyPort->text() + "...");
-	chPTh->start();
-}
-
-void nesca_3::slotIRCOfflined()
-{
-	CSSOCKET(lSock);
-	ui->IRCConnectBut->setStyleSheet(
-		" #IRCConnectBut {"
-		"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-		"color: green;"
-		"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-		"}");
-	ui->IRCConnectBut->setText("Connect");
-	ui->ircText->append("<span style=\"color:#efe100;\">[-//-] Disconnected.</span>");
-}
-
-void nesca_3::ConnectToIRCServer()
-{
-	QStringList qsl;
-	if(ui->ircServerBox->text().contains(":"))
-	{
-		qsl = ui->ircServerBox->text().split(":");
-
-		ui->ircServerBox->setText(qsl[0]);
-		ui->serverPortBox->setText(qsl[1]);
-	};
-
-	if(ui->ircProxy->text().contains(":"))
-	{
-		qsl = ui->ircProxy->text().split(":");
-
-		ui->ircProxy->setText(qsl[0]);
-		ui->ircProxyPort->setText(qsl[1]);
-    };
-
-	if(ui->ircServerBox->text() != "")
-	{
-		if(ui->serverPortBox->text() != "")
-		{
-			if(ui->IRCConnectBut->text() == "Connect")
-			{
-				if(!ircTh->isRunning()) 
-				{
-					if(ui->ircProxy->text() != "" && ui->ircProxyPort->text() != "") proxyEnabledFlag = 1;
-
-					iWantToConnect = true;
-					ui->IRCConnectBut->setStyleSheet(
-						" #IRCConnectBut {"
-						"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-						"color: red;"
-						"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-						"}");
-					ui->IRCConnectBut->setText("Disconnect");
-					if(proxyEnabledFlag) ui->ircText->append("<span style=\"color:#efe100;\">[*] Using proxy " + QString(ircProxy) + ":" + QString(ircProxyPort) + ".</span>");
-                    else ui->ircText->append("<span style=\"color:#efe100;\">[*] No proxy selected! Connecting directly...</span>");
-					ircTh->start();
-				}
-				else
-				{
-					ui->ircText->append("<span style=\"color:#efe100;\">[...] Wait...</span>");
-				};
-			}
-			else
-			{
-				iWantToConnect = false;
-				
-					ui->IRCConnectBut->setStyleSheet(
-							" #IRCConnectBut {"
-							"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-							"color: green;"
-							"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-							"}");
-					ui->IRCConnectBut->setText("Connect");
-					ui->ircText->append("<span style=\"color:#efe100;\">[-//-] Disconnected.</span>");
-								
-				CSSOCKET(lSock);
-			};
-		}
-		else
-		{
-
-			ui->ircText->append("<span style=\"color:red;background-color:#313131;\">No IRC port specified!</span>");
-
-		};
-	}
-	else
-	{
-
-		ui->ircText->append("<span style=\"color:red;background-color:#313131;\">No IRC server specified!</span>");
-
-	};
-
-    saveOptions();
-}
-
-void nesca_3::ChangeIRCRawLog()
-{
-	if(ui->IRCModeChangerBut->text() == ":IRC raw")
-	{
-		IRCLogToggled = false;
-		ui->IRCModeChangerBut->setText(":IRC log");
-		ui->ircText->lower();
-		ui->ircRaw->raise();
-	}
-	else
-	{
-		IRCLogToggled = true;
-		ui->IRCModeChangerBut->setText(":IRC raw");
-		ui->ircText->raise();
-		ui->ircRaw->lower();
-	};
-}
-
-void nesca_3::ChangeNick()
-{
-	strcpy(ircNick, ui->ircNickBox->text().toLocal8Bit().data());
-    UserNickInit();
-	ui->shoutBox->setFocus();
 }
 
 void nesca_3::CheckPersKey()
@@ -1508,78 +1290,12 @@ void nesca_3::CheckPersKey(int val = -1)
 	};
 }
 
-void _finishNick()
-{
-	QList<QListWidgetItem *> ql = ui->nickList->findItems(ui->shoutBox->text(), Qt::MatchStartsWith);
-	if(ql.size() > 0)
-	{
-		ui->shoutBox->setText(ql[0]->text() + ", ");
-		ui->shoutBox->setFocus();
-	};
-}
-
 bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 {
-	if (obj == ui->shoutBox)
-	{
-		if (event->type() == QEvent::KeyPress)
-		{
-				QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-				if (keyEvent->key() == Qt::Key_Up)
-				{
-					ui->shoutBox->setText(PhraseLog[PhraseIndex]);
-					++PhraseIndex;
-					if(PhraseIndex >= PhraseLog.size()) PhraseIndex = 0;
-					return true;
-				}
-				else if(keyEvent->key() == Qt::Key_Down)
-				{
-					--PhraseIndex;
-					if(PhraseIndex < 0) PhraseIndex = PhraseLog.size() - 1;
-
-					ui->shoutBox->setText(PhraseLog[PhraseIndex]);
-					return true;
-				}
-				else if(keyEvent->modifiers() == Qt::ControlModifier)
-				{
-					privateMsgFlag = true;
-					event->accept();
-				}
-				else if(keyEvent->key() == Qt::Key_Tab)
-				{
-					_finishNick();
-					return true;
-				};
-		};
-		return false;
-	}
-	else if (obj == ui->ircText)
-	{
-		if (event->type() == QEvent::KeyPress)
-		{
-			QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-			if(keyEvent->modifiers() == Qt::ControlModifier)
-			{
-				privateMsgFlag = true;
-				event->accept();
-                return true;
-			};
-            return false;
-		}
-		else if (event->type() == QEvent::KeyRelease)
-		{
-			privateMsgFlag = false;	
-			event->accept();
-            return true;
-		};
-        return false;
-	}
-    else if (obj == qwm)
-	{
-        //auto qwe = event->type();
+    if (obj == qwm)
+    {
         if(MapWidgetOpened && event->type() == QEvent::WindowActivate)
         {
-            //qwm->raise();
             this->raise();
         };
 		if (event->type() == QEvent::KeyPress)
@@ -1628,249 +1344,12 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 	};
 }
 
-void nesca_3::ChangeTopic()
-{
-	if(ui->topicLine->text().size() > 0)
-	{
-		char temp[2048] = {0};
-
-		QString strf;
-		
-		QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
-		strf = codec->toUnicode(ui->topicLine->text().toUtf8());
-		strcpy(temp, "TOPIC #");
-		strcat(temp, IRC_CHAN);
-		strcat(temp, " :");
-		strncat(temp, strf.toLocal8Bit().data(), 256);
-		strcat(temp, "\n");
-
-		sendS(lSock, temp, strlen(temp), 0);
-	};
-}
-
-void nesca_3::SaySmthng()
-{
-	if(ui->shoutBox->text().size() > 0)
-	{
-		char temp[2048] = {0};
-		globalPinger = 0;
-		PhraseIndex = 0;
-		if(PhraseLog.size() > 50)
-		{
-			PhraseLog.pop_back();
-			if(ui->shoutBox->text() != PhraseLog[PhraseIndex]) PhraseLog.push_front(ui->shoutBox->text());
-		}
-		else 
-		{
-			if(ui->shoutBox->text() != PhraseLog[PhraseIndex]) PhraseLog.push_front(ui->shoutBox->text());
-		};
-
-		if(ui->shoutBox->text() == "/clear" || ui->shoutBox->text() == "clear" || ui->shoutBox->text() == "clr")
-		{
-			ui->ircText->clear();
-		}
-		else if(ui->shoutBox->text().contains("/me "))
-		{
-			QString strf;
-			if(utfIRCFlag)
-			{
-				strf = codec->toUnicode(ui->shoutBox->text().toUtf8());
-			}
-			else strf = ui->shoutBox->text();
-			
-			strcpy(temp, "PRIV");
-			strcat(temp, "MSG #");
-			strcat(temp, IRC_CHAN);
-			strcat(temp, " :");
-			strcat(temp, "ACTION ");
-			strcat(temp, strf.toLocal8Bit().data() + 3);
-			strcat(temp, "\n");
-			sendS(lSock, temp, strlen(temp), 0);
-			appendDefaultIRCTextOut("--> " + ui->ircNickBox->text() + " " + strf.mid(3));
-		}
-		else if(ui->shoutBox->text().contains("/w "))
-		{
-			int lBoundary1 = ui->shoutBox->text().indexOf(" ");
-			int lBoundary2 = ui->shoutBox->text().indexOf(",");
-			int lBoundary = 0;
-			if(lBoundary1 == -1)
-			{
-				lBoundary = lBoundary2;				
-			}
-			else if(lBoundary2 == -1)
-			{
-				lBoundary = lBoundary1;
-			}
-			else if(lBoundary1 > lBoundary2)
-			{
-				lBoundary = lBoundary2;
-			}
-			else
-			{
-				lBoundary = lBoundary1;
-			};
-			QString nickPG = ui->shoutBox->text().mid(lBoundary + 1);
-			int rBoundary = nickPG.indexOf(" ");
-			QString nickP = ui->shoutBox->text().mid(lBoundary + 1, rBoundary);
-			QString msgP = nickPG.mid(rBoundary + 1);
-
-			QString strf;
-			if(utfIRCFlag)
-			{
-				strf = codec->toUnicode(msgP.toUtf8());
-			}
-			else strf = msgP;
-
-			strcpy(temp, "PRIV");
-			strcat(temp, "MSG ");
-			strcat(temp, nickP.toLocal8Bit().data());
-			strcat(temp, " :");
-			strcat(temp, strf.toLocal8Bit().data());
-			strcat(temp, "\n");
-			sendS(lSock, temp, strlen(temp), 0);
-			sendS(lSock, "PING 0", 6, 0);
-			
-			QString rData;
-			QString rData2;
-			
-			if(utfIRCFlag) 
-			{
-				QString str = codec->toUnicode(msgP.toUtf8());
-				rData2 = "<font color=\"#ffae00\">[" + QTime::currentTime().toString() + "]</font> <font color=\"#810000\">[PM -> " + nickP + "]:</font> " + msgP;
-				ui->ircText->append(rData2);
-				rData = "<font color=\"#ffae00\">[" + QTime::currentTime().toString() + "]</font> <font color=\"#810000\">[PM -> " + nickP + "]:</font> " + str;
-				globalIRCText += rData + "\n";
-			}
-			else 
-			{
-				rData = "<font color=\"#ffae00\">[" + QTime::currentTime().toString() + "]</font> <font color=\"#810000\">[PM -> " + nickP + "]:</font> " + msgP;
-				ui->ircText->append(rData);
-				globalIRCText += rData + "\n";
-			};
-		}
-		else if(ui->shoutBox->text().contains("/nick "))
-		{
-			int lBoundary = ui->shoutBox->text().indexOf(" ");
-			
-			QString nickPG = ui->shoutBox->text().mid(lBoundary + 1);
-			int rBoundary = nickPG.indexOf(" ");
-			QString nickP = ui->shoutBox->text().mid(lBoundary + 1, rBoundary);
-			
-			strcpy(temp, "NICK ");
-			strcat(temp, nickP.toLocal8Bit().data());
-			strcat(temp, "\n");
-			ui->ircNickBox->setText(nickP);
-            UserNickInit();
-		}
-		else 
-		{
-			QString strf;
-			if(utfIRCFlag)
-			{
-				strf = codec->toUnicode(ui->shoutBox->text().toUtf8());
-			}
-			else strf = ui->shoutBox->text();
-			if(IRCLogToggled) 
-			{
-				strcpy(temp, "PRIV");
-				strcat(temp, "MSG #");
-				strcat(temp, IRC_CHAN);
-				strcat(temp, " :");
-				strcat(temp, strf.toLocal8Bit().data());
-				strcat(temp, "\n");
-				appendDefaultIRCTextOut("[" + ui->ircNickBox->text() + "]: " + strf);
-			}
-			else
-			{
-				if(strf.contains("join "))
-				{
-					appendDefaultIRCRawTextOut("[JOIN command is not accepted]");
-					ui->shoutBox->clear();
-					return;
-				}
-				else
-				{
-					strcpy(temp, strf.toLocal8Bit().data());
-					strcat(temp, "\n");
-				};
-			};
-
-			sendS(lSock, temp, strlen(temp), 0);
-		};
-
-		ui->shoutBox->clear();
-	};
-}
-
-void nesca_3::slotChangeCPModeToUTF()
-{
-	utfIRCFlag = true;
-	ui->IRCUTFMode->setStyleSheet("background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(0, 214, 0, 40);color: rgb(0, 214, 0);");
-	ui->IRCCP1251Mode->setStyleSheet("background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);color: rgb(71, 71, 71);");
-	
-	QByteArray wtfR = codec->fromUnicode(globalIRCRaw.replace("\n", "<br>"));
-	QByteArray wtfT = codec->fromUnicode(globalIRCText.replace("\n", "<br>"));
-	ui->ircText->setHtml( QString(wtfT) );
-	ui->ircRaw->setHtml( QString(wtfR) );
-	ui->ircText->verticalScrollBar()->setValue(ui->ircText->verticalScrollBar()->maximum());
-	ui->ircRaw->verticalScrollBar()->setValue(ui->ircRaw->verticalScrollBar()->maximum());
-}
-
-void nesca_3::slotChangeCPModeTo1251()
-{
-	utfIRCFlag = false;
-	ui->IRCCP1251Mode->setStyleSheet("background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(0, 214, 0, 40);color: rgb(0, 214, 0);");
-	ui->IRCUTFMode->setStyleSheet("background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);color: rgb(71, 71, 71);");
-		
-	ui->ircText->setHtml(globalIRCText.replace("\n", "<br>"));
-	ui->ircRaw->setHtml(globalIRCRaw.replace("\n", "<br>"));
-	ui->ircText->verticalScrollBar()->setValue(ui->ircText->verticalScrollBar()->maximum());
-	ui->ircRaw->verticalScrollBar()->setValue(ui->ircRaw->verticalScrollBar()->maximum());
-}
-
-void nesca_3::onLinkClicked(QUrl link)
-{
-	QString lnk = link.toString();
-	
-	if(lnk.contains("nesca:") == 1 && privateMsgFlag == false)
-	{
-		ui->shoutBox->setText(ui->shoutBox->text() + lnk.mid(6) + ", ");
-		ui->shoutBox->setFocus();
-	}
-	else if(lnk.contains("nesca:") == 1 && privateMsgFlag)
-	{
-		ui->shoutBox->setText("/w " + lnk.mid(6) + " ");
-		ui->shoutBox->setFocus();
-	}
-	else
-	{
-		QDesktopServices::openUrl(link);
-	};
-}
-
-void nesca_3::slotRestartIRC()
-{
-	ircPTh->terminate();
-	globalPinger = 0;
-	CSSOCKET(lSock);
-	ircTh->terminate();
-	ircTh->start();
-}
-
 void nesca_3::slotClearLogs()
 {
 	ui->dataText->clear();
 	ui->BAText->clear();
 }
 
-void nesca_3::slotIRCGetTopic(QString str)
-{
-	ui->topicLine->setText(str);
-	QString rData;
-	rData = "<font style=\"color:#c0ff00; text-decoration: underline;\">Topic: \"" + str + "\"</font>";
-	globalIRCText += rData + "\n";
-	ui->ircText->append(rData);
-}
 
 int c = 1;
 
@@ -1960,88 +1439,6 @@ void PieStatView::contextMenuEvent(QContextMenuEvent *event)
 	menuPS->popup(event->globalPos());
 
 	connect(menuPS, SIGNAL(triggered(QAction *)), gthis, SLOT(slotSaveImage(QAction *)));
-}
-
-QLabel *msgLbl;
-QLabel *msgDLbl;
-QLabel *msgTLbl;
-QLabel *msgNLbl;
-void nesca_3::slotUnhidePopup(QString strD = "", QString senderNick = "")
-{
-	msgWdgt->show();
-	QString str;
-	if(utfIRCFlag) 
-	{
-		QByteArray wtf = codec->fromUnicode(strD);
-		str = QString(wtf);
-	}
-	else str = strD;
-	if(msgLbl != NULL) msgLbl->setText(str);
-	if(msgNLbl != NULL) msgNLbl->setText(senderNick);
-	if(msgDLbl != NULL) msgDLbl->setText(QTime::currentTime().toString());
-}
-
-void CreateMsgPopupWidget(QString str = "", QString senderNick = "")
-{
-	QDesktopWidget desk;
-
-	int px_width = desk.width();
-	int px_height = desk.height();
-
-	msgWdgt = new PopupMsgWidget();
-	msgWdgt->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::SubWindow);
-	msgWdgt->setStyleSheet(
-		"background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255)); border: 1px solid #525252;"
-		);
-
-	msgWdgt->setGeometry(px_width - 300, px_height - 100, 300, 100);
-
-	QLabel *msgBLbl = new QLabel(msgWdgt);
-	msgBLbl->setGeometry(0, 0, 300, 100);
-	msgBLbl->setStyleSheet(
-		"background-color: rgba(0, 0, 0, 0);"
-		);
-	msgBLbl->show();
-	
-	msgDLbl = new QLabel(msgWdgt);
-	msgDLbl->setGeometry(0, 0, 300, 15);
-	msgDLbl->setStyleSheet(
-		"background-color: rgba(0, 0, 0, 70);"
-		);
-	msgDLbl->show();
-
-	msgTLbl = new QLabel(msgWdgt);
-	msgTLbl->setText("New message");
-	msgTLbl->setStyleSheet(
-		"color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);"
-		);
-	msgTLbl->show();
-
-	msgDLbl = new QLabel(msgWdgt);
-	msgDLbl->setGeometry(249, 0, 300, 15);
-	msgDLbl->setText(QTime::currentTime().toString());
-	msgDLbl->setStyleSheet(
-		"color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);"
-		);
-	msgDLbl->show();
-
-	msgLbl = new QLabel(msgWdgt);
-	msgLbl->setText(str);
-	msgLbl->setGeometry(10, 10, 290, 100);
-	msgLbl->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-	msgLbl->setStyleSheet(
-		"color: rgb(246, 246, 246);background-color: rgba(2, 2, 2, 0); border:none;font-weight: bold;"
-		);
-	msgLbl->show();
-
-	msgNLbl = new QLabel(msgWdgt);
-	msgNLbl->setText(senderNick);
-	msgNLbl->setGeometry(35, 0, 249, 15);
-	msgNLbl->setAlignment(Qt::AlignHCenter);
-	msgNLbl->setStyleSheet(
-		"color: rgb(246, 246, 246);background-color: rgba(2, 2, 2, 0); border:none;font-weight: bold;text-decoration:underline;"
-		);
-	msgNLbl->show();
 }
 
 QTextBrowser *SendData;
@@ -2170,21 +1567,6 @@ void nesca_3::slotVoiceAddLine()
 			as += 2;
 			sceneVoice->addLine(as - 2, 120 - vSSHLst[i - 1], as, 120 - vSSHLst[i] - 1, penQoS7);
 		};
-	};
-}
-
-void nesca_3::slotShowNicks()
-{
-	if(ui->nickShowBut->text() == "<")
-	{
-		ui->nickShowBut->setText(">");
-		ui->nickList->raise();
-		GetNicks();
-	}
-	else
-	{
-		ui->nickShowBut->setText("<");
-		ui->nickList->lower();
 	};
 }
 
@@ -2815,27 +2197,12 @@ void nesca_3::ConnectEvrthng()
 	connect ( ui->secretMessageBut_5, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
 	connect ( ui->secretMessageBut_6, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
 	connect ( ui->secretMessageBut_7, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
-	connect ( ui->secretMessageBut_8, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
-	connect ( ui->nickList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(slotItemClicked(QListWidgetItem*)));
-	connect ( ui->nickShowBut, SIGNAL( clicked() ), this, SLOT( slotShowNicks() ) );
-	connect ( ui->ircText, SIGNAL( anchorClicked(QUrl) ), this, SLOT( onLinkClicked(QUrl) ) );
-	connect ( ui->ircRaw, SIGNAL( anchorClicked(QUrl) ), this, SLOT( onLinkClicked(QUrl) ) );
-	connect ( ui->dataText, SIGNAL( anchorClicked(QUrl) ), this, SLOT( onLinkClicked(QUrl) ) );
-	connect ( ui->ircProxy, SIGNAL( returnPressed() ), this, SLOT( CheckProxy() ) );
-	connect ( ui->ircProxyPort, SIGNAL( returnPressed() ), this, SLOT( CheckProxy() ) );
-	connect ( ui->shoutBox, SIGNAL( returnPressed() ), this, SLOT( SaySmthng() ) );
-	connect ( ui->ircNickBox, SIGNAL( returnPressed() ), this, SLOT( ChangeNick() ) );
-	connect ( ui->ircServerBox, SIGNAL( returnPressed() ), this, SLOT( ConnectToIRCServer() ) );
-	connect ( ui->serverPortBox, SIGNAL( returnPressed() ), this, SLOT( ConnectToIRCServer() ) );
+    connect ( ui->secretMessageBut_8, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
+    connect ( ui->dataText, SIGNAL( anchorClicked(QUrl) ), this, SLOT( onLinkClicked(QUrl) ) );
 	connect ( ui->checkKeyBut, SIGNAL( clicked() ), this, SLOT( CheckPersKey() ) );
-	connect ( ui->DataflowModeBut, SIGNAL( clicked() ), this, SLOT( slotShowDataflow() ) );
-	connect ( ui->IRCConnectBut, SIGNAL( clicked() ), this, SLOT( ConnectToIRCServer() ) );
-	connect ( ui->IRCModeChangerBut, SIGNAL( clicked() ), this, SLOT( ChangeIRCRawLog() ) );
-	connect ( ui->JobModeBut, SIGNAL( clicked() ), this, SLOT( switchToJobMode() ) );
-	connect ( ui->IRCModeBut, SIGNAL( clicked() ), this, SLOT( ChangeDispalyMode() ) );
-	connect ( ui->clearLogBut, SIGNAL( clicked() ), this, SLOT( slotClearLogs() ) );
-	connect ( ui->IRCUTFMode, SIGNAL( clicked() ), this, SLOT( slotChangeCPModeToUTF() ) );
-	connect ( ui->IRCCP1251Mode, SIGNAL( clicked() ), this, SLOT( slotChangeCPModeTo1251() ) );
+    connect ( ui->DataflowModeBut, SIGNAL( clicked() ), this, SLOT( slotShowDataflow() ) );
+    connect ( ui->JobModeBut, SIGNAL( clicked() ), this, SLOT( switchToJobMode() ) );
+    connect ( ui->clearLogBut, SIGNAL( clicked() ), this, SLOT( slotClearLogs() ) );
 	connect ( mct, SIGNAL(showNewMsg(QString)), this, SLOT(slotShowServerMsg(QString)));
 	connect ( tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(trayButtonClicked()));
 	connect ( ui->exitButton, SIGNAL( clicked() ), this, SLOT( exitButtonClicked() ) );
@@ -2857,8 +2224,7 @@ void nesca_3::ConnectEvrthng()
 	connect ( ui->iptoLine_value_3, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelTO_ValueChanged(QString) ) );
 	connect ( ui->restoreDefaultPorts1, SIGNAL( clicked() ), this, SLOT( slotRestoreDefPorts() ) );
 	connect ( ui->restoreDefaultPorts2, SIGNAL( clicked() ), this, SLOT( slotRestoreDefPorts() ) );
-	connect ( ui->restoreDefaultPorts3, SIGNAL( clicked() ), this, SLOT( slotRestoreDefPorts() ) );
-	connect ( ui->IRCCheckProxyBut, SIGNAL( clicked() ), this, SLOT( CheckProxy() ) );
+    connect ( ui->restoreDefaultPorts3, SIGNAL( clicked() ), this, SLOT( slotRestoreDefPorts() ) );
 	connect ( ui->lineEditStartIPDNS, SIGNAL( textChanged(QString) ), this, SLOT( DNSLine_ValueChanged(QString) ) );
 	connect ( ui->ipLine, SIGNAL(				returnPressed() ), this, SLOT(		startScanButtonClicked() ) );
 	connect ( ui->threadLine, SIGNAL(			returnPressed() ), this, SLOT(		startScanButtonClicked() ) );
@@ -2871,8 +2237,7 @@ void nesca_3::ConnectEvrthng()
 	connect ( ui->me2ScanBut, SIGNAL( clicked() ), this, SLOT( activateME2ScanScene() ) );
 	connect ( ui->QoSScanBut, SIGNAL( clicked() ), this, SLOT( activateQoSScanBut() ) );
 	connect ( ui->VoiceScanBut, SIGNAL( clicked() ), this, SLOT( activateVoiceScanBut() ) );
-	connect ( ui->PieStatBut, SIGNAL( clicked() ), this, SLOT( activatePieStatBut() ) );
-	connect ( ui->topicLine, SIGNAL( returnPressed() ), this, SLOT( ChangeTopic() ) );
+    connect ( ui->PieStatBut, SIGNAL( clicked() ), this, SLOT( activatePieStatBut() ) );
 	connect ( stt, SIGNAL(showRedVersion()), this, SLOT(slotShowRedVersion()));
 	connect ( stt, SIGNAL(startScanIP()), this, SLOT(IPScanSeq()));
 	connect ( stt, SIGNAL(startScanDNS()), this, SLOT(DNSScanSeq()));
@@ -2897,28 +2262,6 @@ void nesca_3::ConnectEvrthng()
 	connect ( stt, SIGNAL(changeGreenBAData(QString)), this, SLOT(appendGreenBAData(QString)));
 	connect ( stt, SIGNAL(changeRedBAData(QString)), this, SLOT(appendRedBAData(QString)));
 	connect ( stt, SIGNAL(signalDataSaved(bool)), this, SLOT(changeNSTrackLabel(bool)));
-	connect ( chPTh, SIGNAL(changeGreenIRCData(QString)), this, SLOT(appendGreenIRCText(QString)));
-	connect ( chPTh, SIGNAL(changeRedIRCData(QString)), this, SLOT(appendRedIRCText(QString)));
-	connect ( chPTh, SIGNAL(changeYellowIRCData(QString)), this, SLOT(appendYellowIRCText(QString)));
-	connect ( chPTh, SIGNAL(changeIRCData(bool, bool, int, QString, QString)), this, SLOT(appendDefaultIRCText(bool, bool, int, QString, QString)));
-	connect ( ircTh, SIGNAL(getTopic(QString)), this, SLOT(slotIRCGetTopic(QString)) );
-	connect ( ircTh, SIGNAL(IRCOfflined()), this, SLOT(slotIRCOfflined()) );
-	connect ( ircTh, SIGNAL(sUnhidePopup(QString, QString)), this, SLOT(slotUnhidePopup(QString, QString)));
-	connect ( ircTh, SIGNAL(ClearNickList()), this, SLOT(slotClearNickList()));
-	connect ( ircTh, SIGNAL(AddNick(QString)), this, SLOT(slotAppendIRCNick(QString)));
-	connect ( ircTh, SIGNAL(changeGreenIRCData(QString)), this, SLOT(appendGreenIRCText(QString)));
-	connect ( ircTh, SIGNAL(changeRedIRCData(QString)), this, SLOT(appendRedIRCText(QString)));
-	connect ( ircPTh, SIGNAL(changeRedIRCData(QString)), this, SLOT(appendRedIRCText(QString)));
-	connect ( ircPTh, SIGNAL(RestartIRC()), this, SLOT(slotRestartIRC()));
-	connect ( ircTh, SIGNAL(changeYellowIRCData(QString)), this, SLOT(appendYellowIRCText(QString)));
-	connect ( ircTh, SIGNAL(changeIRCData(bool, bool, int, QString, QString)), this, SLOT(appendDefaultIRCText(bool, bool, int, QString, QString)));
-	connect ( ircTh, SIGNAL(changeRawIRCDataInc(QString)), this, SLOT(appendDefaultIRCRawTextInc(QString)));
-	connect ( ircTh, SIGNAL(changeRawIRCDataOut(QString)), this, SLOT(appendDefaultIRCRawTextOut(QString)));
-	connect ( chPTh, SIGNAL(changeRawIRCDataInc(QString)), this, SLOT(appendDefaultIRCRawTextInc(QString)));
-	connect ( chPTh, SIGNAL(changeRawIRCDataOut(QString)), this, SLOT(appendDefaultIRCRawTextOut(QString)));
-	connect ( ircTh, SIGNAL(setNick(QString)), this, SLOT(setNickBox(QString)));
-	connect ( ircTh, SIGNAL(changeIRCDataOut(QString)), this, SLOT(appendDefaultIRCTextOut(QString)));
-	connect ( ircTh, SIGNAL(notifyPlay()), this, SLOT(playFcknSound()));
 	connect ( adtHN, SIGNAL(sDrawActivityLine(QString)), this, SLOT(slotDrawActivityLine(QString)));
 	connect ( adtHN, SIGNAL(sDrawGrid()), this, SLOT(slotDrawActivityGrid()));
 	connect ( dtHN, SIGNAL(sAddDelimLines()), this, SLOT(slotDrawDelimLines()));
@@ -2932,9 +2275,10 @@ void nesca_3::ConnectEvrthng()
 	connect ( vsTh, SIGNAL(sAddLine()), this, SLOT(slotVoiceAddLine()));
 	connect ( vsTh, SIGNAL(sDrawGrid(int)), this, SLOT(slotDrawVoiceGrid(int)));
 	connect ( vsTh, SIGNAL(sDrawTextPlacers()), this, SLOT(slotDrawTextPlacers()));
-	connect ( psTh, SIGNAL(sUpdatePie()), this, SLOT(slotUpdatePie()) );
-	connect ( irc_nmb, SIGNAL(sBlinkMessage()), this, SLOT(slotBlinkMessage()) );
+    connect ( psTh, SIGNAL(sUpdatePie()), this, SLOT(slotUpdatePie()) );
     connect ( ui->tabMainWidget, SIGNAL(currentChanged(int)), this, SLOT(slotTabChanged(int)) );
+    /*Msg blinker*/
+    //connect ( irc_nmb, SIGNAL(sBlinkMessage()), this, SLOT(slotBlinkMessage()) );
 }
 
 void _LoadPersInfoToLocalVars(int savedTabIndex) {
@@ -2984,11 +2328,6 @@ void _LoadPersInfoToLocalVars(int savedTabIndex) {
     strncpy(trcPersKey, ui->linePersKey->text().toLocal8Bit().data(), 32);
     memset(trcPersKey + 32, '\0', 1);
     strcpy(trcSrvPortLine, ui->trcSrvPortLine->text().toLocal8Bit().data());
-    strcpy(ircServer, ui->ircServerBox->text().toLocal8Bit().data());
-    strcpy(ircPort, ui->serverPortBox->text().toLocal8Bit().data());
-    strcpy(ircProxy, ui->ircProxy->text().toLocal8Bit().data());
-    strcpy(ircProxyPort, ui->ircProxyPort->text().toLocal8Bit().data());
-    strcpy(ircNick, ui->ircNickBox->text().toLocal8Bit().data());
     strncpy(gProxyIP, ui->systemProxyIP->text().toLocal8Bit().data(), 64);
     gProxyIP[ui->systemProxyIP->text().size()] = '\0';
     strncpy(gProxyPort, ui->systemProxyPort->text().toLocal8Bit().data(), 8);
@@ -3183,13 +2522,8 @@ void RestoreSession()
             }
             setUIText("[MAXBTHR]:", ui->maxBrutingThrBox, resStr);
             setUIText("[PERSKEY]:", ui->linePersKey, resStr);
-            setUIText("[IRCSERVER]:", ui->ircServerBox, resStr);
-            setUIText("[IRCPORT]:", ui->serverPortBox, resStr);
-            setUIText("[IRCPROXY]:", ui->ircProxy, resStr);
-            setUIText("[IRCPROXYPORT]:", ui->ircProxyPort, resStr);
             setUIText("[SYSTEMPROXYIP]:", ui->systemProxyIP, resStr);
             setUIText("[SYSTEMPROXYPORT]:", ui->systemProxyPort, resStr);
-            setUIText("[IRCNICK]:", ui->ircNickBox, resStr);
 
             ZeroMemory(resStr, sizeof(resStr));
 		};
@@ -3278,10 +2612,7 @@ void _startMsgCheck()
 
     gthis = this;
     ui->setupUi(this);
-    ui->widgetIRC->installEventFilter(this);
-	ui->shoutBox->installEventFilter(this);
-	setSomeStyleArea();
-	ui->IRCModeChangerBut->setVisible(false);
+    setSomeStyleArea();
 	ui->dataText->setOpenExternalLinks(true);
 	ui->dataText->setOpenLinks(false);
 	ui->rVerLabel->hide();
@@ -3295,9 +2626,7 @@ void _startMsgCheck()
 
 	QTime time = QTime::currentTime();
 	qsrand((uint)time.msec());
-		
-	ui->ircNickBox->setText("nsa_" + QString::number(qrand() % 8999 + 1000));
-	
+
 	strcpy(gVER, GetVer());
 	QString QVER(gVER);
 	ui->logoLabel->setToolTip("v3-" + QVER);
@@ -3306,8 +2635,7 @@ void _startMsgCheck()
 
 	CreateVerFile();
     RestoreSession();
-	PhraseLog.push_back("");
-	CreateMsgPopupWidget();
+    PhraseLog.push_back("");
 
 	dtHN->start();
 	dtME2->start();
@@ -3328,11 +2656,6 @@ void _startMsgCheck()
 	_startVerCheck();
     _startMsgCheck();
     qrp.setMinimal(true);
-}
-
-void nesca_3::playFcknSound()
-{
-	QSound::play("00000036.wav");	
 }
 
 void nesca_3::mousePressEvent(QMouseEvent *event)
@@ -3655,218 +2978,6 @@ QString GetColorCode(int mode, QString str)
 	else result = "#AFAFAF";
 
 	return result;
-}
-
-void nesca_3::appendDefaultIRCTextOut(QString str)
-{
-	bool thisIsUrl = false;
-	r.indexIn(str);
-
-	QString link = r.cap(0);
-
-	if(link.size() != 0) 
-	{
-		str.replace("<", "&lt;");
-		link.replace("<", "&lt;");
-		str.replace(r, "<a href=\"" + link.trimmed() + "\"><span style=\"color: #717171;\">" + link.trimmed() + "</span></a> ");
-		thisIsUrl = true;
-	};
-
-	QString rData;
-	if(code160 || thisIsUrl) rData = "<font color=\"white\">[" + QTime::currentTime().toString() + "] " + str.trimmed() + "</font>";
-	else rData = "<font color=\"white\">[" + QTime::currentTime().toString() + "] " + str.trimmed().toHtmlEscaped() + "</font>";
-	
-	globalIRCText += rData + "\n";
-	if(utfIRCFlag) 
-	{
-		QByteArray wtf = codec->fromUnicode(rData);
-		ui->ircText->append(QString(wtf));
-	}
-	else ui->ircText->append(rData);
-
-	thisIsUrl = false;
-}
-
-void nesca_3::appendDefaultIRCText(bool pm, bool hlflag, QString str, QString senderNick)
-{
-	bool thisIsUrl = false;
-
-	int pos = 0;
-	QString colRes;
-	while ((pos = colr.indexIn(str, pos)) != -1) 
-	{	
-		colRes = colr.cap(1);
-		if(colRes.indexOf(",") > 0) str.replace(colRes, "</font><font style=\"color: " + GetColorCode(0, colRes) + ";background-color: " + GetColorCode(1, colRes) + ";\">");
-		else str.replace(colRes, "</font><font style=\"color: " + GetColorCode(0, colRes) + ";\">");
-		pos += colr.matchedLength();
-		thisIsUrl = true;
-	};
-
-	int posBold = 0;
-	QString boldRes;
-	boldr.setMinimal(true);
-	while ((posBold = boldr.indexIn(str, posBold)) != -1) 
-	{	
-		boldRes = boldr.cap(0);
-		QString boldResTrimmed = boldRes;
-		boldResTrimmed.replace("", "");
-		str.replace(boldRes, "<font style=\"font-weight: bold;\">" + boldResTrimmed + "</font>");
-		posBold += boldr.matchedLength();
-		thisIsUrl = true;
-	};
-
-	int posUnder = 0;
-	QString underRes;
-	under.setMinimal(true);
-	while ((posUnder = under.indexIn(str, posUnder)) != -1) 
-	{	
-		underRes = under.cap(0);
-		QString underResTrimmed = underRes;
-		underResTrimmed.replace("", "");
-		str.replace(underRes, "<font style=\"text-decoration: underline;\">" + underResTrimmed + "</font>");
-		posUnder += under.matchedLength();
-		thisIsUrl = true;
-	};
-
-	r.indexIn(str);
-	QString link = r.cap(0);
-	if(link.size() != 0) 
-	{
-		str.replace("<", "&lt;");
-		link.replace("<", "&lt;");
-		str.replace(r, "<a href=\"" + link.trimmed() + "\"><span style=\"color: #717171;\">" + link.trimmed() + "</span></a> ");
-		thisIsUrl = true;
-	};
-
-	
-	str.replace("", "</font>");
-	str.replace("", "</font>");
-	
-	char rawData[512] = {0};
-	strncpy(rawData, str.toLocal8Bit().data(), 512);
-
-	if(strstr(rawData, "") != NULL || strstr(rawData, "") != NULL || 
-		strstr(rawData, "") != NULL || strstr(rawData, "") != NULL
-		) thisIsUrl = true;
-
-	QString rData;
-	if(strstr(rawData, "ACTION") != NULL)
-	{
-		senderNick.replace("[", "");
-		senderNick.replace("]:", "");
-		str.replace("ACTION", "");
-		str.replace("", "");
-		rData = "<font color=\"#ffae00\">[" + QTime::currentTime().toString() + "]</font> -->" + senderNick + "<font style=\"color:#darkgray;background-color:#003f5f;\"> " + str.trimmed().toHtmlEscaped() + "</font>";
-		globalIRCText += rData + "\n";
-		if(utfIRCFlag) 
-		{
-			QByteArray wtf = codec->fromUnicode(rData);
-			ui->ircText->append(QString(wtf));
-		}
-		else ui->ircText->append(rData);
-	}
-	else
-	{	
-		if(hlflag)
-		{
-			if(code160 || thisIsUrl) rData = "<font color=\"#ffae00\">[" + QTime::currentTime().toString() + "]</font> " + (pm?" <font color=\"#810000\">[PM]</font> ":"") + senderNick + "<font style=\"color:#AFAFAF;background-color:#003f5f;\"> " + str + "</font>";
-			else rData = "<font color=\"#ffae00\">[" + QTime::currentTime().toString() + "]</font> " + (pm?" <font color=\"#810000\">[PM]</font> ":"") + senderNick + "<font style=\"color:#AFAFAF;background-color:#003f5f;\"> " + str.trimmed().toHtmlEscaped() + "</font>";
-		}
-		else
-		{
-			if(code160 || thisIsUrl) rData = "<font color=\"#ffae00\">[" + QTime::currentTime().toString() + "]</font> " + (pm?" <font color=\"#810000\">[PM]</font> ":"") + senderNick + "<font style=\"color:#AFAFAF;\"> " + str + "</font>";
-			else rData = "<font color=\"#ffae00\">[" + QTime::currentTime().toString() + "]</font> " + (pm?" <font color=\"#810000\">[PM]</font> ":"") + senderNick + "<font color=\"#AFAFAF\"> " + str.trimmed().toHtmlEscaped() + "</font>";
-		};
-		
-		globalIRCText += rData + "\n";
-		if(utfIRCFlag) 
-		{
-			QByteArray wtf = codec->fromUnicode(rData);
-			ui->ircText->append(QString(wtf));
-		}
-		else ui->ircText->append(rData);
-	};
-}
-
-void nesca_3::appendRedIRCText(QString str)
-{
-	QString rData;
-	rData = "<font style=\"color:red;background-color:#313131;\">[" + QTime::currentTime().toString() + "] " + str + "</font>";
-	globalIRCText += rData + "\n";
-	ui->ircText->append(rData);
-}
-
-void nesca_3::appendGreenIRCText(QString str)
-{
-	QString rData;
-	rData = "<font style=\"color:#06ff00;\">[" + QTime::currentTime().toString() + "] " + str + "</font>";
-	globalIRCText += rData + "\n";
-	ui->ircText->append(rData);
-}
-
-void nesca_3::appendYellowIRCText(QString str)
-{
-	QString rData;
-	rData = "<font style=\"color:#efe100;\">[" + QTime::currentTime().toString() + "] " + "[*] " + str.trimmed() + "</font>";
-	globalIRCText += rData + "\n";
-	ui->ircText->append(rData);
-}
-
-void nesca_3::appendDefaultIRCRawTextInc(QString str)
-{
-	QString rData;
-	if(code160) rData = "[" + QTime::currentTime().toString() + "] " + str;
-	else rData = "[" + QTime::currentTime().toString() + "] " + str.toHtmlEscaped();
-	globalIRCRaw += rData + "\n";
-	if(utfIRCFlag) 
-	{
-		QByteArray wtf = codec->fromUnicode(rData);
-		ui->ircRaw->append(QString(wtf));
-	}
-	else ui->ircRaw->append(rData);
-}
-
-void nesca_3::appendDefaultIRCRawTextOut(QString str)
-{
-	QString rData;
-	if(code160) rData = "<font color=\"#dbdbdb\">[" + QTime::currentTime().toString() + "] " + str.trimmed() + "</font>";
-	else rData = "<font color=\"#dbdbdb\">[" + QTime::currentTime().toString() + "] " + str.trimmed().toHtmlEscaped() + "</font>";
-	globalIRCRaw += rData + "\n";
-	if(utfIRCFlag) 
-	{
-		QByteArray wtf = codec->fromUnicode(rData);
-		ui->ircRaw->append(QString(wtf));
-	}
-	else ui->ircRaw->append(rData);
-}
-
-void nesca_3::slotClearNickList()
-{
-	ui->nickList->clear();
-}
-
-void nesca_3::slotAppendIRCNick(QString str)
-{
-	if(str.size() > 0 && str != " ") 
-	{
-		ui->nickList->addItem(str.remove("@"));
-		ui->nickList->setGeometry(ui->nickList->x(), ui->nickList->y(), ui->nickList->width(), ui->nickList->count() * 17 + 5);
-	};
-}
-
-void nesca_3::slotItemClicked(QListWidgetItem* wi)
-{
-	if(privateMsgFlag == false)
-	{
-		QString pText = ui->shoutBox->text();
-		ui->shoutBox->setText(pText + wi->text() + ", ");
-		ui->shoutBox->setFocus();
-	}
-	else
-	{
-		ui->shoutBox->setText("/w " + wi->text().remove("@") + " ");
-		ui->shoutBox->setFocus();
-	};
 }
 
 nesca_3::~nesca_3()

@@ -20,18 +20,14 @@ SOURCES +=\
     ActivityDrawerTh_HorNet.cpp \
     base64.cpp \
     CheckKey_Th.cpp \
-    CheckProxy_Th.cpp \
     DrawerTh_GridQoSScanner.cpp \
     DrawerTh_HorNet.cpp \
     DrawerTh_ME2Scanner.cpp \
     DrawerTh_QoSScanner.cpp \
     DrawerTh_VoiceScanner.cpp \
-    irc_nmblinker.cpp \
-    IRCPinger_Th.cpp \
     msgcheckerthread.cpp \
     nesca_3.cpp \
     nesca_startModule.cpp \
-    oIRC_Th.cpp \
     piestat.cpp \
     progressbardrawer.cpp \
     STh.cpp \
@@ -50,7 +46,6 @@ SOURCES +=\
 HEADERS  += ActivityDrawerTh_HorNet.h \
     base64.h \
     CheckKey_Th.h \
-    CheckProxy_Th.h \
     DrawerTh_GridQoSScanner.h \
     DrawerTh_HorNet.h \
     DrawerTh_ME2Scanner.h \
@@ -58,12 +53,9 @@ HEADERS  += ActivityDrawerTh_HorNet.h \
     DrawerTh_VoiceScanner.h \
     externData.h \
     externFunctions.h \
-    irc_nmblinker.h \
-    IRCPinger_Th.h \
     mainResources.h \
     msgcheckerthread.h \
     nesca_3.h \
-    oIRC_Th.h \
     piestat.h \
     progressbardrawer.h \
     resource.h \

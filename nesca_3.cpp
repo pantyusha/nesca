@@ -2941,7 +2941,6 @@ void nesca_3::ConnectEvrthng()
 }
 
 void _LoadPersInfoToLocalVars(int savedTabIndex) {
-    ZeroMemory(endIP2, sizeof(endIP2));
     ZeroMemory(top_level_domain, sizeof(top_level_domain));
     ZeroMemory(gPorts, sizeof(gPorts));
 
@@ -2957,16 +2956,15 @@ void _LoadPersInfoToLocalVars(int savedTabIndex) {
                 QList<QString> splittedTargetLine = targetLine.split("-");
                 strcpy(currentIP, splittedTargetLine[0].toLocal8Bit().data());
                 strcpy(finalIP, splittedTargetLine[1].toLocal8Bit().data());
-                strcpy(endIP2, ui->ipLine->text().toLocal8Bit().data());
             }
         }
         else
         {
             if(ui->ipLine->text().indexOf("/") < 0)
             {
-                strcpy(endIP2, ui->ipLine->text().toLocal8Bit().data());
-                strcat(endIP2, "-");
-                strcat(endIP2, ui->ipLine->text().toLocal8Bit().data());
+                strcpy(currentIP, ui->ipLine->text().toLocal8Bit().data());
+                strcat(currentIP, "-");
+                strcat(currentIP, ui->ipLine->text().toLocal8Bit().data());
             };
         };
 
@@ -2978,7 +2976,7 @@ void _LoadPersInfoToLocalVars(int savedTabIndex) {
         gMode = 1;
         gThreads = ui->lineEditThread->text().toInt();
 
-        strcpy(endIP2, ui->lineEditStartIPDNS->text().toLocal8Bit().data());
+        strcpy(currentIP, ui->lineEditStartIPDNS->text().toLocal8Bit().data());
         strcpy(top_level_domain, ui->lineILVL->text().toLocal8Bit().data());
         strncpy(gPorts, ("-p" + ui->lineEditPort->text()).toLocal8Bit().data(), 65536);
         gPorts[ui->lineEditPort->text().size()] = '\0';

@@ -32,7 +32,6 @@ unsigned int Activity = 0;
 unsigned char **ipsstartfl = NULL, **ipsendfl = NULL, **starterIP = NULL;
 double ips = 0;
 char top_level_domain[128] = {0};
-char endIP2[128] = {0};
 char **GlobalNegatives = 0;
 char **loginLst, **passLst;
 char **wfLoginLst, **wfPassLst;
@@ -805,13 +804,9 @@ void _connect() {
     }
 }
 
-void verboseProgress(long long unsigned int target, const char *ip) {
-
+inline void progressOutput(long long unsigned int target) {
     char targetNPers[128] = {0};
     float percent = (gTargetsOverall != 0 ? (100 - target/(double)gTargetsOverall * 100) : 0);
-
-    stt->doEmitionIPRANGE(QString(ip));
-    strcpy(currentIP, ip);
 
     sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
     stt->doEmitionTargetsLeft(QString(targetNPers));
@@ -820,34 +815,26 @@ void verboseProgress(long long unsigned int target, const char *ip) {
     sprintf(metaPercent, "%.1f",
             percent);
 }
+void verboseProgress(long long unsigned int target, const char *ip) {
+
+    stt->doEmitionIPRANGE(QString(ip));
+    progressOutput(target);
+}
 void verboseProgressDNS(long long unsigned int target, const char *ip, const char *TLD) {
 
-	char targetNPers[128] = { 0 };
-	float percent = (gTargetsOverall != 0 ? (100 - target / (double)gTargetsOverall * 100) : 0);
-
-	stt->doEmitionIPRANGE(QString(ip) + QString(TLD));
-	strcpy(currentIP, ip);
-
-    sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
-    stt->doEmitionTargetsLeft(QString(targetNPers));
-
-	sprintf(metaTargets, "%Lu", target);
-	sprintf(metaPercent, "%.1f",
-		percent);
+    stt->doEmitionIPRANGE(QString(ip) + QString(TLD));
+    progressOutput(target);
 }
 
 void _passLoginLoader() {
 	MaxLogin = 0;
 	MaxPass = 0;
 
-	FILE *loginList;
-	FILE *passList;
-	
 	char buffFG[32] = {0};
 	int i = 0;
 
-	loginList = fopen("login.txt", "r");
-	passList = fopen("pass.txt", "r");
+    FILE *loginList = fopen("login.txt", "r");
+    FILE *passList = fopen("pass.txt", "r");
 
 	if(passList != NULL && loginList != NULL)
 	{
@@ -1898,7 +1885,6 @@ int ParseArgs(int argc, char *argv[]) {
         };
 
         strcpy(saveEndIP, gRange);
-        strcpy(endIP2, gRange);
         strcpy(finalIP, strstr(gRange, "-") + 1);
 	}
 	else if(gMode == 1)
@@ -1906,14 +1892,12 @@ int ParseArgs(int argc, char *argv[]) {
 		if(strstr(argv[2], "/") != NULL)
 		{
 			strcpy(gRange, argv[2]);
-			strcpy(saveEndIP, argv[2]); 
-			strcpy(endIP2, argv[2]);
+            strcpy(saveEndIP, argv[2]);
 		}
 		else
 		{
 			strcpy(gRange, argv[2]);
-			strcpy(saveEndIP, gRange);
-			strcpy(endIP2, gRange);
+            strcpy(saveEndIP, gRange);
 		};
 
 	};
@@ -2037,8 +2021,9 @@ int _getChunkCount(char *data) {
 }
 
 int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
+
 	if(strstr(mask, "[") != NULL)
-	{
+    {
 		char maskEnd[1024] = {0};
 		char maskRes[1024] = {0};
 		char *ptr1 = strstr(mask, "[");
@@ -2095,7 +2080,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 	}
 	else
     {
-        strcpy(endIP2, saveMask);
+        strcpy(currentIP, saveMask);
 
         while(cons >= gThreads && globalScanFlag) Sleep(300);
         if(!globalScanFlag) return 0;

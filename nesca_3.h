@@ -29,7 +29,7 @@ extern bool widgetIsHidden, IRCLogToggled, blinkFlag, disableBlink, debugFileOK,
 	smBit_8, smBit_7, smBit_6, smBit_5, smBit_4, smBit_3, smBit_2, smBit_1, printDelimiter;
 extern float QoSStep;
 extern int MaxDataVal;
-extern char endIP2[128], inputStr[256];
+extern char inputStr[256];
 extern SOCKET lSock;
 
 extern QVector<int> vAlivLst, vAnomLst, vWFLst, vSuspLst, vLowlLst, vBALst, vSSHLst, vOvrlLst, actLst;

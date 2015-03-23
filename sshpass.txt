@@ -23,3 +23,4 @@ admin:654321
 root:password
 admin:pasword
 test:test
+root:1qazXSW@

@@ -6,6 +6,7 @@
 #include "Connector.h"
 #include "BasicAuth.h"
 #include "FTPAuth.h"
+#include "SSHAuth.h"
 #include <memory>
 
 char* strstri(const char *_Str, const char *_SubStr)
@@ -489,7 +490,6 @@ char topBuff[1024] = {"<div id=\"tit\"><a href=\"strange.html\">.strange</a> <a 
 void fputsf(char *text, int flag, char *msg)
 {
     FILE *file = NULL;
-	char wew[256] = {0};
 
 	if(flag == 0 || flag == 15 || flag == -10) 
 	{
@@ -760,7 +760,7 @@ void putInFile(int flag, const char *ip, char *port, int recd, char *finalstr, c
 	ZeroMemory(msg, strlen(msg));
 }
 
-void _specFillerBA(char *hl, const char *ip, char *port, char *finalstr, const char *login, const char *pass, int flag)
+void _specFillerBA(const char *ip, char *port, char *finalstr, const char *login, const char *pass, int flag)
 {
     char log[512] = {0};
 	
@@ -779,7 +779,7 @@ void _specFillerBA(char *hl, const char *ip, char *port, char *finalstr, const c
     fputsf (log , flag, "Basic Authorization");
 }
 
-void _specFillerWF(char *hl, const char *ip, char *port, char *finalstr, char *login, char *pass, int flag)
+void _specFillerWF(const char *ip, char *port, char *finalstr, char *login, char *pass, int flag)
 {
 	char log[512] = {0};
 	
@@ -1144,7 +1144,7 @@ void _specWFBrute(const char *ip, int port, char *hl, const char *buff, int flag
 
 			if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 			{
-				_specFillerWF(hl, ip, tport, title, lps.login, lps.pass, flag);
+                _specFillerWF(ip, tport, title, lps.login, lps.pass, flag);
 		
 				fillGlobalLogData(ip, hl, tport, std::to_string(recd).c_str(), title, lps.login, lps.pass, comment, cp, tclass);
 				putInFile(flag, ip, tport, recd, title, hl, cp);
@@ -1172,13 +1172,13 @@ void _specWEBIPCAMBrute(const char *ip, int port, char *hl, char *finalstr, int 
 
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
-		_specFillerBA(hl, ip, tport, finalstr, lps.login, lps.pass, flag);
+        _specFillerBA(ip, tport, finalstr, lps.login, lps.pass, flag);
 
 		fillGlobalLogData(ip, hl, tport, std::to_string(recd).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");	
 	};
 }
 
-void _specBrute(char *cookie, const char *ip, int port,
+void _specBrute(const char *ip, int port,
                 char *hl, char *finalstr, int flag,
                 char *path, char *comment, char *cp, int recd)
 {
@@ -1186,11 +1186,11 @@ void _specBrute(char *cookie, const char *ip, int port,
     char tport[32] = {0};
     sprintf(tport, ":%d", port);
 
-    const lopaStr &lps = BA::_BALobby((string(ip) + string(path)).c_str(), port);
+    const lopaStr &lps = BA::BALobby((string(ip) + string(path)).c_str(), port);
 	
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
-		_specFillerBA(hl, ip, tport, finalstr, lps.login, lps.pass, flag);
+        _specFillerBA(ip, tport, finalstr, lps.login, lps.pass, flag);
 
 		fillGlobalLogData(ip, hl, tport, std::to_string(recd).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");
 	};
@@ -1361,14 +1361,12 @@ void _saveSSH(const char *ip, int port, int recd, const char *buffcpy)
 
 int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, char *hl)
 {
-	if(	strstr(buffcpy, "SSH-2.0-OpenSSH") != NULL || strstr(buffcpy, "SSH-2.0-mod_sftp") != NULL) 
+    if(	strstr(buffcpy, "SSH-2.0-OpenSSH") != NULL ||
+            strstr(buffcpy, "SSH-2.0-mod_sftp") != NULL)
     {
         std::string sshBuff;
-        int res = Connector::_SSHLobby(ip, p, &sshBuff);
-		if(res != -1 && res != -2)
-		{
-            _saveSSH(ip, p, recd, (char*)sshBuff.c_str());
-		};
+        int res = SSHAuth::SSHLobby(ip, p, &sshBuff);
+        if(res != -1 && res != -2) _saveSSH(ip, p, recd, (char*)sshBuff.c_str());
 		return -1;
 	};
 	
@@ -1417,11 +1415,7 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 		
 		int sz = strlen(ps.path);
         strncpy(baPath, ps.path, (sz < 256 ? sz : 256));
-	}
-	else
-	{
-		if(strstr(buffcpy, "Set-Cookie:") != NULL) strncpy(ps.cookie, _getAttribute(buffcpy, "Set-Cookie:"), COOKIE_MAX_SIZE);		
-	};
+    };
 
     sprintf(port, "%d", p);
 
@@ -1435,7 +1429,7 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 		char log[2048] = {0};
 		char logEmit[2048] = {0};
 
-        const lopaStr &lps = FTPA::_FTPLobby(ip, p, &ps);
+        const lopaStr &lps = FTPA::FTPLobby(ip, p, &ps);
 
 		if(strstr(lps.other, "ROUTER") != NULL)
 		{
@@ -1480,47 +1474,47 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 	}
 	else if(flag == 21) //Eyeon
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Eyeon Camera", flag, "/user/index.htm", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "Eyeon Camera", flag, "/user/index.htm", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 22) //IP Camera control
 	{
-        _specBrute(ps.cookie, ip, p, hl, "IP camera Control webpage", flag, "/main/cs_motion.asp", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "IP camera Control webpage", flag, "/main/cs_motion.asp", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 23) //Network Camera BB-SC384
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Network Camera BB-SC384", flag, "/live/index2.html", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "Network Camera BB-SC384", flag, "/live/index2.html", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 24) //Network Camera VB-M40
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Network Camera VB-M40", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "Network Camera VB-M40", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 25) //Panasonic WTFISTHISAreaOMGIDONTEVEN-camera
 	{
-        _specBrute(ps.cookie, ip, 60002, hl, "Panasonic WTFISTHISAreaOMGIDONTEVEN-camera", flag, "/SnapshotJPEG", "Basic Authorization", cp, recd);
+        _specBrute(ip, 60002, hl, "Panasonic WTFISTHISAreaOMGIDONTEVEN-camera", flag, "/SnapshotJPEG", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 26) //Sony Network Camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Sony Network Camera", flag, "/oneshotimage?", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "Sony Network Camera", flag, "/oneshotimage?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 27) //UA Network Camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "UA Network Camera", flag, "/webs.cgi?", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "UA Network Camera", flag, "/webs.cgi?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 28) //Network Camera VB-M40
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Network Camera VB-??", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "Network Camera VB-??", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 29) //LG Smart IP Device
 	{
-        _specBrute(ps.cookie, ip, p, hl, "LG Smart IP Device Camera", flag, "/digest.php", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "LG Smart IP Device Camera", flag, "/digest.php", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 30) //NAS
 	{
-        _specBrute(ps.cookie, ip, p, hl, "NAS", flag, "/cgi-bin/data/viostor-220/viostor/viostor.cgi", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "NAS", flag, "/cgi-bin/data/viostor-220/viostor/viostor.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 31) //ip cam
 	{
-        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/check_user.cgi", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "IP Camera", flag, "/check_user.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 32) //IPC WEB ip cam
 	{
@@ -1532,7 +1526,7 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 	}
 	else if(flag == 34) //Hikvision ip cam
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 35) //EasyCam
 	{
@@ -1540,11 +1534,11 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 	}
 	else if(flag == 36) //Panasonic Cam
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 37) //Panasonic Cam
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/view/getuid.cgi", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "[Panasonic] IP Camera", flag, "/view/getuid.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 38) //Foscam
 	{
@@ -1552,11 +1546,11 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 	}
 	else if(flag == 39) //EagleEye
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[EagleEye] IP Camera", flag, "/cgi-bin/guest/Video.cgi?", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "[EagleEye] IP Camera", flag, "/cgi-bin/guest/Video.cgi?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 40) //Network Camera VB-C??
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Network Camera VB-C??] IP Camera", flag, "/admin/index.shtml?", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "[Network Camera VB-C??] IP Camera", flag, "/admin/index.shtml?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 41) //AVIOSYS-camera
 	{
@@ -1564,19 +1558,19 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 	}
 	else if(flag == 42) //NW_camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[NW_camera] IP Camera", flag, "/cgi-bin/getuid?FILE=indexnw.html", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "[NW_camera] IP Camera", flag, "/cgi-bin/getuid?FILE=indexnw.html", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 43) //NW_camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Micros] IP Camera", flag, "/gui/rem_display.shtml", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "[Micros] IP Camera", flag, "/gui/rem_display.shtml", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 44) //Hikvision ip cam 2
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Hikvision] IP Camera 2", flag, "/ISAPI/Security/userCheck", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "[Hikvision] IP Camera 2", flag, "/ISAPI/Security/userCheck", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 45) //Panasonic ip cam
 	{
-        _specBrute(ps.cookie, ip, p, hl, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 46) //Buffalo disk
 	{
@@ -1596,46 +1590,46 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 	}
 	else if (flag == 50) //IP Camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/app/multi/single.asp", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "IP Camera", flag, "/app/multi/single.asp", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 20) //AXIS Camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 19) //reecam cameras
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Reecam (network camera)", flag, "/videostream.cgi", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "Reecam (network camera)", flag, "/videostream.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 18) //linksys camera
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Linksys camera", flag, "/img/main.cgi", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "Linksys camera", flag, "/img/main.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 17) //Real-time IP Camera Monitoring System
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Real-time IP Camera Monitoring System", flag, "/live.htm", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "Real-time IP Camera Monitoring System", flag, "/live.htm", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 11) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, "Netwave IP Camera", flag, "/videostream.cgi", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "Netwave IP Camera", flag, "/videostream.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 12) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/view/view.shtml?videos=", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "IP Camera", flag, "/view/view.shtml?videos=", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 13) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/eng/view/indexjava.html", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "IP Camera", flag, "/eng/view/indexjava.html", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 14) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, "IP Camera", flag, "/rdr.cgi", "Basic Authorization", cp, recd);
+        _specBrute(ip, p, hl, "IP Camera", flag, "/rdr.cgi", "Basic Authorization", cp, recd);
 	}
 	else if(flag == 15) //For HFS
     {
         char log[512] = {0};
 		++AnomC1;
 
-        const lopaStr &lps = BA::_BALobby((string(ip) + "/~login").c_str(), p);
+        const lopaStr &lps = BA::BALobby((string(ip) + "/~login").c_str(), p);
         sprintf(log, "[HFS]:<font color=\"#ff6600\">%s :: </font><a href=\"http://%s:%s/\"><span style=\"color: #a1a1a1;\">%s:%s</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">%s Pass: %s:%s</font>",
                 hl, ip, port, ip, port, finalstr, lps.login, lps.pass);
 
@@ -1645,11 +1639,11 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 	}
 	else if(flag == 1) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, finalstr, flag, baPath, "[NORMAL]", cp, recd);
+        _specBrute(ip, p, hl, finalstr, flag, baPath, "[NORMAL]", cp, recd);
 	}
 	else if(flag == 101) 
 	{
-        _specBrute(ps.cookie, ip, p, hl, finalstr, flag, baPath, "[DIGEST]", cp, recd);
+        _specBrute(ip, p, hl, finalstr, flag, baPath, "[DIGEST]", cp, recd);
 	}
 	else if(flag == 10) 
 	{
@@ -1663,7 +1657,7 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 	return flag;
 }
 
-int redirectReconnect(char *cookie, char *ip, int port, char *str, Lexems *ls, PathStr *ps, std::vector<std::string> *redirStrLst)
+int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, std::vector<std::string> *redirStrLst)
 {
 	if(ls->iterationCount++ == 5)
 	{	
@@ -2151,33 +2145,11 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 	};
 }
 
-void _getJSCookie(char *dataBuff, const char *str, char *ip, int port)
-{
-	char *ptr1 = strstri(str, "document.cookie");
-	if(ptr1 != NULL)
-	{
-		char *ptr2 = _findFirst(ptr1, "\"'");
-		if(ptr2 != NULL)
-		{
-			char *ptr3 = _findFirst(ptr2 + 1, "\"'");
-			if(ptr3 != NULL)
-			{
-				int sz = ptr3 - ptr2 - 1;
-				if(sz < 1024) strncpy(dataBuff, ptr2 + 1, sz);
-				else
-				{
-					stt->doEmitionRedFoundData("[_getJSCookie] Cookie exceeds max value [" + QString(ip) + ":" + QString::number(port) + "]");					
-				};
-			};
-		};
-	};
-}
-
 int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps, std::vector<std::string> *redirStrLst)
 {
 	std::string redirectStr = "";
-	if(strstr(str, "Set-Cookie:") != NULL) strncpy(ps->cookie, _getAttribute(str, "Set-Cookie:"), COOKIE_MAX_SIZE);
-	strcpy(ps->codepage, GetCodePage(str));
+
+    strcpy(ps->codepage, GetCodePage(str));
     char finalstr[512] = {0};
 	
 	if(strstri(str, "notice auth :*** looking up your hostname...") 
@@ -2279,15 +2251,17 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
                         };
                     };
                 };
+
                 redirectStr = std::string(temp3);
                 if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end())
                 {
                     redirStrLst->push_back(redirectStr);
-                    return redirectReconnect(ps->cookie, ip, port, temp3, l, ps, redirStrLst);
+                    return redirectReconnect(ip, port, temp3, l, ps, redirStrLst);
                 } return -1;
                 strcat(ps->headr, " ");
                 return -2;
             };
+
             strcat(ps->headr, finalstr);
             strcat(ps->headr, " ");
             return 0;
@@ -2295,13 +2269,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
     };
 
 	if(strstri(str, "<script") != NULL)
-	{
-		if(strstri(str, "document.cookie") != NULL)
-		{
-			ZeroMemory(ps->cookie, sizeof(ps->cookie));
-			_getJSCookie(ps->cookie, str, ip, port);
-		};
-
+    {
 		char *ptr1 = strstri(str, "<script");
 		char *ptr2 = NULL;
 		char linkPtr[512] = {0};
@@ -2330,7 +2298,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 					if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 					{
 						redirStrLst->push_back(redirectStr);
-                        redirectReconnect(ps->cookie, ip, port, linkPtr, l, ps, redirStrLst);
+                        redirectReconnect(ip, port, linkPtr, l, ps, redirStrLst);
 					};
 				};
 				delete []scriptContainer;
@@ -2381,7 +2349,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 					if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 					{
 						redirStrLst->push_back(redirectStr);
-                        return redirectReconnect(ps->cookie, ip, port, linkPtr, l, ps, redirStrLst);
+                        return redirectReconnect(ip, port, linkPtr, l, ps, redirStrLst);
 					} return -1;
 				};
 				delete []scriptContainer;
@@ -2495,7 +2463,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 							if(std::find(redirStrLst->begin(), redirStrLst->end(), redirectStr) == redirStrLst->end()) 
 							{
 								redirStrLst->push_back(redirectStr);
-                                return redirectReconnect(ps->cookie, ip, port, lol, l, ps, redirStrLst);
+                                return redirectReconnect(ip, port, lol, l, ps, redirStrLst);
 							};
 						}
 						else
@@ -2565,7 +2533,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 	//				if (std::find(redirStrLst->begin(), redirStrLst->end(), redirStr) == redirStrLst->end())
 	//				{
 	//					redirStrLst->push_back(redirStr);
- //                       return redirectReconnect(ps->cookie, ip, port, redirStr, l, ps, redirStrLst);
+ //                       return redirectReconnect(ip, port, redirStr, l, ps, redirStrLst);
 	//				} return -1;
 	//			}
 	//			return -2;

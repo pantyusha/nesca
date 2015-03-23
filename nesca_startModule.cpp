@@ -27,12 +27,12 @@ int ipsstart[4], ipsend[4],
 	overallPorts, flCounter, octet[4];
 int BA = 0;
 int gPingTimeout = 1;
+int gMaxBrutingThreads = 200;
 unsigned int Activity = 0;
 
 unsigned char **ipsstartfl = NULL, **ipsendfl = NULL, **starterIP = NULL;
 double ips = 0;
 char top_level_domain[128] = {0};
-char endIP2[128] = {0};
 char **GlobalNegatives = 0;
 char **loginLst, **passLst;
 char **wfLoginLst, **wfPassLst;
@@ -190,21 +190,7 @@ void _SaveBackupToFile()
 
         if(strlen(endStr) > 0)
 		{
-			strcpy(saveStr, "[SESSION]:");
-			strcat(saveStr, std::to_string(gMode).c_str());
-            strcat(saveStr, " ");
-            strcat(saveStr, endStr);
-			if(gMode == 1)
-			{
-				strcat(saveStr, " ");
-				strcat(saveStr, top_level_domain);
-			};
-			strcat(saveStr, " ");
-			strcat(saveStr, std::to_string(gThreads).c_str());
-			strcat(saveStr, " ");
-			strcat(saveStr, gPorts);
-
-			strcat(saveStr, "\n");
+            sprintf(saveStr, "[SESSION]:%d %s %s %d %s\n", gMode, endStr, (gMode ? top_level_domain : ""), gThreads, gPorts);
 			strcat(saveBuffer, saveStr);
 			ZeroMemory(saveStr, sizeof(saveStr));
 		};
@@ -233,84 +219,42 @@ void _SaveBackupToFile()
 			else stt->doEmitionRedFoundData("[_saver] Cannot open file.");
 		};
 
-		strcpy(saveStr, "[SESSION]:");
-		strcat(saveStr, std::to_string(gMode).c_str());
-		strcat(saveStr, " RESTORE_IMPORT_SESSION");
-		strcat(saveStr, " ");
-		strcat(saveStr, std::to_string(gThreads).c_str());
-		strcat(saveStr, " ");
-		strcat(saveStr, gPorts);
-
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[SESSION]:%d RESTORE_IMPORT_SESSION %d %s\n", gMode, gThreads, gPorts);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 	};
 
-		strcpy(saveStr, "[NDBSERVER]:");
-		strcat(saveStr, trcSrv);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[NDBSERVER]:%s\n", trcSrv);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[NDBSCRIPT]:");
-		strcat(saveStr, trcScr);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[NDBSCRIPT]:%s\n", trcScr);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[NDBPORT]:");
-		strcat(saveStr, trcSrvPortLine);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[NDBPORT]:%s\n", trcSrvPortLine);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[PROXY]:");
-		strcat(saveStr, trcProxy);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[PROXY]:%s\n", trcProxy);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[PROXYPORT]:");
-		strcat(saveStr, trcPort);
-		strcat(saveStr, "\n");
+        sprintf(saveStr, "[PROXYPORT]:%s\n", trcPort);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[IRCSERVER]:");
-		strcat(saveStr, ircServer);
-		strcat(saveStr, "\n");
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+        sprintf(saveStr, "[PING]:%s\n", gPingNScan ? "true" : "false");
+        strcat(saveBuffer, saveStr);
+        ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[IRCPORT]:");
-		strcat(saveStr, ircPort);
-		strcat(saveStr, "\n");
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+        sprintf(saveStr, "[SHUFFLE]:%s\n", gShuffle ? "true" : "false");
+        strcat(saveBuffer, saveStr);
+        ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[IRCPROXY]:");
-		strcat(saveStr, ircProxy);
-		strcat(saveStr, "\n");
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
-
-		strcpy(saveStr, "[IRCPROXYPORT]:");
-		strcat(saveStr, ircProxyPort);
-		strcat(saveStr, "\n");
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
-
-		strcpy(saveStr, "[IRCNICK]:");
-		strcat(saveStr, ircNick);
-		strcat(saveStr, "\n");
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
-		
-		strcpy(saveStr, "[PING]:");
-		strcat(saveStr, gPingNScan ? "true" : "false");
-		strcat(saveStr, "\n");
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+        sprintf(saveStr, "[NSTRACK]:%s\n", trackerOK ? "true" : "false");
+        strcat(saveBuffer, saveStr);
+        ZeroMemory(saveStr, sizeof(saveStr));
 
         sprintf(saveStr, "[PING_TO]: %d\n", gPingTimeout);
 		strcat(saveBuffer, saveStr);
@@ -408,7 +352,7 @@ void _tracker() {
     while(true) {
         while(!trackerOK) Sleep(1000);
 
-        if(globalScanFlag == false && jsonArr->size() == 0) break;
+        if(!globalScanFlag && jsonArr->size() == 0) break;
         char rBuffT[250000] = {0};
         char *msg = new char[4096];
         ZeroMemory(msg, sizeof(*msg));
@@ -563,7 +507,7 @@ void _tracker() {
 
             while(true)
             {
-                if(globalScanFlag == false && jsonArr->size() == 0) break;
+                if(!globalScanFlag && jsonArr->size() == 0) break;
                 if(!trackerOK) {
                     Sleep(1000);
                     continue;
@@ -774,6 +718,38 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[]) {
 	return gTargets;
 }
 
+unsigned char tl(unsigned char d)
+{
+    if(d >= 192 && d <= 223)
+    {
+        return (unsigned char)(d + 32);
+    }
+    else
+    {
+        return tolower(d);
+    };
+}
+
+std::string toLowerStr(const char *str)
+{
+    if(str != NULL) {
+        int tsz = strlen(str);
+        char *strr = new char[tsz+1];
+        ZeroMemory(strr, tsz);
+
+        for (int i = 0; i < tsz; i++)
+        {
+            strr[i] = tl(str[i]);
+        };
+
+        memset(strr + tsz, '\0', 1);
+
+        std::string tstr = std::string(strr);
+        delete []strr;
+        return tstr;
+    } else return "";
+}
+
 void _connect() {
     string ip = "";
 	while (globalScanFlag) {
@@ -797,7 +773,7 @@ void _connect() {
 			ConInc();
 			for (int i = 0; i <= overallPorts; ++i)
 			{
-				if (globalScanFlag == false) break;
+                if (!globalScanFlag) break;
 				if (Connector::_ConnectToPort(ip, portArr[i], "") == -2) break;
 			};
 			ConDec();
@@ -805,49 +781,39 @@ void _connect() {
     }
 }
 
-void verboseProgress(long long unsigned int target, const char *ip) {
-
+inline void progressOutput(long long unsigned int target) {
     char targetNPers[128] = {0};
     float percent = (gTargetsOverall != 0 ? (100 - target/(double)gTargetsOverall * 100) : 0);
 
-    stt->doEmitionIPRANGE(QString(ip));
-    strcpy(currentIP, ip);
-
-    //sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
-    //stt->doEmitionTargetsLeft(QString(targetNPers));
+    sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
+    stt->doEmitionTargetsLeft(QString(targetNPers));
 
     sprintf(metaTargets, "%Lu", target);
     sprintf(metaPercent, "%.1f",
             percent);
 }
-void verboseProgressDNS(long long unsigned int target, const char *ip, const char *TLD) {
+void verboseProgress(long long unsigned int target, const char *ip) {
 
-	char targetNPers[128] = { 0 };
-	float percent = (gTargetsOverall != 0 ? (100 - target / (double)gTargetsOverall * 100) : 0);
+    stt->doEmitionIPRANGE(QString(ip));
+    strcpy(currentIP, ip);
+    progressOutput(target);
+}
+void verboseProgressDNS(long long unsigned int target, const char *ip, const char *TLD, const char *mask) {
 
-	stt->doEmitionIPRANGE(QString(ip) + QString(TLD));
-	strcpy(currentIP, ip);
-
-	//sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
-	//stt->doEmitionTargetsLeft(QString(targetNPers));
-
-	sprintf(metaTargets, "%Lu", target);
-	sprintf(metaPercent, "%.1f",
-		percent);
+    stt->doEmitionIPRANGE(QString(ip) + QString(TLD));
+    strcpy(currentIP, mask);
+    progressOutput(target);
 }
 
 void _passLoginLoader() {
 	MaxLogin = 0;
 	MaxPass = 0;
 
-	FILE *loginList;
-	FILE *passList;
-	
 	char buffFG[32] = {0};
 	int i = 0;
 
-	loginList = fopen("login.txt", "r");
-	passList = fopen("pass.txt", "r");
+    FILE *loginList = fopen("login.txt", "r");
+    FILE *passList = fopen("pass.txt", "r");
 
 	if(passList != NULL && loginList != NULL)
 	{
@@ -1898,7 +1864,6 @@ int ParseArgs(int argc, char *argv[]) {
         };
 
         strcpy(saveEndIP, gRange);
-        strcpy(endIP2, gRange);
         strcpy(finalIP, strstr(gRange, "-") + 1);
 	}
 	else if(gMode == 1)
@@ -1906,14 +1871,12 @@ int ParseArgs(int argc, char *argv[]) {
 		if(strstr(argv[2], "/") != NULL)
 		{
 			strcpy(gRange, argv[2]);
-			strcpy(saveEndIP, argv[2]); 
-			strcpy(endIP2, argv[2]);
+            strcpy(saveEndIP, argv[2]);
 		}
 		else
 		{
 			strcpy(gRange, argv[2]);
-			strcpy(saveEndIP, gRange);
-			strcpy(endIP2, gRange);
+            strcpy(saveEndIP, gRange);
 		};
 
 	};
@@ -2037,8 +2000,9 @@ int _getChunkCount(char *data) {
 }
 
 int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
+
 	if(strstr(mask, "[") != NULL)
-	{
+    {
 		char maskEnd[1024] = {0};
 		char maskRes[1024] = {0};
 		char *ptr1 = strstr(mask, "[");
@@ -2069,17 +2033,14 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 		int szMask = strlen(mask);
 		int szOffset = startPosition + 2;
 		if(szMask != szOffset) strcpy(maskEnd, strstr(mask, "]") + 1);
-		else
-		{
-			ZeroMemory(maskEnd, sizeof(maskEnd));
-		};
+        else ZeroMemory(maskEnd, sizeof(maskEnd));;
 
 		char maskSaver[128] = {0};
 		if(firstPos != -1 && secondPos != -1)
 		{
 			for(int i = firstPos; i <= secondPos; ++i)
 			{
-				if(globalScanFlag == false) break;
+                if(!globalScanFlag) break;
 
 				strcpy(maskSaver, saveMask);
 				strcat(maskSaver, maskEntry);
@@ -2098,14 +2059,13 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 	}
 	else
     {
-        strcpy(endIP2, saveMask);
+        strcpy(currentIP, saveMask);
 
         while(cons >= gThreads && globalScanFlag) Sleep(300);
-        if(globalScanFlag == false) return 0;
+        if(!globalScanFlag) return 0;
 
-        string res = string(mask);
-		verboseProgressDNS(--gTargets, res.c_str(), top_level_domain);
-        res += string(top_level_domain);
+        verboseProgressDNS(--gTargets, mask, top_level_domain, saveMask);
+        string res = string(mask) + string(top_level_domain);
 
 		++indexIP;
 
@@ -2124,9 +2084,6 @@ void runAuxiliaryThreads() {
 
 int startScan(char* args) {
 	curl_global_init(CURL_GLOBAL_ALL);
-	SSL_library_init();
-	OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
-	SSL_load_error_strings();   /* Bring in and register error messages */
 
 	horLineFlag = false;
 	flCounter = 0;
@@ -2146,7 +2103,6 @@ int startScan(char* args) {
 	ZeroMemory(ipsend, sizeof(ipsend));
 	
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	//std::string OutputFolder = std::string(RESULT_DIR_NAME);
 	CreateDirectoryA(RESULT_DIR_NAME, NULL);
 #else
 	struct stat str = {0};
@@ -2183,10 +2139,10 @@ int startScan(char* args) {
 	_passLoginLoader();
 	_NegativeLoader();
 
-	if (gMode == 0)
-	{
-		runAuxiliaryThreads();
+    runAuxiliaryThreads();
 
+	if (gMode == 0)
+    {
 		unsigned long ip1 = (ipsstart[0] * 16777216) + (ipsstart[1] * 65536) + (ipsstart[2] * 256) + ipsstart[3];
 		unsigned long ip2 = (ipsend[0] * 16777216) + (ipsend[1] * 65536) + (ipsend[2] * 256) + ipsend[3];
 
@@ -2197,7 +2153,7 @@ int startScan(char* args) {
 
 					   for (unsigned long i = ip1; i <= ip2; ++i) {
 
-						   if (globalScanFlag == false) break;
+                           if (!globalScanFlag) break;
 						   unsigned long offset = ip2 - i;
 
 						   tAddr.s_addr = ntohl(i);
@@ -2210,7 +2166,7 @@ int startScan(char* args) {
 							   while (ipVec.size() != 0) {
 
 								   while (cons >= gThreads && globalScanFlag) Sleep(500);
-								   if (globalScanFlag == false) goto haters_gonna_hate_IPM;
+                                   if (!globalScanFlag) goto haters_gonna_hate_IPM;
 
 								   ++indexIP;
 								   std::string res = ipVec[0];
@@ -2231,7 +2187,7 @@ int startScan(char* args) {
 						for (unsigned long i = ip1; i <= ip2; ++i) {
 
 							while (cons >= gThreads && globalScanFlag) Sleep(500);
-							if (globalScanFlag == false) break;
+                            if (!globalScanFlag) break;
 
 							std::string res = "";
 							++indexIP;
@@ -2247,9 +2203,7 @@ int startScan(char* args) {
 		}
 	}
 	else if (gMode == 1)
-	{
-		runAuxiliaryThreads();
-
+    {
 		strcpy(top_level_domain, gFirstDom);
 
 		char dataEntry[1024] = { 0 };
@@ -2301,6 +2255,7 @@ int startScan(char* args) {
 				memset(dataEntry + innerCounter++, saveEndIP[i], 1);
 			};
 		};
+
 		memset(dataEntry + innerCounter + 1, '\0', 1);
 
 		for (int i = 0; i < sz; ++i)
@@ -2376,8 +2331,6 @@ int startScan(char* args) {
 			return -1;
 		};
 
-		runAuxiliaryThreads();
-
 		stt->doEmitionChangeStatus("Scanning...");
 		for (gC = 0; gC < flCounter; ++gC)
 		{
@@ -2407,7 +2360,7 @@ int startScan(char* args) {
 
 						   for (unsigned long i = ip1; i <= ip2; ++i) {
 
-							   if (globalScanFlag == false) break;
+                               if (!globalScanFlag) break;
 							   unsigned long offset = ip2 - i;
 
 							   tAddr.s_addr = ntohl(i);
@@ -2420,7 +2373,7 @@ int startScan(char* args) {
 								   while (ipVec.size() != 0) {
 
 									   while (cons >= gThreads && globalScanFlag) Sleep(500);
-									   if (globalScanFlag == false) goto haters_gonna_hate_IM;
+                                       if (!globalScanFlag) goto haters_gonna_hate_IM;
 
 									   ++indexIP;
 									   std::string res = ipVec[0];
@@ -2440,7 +2393,7 @@ int startScan(char* args) {
 							for (unsigned long i = ip1; i <= ip2; ++i) {
 
 								while (cons >= gThreads && globalScanFlag) Sleep(500);
-								if (globalScanFlag == false) break;
+                                if (!globalScanFlag) break;
 
 								++indexIP;
 
@@ -2476,6 +2429,7 @@ int startScan(char* args) {
 
 void nCleanup(){
     Threader::cleanUp();
+    curl_global_cleanup();
 
 	if(loginLst != NULL)
 	{
@@ -2491,10 +2445,7 @@ void nCleanup(){
 	};
 	if(GlobalNegatives != NULL)
     {
-		for(int i = 0; i < GlobalNegativeSize; ++i) 
-		{
-			delete []GlobalNegatives[i];
-		};
+        for(int i = 0; i < GlobalNegativeSize; ++i) delete []GlobalNegatives[i];
 		delete []GlobalNegatives;
 		GlobalNegatives = NULL;
 	};

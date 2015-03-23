@@ -29,7 +29,7 @@ bool BA::checkOutput(const string *buffer, const char *ip, const int port) {
     return false;
 }
 
-lopaStr BA::_BABrute(const char *ip, const int port) {
+lopaStr BA::BABrute(const char *ip, const int port) {
     string buffer;
     string lpString;
     lopaStr lps;
@@ -65,11 +65,11 @@ lopaStr BA::_BABrute(const char *ip, const int port) {
     return lps;
 }
 
-lopaStr BA::_BALobby(const char *ip, const int port) {
+lopaStr BA::BALobby(const char *ip, const int port) {
     while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
     BruteUtils::BConInc();
-    const lopaStr &lps = _BABrute(ip, port);
+    const lopaStr &lps = BABrute(ip, port);
     BruteUtils::BConDec();
 
     return lps;

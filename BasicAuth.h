@@ -10,10 +10,10 @@
 class BA {
 private:
 	static bool checkOutput(const string *buffer, const char *ip, const int port);
-    static lopaStr _BABrute(const char *ip, const int port);
+    static lopaStr BABrute(const char *ip, const int port);
 
 public:
-    static lopaStr _BALobby(const char *ip, const int port);
+    static lopaStr BALobby(const char *ip, const int port);
 };
 
 #endif // BASICAUTH_H

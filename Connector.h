@@ -4,6 +4,7 @@
 #include "externData.h"
 #include "Utils.h"
 #include "BruteUtils.h"
+#include "SSHAuth.h"
 #include "STh.h"
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)

@@ -6,6 +6,7 @@
 #include "Connector.h"
 #include "BasicAuth.h"
 #include "FTPAuth.h"
+#include "SSHAuth.h"
 #include <memory>
 
 char* strstri(const char *_Str, const char *_SubStr)
@@ -1185,7 +1186,7 @@ void _specBrute(const char *ip, int port,
     char tport[32] = {0};
     sprintf(tport, ":%d", port);
 
-    const lopaStr &lps = BA::_BALobby((string(ip) + string(path)).c_str(), port);
+    const lopaStr &lps = BA::BALobby((string(ip) + string(path)).c_str(), port);
 	
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
@@ -1360,14 +1361,12 @@ void _saveSSH(const char *ip, int port, int recd, const char *buffcpy)
 
 int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, char *hl)
 {
-	if(	strstr(buffcpy, "SSH-2.0-OpenSSH") != NULL || strstr(buffcpy, "SSH-2.0-mod_sftp") != NULL) 
+    if(	strstr(buffcpy, "SSH-2.0-OpenSSH") != NULL ||
+            strstr(buffcpy, "SSH-2.0-mod_sftp") != NULL)
     {
         std::string sshBuff;
-        int res = Connector::_SSHLobby(ip, p, &sshBuff);
-		if(res != -1 && res != -2)
-		{
-            _saveSSH(ip, p, recd, (char*)sshBuff.c_str());
-		};
+        int res = SSHAuth::SSHLobby(ip, p, &sshBuff);
+        if(res != -1 && res != -2) _saveSSH(ip, p, recd, (char*)sshBuff.c_str());
 		return -1;
 	};
 	
@@ -1430,7 +1429,7 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
 		char log[2048] = {0};
 		char logEmit[2048] = {0};
 
-        const lopaStr &lps = FTPA::_FTPLobby(ip, p, &ps);
+        const lopaStr &lps = FTPA::FTPLobby(ip, p, &ps);
 
 		if(strstr(lps.other, "ROUTER") != NULL)
 		{
@@ -1630,7 +1629,7 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int recd, Lexems *lx, 
         char log[512] = {0};
 		++AnomC1;
 
-        const lopaStr &lps = BA::_BALobby((string(ip) + "/~login").c_str(), p);
+        const lopaStr &lps = BA::BALobby((string(ip) + "/~login").c_str(), p);
         sprintf(log, "[HFS]:<font color=\"#ff6600\">%s :: </font><a href=\"http://%s:%s/\"><span style=\"color: #a1a1a1;\">%s:%s</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">%s Pass: %s:%s</font>",
                 hl, ip, port, ip, port, finalstr, lps.login, lps.pass);
 

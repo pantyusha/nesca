@@ -2,7 +2,6 @@
 #include "base64.h"
 
 #include <libssh/libssh.h>
-#include <openssl/ssl.h>
 #include <vector>
 #include <curl/curl.h>
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)

@@ -2124,9 +2124,6 @@ void runAuxiliaryThreads() {
 
 int startScan(char* args) {
 	curl_global_init(CURL_GLOBAL_ALL);
-	SSL_library_init();
-	OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
-	SSL_load_error_strings();   /* Bring in and register error messages */
 
 	horLineFlag = false;
 	flCounter = 0;
@@ -2146,7 +2143,6 @@ int startScan(char* args) {
 	ZeroMemory(ipsend, sizeof(ipsend));
 	
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	//std::string OutputFolder = std::string(RESULT_DIR_NAME);
 	CreateDirectoryA(RESULT_DIR_NAME, NULL);
 #else
 	struct stat str = {0};
@@ -2183,10 +2179,10 @@ int startScan(char* args) {
 	_passLoginLoader();
 	_NegativeLoader();
 
-	if (gMode == 0)
-	{
-		runAuxiliaryThreads();
+    runAuxiliaryThreads();
 
+	if (gMode == 0)
+    {
 		unsigned long ip1 = (ipsstart[0] * 16777216) + (ipsstart[1] * 65536) + (ipsstart[2] * 256) + ipsstart[3];
 		unsigned long ip2 = (ipsend[0] * 16777216) + (ipsend[1] * 65536) + (ipsend[2] * 256) + ipsend[3];
 
@@ -2247,9 +2243,7 @@ int startScan(char* args) {
 		}
 	}
 	else if (gMode == 1)
-	{
-		runAuxiliaryThreads();
-
+    {
 		strcpy(top_level_domain, gFirstDom);
 
 		char dataEntry[1024] = { 0 };
@@ -2301,6 +2295,7 @@ int startScan(char* args) {
 				memset(dataEntry + innerCounter++, saveEndIP[i], 1);
 			};
 		};
+
 		memset(dataEntry + innerCounter + 1, '\0', 1);
 
 		for (int i = 0; i < sz; ++i)
@@ -2375,8 +2370,6 @@ int startScan(char* args) {
 
 			return -1;
 		};
-
-		runAuxiliaryThreads();
 
 		stt->doEmitionChangeStatus("Scanning...");
 		for (gC = 0; gC < flCounter; ++gC)
@@ -2476,6 +2469,7 @@ int startScan(char* args) {
 
 void nCleanup(){
     Threader::cleanUp();
+    curl_global_cleanup();
 
 	if(loginLst != NULL)
 	{
@@ -2491,10 +2485,7 @@ void nCleanup(){
 	};
 	if(GlobalNegatives != NULL)
     {
-		for(int i = 0; i < GlobalNegativeSize; ++i) 
-		{
-			delete []GlobalNegatives[i];
-		};
+        for(int i = 0; i < GlobalNegativeSize; ++i) delete []GlobalNegatives[i];
 		delete []GlobalNegatives;
 		GlobalNegatives = NULL;
 	};

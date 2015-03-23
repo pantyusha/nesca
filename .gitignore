@@ -32,3 +32,8 @@ version
 lisca.cpp
 main - копия.cpp
 result_files-*
+*.BACKUP.*
+*.LOCAL.*
+*.REMOTE.*
+*.BASE.*
+

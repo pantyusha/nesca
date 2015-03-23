@@ -781,7 +781,7 @@ void _connect() {
     }
 }
 
-inline void progressOutput(long long unsigned int target) {
+inline void progressOutput(unsigned long target) {
     char targetNPers[128] = {0};
     float percent = (gTargetsOverall != 0 ? (100 - target/(double)gTargetsOverall * 100) : 0);
 
@@ -792,13 +792,13 @@ inline void progressOutput(long long unsigned int target) {
     sprintf(metaPercent, "%.1f",
             percent);
 }
-void verboseProgress(long long unsigned int target, const char *ip) {
+void verboseProgress(unsigned long target, const char *ip) {
 
     stt->doEmitionIPRANGE(QString(ip));
     strcpy(currentIP, ip);
     progressOutput(target);
 }
-void verboseProgressDNS(long long unsigned int target, const char *ip, const char *TLD, const char *mask) {
+void verboseProgressDNS(unsigned long target, const char *ip, const char *TLD, const char *mask) {
 
     stt->doEmitionIPRANGE(QString(ip) + QString(TLD));
     strcpy(currentIP, mask);

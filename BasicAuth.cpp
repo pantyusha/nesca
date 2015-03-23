@@ -54,7 +54,7 @@ lopaStr BA::BABrute(const char *ip, const int port) {
                 return lps;
             };
 
-			if (BALogSwitched) stt->doEmitionBAData("FTP: " + QString(ip) + ":" + QString::number(port) + 
+			if (BALogSwitched) stt->doEmitionBAData("BA: " + QString(ip) + ":" + QString::number(port) + 
 				"; l/p: " + QString(loginLst[i]) + ":" + QString(passLst[j]) + ";	- Progress: (" + 
 				QString::number((++passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
 

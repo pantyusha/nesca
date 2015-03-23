@@ -24,7 +24,7 @@
 #include "mainResources.h"
 
 extern Ui::nesca_3Class *ui;
-extern bool widgetIsHidden, IRCLogToggled, blinkFlag, disableBlink, debugFileOK, QOSWait,
+extern bool widgetIsHidden, IRCLogToggled, blinkFlag, disableBlink, QOSWait,
 	connectedToIRC, ME2ScanFlag, QoSScanFlag, VoiceScanFlag, PieStatFlag, proxyEnabledFlag,
 	smBit_8, smBit_7, smBit_6, smBit_5, smBit_4, smBit_3, smBit_2, smBit_1, printDelimiter;
 extern float QoSStep;
@@ -69,8 +69,7 @@ protected:
         void DNSLine_ValueChanged();
 		void slotChangeCPModeToUTF();
 		void slotChangeCPModeTo1251();
-		void slotShowRedVersion();
-		void ChangeDebugFileState(bool val);
+        void slotShowRedVersion();
 		void ChangeTopic();
 		void slotIRCGetTopic(QString str);
 		void slotIRCOfflined();

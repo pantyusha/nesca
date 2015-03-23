@@ -176,7 +176,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
-         <pointsize>9</pointsize>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -486,7 +486,7 @@
        <property name="font">
         <font>
          <family>Eurostile</family>
-         <pointsize>9</pointsize>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -793,7 +793,7 @@ color: rgb(214, 214, 0);</string>
        <property name="font">
         <font>
          <family>Eurostile</family>
-         <pointsize>9</pointsize>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -973,8 +973,8 @@ border-radius: 3px;</string>
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>100</y>
-         <width>241</width>
+         <y>120</y>
+         <width>281</width>
          <height>17</height>
         </rect>
        </property>
@@ -990,7 +990,7 @@ border-radius: 3px;</string>
         <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
        </property>
        <property name="text">
-        <string>Send results to NescaDatabase</string>
+        <string>Send results to public NescaDatabase</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -1140,34 +1140,6 @@ border-radius: 3px;</string>
        </property>
        <property name="text">
         <string>Check key</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="debugFileOnOff">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>116</y>
-         <width>276</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Eurostile</family>
-         <pointsize>8</pointsize>
-        </font>
-       </property>
-       <property name="whatsThis">
-        <string/>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
-       </property>
-       <property name="text">
-        <string>[DEBUG] Write main output to file &quot;./logs/output.txt&quot;</string>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
        </property>
       </widget>
       <widget class="QCheckBox" name="pingingOnOff">
@@ -2546,7 +2518,7 @@ p, li { white-space: pre-wrap; }
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="cursorWidth">
@@ -3530,7 +3502,7 @@ background-color: #000000;</string>
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="acceptRichText">
@@ -3666,7 +3638,7 @@ p, li { white-space: pre-wrap; }
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Eurostile'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:2px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="acceptRichText">

@@ -751,7 +751,7 @@ std::string toLowerStr(const char *str)
 }
 
 void _connect() {
-    string ip = "";
+	std::string ip = "";
 	while (globalScanFlag) {
 		std::unique_lock<std::mutex> lk(Threader::m);
 		Threader::cv.wait(lk, []{return Threader::ready; });
@@ -2065,7 +2065,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
         if(!globalScanFlag) return 0;
 
         verboseProgressDNS(--gTargets, mask, top_level_domain, saveMask);
-        string res = string(mask) + string(top_level_domain);
+		std::string res = std::string(mask) + std::string(top_level_domain);
 
 		++indexIP;
 
@@ -2193,7 +2193,7 @@ int startScan(char* args) {
 							++indexIP;
 
 							tAddr.s_addr = ntohl(i);
-							res = string(inet_ntoa(tAddr));
+							res = std::string(inet_ntoa(tAddr));
 							verboseProgress(gTargets--, res.c_str());
 
 							Threader::fireThread(res, (void*(*)(void))_connect);
@@ -2398,7 +2398,7 @@ int startScan(char* args) {
 								++indexIP;
 
 								tAddr.s_addr = ntohl(i);
-								std::string res = string(inet_ntoa(tAddr));
+								std::string res = std::string(inet_ntoa(tAddr));
 								verboseProgress(gTargets--, res.c_str());
 								Threader::fireThread(res, (void*(*)(void))_connect);
 							}

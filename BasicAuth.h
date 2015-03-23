@@ -1,9 +1,8 @@
 #ifndef BASICAUTH_H
 #define BASICAUTH_H
 
-#include "Connector.h"
-#include "BruteUtils.h"
 #include "Utils.h"
+#include "Connector.h"
 #include "externData.h"
 #include "mainResources.h"
 

@@ -2124,9 +2124,9 @@ void runAuxiliaryThreads() {
 
 int startScan(char* args) {
 	curl_global_init(CURL_GLOBAL_ALL);
-	SSL_library_init();
-	OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
-	SSL_load_error_strings();   /* Bring in and register error messages */
+    //SSL_library_init();
+//	OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
+//	SSL_load_error_strings();   /* Bring in and register error messages */
 
 	horLineFlag = false;
 	flCounter = 0;
@@ -2183,10 +2183,10 @@ int startScan(char* args) {
 	_passLoginLoader();
 	_NegativeLoader();
 
-	if (gMode == 0)
-	{
-		runAuxiliaryThreads();
+    runAuxiliaryThreads();
 
+	if (gMode == 0)
+    {
 		unsigned long ip1 = (ipsstart[0] * 16777216) + (ipsstart[1] * 65536) + (ipsstart[2] * 256) + ipsstart[3];
 		unsigned long ip2 = (ipsend[0] * 16777216) + (ipsend[1] * 65536) + (ipsend[2] * 256) + ipsend[3];
 
@@ -2247,9 +2247,7 @@ int startScan(char* args) {
 		}
 	}
 	else if (gMode == 1)
-	{
-		runAuxiliaryThreads();
-
+    {
 		strcpy(top_level_domain, gFirstDom);
 
 		char dataEntry[1024] = { 0 };
@@ -2375,8 +2373,6 @@ int startScan(char* args) {
 
 			return -1;
 		};
-
-		runAuxiliaryThreads();
 
 		stt->doEmitionChangeStatus("Scanning...");
 		for (gC = 0; gC < flCounter; ++gC)

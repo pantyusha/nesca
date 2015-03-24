@@ -1,4 +1,5 @@
 #include "Connector.h"
+#include "SSHAuth.h"
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 int _pingMyTarget(const char *ip)
@@ -194,7 +195,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 						QString(ip) + ":" + QString::number(port));
 					return -2;
 				} else if (res == 8) {
-					stt->doEmitionFoundData("Strange ftp repl. (" + 
+					stt->doEmitionFoundData("Strange ftp reply. (" + 
 						QString::number(res) + ") " + QString(ip) + 
 						":" + QString::number(port));
 					return -2;
@@ -227,7 +228,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 	return buffer->size();
 }
 
-int Connector::_ConnectToPort(string ip, int port, char *hl)
+int Connector::_ConnectToPort(std::string ip, int port, char *hl)
 {
     if(gPingNScan)
     {

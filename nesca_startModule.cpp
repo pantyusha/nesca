@@ -204,7 +204,13 @@ void _SaveBackupToFile()
 			FILE *savingFile = fopen("tempIPLst.bk", "w");
 			if (savingFile != NULL)
 			{
-				for(int tCounter = gC; tCounter < flCounter; ++tCounter)
+				sprintf(ipRange, "%s-%d.%d.%d.%d\n",
+					currentIP,
+					ipsendfl[gC][0], ipsendfl[gC][1], ipsendfl[gC][2], ipsendfl[gC][3]);
+				fputs(ipRange, savingFile);
+
+				ZeroMemory(ipRange, sizeof(ipRange));
+				for(int tCounter = gC + 1; tCounter < flCounter; ++tCounter)
                 {
                     sprintf(ipRange, "%d.%d.%d.%d-%d.%d.%d.%d\n",
 						ipsstartfl[tCounter][0], ipsstartfl[tCounter][1], ipsstartfl[tCounter][2], ipsstartfl[tCounter][3],
@@ -751,7 +757,7 @@ std::string toLowerStr(const char *str)
 }
 
 void _connect() {
-    string ip = "";
+	std::string ip = "";
 	while (globalScanFlag) {
 		std::unique_lock<std::mutex> lk(Threader::m);
 		Threader::cv.wait(lk, []{return Threader::ready; });
@@ -781,7 +787,7 @@ void _connect() {
     }
 }
 
-inline void progressOutput(long long unsigned int target) {
+inline void progressOutput(unsigned long target) {
     char targetNPers[128] = {0};
     float percent = (gTargetsOverall != 0 ? (100 - target/(double)gTargetsOverall * 100) : 0);
 
@@ -792,13 +798,13 @@ inline void progressOutput(long long unsigned int target) {
     sprintf(metaPercent, "%.1f",
             percent);
 }
-void verboseProgress(long long unsigned int target, const char *ip) {
+void verboseProgress(unsigned long target, const char *ip) {
 
     stt->doEmitionIPRANGE(QString(ip));
     strcpy(currentIP, ip);
     progressOutput(target);
 }
-void verboseProgressDNS(long long unsigned int target, const char *ip, const char *TLD, const char *mask) {
+void verboseProgressDNS(unsigned long target, const char *ip, const char *TLD, const char *mask) {
 
     stt->doEmitionIPRANGE(QString(ip) + QString(TLD));
     strcpy(currentIP, mask);
@@ -2065,7 +2071,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
         if(!globalScanFlag) return 0;
 
         verboseProgressDNS(--gTargets, mask, top_level_domain, saveMask);
-        string res = string(mask) + string(top_level_domain);
+		std::string res = std::string(mask) + std::string(top_level_domain);
 
 		++indexIP;
 
@@ -2193,7 +2199,7 @@ int startScan(char* args) {
 							++indexIP;
 
 							tAddr.s_addr = ntohl(i);
-							res = string(inet_ntoa(tAddr));
+							res = std::string(inet_ntoa(tAddr));
 							verboseProgress(gTargets--, res.c_str());
 
 							Threader::fireThread(res, (void*(*)(void))_connect);
@@ -2398,7 +2404,7 @@ int startScan(char* args) {
 								++indexIP;
 
 								tAddr.s_addr = ntohl(i);
-								std::string res = string(inet_ntoa(tAddr));
+								std::string res = std::string(inet_ntoa(tAddr));
 								verboseProgress(gTargets--, res.c_str());
 								Threader::fireThread(res, (void*(*)(void))_connect);
 							}

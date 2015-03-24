@@ -1,9 +1,8 @@
 #ifndef FTPAUTH_H
 #define FTPAUTH_H
 
-#include "Connector.h"
-#include "BruteUtils.h"
 #include "Utils.h"
+#include "Connector.h"
 #include "externData.h"
 #include "mainResources.h"
 

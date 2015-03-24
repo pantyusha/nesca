@@ -47,7 +47,7 @@ bool privateMsgFlag = false;
 char inputStr[256] = {0};
 bool proxyEnabledFlag = false;
 bool disableBlink = false;
-char gVER[16] = {0};
+char gVER[32] = {0};
 int nickFlag;
 int offlineFlag;
 bool OnlineMsgSentFlag = false;
@@ -2545,7 +2545,7 @@ void CreateVerFile()
 	};
 }
 
-const char *GetVer()
+std::string GetVer()
 {
 	int dver = 0;
     int tver = 0;
@@ -2585,8 +2585,14 @@ const char *GetVer()
 	tver *= 10;
 	tver += __TIME__[4] - 48;
 
-    char db[32] = {0};
-    sprintf(db, "%X-%X", dver, tver);
+    char dverX[16] = {0};
+    char tverX[16] = {0};
+
+    sprintf(dverX, "%X", dver);
+    sprintf(tverX, "%X", tver);
+
+    std::string db = std::string(dverX) + "-" + std::string(tverX);
+    //sprintf(db, "%X-%X", dver, tver);
 
     return db;
 }
@@ -2627,8 +2633,11 @@ void _startMsgCheck()
 	QTime time = QTime::currentTime();
 	qsrand((uint)time.msec());
 
-	strcpy(gVER, GetVer());
-	QString QVER(gVER);
+
+
+    const std::string &gVERStr = GetVer();
+    strcpy(gVER, gVERStr.c_str());
+    QString QVER(gVER);
 	ui->logoLabel->setToolTip("v3-" + QVER);
 	ui->logoLabel->setStyleSheet("color:white; border: none;background-color:black;");
 	ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");

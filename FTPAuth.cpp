@@ -21,30 +21,39 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 	int res = 0;
 	int passCounter = 0;
 
+    char login[128] = {0};
+    char pass[32] = {0};
+
     for(int i = 0; i < MaxLogin; ++i)
     {
         if(!globalScanFlag) return lps;
+        if(!lUpdated) Sleep(100);
         if(strlen(loginLst[i]) <= 1) continue;
+
+        strcpy(login, loginLst[i]);
 
         for(int j = 0; j < MaxPass; ++j)
         {
             if(!globalScanFlag) return lps;
+            if(!pUpdated) Sleep(100);
             if(strlen(passLst[j]) <= 1) continue;
 
-            lpString = string(loginLst[i]) + ":" + string(passLst[j]);
+            strcpy(pass, passLst[j]);
+
+            lpString = string(login) + ":" + string(pass);
 			
 			res = Connector::nConnect((string("ftp://") + string(ip)).c_str(), port, &buffer, NULL, NULL, &lpString);
 			if (res == -2) return lps;
 			else if (res != -1) {
 				if (!globalScanFlag) return lps;
-				strcpy(lps.login, loginLst[i]);
-				strcpy(lps.pass, passLst[j]);
+                strcpy(lps.login, login);
+                strcpy(lps.pass, pass);
 				ps->directoryCount = std::count(buffer.begin(), buffer.end(), '\n');
 				return lps;
 			};
 
 			if (BALogSwitched) stt->doEmitionBAData("FTP: " + QString(ip) + ":" + QString::number(port) +
-				"; l/p: " + QString(loginLst[i]) + ":" + QString(passLst[j]) + ";	- Progress: (" +
+                "; l/p: " + QString(login) + ":" + QString(pass) + ";	- Progress: (" +
 				QString::number((++passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
 
             Sleep(100);

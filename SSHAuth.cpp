@@ -92,6 +92,7 @@ int SSHBrute(const char* host, int port, std::string *buffer, const char *banner
     for(int i = 0; i < MaxSSHPass; ++i)
     {
         if(!globalScanFlag) break;
+        if(!sshlpUpdated) Sleep(100);
         strcpy(temp, sshlpLst[i]);
         ptr1 = strstr(temp, ":");
 		if (ptr1 == NULL) {

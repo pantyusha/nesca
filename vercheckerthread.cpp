@@ -7,7 +7,7 @@
 void _checkVer()
 {
     while(true) {
-        char request[64] = {"http://nesca.d3w.org/version"};
+        const char request[64] = {"http://nesca.d3w.org/version"};
         std::string buffer;
         std::vector<std::string> headerVector {"X-Nescav3: True"};
         Connector::nConnect(request, 80, &buffer, NULL, &headerVector);
@@ -20,6 +20,8 @@ void _checkVer()
                 ptr1 = strstr((char*)buffer.c_str(), "\r\n\r\n");
                 if(strcmp(gVER, ptr1 + 4) != 0)
                 {
+                    stt->doEmitionFoundData("<br><font color=\"Pink\">======Update required======<br>Latest version: " + QString(ptr1 + 4) +
+                                            "<br>Your version: " + QString(gVER) + "<br>=======================</font>");
                     stt->doEmitionShowRedVersion();
                 };
             };

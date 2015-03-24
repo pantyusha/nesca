@@ -6,8 +6,8 @@ lopaStr WFClass::parseResponse(const char *ip,
                                const int port,
                                const std::string *buffer,
                                const char* formVal,
-                               const int *iIndex,
-                               const int *jIndex) {
+                               const char *login,
+                               const char *pass) {
 
     lopaStr result = {"UNKNOWN", "UNKNOWN", "UNKNOWN"};
 
@@ -32,9 +32,9 @@ lopaStr WFClass::parseResponse(const char *ip,
             if(*iIndex == 0) return result;
 
             stt->doEmition_BAGreenData("[+] " + QString(ip) + ":" + QString::number(port) + " - WF pass: " +
-                                       QString(wfLoginLst[*iIndex]) + ":" + QString(wfPassLst[*jIndex]));
-            strcpy(result.login, wfLoginLst[*iIndex]);
-            strcpy(result.pass, wfPassLst[*jIndex]);
+                                       QString(login) + ":" + QString(pass));
+            strcpy(result.login, login);
+            strcpy(result.pass, pass);
             return result;
 
         } else {
@@ -60,14 +60,22 @@ lopaStr WFClass::doGetCheck(const char *ip,
     int passCounter = 0;
     int firstCycle = 0;
 
+    char login[128] = {0};
+    char pass[32] = {0};
+
     for(int i = 0; i < MaxWFLogin; ++i)
     {
         if(!globalScanFlag) break;
+        if(!wflUpdated) Sleep(100);
+        strcpy(login, wfLoginLst[i]);
+
         for(int j = firstCycle; j < MaxWFPass; ++j)
         {
             if(!globalScanFlag) break;
+            if(!wfpUpdated) Sleep(100);
+            strcpy(pass, wfPassLst[j]);
 
-            int rSize = strlen(ip) + strlen(actionVal) + strlen(userVal) + strlen(wfLoginLst[i]) + strlen(passVal) + strlen(wfPassLst[j]) + 4;
+            int rSize = strlen(ip) + strlen(actionVal) + strlen(userVal) + strlen(login) + strlen(passVal) + strlen(pass) + 4;
 
             if(rSize > 256) {
                 stt->doEmitionRedFoundData("[WF] Wrong request size! (" + QString(ip) + ":" + QString::number(port) + ")");
@@ -75,15 +83,17 @@ lopaStr WFClass::doGetCheck(const char *ip,
             };
 
             char nip[256] = {0};
-            sprintf(nip, "%s%s?%s=%s&%s=%s", ip, actionVal, userVal, wfLoginLst[i], passVal, wfPassLst[j]);
+            sprintf(nip, "%s%s?%s=%s&%s=%s", ip, actionVal, userVal, login, passVal, pass);
 
             std::string buffer;
             Connector::nConnect(nip, port, &buffer);
 
-            if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(wfLoginLst[i]) + ":" + QString(wfPassLst[j]) + ";	- Progress: (" + QString::number((passCounter/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
+            if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) +
+                                                   "; login/pass: "+ QString(login) + ":" + QString(pass) +
+                                                   ";	- Progress: (" + QString::number((passCounter/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
             ++passCounter;
 
-            result = parseResponse(ip, port, &buffer, formVal, &i, &j);
+            result = parseResponse(ip, port, &buffer, formVal, login, pass);
             if(i == 0) ++i;
         }
         firstCycle = 1;
@@ -103,14 +113,22 @@ lopaStr WFClass::doPostCheck(const char *ip,
     int passCounter = 0;
     int firstCycle = 0;
 
+    char login[128] = {0};
+    char pass[32] = {0};
+
     for(int i = 0; i < MaxWFLogin; ++i)
     {
         if(!globalScanFlag) break;
+        if(!wflUpdated) Sleep(100);
+        strcpy(login, wfLoginLst[i]);
+
         for(int j = firstCycle; j < MaxWFPass; ++j)
         {
             if(!globalScanFlag) break;
+            if(!wfpUpdated) Sleep(100);
+            strcpy(pass, wfPassLst[j]);
 
-            int rSize = strlen(ip) + strlen(actionVal) + strlen(userVal) + strlen(wfLoginLst[i]) + strlen(passVal) + strlen(wfPassLst[j]) + 4;
+            int rSize = strlen(ip) + strlen(actionVal) + strlen(userVal) + strlen(login) + strlen(passVal) + strlen(pass) + 4;
 
             if(rSize > 256) {
                 stt->doEmitionRedFoundData("[WF] Wrong request size! (" + QString(ip) + ":" + QString::number(port) + ")");
@@ -120,15 +138,17 @@ lopaStr WFClass::doPostCheck(const char *ip,
             char nip[256] = {0};
             char postData[256] = {0};
             sprintf(nip, "%s%s", ip, actionVal);
-            sprintf(postData, "%s=%s&%s=%s", userVal, wfLoginLst[i], passVal, wfPassLst[j]);
+            sprintf(postData, "%s=%s&%s=%s", userVal, login, passVal, pass);
 
             std::string buffer;
             Connector::nConnect(nip, port, &buffer, postData);
 
-            if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) + "; login/pass: "+ QString(wfLoginLst[i]) + ":" + QString(wfPassLst[j]) + ";	- Progress: (" + QString::number((passCounter/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
+            if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " +
+                                                   QString(login) + ":" + QString(pass) + ";	- Progress: (" +
+                                                   QString::number((passCounter/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
             ++passCounter;
 
-            return parseResponse(ip, port, &buffer, formVal, &i, &j);
+            return parseResponse(ip, port, &buffer, formVal, login, pass);
             if(i == 0) ++i;
         }
         firstCycle = 1;

@@ -1,6 +1,5 @@
 #include "WebformWorker.h"
-
-bool WFClass::active = false;
+#include "FileUpdater.h"
 
 lopaStr WFClass::parseResponse(const char *ip,
                                const int port,
@@ -28,8 +27,6 @@ lopaStr WFClass::parseResponse(const char *ip,
                 && Utils::ci_find_substr(*buffer, std::string("later")) == -1
                 && Utils::ci_find_substr(*buffer, std::string("forbidden")) == -1
                 ) {
-
-            if(*iIndex == 0) return result;
 
             stt->doEmition_BAGreenData("[+] " + QString(ip) + ":" + QString::number(port) + " - WF pass: " +
                                        QString(login) + ":" + QString(pass));
@@ -66,13 +63,11 @@ lopaStr WFClass::doGetCheck(const char *ip,
     for(int i = 0; i < MaxWFLogin; ++i)
     {
         if(!globalScanFlag) break;
-        if(!wflUpdated) Sleep(100);
         strcpy(login, wfLoginLst[i]);
 
         for(int j = firstCycle; j < MaxWFPass; ++j)
         {
             if(!globalScanFlag) break;
-            if(!wfpUpdated) Sleep(100);
             strcpy(pass, wfPassLst[j]);
 
             int rSize = strlen(ip) + strlen(actionVal) + strlen(userVal) + strlen(login) + strlen(passVal) + strlen(pass) + 4;
@@ -119,13 +114,11 @@ lopaStr WFClass::doPostCheck(const char *ip,
     for(int i = 0; i < MaxWFLogin; ++i)
     {
         if(!globalScanFlag) break;
-        if(!wflUpdated) Sleep(100);
         strcpy(login, wfLoginLst[i]);
 
         for(int j = firstCycle; j < MaxWFPass; ++j)
         {
             if(!globalScanFlag) break;
-            if(!wfpUpdated) Sleep(100);
             strcpy(pass, wfPassLst[j]);
 
             int rSize = strlen(ip) + strlen(actionVal) + strlen(userVal) + strlen(login) + strlen(passVal) + strlen(pass) + 4;

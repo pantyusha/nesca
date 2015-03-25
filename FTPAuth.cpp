@@ -27,7 +27,6 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
     for(int i = 0; i < MaxLogin; ++i)
     {
         if(!globalScanFlag) return lps;
-        if(!lUpdated) Sleep(100);
         if(strlen(loginLst[i]) <= 1) continue;
 
         strcpy(login, loginLst[i]);
@@ -35,7 +34,6 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
         for(int j = 0; j < MaxPass; ++j)
         {
             if(!globalScanFlag) return lps;
-            if(!pUpdated) Sleep(100);
             if(strlen(passLst[j]) <= 1) continue;
 
             strcpy(pass, passLst[j]);

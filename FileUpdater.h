@@ -6,6 +6,8 @@
 #endif
 
 #include <fstream>
+#include <mutex>
+#include <condition_variable>
 #include "externData.h"
 #include "externFunctions.h"
 
@@ -17,12 +19,10 @@ public:
     static long oldSSHLstSize;
     static long oldWFLoginLstSize;
     static long oldWFPassLstSize;
-    static bool negUpdated;
-    static bool lUpdated;
-    static bool pUpdated;
-    static bool wflUpdated;
-    static bool wfpUpdated;
-    static bool sshlpUpdated;
+    static bool ready;
+    static std::condition_variable cv;
+    static std::mutex filesUpdatingMutex;
+    static std::unique_lock<std::mutex> lk;
 
 public:
     static int updateLists();

@@ -1,4 +1,6 @@
 #include "FileUpdater.h"
+#include "STh.h"
+#include "mainResources.h"
 
 long FileUpdater::oldNegLstSize = 0;
 long FileUpdater::oldLoginLstSize = 0;
@@ -6,329 +8,10 @@ long FileUpdater::oldPassLstSize = 0;
 long FileUpdater::oldSSHLstSize = 0;
 long FileUpdater::oldWFLoginLstSize = 0;
 long FileUpdater::oldWFPassLstSize = 0;
-bool FileUpdater::negUpdated = false;
-bool FileUpdater::lUpdated = false;
-bool FileUpdater::pUpdated = false;
-bool FileUpdater::wflUpdated = false;
-bool FileUpdater::wfpUpdated = false;
-bool FileUpdater::sshlpUpdated = false;
-
-void updateNegatives() {
-    if(GlobalNegatives != NULL)
-    {
-        for(int i = 0; i < GlobalNegativeSize; ++i) delete []GlobalNegatives[i];
-        delete []GlobalNegatives;
-        GlobalNegatives = NULL;
-    };
-
-    negativeLoader();
-}
-void updateLogin() {
-
-    if(loginLst != NULL)
-    {
-        for(int i = 0; i < MaxLogin; ++i) delete []loginLst[i];
-        delete []loginLst;
-        loginLst = NULL;
-    };
-
-    MaxLogin = 0;
-
-    char buffFG[32] = {0};
-
-    FILE *loginList = fopen("login.txt", "r");
-
-    if(loginList != NULL)
-    {
-        while(fgets(buffFG, 32, loginList) != NULL)
-        {
-            MaxLogin++;
-            ZeroMemory(buffFG, sizeof(buffFG));
-        };
-
-        rewind(loginList);
-
-        loginLst = new char*[MaxLogin];
-
-        for(int j = 0; j < MaxLogin; j++)
-        {
-            loginLst[j] = new char[32];
-        };
-
-        int i = 0;
-        while(fgets(buffFG, 32, loginList) != NULL)
-        {
-            memset(loginLst[i], 0, strlen(buffFG) + 1);
-
-            if(strstr(buffFG, "\n") != NULL) strncat(loginLst[i++], buffFG, strlen(buffFG) - 1);
-            else strncat(loginLst[i++], buffFG, strlen(buffFG));
-            ZeroMemory(buffFG, sizeof(buffFG));
-        };
-
-        stt->doEmitionGreenFoundData("Login list loaded (" + QString::number(MaxLogin) + " entries)");
-
-        fclose(loginList);
-    }
-    else
-    {
-        stt->doEmitionRedFoundData("No login list found");
-        stt->doEmitionKillSttThread();
-    };
-}
-void updatePass() {
-
-    if(passLst != NULL)
-    {
-        for(int i = 0; i < MaxPass; ++i) delete []passLst[i];
-        delete []passLst;
-        passLst = NULL;
-    };
-
-    MaxPass = 0;
-
-    char buffFG[32] = {0};
-
-    FILE *passList = fopen("pass.txt", "r");
-
-    if(passList != NULL)
-    {
-        while(fgets(buffFG, 32, passList) != NULL)
-        {
-            MaxPass++;
-            ZeroMemory(buffFG, sizeof(buffFG));
-        };
-
-        rewind(passList);
-
-        passLst = new char*[MaxPass];
-
-        for(int j = 0; j < MaxPass; j++)
-        {
-            passLst[j] = new char[32];
-        };
-
-        int i = 0;
-        while(fgets(buffFG, 32, passList) != NULL)
-        {
-            memset(passLst[i], 0, strlen(buffFG) + 1);
-
-            if(strstr(buffFG, "\n") != NULL) strncat(passLst[i++], buffFG, strlen(buffFG) - 1);
-            else  strncat(passLst[i++], buffFG, strlen(buffFG));
-            ZeroMemory(buffFG, sizeof(buffFG));
-        };
-
-        stt->doEmitionGreenFoundData("Password list loaded (" + QString::number(MaxPass) + " entries)");
-
-        fclose(passList);
-    }
-    else
-    {
-        stt->doEmitionRedFoundData("No password list found");
-        stt->doEmitionKillSttThread();
-    };
-}
-void updateSSH() {
-
-    if(sshlpLst != NULL)
-    {
-        for(int i = 0; i < MaxSSHPass; ++i) delete []sshlpLst[i];
-        delete []sshlpLst;
-        sshlpLst = NULL;
-    };
-
-    MaxSSHPass = 0;
-
-    FILE *sshlpList;
-    ZeroMemory(buffFG, sizeof(buffFG));
-
-    sshlpList = fopen("sshpass.txt", "r");
-
-    if(sshlpList != NULL)
-    {
-        while(fgets(buffFG, 32, sshlpList) != NULL)
-        {
-            ++MaxSSHPass;
-            ZeroMemory(buffFG, sizeof(buffFG));
-        };
-
-        rewind(sshlpList);
-
-        sshlpLst = new char*[MaxSSHPass];
-
-        for(int j = 0; j < MaxSSHPass; j++)
-        {
-            sshlpLst[j] = new char[32];
-        };
-
-        int i = 0;
-        while(fgets(buffFG, 32, sshlpList) != NULL)
-        {
-            memset(sshlpLst[i], 0, strlen(buffFG) + 1);
-
-            if(strstr(buffFG, "\n") != NULL) strncat(sshlpLst[i++], buffFG, strlen(buffFG) - 1);
-            else strncat(sshlpLst[i++], buffFG, strlen(buffFG));
-            ZeroMemory(buffFG, sizeof(buffFG));
-        };
-
-        stt->doEmitionGreenFoundData("SSH Password list loaded (" + QString::number(MaxSSHPass) + " entries)");
-
-        fclose(sshlpList);
-    }
-    else
-    {
-        stt->doEmitionRedFoundData("No password/login list found");
-        stt->doEmitionKillSttThread();
-    };
-}
-void updateWFLogin() {
-
-    if(wfLoginLst != NULL)
-    {
-        for(int i = 0; i < MaxWFLogin; ++i) delete []wfLoginLst[i];
-        delete []wfLoginLst;
-        wfLoginLst = NULL;
-    };
-
-    MaxWFLogin = 0;
-
-    FILE *wfLoginList;
-
-    ZeroMemory(buffFG, sizeof(buffFG));
-
-    wfLoginList = fopen("wflogin.txt", "r");
-
-    if(wfLoginList != NULL)
-    {
-        while(fgets(buffFG, 32, wfLoginList) != NULL)
-        {
-            MaxWFLogin++;
-            ZeroMemory(buffFG, sizeof(buffFG));
-        };
-
-        rewind(wfLoginList);
-
-        wfLoginLst = new char*[MaxWFLogin];
-
-        for(int j = 0; j < MaxWFLogin; j++)
-        {
-            wfLoginLst[j] = new char[32];
-        };
-
-        int i = 0;
-        while(fgets(buffFG, 32, wfLoginList) != NULL)
-        {
-            memset(wfLoginLst[i], 0, strlen(buffFG) + 1);
-
-            if(strstr(buffFG, "\n") != NULL) strncat(wfLoginLst[i++], buffFG, strlen(buffFG) - 1);
-            else strncat(wfLoginLst[i++], buffFG, strlen(buffFG));
-            ZeroMemory(buffFG, sizeof(buffFG));
-        };
-
-        stt->doEmitionGreenFoundData("WFLogin list loaded (" + QString::number(MaxWFLogin) + " entries)");
-        fclose(wfLoginList);
-    }
-}
-void updateWFPass() {
-
-    if(wfPassLst != NULL)
-    {
-        for(int i = 0; i < MaxWFPass; ++i) delete []wfPassLst[i];
-        delete []wfPassLst;
-        wfPassLst = NULL;
-    };
-
-    MaxWFPass = 0;
-
-    FILE *wfPassList;
-
-    ZeroMemory(buffFG, sizeof(buffFG));
-
-    wfPassList = fopen("wfpass.txt", "r");
-
-    if(wfPassList != NULL)
-    {
-        while(fgets(buffFG, 32, wfPassList) != NULL)
-        {
-            MaxWFPass++;
-            ZeroMemory(buffFG, sizeof(buffFG));
-        };
-
-        rewind(wfPassList);
-
-        wfPassLst = new char*[MaxWFPass];
-
-        for(int j = 0; j < MaxWFPass; j++)
-        {
-            wfPassLst[j] = new char[32];
-        };
-
-        int i = 0;
-        while(fgets(buffFG, 32, wfPassList) != NULL)
-        {
-            memset(wfPassLst[i], 0, strlen(buffFG) + 1);
-
-            if(strstr(buffFG, "\n") != NULL) strncat(wfPassLst[i++], buffFG, strlen(buffFG) - 1);
-            else strncat(wfPassLst[i++], buffFG, strlen(buffFG));
-            ZeroMemory(buffFG, sizeof(buffFG));
-        };
-
-        stt->doEmitionGreenFoundData("WFPassword list loaded (" + QString::number(MaxWFPass) + " entries)");
-        fclose(wfPassList);
-    }
-}
-
-long getFileSize(const char *fileName) {
-    std::ifstream in(fileName, std::ifstream::ate | std::ifstream::binary);
-    return in.tellg();
-}
-
-bool updateList(const char *fileName) {
-    long sz = getFileSize(fileName);
-
-    if(strstr(fileName, "negatives") != NULL) {
-        if(sz != oldNegLstSize) {
-            negUpdated = false;
-            oldNegLstSize = sz;
-            updateNegatives();
-            negUpdated = true;
-        }
-    } else if(strstr(fileName, "login") != NULL) {
-        if(sz != oldLoginLstSize) {
-            lUpdated = false;
-            oldLoginLstSize = sz;
-            updateLogin();
-            lUpdated = true;
-        }
-    } else if(strstr(fileName, "pass") != NULL) {
-        if(sz != oldPassLstSize) {
-            pUpdated = false;
-            oldPassLstSize = sz;
-            updatePass();
-            pUpdated = true;
-        }
-    } else if(strstr(fileName, "sshpass") != NULL) {
-        if(sz != oldSSHLstSize) {
-            sshlpUpdated = false;
-            oldSSHLstSize = sz;
-            updateSSH();
-            sshlpUpdated = true;
-        }
-    } else if(strstr(fileName, "wflogin") != NULL) {
-        if(sz != oldWFLoginLstSize) {
-            wflUpdated = false;
-            oldWFLoginLstSize = sz;
-            updateWFLogin();
-            wflUpdated = true;
-        }
-    } else if(strstr(fileName, "wfpass") != NULL) {
-        if(sz != oldWFPassLstSize) {
-            wfpUpdated = false;
-            oldWFPassLstSize = sz;
-            updateWFPass();
-            wfpUpdated = true;
-        }
-    }
-}
+std::mutex FileUpdater::filesUpdatingMutex;
+std::condition_variable FileUpdater::cv;
+bool FileUpdater::ready = false;
+std::unique_lock<std::mutex> FileUpdater::lk;
 
 void ReadUTF8(FILE* nFile, char *cp) {
     char buffFG[256] = {0};
@@ -461,14 +144,295 @@ void negativeLoader() {
     }
 }
 
+void *updateNegatives() {
+    if(GlobalNegatives != NULL)
+    {
+        for(int i = 0; i < GlobalNegativeSize; ++i) delete []GlobalNegatives[i];
+        delete []GlobalNegatives;
+        GlobalNegatives = NULL;
+    };
+
+    negativeLoader();
+}
+void *updateLogin() {
+
+    if(loginLst != NULL)
+    {
+        for(int i = 0; i < MaxLogin; ++i) delete []loginLst[i];
+        delete []loginLst;
+        loginLst = NULL;
+    };
+
+    MaxLogin = 0;
+
+    char buffFG[32] = {0};
+
+    FILE *loginList = fopen("login.txt", "r");
+
+    if(loginList != NULL)
+    {
+        while(fgets(buffFG, 32, loginList) != NULL)
+        {
+            MaxLogin++;
+            ZeroMemory(buffFG, sizeof(buffFG));
+        };
+
+        rewind(loginList);
+
+        loginLst = new char*[MaxLogin];
+
+        for(int j = 0; j < MaxLogin; j++)
+        {
+            loginLst[j] = new char[32];
+        };
+
+        int i = 0;
+        while(fgets(buffFG, 32, loginList) != NULL)
+        {
+            memset(loginLst[i], 0, strlen(buffFG) + 1);
+
+            if(strstr(buffFG, "\n") != NULL) strncat(loginLst[i++], buffFG, strlen(buffFG) - 1);
+            else strncat(loginLst[i++], buffFG, strlen(buffFG));
+            ZeroMemory(buffFG, sizeof(buffFG));
+        };
+
+        stt->doEmitionGreenFoundData("Login list loaded (" + QString::number(MaxLogin) + " entries)");
+
+        fclose(loginList);
+    }
+    else
+    {
+        stt->doEmitionRedFoundData("No login list found");
+        stt->doEmitionKillSttThread();
+    };
+}
+void *updatePass() {
+
+    if(passLst != NULL)
+    {
+        for(int i = 0; i < MaxPass; ++i) delete []passLst[i];
+        delete []passLst;
+        passLst = NULL;
+    };
+
+    MaxPass = 0;
+
+    char buffFG[32] = {0};
+
+    FILE *passList = fopen("pass.txt", "r");
+
+    if(passList != NULL)
+    {
+        while(fgets(buffFG, 32, passList) != NULL)
+        {
+            MaxPass++;
+            ZeroMemory(buffFG, sizeof(buffFG));
+        };
+
+        rewind(passList);
+
+        passLst = new char*[MaxPass];
+
+        for(int j = 0; j < MaxPass; j++)
+        {
+            passLst[j] = new char[32];
+        };
+
+        int i = 0;
+        while(fgets(buffFG, 32, passList) != NULL)
+        {
+            memset(passLst[i], 0, strlen(buffFG) + 1);
+
+            if(strstr(buffFG, "\n") != NULL) strncat(passLst[i++], buffFG, strlen(buffFG) - 1);
+            else  strncat(passLst[i++], buffFG, strlen(buffFG));
+            ZeroMemory(buffFG, sizeof(buffFG));
+        };
+
+        stt->doEmitionGreenFoundData("Password list loaded (" + QString::number(MaxPass) + " entries)");
+
+        fclose(passList);
+    }
+    else
+    {
+        stt->doEmitionRedFoundData("No password list found");
+        stt->doEmitionKillSttThread();
+    };
+}
+void *updateSSH() {
+
+    if(sshlpLst != NULL)
+    {
+        for(int i = 0; i < MaxSSHPass; ++i) delete []sshlpLst[i];
+        delete []sshlpLst;
+        sshlpLst = NULL;
+    };
+
+    MaxSSHPass = 0;
+
+    char buffFG[32] = {0};
+    ZeroMemory(buffFG, sizeof(buffFG));
+
+    FILE *sshlpList = fopen("sshpass.txt", "r");
+
+    if(sshlpList != NULL)
+    {
+        while(fgets(buffFG, 32, sshlpList) != NULL)
+        {
+            ++MaxSSHPass;
+            ZeroMemory(buffFG, sizeof(buffFG));
+        };
+
+        rewind(sshlpList);
+
+        sshlpLst = new char*[MaxSSHPass];
+
+        for(int j = 0; j < MaxSSHPass; j++)
+        {
+            sshlpLst[j] = new char[32];
+        };
+
+        int i = 0;
+        while(fgets(buffFG, 32, sshlpList) != NULL)
+        {
+            memset(sshlpLst[i], 0, strlen(buffFG) + 1);
+
+            if(strstr(buffFG, "\n") != NULL) strncat(sshlpLst[i++], buffFG, strlen(buffFG) - 1);
+            else strncat(sshlpLst[i++], buffFG, strlen(buffFG));
+            ZeroMemory(buffFG, sizeof(buffFG));
+        };
+
+        stt->doEmitionGreenFoundData("SSH Password list loaded (" + QString::number(MaxSSHPass) + " entries)");
+
+        fclose(sshlpList);
+    }
+    else
+    {
+        stt->doEmitionRedFoundData("No password/login list found");
+        stt->doEmitionKillSttThread();
+    };
+}
+void *updateWFLogin() {
+
+    if(wfLoginLst != NULL)
+    {
+        for(int i = 0; i < MaxWFLogin; ++i) delete []wfLoginLst[i];
+        delete []wfLoginLst;
+        wfLoginLst = NULL;
+    };
+
+    MaxWFLogin = 0;
+
+    char buffFG[32] = {0};
+    ZeroMemory(buffFG, sizeof(buffFG));
+
+    FILE *wfLoginList = fopen("wflogin.txt", "r");
+
+    if(wfLoginList != NULL)
+    {
+        while(fgets(buffFG, 32, wfLoginList) != NULL)
+        {
+            MaxWFLogin++;
+            ZeroMemory(buffFG, sizeof(buffFG));
+        };
+
+        rewind(wfLoginList);
+
+        wfLoginLst = new char*[MaxWFLogin];
+
+        for(int j = 0; j < MaxWFLogin; j++)
+        {
+            wfLoginLst[j] = new char[32];
+        };
+
+        int i = 0;
+        while(fgets(buffFG, 32, wfLoginList) != NULL)
+        {
+            memset(wfLoginLst[i], 0, strlen(buffFG) + 1);
+
+            if(strstr(buffFG, "\n") != NULL) strncat(wfLoginLst[i++], buffFG, strlen(buffFG) - 1);
+            else strncat(wfLoginLst[i++], buffFG, strlen(buffFG));
+            ZeroMemory(buffFG, sizeof(buffFG));
+        };
+
+        stt->doEmitionGreenFoundData("WFLogin list loaded (" + QString::number(MaxWFLogin) + " entries)");
+        fclose(wfLoginList);
+    }
+}
+void *updateWFPass() {
+
+    if(wfPassLst != NULL)
+    {
+        for(int i = 0; i < MaxWFPass; ++i) delete []wfPassLst[i];
+        delete []wfPassLst;
+        wfPassLst = NULL;
+    };
+
+    MaxWFPass = 0;
+
+    char buffFG[32] = {0};
+    ZeroMemory(buffFG, sizeof(buffFG));
+
+    FILE *wfPassList = fopen("wfpass.txt", "r");
+
+    if(wfPassList != NULL)
+    {
+        while(fgets(buffFG, 32, wfPassList) != NULL)
+        {
+            MaxWFPass++;
+            ZeroMemory(buffFG, sizeof(buffFG));
+        };
+
+        rewind(wfPassList);
+
+        wfPassLst = new char*[MaxWFPass];
+
+        for(int j = 0; j < MaxWFPass; j++)
+        {
+            wfPassLst[j] = new char[32];
+        };
+
+        int i = 0;
+        while(fgets(buffFG, 32, wfPassList) != NULL)
+        {
+            memset(wfPassLst[i], 0, strlen(buffFG) + 1);
+
+            if(strstr(buffFG, "\n") != NULL) strncat(wfPassLst[i++], buffFG, strlen(buffFG) - 1);
+            else strncat(wfPassLst[i++], buffFG, strlen(buffFG));
+            ZeroMemory(buffFG, sizeof(buffFG));
+        };
+
+        stt->doEmitionGreenFoundData("WFPassword list loaded (" + QString::number(MaxWFPass) + " entries)");
+        fclose(wfPassList);
+    }
+}
+
+long getFileSize(const char *fileName) {
+    std::ifstream in(fileName, std::ifstream::ate | std::ifstream::binary);
+    return in.tellg();
+}
+
+void updateList(const char *fileName, long *szPtr, void *funcPtr(void)) {
+    long sz = getFileSize(fileName);
+
+    if(sz != *szPtr) {
+
+        FileUpdater::lk = std::unique_lock<std::mutex> (FileUpdater::filesUpdatingMutex);
+        *szPtr = sz;
+        funcPtr();
+        FileUpdater::lk.unlock();
+        FileUpdater::ready = true;
+        FileUpdater::cv.notify_one();
+    }
+}
+
 int FileUpdater::updateLists() {
     while(globalScanFlag) {
-        bool res = updateList("negatives.txt");
-        res = updateList("login.txt");
-        res = updateList("pass.txt");
-        res = updateList("sshpass.txt");
-        res = updateList("wflogin.txt");
-        res = updateList("wfpass.txt");
+        updateList("negatives.txt", &oldNegLstSize, updateNegatives);
+        updateList("login.txt", &oldLoginLstSize, updateLogin);
+        updateList("pass.txt", &oldPassLstSize, updatePass);
+        updateList("sshpass.txt", &oldSSHLstSize, updateSSH);
+        updateList("wflogin.txt", &oldWFLoginLstSize, updateWFLogin);
+        updateList("wfpass.txt", &oldWFPassLstSize, updateWFPass);
 
     Sleep(60000);
     }

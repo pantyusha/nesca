@@ -762,7 +762,8 @@ void _connect() {
 	while (globalScanFlag) {
 		std::unique_lock<std::mutex> lk(Threader::m);
 		Threader::cv.wait(lk, []{return Threader::ready; });
-		if (Threader::threadId > gThreads || !globalScanFlag) {
+
+        if (Threader::threadId > gThreads || !globalScanFlag) {
 			--Threader::threadId;
 			Threader::ready = false;
 			lk.unlock();
@@ -1326,6 +1327,7 @@ char *GetCIDRRangeStr(char *str) {
 
 	return result;
 }
+
 int fInit(int InitMode, char *gR) {
     strcpy(metaRange, gR);
     if (InitMode == 0)

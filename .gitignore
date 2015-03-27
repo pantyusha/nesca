@@ -40,3 +40,5 @@ result_files-*
 nesca
 moc_*
 *~
+*.user
+Makefile

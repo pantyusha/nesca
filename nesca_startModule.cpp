@@ -4,6 +4,7 @@
 #include "externFunctions.h"
 #include "Connector.h"
 #include "Threader.h"
+#include "FileUpdater.h"
 #include <thread>
 
 QJsonArray *jsonArr = new QJsonArray();
@@ -58,6 +59,38 @@ volatile int gThreads;
 volatile int cons = 0;
 volatile int BrutingThrds = 0;
 volatile int threads = 20;
+
+unsigned char tl(unsigned char d)
+{
+    if(d >= 192 && d <= 223)
+    {
+        return (unsigned char)(d + 32);
+    }
+    else
+    {
+        return tolower(d);
+    };
+}
+
+std::string toLowerStr(const char *str)
+{
+    if(str != NULL) {
+        int tsz = strlen(str);
+        char *strr = new char[tsz+1];
+        ZeroMemory(strr, tsz);
+
+        for (int i = 0; i < tsz; i++)
+        {
+            strr[i] = tl(str[i]);
+        };
+
+        memset(strr + tsz, '\0', 1);
+
+        std::string tstr = std::string(strr);
+        delete []strr;
+        return tstr;
+    } else return "";
+}
 
 void SaveErrorLog(char *sender, char *MesSent, char *ReplRecv)
 {
@@ -724,44 +757,13 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[]) {
 	return gTargets;
 }
 
-unsigned char tl(unsigned char d)
-{
-    if(d >= 192 && d <= 223)
-    {
-        return (unsigned char)(d + 32);
-    }
-    else
-    {
-        return tolower(d);
-    };
-}
-
-std::string toLowerStr(const char *str)
-{
-    if(str != NULL) {
-        int tsz = strlen(str);
-        char *strr = new char[tsz+1];
-        ZeroMemory(strr, tsz);
-
-        for (int i = 0; i < tsz; i++)
-        {
-            strr[i] = tl(str[i]);
-        };
-
-        memset(strr + tsz, '\0', 1);
-
-        std::string tstr = std::string(strr);
-        delete []strr;
-        return tstr;
-    } else return "";
-}
-
 void _connect() {
 	std::string ip = "";
 	while (globalScanFlag) {
 		std::unique_lock<std::mutex> lk(Threader::m);
 		Threader::cv.wait(lk, []{return Threader::ready; });
-		if (Threader::threadId > gThreads || !globalScanFlag) {
+
+        if (Threader::threadId > gThreads || !globalScanFlag) {
 			--Threader::threadId;
 			Threader::ready = false;
 			lk.unlock();
@@ -811,309 +813,6 @@ void verboseProgressDNS(unsigned long target, const char *ip, const char *TLD, c
     progressOutput(target);
 }
 
-void _passLoginLoader() {
-	MaxLogin = 0;
-	MaxPass = 0;
-
-	char buffFG[32] = {0};
-	int i = 0;
-
-    FILE *loginList = fopen("login.txt", "r");
-    FILE *passList = fopen("pass.txt", "r");
-
-	if(passList != NULL && loginList != NULL)
-	{
-		while(fgets(buffFG, 32, loginList) != NULL)
-		{
-			MaxLogin++;
-			ZeroMemory(buffFG, sizeof(buffFG));
-		};
-
-		while(fgets(buffFG, 32, passList) != NULL)
-		{
-			MaxPass++;
-			ZeroMemory(buffFG, sizeof(buffFG));
-		};
-
-		rewind(loginList);
-		rewind(passList);
-
-		loginLst = new char*[MaxLogin];
-		passLst = new char*[MaxPass];
-
-		for(int j = 0; j < MaxLogin; j++)
-		{
-			loginLst[j] = new char[32];
-		};
-
-		for(int j = 0; j < MaxPass; j++)
-		{
-			passLst[j] = new char[32];
-		};
-
-		while(fgets(buffFG, 32, passList) != NULL)
-		{
-			memset(passLst[i], 0, strlen(buffFG) + 1);
-
-			if(strstr(buffFG, "\n") != NULL) strncat(passLst[i++], buffFG, strlen(buffFG) - 1);
-			else  strncat(passLst[i++], buffFG, strlen(buffFG));
-			ZeroMemory(buffFG, sizeof(buffFG));
-		};
-
-        stt->doEmitionGreenFoundData("Password list loaded (" + QString::number(MaxPass) + " entries)");
-	
-		i = 0;
-
-		while(fgets(buffFG, 32, loginList) != NULL)
-		{
-			memset(loginLst[i], 0, strlen(buffFG) + 1);
-
-			if(strstr(buffFG, "\n") != NULL) strncat(loginLst[i++], buffFG, strlen(buffFG) - 1);
-			else strncat(loginLst[i++], buffFG, strlen(buffFG));
-			ZeroMemory(buffFG, sizeof(buffFG));
-		};
-		
-        stt->doEmitionGreenFoundData("Login list loaded (" + QString::number(MaxLogin) + " entries)");
-		
-		fclose(loginList);
-		fclose(passList);
-	} 
-	else 
-    {
-		stt->doEmitionRedFoundData("No password/login list found");
-        stt->doEmitionKillSttThread();
-	};
-
-	MaxWFLogin = 0;
-	MaxWFPass = 0;
-
-	FILE *wfLoginList;
-	FILE *wfPassList;
-	
-	ZeroMemory(buffFG, sizeof(buffFG));
-	i = 0;
-
-	wfLoginList = fopen("wflogin.txt", "r");
-	wfPassList = fopen("wfpass.txt", "r");
-
-	if(wfPassList != NULL && wfLoginList != NULL)
-	{
-		while(fgets(buffFG, 32, wfLoginList) != NULL)
-		{
-			MaxWFLogin++;
-			ZeroMemory(buffFG, sizeof(buffFG));
-		};
-
-		while(fgets(buffFG, 32, wfPassList) != NULL)
-		{
-			MaxWFPass++;
-			ZeroMemory(buffFG, sizeof(buffFG));
-		};
-
-		rewind(wfLoginList);
-		rewind(wfPassList);
-
-		wfLoginLst = new char*[MaxWFLogin];
-		wfPassLst = new char*[MaxWFPass];
-
-		for(int j = 0; j < MaxWFLogin; j++)
-		{
-			wfLoginLst[j] = new char[32];
-		};
-
-		for(int j = 0; j < MaxWFPass; j++)
-		{
-			wfPassLst[j] = new char[32];
-		};
-
-		while(fgets(buffFG, 32, wfPassList) != NULL)
-		{
-			memset(wfPassLst[i], 0, strlen(buffFG) + 1);
-
-			if(strstr(buffFG, "\n") != NULL) strncat(wfPassLst[i++], buffFG, strlen(buffFG) - 1);
-			else strncat(wfPassLst[i++], buffFG, strlen(buffFG));
-			ZeroMemory(buffFG, sizeof(buffFG));
-		};
-
-        stt->doEmitionGreenFoundData("WFPassword list loaded (" + QString::number(MaxWFPass) + " entries)");
-	
-		i = 0;
-
-		while(fgets(buffFG, 32, wfLoginList) != NULL)
-		{
-			memset(wfLoginLst[i], 0, strlen(buffFG) + 1);
-
-			if(strstr(buffFG, "\n") != NULL) strncat(wfLoginLst[i++], buffFG, strlen(buffFG) - 1);
-			else strncat(wfLoginLst[i++], buffFG, strlen(buffFG));
-			ZeroMemory(buffFG, sizeof(buffFG));
-		};
-
-        stt->doEmitionGreenFoundData("WFLogin list loaded (" + QString::number(MaxWFLogin) + " entries)");
-        fclose(wfPassList);
-        fclose(wfLoginList);
-	} 
-	else 
-    {
-		stt->doEmitionRedFoundData("No password/login list found");
-        stt->doEmitionKillSttThread();
-	};
-
-	MaxSSHPass = 0;
-	FILE *sshlpList;
-	ZeroMemory(buffFG, sizeof(buffFG));
-	i = 0;
-
-	sshlpList = fopen("sshpass.txt", "r");
-
-	if(sshlpList != NULL)
-	{
-		while(fgets(buffFG, 32, sshlpList) != NULL)
-		{
-			++MaxSSHPass;
-			ZeroMemory(buffFG, sizeof(buffFG));
-		};
-
-		rewind(sshlpList);
-
-		sshlpLst = new char*[MaxSSHPass];
-
-		for(int j = 0; j < MaxSSHPass; j++)
-		{
-			sshlpLst[j] = new char[32];
-		};
-
-		while(fgets(buffFG, 32, sshlpList) != NULL)
-		{
-			memset(sshlpLst[i], 0, strlen(buffFG) + 1);
-
-			if(strstr(buffFG, "\n") != NULL) strncat(sshlpLst[i++], buffFG, strlen(buffFG) - 1);
-			else strncat(sshlpLst[i++], buffFG, strlen(buffFG));
-			ZeroMemory(buffFG, sizeof(buffFG));
-		};
-
-        stt->doEmitionGreenFoundData("SSH Password list loaded (" + QString::number(MaxSSHPass) + " entries)");
-	
-		fclose(sshlpList);
-	} 
-	else 
-    {
-		stt->doEmitionRedFoundData("No password/login list found");
-		stt->doEmitionKillSttThread();
-	};
-}
-
-void ReadUTF8(FILE* nFile, char *cp) {
-	char buffFG[256] = {0};
-	int i = 0;
-	GlobalNegativeSize = 0;
-
-	if(nFile != NULL)
-	{
-		while(fgets((char*)buffFG, sizeof(buffFG), nFile) != NULL)
-		{
-			if(buffFG[0] != '#' && buffFG[0] != ' ' && buffFG[0] != '\n' && buffFG[0] != '\r' && strcmp(buffFG, "") != 0 && 
-				((buffFG[0] == '/' && buffFG[1] == '/') == false) && ((buffFG[0] == '\t' && buffFG[1] == '\t' && buffFG[2] == '\t' && (buffFG[3] == 13 || buffFG[3] == 10 || buffFG[3] == '#')) == false)
-				&& (buffFG[0] == '\t' && buffFG[1] == '\t' && buffFG[2] == '\t' && (buffFG[3] == '/' && buffFG[4] == '/')) == false)
-			{
-				++GlobalNegativeSize;
-			};
-			ZeroMemory(buffFG, sizeof(buffFG));
-		};
-
-		rewind(nFile);
-		if(strcmp(cp, "UTF") == 0) fseek(nFile, 3, 0);
-
-		GlobalNegatives = new char*[GlobalNegativeSize + 2];
-
-		while(fgets(buffFG, sizeof(buffFG), nFile) != NULL)
-		{
-			if(buffFG[0] == '#' || buffFG[0] == ' ' || buffFG[0] == '\n' || buffFG[0] == '\r' || strcmp(buffFG, "") == 0 || 
-				(buffFG[0] == '/' && buffFG[1] == '/')) 
-			{
-				ZeroMemory(buffFG, sizeof(buffFG));
-				continue;
-			};
-
-			if(buffFG[0] == '\t' && buffFG[1] == '\t' && buffFG[2] == '\t')
-			{
-				char buffFGT[256] = {0};
-				strcpy(buffFGT, buffFG);
-				char *ptr1 = strstr(buffFGT, "\t\t\t");
-				ZeroMemory(buffFG, sizeof(buffFG));
-				strcpy(buffFG, ptr1 + 3);
-			};
-
-			int bSz = strlen(buffFG);
-			if((bSz == 2 && buffFG[0] == 13 && buffFG[1] == 10) || (bSz == 1 && (buffFG[0] == 13 || buffFG[0] == 10)))
-			{
-				ZeroMemory(buffFG, sizeof(buffFG));
-				continue;
-			};
-			if(buffFG[bSz] == 13 || buffFG[bSz] == 10) 
-			{
-				buffFG[bSz] = '\0';
-			};
-			if(buffFG[bSz - 1] == 13 || buffFG[bSz - 1] == 10) 
-			{
-				buffFG[bSz - 1] = '\0';
-			};
-			if(buffFG[bSz - 2] == 13 || buffFG[bSz - 2] == 10) 
-			{
-				buffFG[bSz - 2] = '\0';
-			};
-
-			if(strstr((char*)buffFG, "\n") != 0) 
-			{				
-                std::string res;
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-                res = xcode(buffFG, CP_UTF8, CP_ACP);
-#else
-                res = std::string(buffFG);
-#endif
-				int sz = res.size();
-				GlobalNegatives[i] = new char[sz + 1];
-                ZeroMemory(GlobalNegatives[i], sizeof(*GlobalNegatives[i]));
-				memcpy(GlobalNegatives[i], toLowerStr(res.c_str()).c_str(), sz - 1);
-				memset(GlobalNegatives[i] + sz - 1, '\0', 1);
-				++i;
-			}
-			else 
-			{
-                std::string res;
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-                res = xcode(buffFG, CP_UTF8, CP_ACP);
-#else
-                res = std::string(buffFG);
-#endif
-				int sz = res.size();
-				GlobalNegatives[i] = new char[sz + 1];
-                ZeroMemory(GlobalNegatives[i], sizeof(*GlobalNegatives[i]));
-				memcpy(GlobalNegatives[i], toLowerStr(res.c_str()).c_str(), sz);
-				memset(GlobalNegatives[i] + sz, '\0', 1);
-				++i;
-			};
-		
-			unsigned char buffcpy2[256] = {0};
-			int sz = strlen((char*)buffFG);
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-			strncpy((char*)buffcpy2, xcode(buffFG, CP_ACP, CP_UTF8).c_str(), sz);
-#else
-			strncpy((char*)buffcpy2, buffFG, sz);
-#endif
-			ZeroMemory(buffFG, sizeof(buffFG));
-		};
-
-		stt->doEmitionGreenFoundData("Negative list loaded (" + QString::number(GlobalNegativeSize) + " entries)");
-		ZeroMemory(buffFG, sizeof(buffFG));
-		fclose(nFile);
-	}
-	else
-    {
-		stt->doEmitionRedFoundData("No negative list found");
-        stt->doEmitionKillSttThread();
-	};
-}
-
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 unsigned char* ASCIItoUNICODE (unsigned char ch)
 {
@@ -1153,24 +852,6 @@ std::string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage) {
     delete buf;
 #endif
 	return res;
-}
-void _NegativeLoader() {
-    FILE *nFile = fopen("negatives.txt", "rb");
-
-	if( nFile != NULL)
-	{
-		unsigned char b[3] = {0};
-		fread(b,1,2, nFile);
-		if( b[0] == 0xEF && b[1] == 0xBB)
-		{
-			fread(b,1,1,nFile); // 0xBF
-			ReadUTF8(nFile, "UTF");
-		}
-		else
-		{
-			ReadUTF8(nFile, "1251");
-		};
-    }
 }
 
 void CheckMaskBits(char *res, int index) {
@@ -1646,6 +1327,7 @@ char *GetCIDRRangeStr(char *str) {
 
 	return result;
 }
+
 int fInit(int InitMode, char *gR) {
     strcpy(metaRange, gR);
     if (InitMode == 0)
@@ -2080,11 +1762,13 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 }
 
 void runAuxiliaryThreads() {
+    std::thread lpThread(FileUpdater::updateLists);
+    lpThread.detach();
 	std::thread saverThread(_saver);
+    saverThread.detach();
 	std::thread trackerThread(_tracker);
-	std::thread timerThread(_timer);
-	saverThread.detach();
-	trackerThread.detach();
+    trackerThread.detach();
+    std::thread timerThread(_timer);
 	timerThread.detach();
 }
 
@@ -2141,10 +1825,7 @@ int startScan(char* args) {
 
 	stt->doEmitionIPRANGE(QString("--"));
 	stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
-
-	_passLoginLoader();
-	_NegativeLoader();
-
+    FileUpdater::loadOnce();
     runAuxiliaryThreads();
 
 	if (gMode == 0)
@@ -2434,6 +2115,7 @@ int startScan(char* args) {
 }
 
 void nCleanup(){
+    FileUpdater::FUClear();
     Threader::cleanUp();
     curl_global_cleanup();
 

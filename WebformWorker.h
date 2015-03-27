@@ -10,13 +10,13 @@
 
 class WFClass : BruteUtils {
 
-private: static bool active;
+private:
     int passCounter = 1;
     lopaStr doGetCheck(const char *ip, int port, char *actionVal, char *userVal, char *passVal, char *formVal);
 	lopaStr doPostCheck(const char *ip, int port, char *actionVal, char *userVal, char *passVal, char *formVal);
     lopaStr parseResponse(const char *ip, const int port, const std::string *buffer, const char* formVal,
-                          const int *iIndex,
-                          const int *jIndex);
+                          const char *login,
+                          const char *pass);
 
 
 public:
@@ -26,12 +26,10 @@ public:
 
         ++WF;
         BConInc();
-        this->active = true;
         passCounter = 1;
     }
 
     ~WFClass(){
-        this->active = false;
         BConDec();
     }
 

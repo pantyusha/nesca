@@ -8,6 +8,7 @@
 #include "FTPAuth.h"
 #include "SSHAuth.h"
 #include <memory>
+#include "FileUpdater.h"
 
 char* strstri(const char *_Str, const char *_SubStr)
 {
@@ -190,6 +191,8 @@ int globalSearchNeg(const char *buffcpy, const char *ip, int port)
 	char negWord[256] = {0};
     for(int i = 0; i < GlobalNegativeSize; ++i)
 	{
+
+        FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
         if(!globalScanFlag) return -1;
 
 			strcpy(negWord, GlobalNegatives[i]);

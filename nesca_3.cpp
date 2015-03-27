@@ -47,7 +47,7 @@ bool privateMsgFlag = false;
 char inputStr[256] = {0};
 bool proxyEnabledFlag = false;
 bool disableBlink = false;
-char gVER[16] = {0};
+char gVER[32] = {0};
 int nickFlag;
 int offlineFlag;
 bool OnlineMsgSentFlag = false;
@@ -471,51 +471,55 @@ void nesca_3::slotDrawTextPlacers()
 		sceneTextPlacer->addLine(85, 110,  90, 100, penPT);
 		sceneTextPlacer->addLine(23, 110,  83, 110, penPT);
 
-		QGraphicsTextItem *item = sceneTextPlacer->addText("- Anomalies", fnt);
+#if (!defined(WIN32) && !defined(_WIN32) && !defined(__WIN32)) || defined(__CYGWIN__)
+        int linuxOffsetKOSTYL = 3;
+#endif
+
+    QGraphicsTextItem *item = sceneTextPlacer->addText("- Anomalies", fnt);
 		item->setX(25);
-		item->setY(94);
+        item->setY(94+linuxOffsetKOSTYL);
 		item->setDefaultTextColor(QColor(255, 255, 255, 180));
 
 		sceneTextPlacer->addLine(118, 120,  130, 100, penPT);
 		sceneTextPlacer->addLine(23, 121,  117, 121, penPT);
-		item = sceneTextPlacer->addText("- Webforms", fnt);
+    item = sceneTextPlacer->addText("- Webforms", fnt);
 		item->setX(25);
-		item->setY(105);
+        item->setY(105+linuxOffsetKOSTYL);
 		item->setDefaultTextColor(QColor(255, 255, 255, 180));
 
 		sceneTextPlacer->addLine(155, 130,  170, 100, penPT);
 		sceneTextPlacer->addLine(23, 131,  154, 131, penPT);
-		item = sceneTextPlacer->addText("- Basic Auth", fnt);
+    item = sceneTextPlacer->addText("- Basic Auth", fnt);
 		item->setX(25);
-		item->setY(115);
+        item->setY(115+linuxOffsetKOSTYL);
 		item->setDefaultTextColor(QColor(255, 255, 255, 180));
 
 		sceneTextPlacer->addLine(190, 140, 210, 100, penPT);
 		sceneTextPlacer->addLine(23, 141,  189, 141, penPT);
 	item = sceneTextPlacer->addText("- Suspicious", fnt);
 		item->setX(25);
-		item->setY(125);
+        item->setY(125+linuxOffsetKOSTYL);
 		item->setDefaultTextColor(QColor(255, 255, 255, 180));
 
 		sceneTextPlacer->addLine(230, 150, 250, 100, penPT);
 		sceneTextPlacer->addLine(23, 151,  229, 151, penPT);
 	item = sceneTextPlacer->addText("- Overloads", fnt);
 		item->setX(25);
-		item->setY(135);
+        item->setY(135+linuxOffsetKOSTYL);
 		item->setDefaultTextColor(QColor(255, 255, 255, 180));
 
 		sceneTextPlacer->addLine(270, 160, 290, 100, penPT);	
 		sceneTextPlacer->addLine(23, 161,  269, 161, penPT);
 	item = sceneTextPlacer->addText("- Lowloads", fnt);
 		item->setX(25);
-		item->setY(145);
+        item->setY(145+linuxOffsetKOSTYL);
 		item->setDefaultTextColor(QColor(255, 255, 255, 180));
 
 		sceneTextPlacer->addLine(310, 170, 330, 100, penPT);	
 		sceneTextPlacer->addLine(23, 171, 309, 171, penPT);
-		item = sceneTextPlacer->addText("- Alive", fnt);
+    item = sceneTextPlacer->addText("- Alive", fnt);
 		item->setX(25);
-		item->setY(155);
+        item->setY(155+linuxOffsetKOSTYL);
 		item->setDefaultTextColor(QColor(255, 255, 255, 180));
 	}
 	else if(VoiceScanFlag)
@@ -2550,50 +2554,70 @@ void CreateVerFile()
 	};
 }
 
-const char *GetVer()
+std::string GetVer()
 {
-	int dver = 0;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+    int dver = 0;
     int tver = 0;
 
-	dver = __DATE__[9] - 48;
-	dver *= 10;
-	dver += __DATE__[10] - 48;
-	dver *= 100;
-	
-	if(__DATE__[0] == 'J' && __DATE__[1] == 'a') dver += 1;
-	else if(__DATE__[0] == 'F') dver += 2;
+    dver = __DATE__[9] - 48;
+    dver *= 10;
+    dver += __DATE__[10] - 48;
+    dver *= 100;
+
+    if(__DATE__[0] == 'J' && __DATE__[1] == 'a') dver += 1;
+    else if(__DATE__[0] == 'F') dver += 2;
     else if(__DATE__[0] == 'M' && __DATE__[2] == 'r') dver += 3;
-	else if(__DATE__[0] == 'A' && __DATE__[1] == 'p') dver += 4;
+    else if(__DATE__[0] == 'A' && __DATE__[1] == 'p') dver += 4;
     else if(__DATE__[0] == 'M' && __DATE__[2] == 'y') dver += 5;
     else if(__DATE__[0] == 'J' && __DATE__[2] == 'n') dver += 6;
     else if(__DATE__[0] == 'J' && __DATE__[2] == 'l') dver += 7;
-	else if(__DATE__[0] == 'A' && __DATE__[1] == 'u') dver += 8;
-	else if(__DATE__[0] == 'S') dver += 9;
-	else if(__DATE__[0] == 'O') dver += 10;
-	else if(__DATE__[0] == 'N') dver += 11;
-	else if(__DATE__[0] == 'D') dver += 12;
-	
-	if(__DATE__[4] != ' ')
-	{
-		dver *= 10;
-		dver += __DATE__[4] - 48;
-	}
-	else dver *= 10;
-	dver *= 10;
-	dver += __DATE__[5] - 48;
+    else if(__DATE__[0] == 'A' && __DATE__[1] == 'u') dver += 8;
+    else if(__DATE__[0] == 'S') dver += 9;
+    else if(__DATE__[0] == 'O') dver += 10;
+    else if(__DATE__[0] == 'N') dver += 11;
+    else if(__DATE__[0] == 'D') dver += 12;
 
-	tver = __TIME__[0] - 48;
-	tver *= 10;
-	tver += __TIME__[1] - 48;
-	tver *= 10;
-	tver += __TIME__[3] - 48;
-	tver *= 10;
-	tver += __TIME__[4] - 48;
+    if(__DATE__[4] != ' ')
+    {
+        dver *= 10;
+        dver += __DATE__[4] - 48;
+    }
+    else dver *= 10;
+    dver *= 10;
+    dver += __DATE__[5] - 48;
 
-    char db[32] = {0};
-    sprintf(db, "%X-%X", dver, tver);
+    tver = __TIME__[0] - 48;
+    tver *= 10;
+    tver += __TIME__[1] - 48;
+    tver *= 10;
+    tver += __TIME__[3] - 48;
+    tver *= 10;
+    tver += __TIME__[4] - 48;
+
+    char dverX[16] = {0};
+    char tverX[16] = {0};
+
+    sprintf(dverX, "%X", dver);
+    sprintf(tverX, "%X", tver);
+
+    std::string db = std::string(dverX) + "-" + std::string(tverX);
 
     return db;
+#else
+    FILE *f = fopen("version", "r");
+    if(f != NULL) {
+        char buff[32] = {0};
+        fgets(buff, 32, f);
+        fclose(f);
+
+        std::string db = std::string(buff);
+        return db;
+    } else {
+        stt->doEmitionRedFoundData("Cannot open version file.");
+        return "?";
+    };
+#endif
 }
 
 void nesca_3::slotShowRedVersion()
@@ -2632,11 +2656,12 @@ void _startMsgCheck()
 	QTime time = QTime::currentTime();
 	qsrand((uint)time.msec());
 
-	strcpy(gVER, GetVer());
-	QString QVER(gVER);
+    const std::string &gVERStr = GetVer();
+    strcpy(gVER, gVERStr.c_str());
+    QString QVER(gVER);
 	ui->logoLabel->setToolTip("v3-" + QVER);
 	ui->logoLabel->setStyleSheet("color:white; border: none;background-color:black;");
-	ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
+    ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
 
 	CreateVerFile();
     RestoreSession();

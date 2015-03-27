@@ -27,7 +27,7 @@ void ReadUTF8(FILE* nFile, char *cp) {
                 && (buffFG[0] == '\t' && buffFG[1] == '\t' && buffFG[2] == '\t' && (buffFG[3] == '/' && buffFG[4] == '/')) == false)
             {
                 ++GlobalNegativeSize;
-            };
+            }
             ZeroMemory(buffFG, sizeof(buffFG));
         };
 
@@ -139,6 +139,7 @@ void negativeLoader() {
         }
         else
         {
+            rewind(nFile);
             ReadUTF8(nFile, "1251");
         };
     }

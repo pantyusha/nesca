@@ -1,4 +1,5 @@
 #include "SSHAuth.h"
+#include "FileUpdater.h"
 
 int _sshConnect(char *user, char *pass, const char *host, int port)
 {
@@ -17,8 +18,9 @@ int _sshConnect(char *user, char *pass, const char *host, int port)
 
     ssh_options_set(my_ssh_session, SSH_OPTIONS_HOST, hostStr);
     ssh_options_set(my_ssh_session, SSH_OPTIONS_PORT, &port);
-    int sshTimeout = gTimeOut + 1;
-    ssh_options_set(my_ssh_session, SSH_OPTIONS_TIMEOUT, &sshTimeout);
+    ssh_options_set(my_ssh_session, SSH_OPTIONS_STRICTHOSTKEYCHECK, 0);
+    ssh_options_set(my_ssh_session, SSH_OPTIONS_GSSAPI_DELEGATE_CREDENTIALS, 0);
+    ssh_options_set(my_ssh_session, SSH_OPTIONS_TIMEOUT, &(gTimeOut + 1));
 
     int rc = ssh_connect(my_ssh_session);
 
@@ -91,17 +93,22 @@ int SSHBrute(const char* host, int port, std::string *buffer, const char *banner
 
     for(int i = 0; i < MaxSSHPass; ++i)
     {
+        FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
         if(!globalScanFlag) break;
         strcpy(temp, sshlpLst[i]);
         ptr1 = strstr(temp, ":");
-		if (ptr1 == NULL) {
+
+        if (ptr1 == NULL) {
 			stt->doEmitionRedFoundData("[SSH]Wrong format: " + QString(temp));
 			return -1;
 		}
+
         sz = ptr1 - temp;
         strncpy(login, temp, sz);
         strcpy(pass, ptr1 + 1);
+
         res = check_ssh_pass(login, pass, temp, host, port, buffer, banner);
+
         ZeroMemory(login, sizeof(login));
         ZeroMemory(pass, sizeof(pass));
         ZeroMemory(temp, sizeof(temp));

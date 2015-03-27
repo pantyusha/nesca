@@ -60,6 +60,38 @@ volatile int cons = 0;
 volatile int BrutingThrds = 0;
 volatile int threads = 20;
 
+unsigned char tl(unsigned char d)
+{
+    if(d >= 192 && d <= 223)
+    {
+        return (unsigned char)(d + 32);
+    }
+    else
+    {
+        return tolower(d);
+    };
+}
+
+std::string toLowerStr(const char *str)
+{
+    if(str != NULL) {
+        int tsz = strlen(str);
+        char *strr = new char[tsz+1];
+        ZeroMemory(strr, tsz);
+
+        for (int i = 0; i < tsz; i++)
+        {
+            strr[i] = tl(str[i]);
+        };
+
+        memset(strr + tsz, '\0', 1);
+
+        std::string tstr = std::string(strr);
+        delete []strr;
+        return tstr;
+    } else return "";
+}
+
 void SaveErrorLog(char *sender, char *MesSent, char *ReplRecv)
 {
 	FILE *errFile = fopen("./logs/ns-track_errors.html", "r");
@@ -723,38 +755,6 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[]) {
 	//unsigned long gTargets = ip2 - ip1;
 
 	return gTargets;
-}
-
-unsigned char tl(unsigned char d)
-{
-    if(d >= 192 && d <= 223)
-    {
-        return (unsigned char)(d + 32);
-    }
-    else
-    {
-        return tolower(d);
-    };
-}
-
-std::string toLowerStr(const char *str)
-{
-    if(str != NULL) {
-        int tsz = strlen(str);
-        char *strr = new char[tsz+1];
-        ZeroMemory(strr, tsz);
-
-        for (int i = 0; i < tsz; i++)
-        {
-            strr[i] = tl(str[i]);
-        };
-
-        memset(strr + tsz, '\0', 1);
-
-        std::string tstr = std::string(strr);
-        delete []strr;
-        return tstr;
-    } else return "";
 }
 
 void _connect() {

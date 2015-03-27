@@ -1,4 +1,5 @@
 #include "FTPAuth.h"
+#include "FileUpdater.h"
 
 bool FTPA::checkOutput(const string *buffer) {
     if(Utils::ci_find_substr(*buffer, "230") != -1) {
@@ -27,6 +28,7 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
     for(int i = 0; i < MaxLogin; ++i)
     {
         if(!globalScanFlag) return lps;
+        FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
         if(strlen(loginLst[i]) <= 1) continue;
 
         strcpy(login, loginLst[i]);
@@ -34,6 +36,7 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
         for(int j = 0; j < MaxPass; ++j)
         {
             if(!globalScanFlag) return lps;
+            FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
             if(strlen(passLst[j]) <= 1) continue;
 
             strcpy(pass, passLst[j]);

@@ -1825,7 +1825,7 @@ int startScan(char* args) {
 
 	stt->doEmitionIPRANGE(QString("--"));
 	stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
-
+    FileUpdater::loadOnce();
     runAuxiliaryThreads();
 
 	if (gMode == 0)
@@ -2115,6 +2115,7 @@ int startScan(char* args) {
 }
 
 void nCleanup(){
+    FileUpdater::FUClear();
     Threader::cleanUp();
     curl_global_cleanup();
 

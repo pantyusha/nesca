@@ -416,7 +416,6 @@ void updateList(const char *fileName, long *szPtr, void *funcPtr(void)) {
     long sz = getFileSize(fileName);
 
     if(sz != *szPtr) {
-
         FileUpdater::lk = std::unique_lock<std::mutex> (FileUpdater::filesUpdatingMutex);
         *szPtr = sz;
         funcPtr();
@@ -428,13 +427,26 @@ void updateList(const char *fileName, long *szPtr, void *funcPtr(void)) {
 
 int FileUpdater::updateLists() {
     while(globalScanFlag) {
-        updateList("negatives.txt", &oldNegLstSize, updateNegatives);
-        updateList("login.txt", &oldLoginLstSize, updateLogin);
-        updateList("pass.txt", &oldPassLstSize, updatePass);
-        updateList("sshpass.txt", &oldSSHLstSize, updateSSH);
-        updateList("wflogin.txt", &oldWFLoginLstSize, updateWFLogin);
-        updateList("wfpass.txt", &oldWFPassLstSize, updateWFPass);
-
-    Sleep(60000);
+        Sleep(60000);
+        if(!globalScanFlag) break;
+        loadOnce();
     }
+}
+
+int FileUpdater::loadOnce() {
+    updateList("negatives.txt", &oldNegLstSize, updateNegatives);
+    updateList("login.txt", &oldLoginLstSize, updateLogin);
+    updateList("pass.txt", &oldPassLstSize, updatePass);
+    updateList("sshpass.txt", &oldSSHLstSize, updateSSH);
+    updateList("wflogin.txt", &oldWFLoginLstSize, updateWFLogin);
+    updateList("wfpass.txt", &oldWFPassLstSize, updateWFPass);
+}
+
+void FileUpdater::FUClear() {
+    oldNegLstSize = 0;
+    oldLoginLstSize = 0;
+    oldPassLstSize = 0;
+    oldSSHLstSize = 0;
+    oldWFLoginLstSize = 0;
+    oldWFPassLstSize = 0;
 }

@@ -26,8 +26,8 @@ public:
 
 public:
     static int updateLists();
-    static void passLoginLoader();
-    static void negativeLoader();
+    static int loadOnce();
+    static void FUClear();
 };
 
 #endif // FILEUPDATER_H

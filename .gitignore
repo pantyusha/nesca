@@ -41,3 +41,4 @@ nesca
 moc_*
 *~
 *.user
+Makefile

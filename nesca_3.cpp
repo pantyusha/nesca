@@ -470,9 +470,10 @@ void nesca_3::slotDrawTextPlacers()
 
 		sceneTextPlacer->addLine(85, 110,  90, 100, penPT);
 		sceneTextPlacer->addLine(23, 110,  83, 110, penPT);
-
+		
+		int linuxOffsetKOSTYL = 0;
 #if (!defined(WIN32) && !defined(_WIN32) && !defined(__WIN32)) || defined(__CYGWIN__)
-        int linuxOffsetKOSTYL = 3;
+        linuxOffsetKOSTYL = 3;
 #endif
 
     QGraphicsTextItem *item = sceneTextPlacer->addText("- Anomalies", fnt);

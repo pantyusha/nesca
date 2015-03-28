@@ -7,7 +7,6 @@
 #define PORTSET "80,81,88,8080,8081,60001,60002,8008,8888,554,9000,441,4111,6667,3536,22,21"
 #define CSSOCKET(Socket) shutdown(Socket, SD_BOTH); closesocket(Socket); Socket = -1;
 
-
 #ifndef CP_UTF8
 #define CP_UTF8 65001
 #endif

@@ -176,3 +176,4 @@ public:
 
 
 extern lopaStr _IPCameraBLobby(const char *ip, int port, char *SPEC);
+extern std::string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage);

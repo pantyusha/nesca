@@ -1,4 +1,5 @@
 #include "FileUpdater.h"
+#include "externFunctions.h"
 #include "STh.h"
 #include "mainResources.h"
 
@@ -147,7 +148,7 @@ void negativeLoader() {
     }
 }
 
-void *updateNegatives() {
+void updateNegatives() {
     if(GlobalNegatives != NULL)
     {
         for(int i = 0; i < GlobalNegativeSize; ++i) delete []GlobalNegatives[i];
@@ -157,7 +158,7 @@ void *updateNegatives() {
 
     negativeLoader();
 }
-void *updateLogin() {
+void updateLogin() {
 
     if(loginLst != NULL)
     {
@@ -210,7 +211,7 @@ void *updateLogin() {
         stt->doEmitionKillSttThread();
     };
 }
-void *updatePass() {
+void updatePass() {
 
     if(passLst != NULL)
     {
@@ -263,7 +264,7 @@ void *updatePass() {
         stt->doEmitionKillSttThread();
     };
 }
-void *updateSSH() {
+void updateSSH() {
 
     if(sshlpLst != NULL)
     {
@@ -317,7 +318,7 @@ void *updateSSH() {
         stt->doEmitionKillSttThread();
     };
 }
-void *updateWFLogin() {
+void updateWFLogin() {
 
     if(wfLoginLst != NULL)
     {
@@ -366,7 +367,7 @@ void *updateWFLogin() {
         fclose(wfLoginList);
     }
 }
-void *updateWFPass() {
+void updateWFPass() {
 
     if(wfPassLst != NULL)
     {
@@ -434,7 +435,7 @@ void updateList(const char *fileName, long *szPtr, void *funcPtr(void)) {
     }
 }
 
-int FileUpdater::updateLists() {
+void FileUpdater::updateLists() {
     while(globalScanFlag) {
         Sleep(60000);
         if(!globalScanFlag) break;
@@ -442,13 +443,13 @@ int FileUpdater::updateLists() {
     }
 }
 
-int FileUpdater::loadOnce() {
-    updateList("negatives.txt", &oldNegLstSize, updateNegatives);
-    updateList("login.txt", &oldLoginLstSize, updateLogin);
-    updateList("pass.txt", &oldPassLstSize, updatePass);
-    updateList("sshpass.txt", &oldSSHLstSize, updateSSH);
-    updateList("wflogin.txt", &oldWFLoginLstSize, updateWFLogin);
-    updateList("wfpass.txt", &oldWFPassLstSize, updateWFPass);
+void FileUpdater::loadOnce() {
+	updateList("negatives.txt", &oldNegLstSize, (void*(*)(void))updateNegatives);
+	updateList("login.txt", &oldLoginLstSize, (void*(*)(void))updateLogin);
+	updateList("pass.txt", &oldPassLstSize, (void*(*)(void))updatePass);
+	updateList("sshpass.txt", &oldSSHLstSize, (void*(*)(void))updateSSH);
+	updateList("wflogin.txt", &oldWFLoginLstSize, (void*(*)(void))updateWFLogin);
+	updateList("wfpass.txt", &oldWFPassLstSize, (void*(*)(void))updateWFPass);
 }
 
 void FileUpdater::FUClear() {

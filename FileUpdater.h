@@ -1,10 +1,6 @@
 #ifndef FILEUPDATER_H
 #define FILEUPDATER_H
 
-#ifndef Sleep
-#define Sleep(msecs) usleep((msecs)*1000)
-#endif
-
 #include <fstream>
 #include <mutex>
 #include <condition_variable>
@@ -25,8 +21,8 @@ public:
     static std::unique_lock<std::mutex> lk;
 
 public:
-    static int updateLists();
-    static int loadOnce();
+    static void updateLists();
+    static void loadOnce();
     static void FUClear();
 };
 

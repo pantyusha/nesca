@@ -26,4 +26,6 @@ void Threader::cleanUp() {
 	lk.unlock();
 	lk.release();
     threadId = 0;
+	std::queue<std::string> empty = {};
+	std::swap(ipQueue, empty);
 }

@@ -340,7 +340,7 @@ int sharedDetector(const char * ip, int port, const char *buffcpy) {
     if(globalSearchNeg(buffcpy, ip, port) == -1)                                                                                                    return -1;
     if(globalSearchPrnt(buffcpy) == -1)																					                            return -1;
     //if(strstr(buffcpy, "<form ") != NULL && strstr(buffcpy, "302 found") == NULL)                                                                   return 10;
-	//nic.sucks, ...
+	//nic.sucks, etc
 
     return -2;
 }
@@ -663,8 +663,9 @@ void fputsf(char *text, int flag, char *msg)
 				stt->doEmitionRedFoundData("\"fOpened\" loop detected!");
 				break;
 			};
+
 			++innerCounter;
-            Sleep((rand() % 100 + 60));
+			Sleep((rand() % 100 + 60));
 		};
 		fOpened = true;
 		fputs (string, file);

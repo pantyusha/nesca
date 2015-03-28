@@ -37,8 +37,7 @@ int _sshConnect(const char *user, const char *pass, const char *host, int port) 
         if(res != CURLE_OK) {
             curl_easy_cleanup(curl);
             ++ssh;
-            stt->doEmitionRedFoundData("[SSH]Cannot connect to: " + QString(host) + ":" + QString::number(port));
-            return 0;
+            return -2;
         }
 
         if(sock != -1) {

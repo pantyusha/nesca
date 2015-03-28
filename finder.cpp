@@ -1785,7 +1785,9 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
 		{
 			ps->flag = -1;
 			ls->flag = -1;
-			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _header::redirect [Dead host].");
+			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) 
+				+ "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" 
+				+ "] Rejecting in _header::redirect [Dead host].");
 		};
 		
 		return -2;
@@ -1899,7 +1901,9 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
 		{
 			ps->flag = -1;
 			ls->flag = -1;
-			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _header::redirect [Dead host].");
+			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + 
+				"/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + 
+				"] Rejecting in _header::redirect [Dead host].");
 		};
 
 		return -2;
@@ -1964,7 +1968,9 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
 		{
 			ps->flag = -1;
 			ls->flag = -1;
-			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _header::redirect [Dead host].");
+			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + 
+				"/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + 
+				"] Rejecting in _header::redirect [Dead host].");
 		};
 		return -2;
 	}
@@ -2018,7 +2024,9 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
 		{
 			ps->flag = -1;
 			ls->flag = -1;
-			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _header::redirect [Dead host].");
+			if(gNegDebugMode) stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + 
+				"/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + 
+				"] Rejecting in _header::redirect [Dead host].");
 		};
 		return -2;
 	};
@@ -2495,7 +2503,10 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 		while(str1 != NULL);
 		return -2;
 	};
-
+	if (strstri(str, "<form ") != NULL)
+	{
+		strcat(ps->headr, "[Form]");
+	}
 	//if(strstri(str, "<form ") != NULL) 
 	//{
 	//	strcat(ps->headr, " [Login form detected]");
@@ -2589,7 +2600,9 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 			{
 				if(gNegDebugMode) 
 				{
-					stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "] Rejecting in _header::Lowload_body (&lt;250b)");
+					stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + 
+						"/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + 
+						"] Rejecting in _header::Lowload_body (&lt;15b)");
 				};
 
 				++Filt;

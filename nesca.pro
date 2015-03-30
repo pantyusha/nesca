@@ -42,7 +42,8 @@ SOURCES +=\
     FTPAuth.cpp \
     Threader.cpp \
     SSHAuth.cpp \
-    FileUpdater.cpp
+    FileUpdater.cpp \
+    FileDownloader.cpp
 
 
 HEADERS  += ActivityDrawerTh_HorNet.h \
@@ -71,7 +72,8 @@ HEADERS  += ActivityDrawerTh_HorNet.h \
     FTPAuth.h \
     Threader.h \
     SSHAuth.h \
-    FileUpdater.h
+    FileUpdater.h \
+    FileDownloader.h
 
 FORMS    += nesca_3.ui
 

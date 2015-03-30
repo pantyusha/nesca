@@ -5,6 +5,7 @@
 #include "Connector.h"
 #include "Threader.h"
 #include "FileUpdater.h"
+#include "FileDownloader.h"
 #include <thread>
 
 QJsonArray *jsonArr = new QJsonArray();
@@ -1764,6 +1765,8 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 void runAuxiliaryThreads() {
     std::thread lpThread(FileUpdater::updateLists);
     lpThread.detach();
+    std::thread fuThread(FileDownloader::checkWebFiles);
+    fuThread.detach();
 	std::thread saverThread(_saver);
     saverThread.detach();
 	std::thread trackerThread(_tracker);

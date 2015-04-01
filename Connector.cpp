@@ -170,7 +170,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
             curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, 1L);
 			curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
 		}; 
-		
+
 		int res = curl_easy_perform(curl);
 		curl_easy_cleanup(curl);
 		
@@ -185,7 +185,9 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 				res != 67 &&
 				res != 52 &&
 				res != 55 &&
-				res != 56) {
+				res != 56 &&
+				res != 35 &&
+				res != 19) {
 				if (res == 5) {
 					stt->doEmitionRedFoundData("Couldn't resolve proxy. The given proxy host could not be resolved. ");
 					return -2;

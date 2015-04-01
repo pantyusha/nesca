@@ -3,6 +3,7 @@
 #include "STh.h"
 #include "mainResources.h"
 
+bool FileUpdater::running = false;
 long FileUpdater::oldNegLstSize = 0;
 long FileUpdater::oldLoginLstSize = 0;
 long FileUpdater::oldPassLstSize = 0;
@@ -76,12 +77,7 @@ void ReadUTF8(FILE* nFile, char *cp) {
 
             if(strstr((char*)buffFG, "\n") != 0)
             {
-                std::string res;
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-                res = xcode(buffFG, CP_UTF8, CP_ACP);
-#else
-                res = std::string(buffFG);
-#endif
+                std::string res = std::string(buffFG);
                 int sz = res.size();
                 GlobalNegatives[i] = new char[sz + 1];
                 ZeroMemory(GlobalNegatives[i], sizeof(*GlobalNegatives[i]));
@@ -91,12 +87,7 @@ void ReadUTF8(FILE* nFile, char *cp) {
             }
             else
             {
-                std::string res;
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-                res = xcode(buffFG, CP_UTF8, CP_ACP);
-#else
-                res = std::string(buffFG);
-#endif
+                std::string res = std::string(buffFG);
                 int sz = res.size();
                 GlobalNegatives[i] = new char[sz + 1];
                 ZeroMemory(GlobalNegatives[i], sizeof(*GlobalNegatives[i]));
@@ -104,14 +95,6 @@ void ReadUTF8(FILE* nFile, char *cp) {
                 memset(GlobalNegatives[i] + sz, '\0', 1);
                 ++i;
             };
-
-            unsigned char buffcpy2[256] = {0};
-            int sz = strlen((char*)buffFG);
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-            strncpy((char*)buffcpy2, xcode(buffFG, CP_ACP, CP_UTF8).c_str(), sz);
-#else
-            strncpy((char*)buffcpy2, buffFG, sz);
-#endif
             ZeroMemory(buffFG, sizeof(buffFG));
         };
 
@@ -436,11 +419,13 @@ void updateList(const char *fileName, long *szPtr, void *funcPtr(void)) {
 }
 
 void FileUpdater::updateLists() {
+	running = true;
     while(globalScanFlag) {
         Sleep(60000);
         if(!globalScanFlag) break;
         loadOnce();
     }
+	running = false;
 }
 
 void FileUpdater::loadOnce() {

@@ -9,6 +9,7 @@
 
 class FileUpdater {
 public:
+	static bool running;
     static long oldNegLstSize;
     static long oldLoginLstSize;
     static long oldPassLstSize;

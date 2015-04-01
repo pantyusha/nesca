@@ -3,6 +3,7 @@
 
 class FileDownloader {
 public:
+	static bool running;
     static void checkWebFiles();
 };
 

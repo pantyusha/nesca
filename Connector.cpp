@@ -151,7 +151,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
         }
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut + 5);
 
         if(postData != NULL) {
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
@@ -186,6 +186,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
             return buffer->size();
 		} else {
 			if (res != 28 &&
+				res != 6 &&
 				res != 7 &&
 				res != 67 &&
 				res != 52 &&
@@ -205,12 +206,6 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 				} else if (res == 8) {
 					stt->doEmitionFoundData("Strange ftp reply. (" + 
 						QString::number(res) + ") " + QString(ip) + 
-						":" + QString::number(port));
-					return -2;
-				}
-				else if (res == 6) {
-					stt->doEmitionFoundData("Couldn't resolve host. (" +
-						QString::number(res) + ") " + QString(ip) +
 						":" + QString::number(port));
 					return -2;
 				}

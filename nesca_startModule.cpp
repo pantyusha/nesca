@@ -1730,15 +1730,20 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 }
 
 void runAuxiliaryThreads() {
-    std::thread lpThread(FileUpdater::updateLists);
-    lpThread.detach();
-    std::thread fuThread(FileDownloader::checkWebFiles);
-    fuThread.detach();
+	if (!FileUpdater::running) {
+		std::thread lpThread(FileUpdater::updateLists);
+		lpThread.detach();
+		Sleep(500);
+	}
+	if (!FileDownloader::running) {
+		std::thread fuThread(FileDownloader::checkWebFiles);
+		fuThread.detach();
+	}
 	std::thread trackerThread(_tracker);
     trackerThread.detach();
     std::thread timerThread(_timer);
 	timerThread.detach();
-    Sleep(1000);
+    Sleep(500);
     std::thread saverThread(_saver);
     saverThread.detach();
 }
@@ -1969,7 +1974,7 @@ int startScan(char* args) {
 		stt->doEmitionYellowFoundData("Starting DNS-scan...");
 		stt->doEmitionChangeStatus("Scanning...");
 
-        int y = _GetDNSFromMask(dataEntry, dataEntry, dataEntry);
+        int y = _GetDNSFromMask(dataEntry, "", dataEntry);
 		if (y == -1)
 		{
 			stt->doEmitionRedFoundData("DNS-Mode error");

@@ -1919,7 +1919,8 @@ void nesca_3::IPScanSeq()
 		if(ui->portLine->text() != "")
 		{
             saveOptions();
-			ui->labelParsed_Value->setText("0/0");
+            ui->labelParsed_Value->setText("0/0");
+            ui->labelOffline_Value->setText("0");
             stopFirst = false;
 			ui->tabMainWidget->setTabEnabled(1, false);
 			ui->tabMainWidget->setTabEnabled(2, false);
@@ -2004,6 +2005,7 @@ void nesca_3::DNSScanSeq()
 		{
             saveOptions();
 			ui->labelParsed_Value->setText("0/0");
+            ui->labelOffline_Value->setText("0");
 			if(ui->lineEditStartIPDNS->text().indexOf(".") > 0)
 			{
 				QStringList lst = ui->lineEditStartIPDNS->text().split(".");
@@ -2062,6 +2064,9 @@ void nesca_3::ImportScanSeq()
         saveOptions();
 		ui->tabMainWidget->setTabEnabled(0, false);
 		ui->tabMainWidget->setTabEnabled(1, false);
+
+        ui->labelParsed_Value->setText("0/0");
+        ui->labelOffline_Value->setText("0");
 
 		strcpy(inputStr, ("DUMMY|-f|" + fileName + "|" + ui->importThreads->text() + "|-p" + ui->importPorts->text().replace(" ", "")).toLocal8Bit().data());	
 
@@ -2292,8 +2297,10 @@ void nesca_3::ConnectEvrthng()
 }
 
 void _LoadPersInfoToLocalVars(int savedTabIndex) {
-    ZeroMemory(top_level_domain, sizeof(top_level_domain));
+    ZeroMemory(currentIP, sizeof(currentIP));
+    ZeroMemory(finalIP, sizeof(finalIP));
     ZeroMemory(gPorts, sizeof(gPorts));
+    ZeroMemory(gTLD, sizeof(gTLD));
 
     if(savedTabIndex == 0)
     {
@@ -2328,9 +2335,15 @@ void _LoadPersInfoToLocalVars(int savedTabIndex) {
         gThreads = ui->lineEditThread->text().toInt();
 
         strcpy(currentIP, ui->lineEditStartIPDNS->text().toLocal8Bit().data());
-        strcpy(top_level_domain, ui->lineILVL->text().toLocal8Bit().data());
+        strcpy(gTLD, ui->lineILVL->text().toLocal8Bit().data());
         strncpy(gPorts, ("-p" + ui->lineEditPort->text()).toLocal8Bit().data(), 65536);
         gPorts[ui->lineEditPort->text().length() + 2] = '\0';
+    }
+    else if(savedTabIndex == 2)
+    {
+        gMode = -1;
+        gThreads = ui->importThreads->text().toInt();
+        strncpy(gPorts, ("-p" + ui->importPorts->text()).toLocal8Bit().data(), 65536);
     };
 
     strcpy(trcSrv, ui->lineTrackerSrv->text().toLocal8Bit().data());
@@ -2374,6 +2387,9 @@ void setUIText(char *field, QLineEdit *qle, const char *resStr) {
 }
 void RestoreSession()
 {
+    ZeroMemory(gPorts, sizeof(gPorts));
+    ZeroMemory(gTLD, sizeof(gTLD));
+
 	FILE *resFile = fopen("restore", "r");
 	char resStr[128] = {0};
 	char *lex;
@@ -2431,13 +2447,14 @@ void RestoreSession()
                     qLex.replace("[09]", "\\d");
                     ui->lineEditStartIPDNS->setText(qLex);
 					lex = strtok(NULL, " ");
-					strcpy(gFirstDom, lex);
-
-					lex = strtok(NULL, " ");
+                    if(strstr(lex, ".") != NULL) {
+                        strcpy(gTLD, lex);
+                        lex = strtok(NULL, " ");
+                    }
                     gThreads = atoi(lex);
 
 					ui->lineEditThread->setText(QString(lex));
-					ui->lineILVL->setText(QString(gFirstDom));
+                    ui->lineILVL->setText(QString(gTLD));
 					ui->tabMainWidget->setCurrentIndex(1);
 					ui->startScanButton_4->setText("RESTORE");
 				}

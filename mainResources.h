@@ -107,12 +107,6 @@ struct lopaStr{
 	char other[128];
 };
 
-struct conSTR{
-	char *lowerBuff;
-	int size;
-	bool overflow = false;
-};
-
 class Lexems
 {
 public:
@@ -129,19 +123,18 @@ public:
 		iterationCount = 0;
 	}
 
-	int _header(char *ip,
-		int port,
-		const char str[],
-		Lexems *l,
-		PathStr *ps,
-		std::vector<std::string> *lst);
+    int _header(char *ip,
+        int port,
+        const char str[],
+        Lexems *l,
+        PathStr *ps,
+        std::vector<std::string> *lst, int size);
 
-	int _filler(int port,
-		const char *buffcpy,
-		char* ip,
-		int recd,
-		Lexems *lx,
-		char *hl);
+    int _filler(int port,
+        const char *buffcpy,
+        char* ip,
+        int size,
+        Lexems *lx);
 };
 
 

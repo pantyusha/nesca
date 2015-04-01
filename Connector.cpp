@@ -104,9 +104,14 @@ int my_trace(CURL *handle, curl_infotype type,
   return 0;
 }
 
-static size_t nWriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+size_t nWriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
+    Activity += nmemb;
+    int ssz = ((std::string*)userp)->size();
+    if(ssz > 180000) {
+        return -1;
+    }
     return size * nmemb;
 }
 
@@ -116,10 +121,10 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
                         const std::string *lpString){
     buffer->clear();
     CURL *curl = curl_easy_init();
-    curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 0L);
 
     if (curl)
     {
+        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 0L);
         if (MapWidgetOpened) {
             struct data config;
             config.trace_ascii = 1; /* enable ascii tracing */
@@ -178,14 +183,15 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 			(port == 21 && buffer->size() > 0)) {
 			if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
 			Activity += buffer->size();
-			return buffer->size();
+            return buffer->size();
 		} else {
 			if (res != 28 &&
 				res != 7 &&
 				res != 67 &&
 				res != 52 &&
-				res != 55 &&
-				res != 56) {
+                res != 55 &&
+                res != 56 &&
+                res != 23) {
 				if (res == 5) {
 					stt->doEmitionRedFoundData("Couldn't resolve proxy. The given proxy host could not be resolved. ");
 					return -2;
@@ -215,24 +221,29 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 				else stt->doEmitionRedFoundData("CURL error: (" + QString::number(res) + ") " + 
 					QString(ip) + ":" + QString::number(port));
 			}
-			++offlines;
-			return -1;
+
+            if(res == 23 && buffer->size() > 0) {
+                if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString("[OVERFLOW]"));
+                return buffer->size();
+            } else {
+                stt->doEmitionOffline(QString::number(++offlines));
+                return -1;
+            }
 		}
     } else {
         stt->doEmitionRedFoundData("Curl error.");
         return -1;
 	};
 
-	if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
-	Activity += buffer->size();
+    if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
 	return buffer->size();
 }
 
-int Connector::_ConnectToPort(std::string ip, int port, char *hl)
+int Connector::_ConnectToPort(char* ip, int port)
 {
     if(gPingNScan)
     {
-        if(_pingMyTarget(ip.c_str()) == 0)
+        if(_pingMyTarget(ip) == 0)
         {
             return -2;
         };
@@ -241,8 +252,8 @@ int Connector::_ConnectToPort(std::string ip, int port, char *hl)
     std::string buffer;
     int size = 0;
 
-    if (port == 22) size = SSHAuth::SSHLobby(ip.c_str(), port, &buffer);
-    else size = nConnect(ip.c_str(), port, &buffer);
+    if (port == 22) size = SSHAuth::SSHLobby(ip, port, &buffer);
+    else size = nConnect(ip, port, &buffer);
 
     if(size > 0)
     {
@@ -250,7 +261,7 @@ int Connector::_ConnectToPort(std::string ip, int port, char *hl)
         ++found;
         stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
         Lexems lx;
-        lx._filler(port, buffer.c_str(), (char*)ip.c_str(), size, &lx, hl);
+        lx._filler(port, buffer.c_str(), ip, size, &lx);
     };
 
     return 0;

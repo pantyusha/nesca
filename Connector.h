@@ -17,6 +17,6 @@ public:
                         const char *postData = NULL,
                         const std::vector<std::string> *customHeaders = NULL,
 						const std::string *lpString = NULL);
-	static int _ConnectToPort(std::string ip, int port, char *hl);
+    static int _ConnectToPort(char *ip, int port);
 };
 #endif // CONNECTOR_H

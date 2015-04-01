@@ -8,8 +8,9 @@ std::queue<std::string> Threader::ipQueue;
 
 void Threader::fireThread(std::string ip, void *func(void)) {
 
-	std::unique_lock<std::mutex> lk(m);
-	ipQueue.push(ip);
+    std::unique_lock<std::mutex> lk(m);
+    ipQueue.push(ip);
+
     if(threadId < gThreads) {
         ++threadId;
         std::thread workerThread(func);
@@ -26,6 +27,6 @@ void Threader::cleanUp() {
 	lk.unlock();
 	lk.release();
     threadId = 0;
-	std::queue<std::string> empty = {};
+    std::queue<std::string> empty = {};
 	std::swap(ipQueue, empty);
 }

@@ -1,8 +1,7 @@
 #include "IPCAuth.h"
+#include "Utils.h"
 #include "BruteUtils.h"
 #include "FileUpdater.h"
-#include "Connector.h"
-#include "Utils.h"
 
 lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 {

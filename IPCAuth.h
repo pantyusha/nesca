@@ -1,6 +1,7 @@
 #ifndef IPCAUTH_H
 #define IPCAUTH_H
 
+#include "Connector.h"
 #include "mainResources.h"
 
 class IPC {

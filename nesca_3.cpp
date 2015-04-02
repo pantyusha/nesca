@@ -1246,7 +1246,7 @@ void nesca_3::switchDataFields()
 //}
 
 void nesca_3::slotTabChanged(int index){
-    if(index < 2) savedTabIndex = index;
+    if(index <= 2) savedTabIndex = index;
 }
 
 void nesca_3::switchToJobMode()
@@ -1919,7 +1919,7 @@ void nesca_3::IPScanSeq()
 	{
 		if(ui->portLine->text() != "")
 		{
-            saveOptions();
+			saveOptions();
             ui->labelParsed_Value->setText("0/0");
             ui->labelOffline_Value->setText("0");
             stopFirst = false;
@@ -2004,7 +2004,7 @@ void nesca_3::DNSScanSeq()
 	{
 		if(ui->lineEditPort->text() != "")
 		{
-            saveOptions();
+			saveOptions();
 			ui->labelParsed_Value->setText("0/0");
             ui->labelOffline_Value->setText("0");
 			if(ui->lineEditStartIPDNS->text().indexOf(".") > 0)
@@ -2060,9 +2060,10 @@ void nesca_3::ImportScanSeq()
 		tr("Files (*.txt)")
 		);
 	else fileName = importFileName;
+	
 	if(fileName != "")
 	{
-        saveOptions();
+		saveOptions();
 		ui->tabMainWidget->setTabEnabled(0, false);
 		ui->tabMainWidget->setTabEnabled(1, false);
 

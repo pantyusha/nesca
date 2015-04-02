@@ -20,7 +20,6 @@ int PieAnomC1 = 0, PieBA = 0, PieSusp = 0, PieLowl = 0, PieWF = 0, PieSSH = 0;
 int AnomC1 = 0, Filt = 0, Overl = 0, Lowl = 0, Alive = 0, saved = 0, Susp = 0, WF = 0, offlines = 0, ssh = 0;
 int GlobalNegativeSize = 0;
 int ipCounter = 0;
-int mode;
 int found = 0, indexIP = 1;
 int gMode;
 int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSSHPass = 0;
@@ -527,12 +526,12 @@ void _tracker() {
                     if(jsonArr == NULL) jsonArr = new QJsonArray();
 
                     QJsonObject jsonMeta;
-                    if(mode == 0) jsonMeta.insert("mode", QJsonValue(QString("IP")));				//
-                    else if(mode == 1) jsonMeta.insert("mode", QJsonValue(QString("DNS")));			//Mode
-                    else if(mode == -1) jsonMeta.insert("mode", QJsonValue(QString("Import")));		//
+                    if(gMode == 0) jsonMeta.insert("mode", QJsonValue(QString("IP")));					//
+					else if (gMode == 1) jsonMeta.insert("mode", QJsonValue(QString("DNS")));			//Mode
+					else if (gMode == -1) jsonMeta.insert("mode", QJsonValue(QString("Import")));		//
                     jsonMeta.insert("range", QJsonValue(QString(metaRange)) );
                     jsonMeta.insert("current", QJsonValue(QString(currentIP)) );
-                    if(mode == 1) jsonMeta.insert("tld", QJsonValue(QString(gTLD)));			//TLD
+					if (gMode == 1) jsonMeta.insert("tld", QJsonValue(QString(gTLD)));					//TLD
                     jsonMeta.insert("targets", QJsonValue(QString(metaTargets)) );
                     jsonMeta.insert("percent", QJsonValue(QString(metaPercent)) );
                     jsonMeta.insert("saved", QJsonValue(QString::number(saved)) );
@@ -1788,7 +1787,6 @@ int startScan(char* args) {
 	};
 
 	ParseArgs(argc, argv);
-	mode = gMode;
 	int resInit = fInit(gMode, gRange);
 
 	if (resInit == -1)

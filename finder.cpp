@@ -9,6 +9,7 @@
 #include "SSHAuth.h"
 #include <memory>
 #include "FileUpdater.h"
+#include "IPCAuth.h"
 
 char* strstri(const char *_Str, const char *_SubStr)
 {
@@ -1169,7 +1170,8 @@ void _specWEBIPCAMBrute(const char *ip, int port, char *finalstr, int flag, char
     char tport[32] = {0};
     sprintf(tport, ":%d", port);
 
-    lps = _IPCameraBLobby(ip, port, SPEC);
+    IPC ipc;
+    lps = ipc.IPCLobby(ip, port, SPEC);
 
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{

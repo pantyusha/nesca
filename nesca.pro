@@ -43,7 +43,8 @@ SOURCES +=\
     Threader.cpp \
     SSHAuth.cpp \
     FileUpdater.cpp \
-    FileDownloader.cpp
+    FileDownloader.cpp \
+    IPCAuth.cpp
 
 
 HEADERS  += ActivityDrawerTh_HorNet.h \
@@ -73,7 +74,8 @@ HEADERS  += ActivityDrawerTh_HorNet.h \
     Threader.h \
     SSHAuth.h \
     FileUpdater.h \
-    FileDownloader.h
+    FileDownloader.h \
+    IPCAuth.h
 
 FORMS    += nesca_3.ui
 

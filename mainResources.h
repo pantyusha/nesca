@@ -137,36 +137,4 @@ public:
         Lexems *lx);
 };
 
-
-class Connector_old
-{
-public:
-	int _Updater();
-
-	lopaStr _WFLobby(char *cookie,
-		char *ip,
-		int port,
-		char *methodVal,
-		char *actionVal,
-		char *userVal,
-		char *passVal,
-		char *formVal);
-
-	lopaStr _IPCameraBLobby(char *ip,
-		int port,
-		char *SPEC);
-
-	int _SSHLobby(char *ip,
-		int port,
-		std::string *buffer);
-
-	void _Connect(void *s);
-
-	int _ConnectToPort(char *ip,
-		int port,
-		char *hl);
-};
-
-
-extern lopaStr _IPCameraBLobby(const char *ip, int port, char *SPEC);
 extern std::string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage);

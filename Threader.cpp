@@ -22,10 +22,13 @@ void Threader::fireThread(std::string ip, void *func(void)) {
 }
 
 void Threader::cleanUp() {
+	ready = true;
+	cv.notify_one();
 	std::unique_lock<std::mutex> lk(m);
 	lk.unlock();
 	lk.release();
     threadId = 0;
     std::queue<std::string> empty = {};
 	std::swap(ipQueue, empty);
+	ready = false;
 }

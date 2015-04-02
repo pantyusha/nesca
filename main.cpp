@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 
 	QStringList list;
-	list << "Eurostile.ttf";
+	list << "small_font.ttf";
 	int fontID(-1);
 	bool fontWarningShown(false);
 	for (QStringList::const_iterator constIterator = list.constBegin(); constIterator != list.constEnd(); ++constIterator) {

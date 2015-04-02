@@ -12,7 +12,7 @@ QJsonArray *jsonArr = new QJsonArray();
 bool gShuffle = true;
 bool __savingBackUpFile = false;
 bool horLineFlag = false;
-static int portArr[65536] = {0};
+static int portArr[65536] = { 0 };
 int gThreadDelay = 10;
 int gC = 0;
 int gTimeOut = 3;
@@ -23,8 +23,8 @@ int ipCounter = 0;
 int found = 0, indexIP = 1;
 int gMode;
 int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSSHPass = 0;
-int ipsstart[4], ipsend[4], 
-	overallPorts, flCounter, octet[4];
+int ipsstart[4], ipsend[4],
+overallPorts, flCounter, octet[4];
 int BA = 0;
 int gPingTimeout = 1;
 int gMaxBrutingThreads = 50;
@@ -36,20 +36,20 @@ char **GlobalNegatives = 0;
 char **loginLst, **passLst;
 char **wfLoginLst, **wfPassLst;
 char **sshlpLst;
-char saveEndIP[128] = {0};
-char gRange[128] = {0};
-char gTLD[128] = {0};
-char gPorts[65536] = {0};
-char metaRange[256] = {0};
-char metaPercent[256] = {0};
-char metaIPS[256] = {0};
-char metaTargets[256] = {0};
-char metaETA[256] = {0};
-char metaOffline[256] = {0};
+char saveEndIP[128] = { 0 };
+char gRange[128] = { 0 };
+char gTLD[128] = { 0 };
+char gPorts[65536] = { 0 };
+char metaRange[256] = { 0 };
+char metaPercent[256] = { 0 };
+char metaIPS[256] = { 0 };
+char metaTargets[256] = { 0 };
+char metaETA[256] = { 0 };
+char metaOffline[256] = { 0 };
 
-char currentIP[MAX_ADDR_LEN] = {0};
-char currentMask[128] = {0};
-char finalIP[32] = {0};
+char currentIP[MAX_ADDR_LEN] = { 0 };
+char currentMask[128] = { 0 };
+char finalIP[32] = { 0 };
 
 bool ErrLogFirstTime = true;
 bool gPingNScan = false;
@@ -61,40 +61,41 @@ volatile int threads = 20;
 
 unsigned char tl(unsigned char d)
 {
-    if(d >= 192 && d <= 223)
-    {
-        return (unsigned char)(d + 32);
-    }
-    else
-    {
-        return tolower(d);
-    };
+	if (d >= 192 && d <= 223)
+	{
+		return (unsigned char)(d + 32);
+	}
+	else
+	{
+		return tolower(d);
+	};
 }
 
 std::string toLowerStr(const char *str)
 {
-    if(str != NULL) {
-        int tsz = strlen(str);
-        char *strr = new char[tsz+1];
-        ZeroMemory(strr, tsz);
+	if (str != NULL) {
+		int tsz = strlen(str);
+		char *strr = new char[tsz + 1];
+		ZeroMemory(strr, tsz);
 
-        for (int i = 0; i < tsz; i++)
-        {
-            strr[i] = tl(str[i]);
-        };
+		for (int i = 0; i < tsz; i++)
+		{
+			strr[i] = tl(str[i]);
+		};
 
-        memset(strr + tsz, '\0', 1);
+		memset(strr + tsz, '\0', 1);
 
-        std::string tstr = std::string(strr);
-        delete []strr;
-        return tstr;
-    } else return "";
+		std::string tstr = std::string(strr);
+		delete[]strr;
+		return tstr;
+	}
+	else return "";
 }
 
 void SaveErrorLog(char *sender, char *MesSent, char *ReplRecv)
 {
 	FILE *errFile = fopen("./logs/ns-track_errors.html", "r");
-	if(errFile != NULL)
+	if (errFile != NULL)
 	{
 		fclose(errFile);
 	};
@@ -108,21 +109,21 @@ void SaveErrorLog(char *sender, char *MesSent, char *ReplRecv)
 #endif
 	time_t rtime;
 	time(&rtime);
-	char cdate[32] = {0};
-	strcpy (cdate, ctime (&rtime));
+	char cdate[32] = { 0 };
+	strcpy(cdate, ctime(&rtime));
 
 	char *totalErrLog = NULL;
-	char stylePart[] = {"<style>html{background-color:#373737;}#mainblock{background-color:#646464;width:100%;border:1px dotted black;}#sender-time{color:#ffffff;}#msr{color:#b9b9b9;}#msc{width:99,8%;border:1px solid black;}pre{width:99,8%;border:1px solid gray;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;white-space:pre-wrap;word-wrap:break-word;}</style>"};
-	char firstPart[] = {"<div id=\"mainblock\"><div id=\"sender-time\">"};
-	char secondPart[] = {"</div><span id=\"msr\">Message sent:</span><pre>"};
-	char thirdPart[] = {"</pre><span id=\"msr\">Reply received:</span><pre><iframe width=\"100%\" height=\"600px\" id=\"msc\" src=\"data:text/html;base64,"};
-	char forthPart[] = {"\"></iframe></pre></div>"};
-	
-	int sz = strlen(stylePart) + strlen(firstPart) + strlen(secondPart) + strlen(thirdPart) + strlen(forthPart) + strlen(QByteArray(MesSent).replace("\r\n", "\n").data()) + (strlen(ReplRecv) + 50*strlen(ReplRecv)/100) + strlen(cdate) + strlen(sender);
+	char stylePart[] = { "<style>html{background-color:#373737;}#mainblock{background-color:#646464;width:100%;border:1px dotted black;}#sender-time{color:#ffffff;}#msr{color:#b9b9b9;}#msc{width:99,8%;border:1px solid black;}pre{width:99,8%;border:1px solid gray;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;white-space:pre-wrap;word-wrap:break-word;}</style>" };
+	char firstPart[] = { "<div id=\"mainblock\"><div id=\"sender-time\">" };
+	char secondPart[] = { "</div><span id=\"msr\">Message sent:</span><pre>" };
+	char thirdPart[] = { "</pre><span id=\"msr\">Reply received:</span><pre><iframe width=\"100%\" height=\"600px\" id=\"msc\" src=\"data:text/html;base64," };
+	char forthPart[] = { "\"></iframe></pre></div>" };
+
+	int sz = strlen(stylePart) + strlen(firstPart) + strlen(secondPart) + strlen(thirdPart) + strlen(forthPart) + strlen(QByteArray(MesSent).replace("\r\n", "\n").data()) + (strlen(ReplRecv) + 50 * strlen(ReplRecv) / 100) + strlen(cdate) + strlen(sender);
 
 	totalErrLog = new char[sz + 4];
 	ZeroMemory(totalErrLog, sz);
-	if(ErrLogFirstTime) strcat(totalErrLog, stylePart);
+	if (ErrLogFirstTime) strcat(totalErrLog, stylePart);
 	strcat(totalErrLog, firstPart);
 	strcat(totalErrLog, sender);
 	strcat(totalErrLog, " - ");
@@ -135,7 +136,7 @@ void SaveErrorLog(char *sender, char *MesSent, char *ReplRecv)
 	memset(totalErrLog + sz, '\0', 1);
 
 	errFile = fopen("./logs/ns-track_errors.html", "a");
-	if(errFile != NULL)	
+	if (errFile != NULL)
 	{
 		fwrite(totalErrLog, sz, 1, errFile);
 		fclose(errFile);
@@ -144,22 +145,22 @@ void SaveErrorLog(char *sender, char *MesSent, char *ReplRecv)
 	{
 		stt->doEmitionRedFoundData("[Log] -Cant open log file!");
 	};
-	if(totalErrLog != NULL)
+	if (totalErrLog != NULL)
 	{
-		delete []totalErrLog;
+		delete[]totalErrLog;
 		totalErrLog = NULL;
 	};
 }
 
 QString GetNSErrorDefinition(const char *str, const char *elem)
 {
-    const char *temp = strstr(str, elem);
+	const char *temp = strstr(str, elem);
 
-	if(temp != NULL)
+	if (temp != NULL)
 	{
-		char definition[128] = {0};
-        const char *firstComma = strstr(temp + strlen(elem) + 1, "\"");
-        const char *lastComma = strstr(firstComma + 1, "\"");
+		char definition[128] = { 0 };
+		const char *firstComma = strstr(temp + strlen(elem) + 1, "\"");
+		const char *lastComma = strstr(firstComma + 1, "\"");
 
 		int sz = lastComma - firstComma - 1;
 
@@ -172,34 +173,34 @@ QString GetNSErrorDefinition(const char *str, const char *elem)
 
 void _SaveBackupToFile()
 {
-	char saveStr[512] = {0};
-    char saveBuffer[4096] = {0};
-	char endStr[128] = {0};
+	char saveStr[512] = { 0 };
+	char saveBuffer[4096] = { 0 };
+	char endStr[128] = { 0 };
 
-	if(gMode == 0 || gMode == 1)
-    {
-		if(gMode == 1) 
-        {
-            strcpy(endStr, currentMask);
-		}
-		else 
+	if (gMode == 0 || gMode == 1)
+	{
+		if (gMode == 1)
 		{
-            sprintf(endStr, "%s-%s", currentIP, finalIP);
+			strcpy(endStr, currentMask);
+		}
+		else
+		{
+			sprintf(endStr, "%s-%s", currentIP, finalIP);
 		};
 
-        if(strlen(endStr) > 0)
+		if (strlen(endStr) > 0)
 		{
-            sprintf(saveStr, "[SESSION]:%d %s %s %d %s\n",
-                    gMode, endStr, gTLD, gThreads, gPorts);
+			sprintf(saveStr, "[SESSION]:%d %s %s %d %s\n",
+				gMode, endStr, gTLD, gThreads, gPorts);
 			strcat(saveBuffer, saveStr);
 			ZeroMemory(saveStr, sizeof(saveStr));
 		};
 	}
-	else if(gMode == -1)
-    {
-		char ipRange[128] = {0};
+	else if (gMode == -1)
+	{
+		char ipRange[128] = { 0 };
 
-		if(flCounter > 0)
+		if (flCounter > 0)
 		{
 			FILE *savingFile = fopen("tempIPLst.bk", "w");
 			if (savingFile != NULL)
@@ -210,105 +211,105 @@ void _SaveBackupToFile()
 				fputs(ipRange, savingFile);
 
 				ZeroMemory(ipRange, sizeof(ipRange));
-				for(int tCounter = gC + 1; tCounter < flCounter; ++tCounter)
-                {
-                    sprintf(ipRange, "%d.%d.%d.%d-%d.%d.%d.%d\n",
+				for (int tCounter = gC + 1; tCounter < flCounter; ++tCounter)
+				{
+					sprintf(ipRange, "%d.%d.%d.%d-%d.%d.%d.%d\n",
 						ipsstartfl[tCounter][0], ipsstartfl[tCounter][1], ipsstartfl[tCounter][2], ipsstartfl[tCounter][3],
 						ipsendfl[tCounter][0], ipsendfl[tCounter][1], ipsendfl[tCounter][2], ipsendfl[tCounter][3]);
 
 					fputs(ipRange, savingFile);
 
-                    ZeroMemory(ipRange, sizeof(ipRange));
+					ZeroMemory(ipRange, sizeof(ipRange));
 				};
 				fclose(savingFile);
 			}
 			else stt->doEmitionRedFoundData("[_saver] Cannot open file.");
 		};
 
-        sprintf(saveStr, "[SESSION]:%d RESTORE_IMPORT_SESSION %d %s\n", gMode, gThreads, gPorts);
+		sprintf(saveStr, "[SESSION]:%d RESTORE_IMPORT_SESSION %d %s\n", gMode, gThreads, gPorts);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
 	};
 
-        sprintf(saveStr, "[NDBSERVER]:%s\n", trcSrv);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[NDBSERVER]:%s\n", trcSrv);
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[NDBSCRIPT]:%s\n", trcScr);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[NDBSCRIPT]:%s\n", trcScr);
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[NDBPORT]:%s\n", trcSrvPortLine);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[NDBPORT]:%s\n", trcSrvPortLine);
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[PROXY]:%s\n", trcProxy);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[PROXY]:%s\n", trcProxy);
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[PROXYPORT]:%s\n", trcPort);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[PROXYPORT]:%s\n", trcPort);
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[PING]:%s\n", gPingNScan ? "true" : "false");
-        strcat(saveBuffer, saveStr);
-        ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[PING]:%s\n", gPingNScan ? "true" : "false");
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[SHUFFLE]:%s\n", gShuffle ? "true" : "false");
-        strcat(saveBuffer, saveStr);
-        ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[SHUFFLE]:%s\n", gShuffle ? "true" : "false");
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[NSTRACK]:%s\n", trackerOK ? "true" : "false");
-        strcat(saveBuffer, saveStr);
-        ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[NSTRACK]:%s\n", trackerOK ? "true" : "false");
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[PING_TO]: %d\n", gPingTimeout);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[PING_TO]: %d\n", gPingTimeout);
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[THREAD_DELAY]: %d\n", gThreadDelay);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[THREAD_DELAY]: %d\n", gThreadDelay);
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[TIMEOUT]: %d\n", gTimeOut);
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[TIMEOUT]: %d\n", gTimeOut);
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[MAXBTHR]: %d\n", gMaxBrutingThreads);
-        strcat(saveBuffer, saveStr);
-        ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[MAXBTHR]: %d\n", gMaxBrutingThreads);
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[SYSTEMPROXYIP]: %s\n", gProxyIP);
-        strcat(saveBuffer, saveStr);
-        ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[SYSTEMPROXYIP]: %s\n", gProxyIP);
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-        sprintf(saveStr, "[SYSTEMPROXYPORT]: %s\n", gProxyPort);
-        strcat(saveBuffer, saveStr);
-        ZeroMemory(saveStr, sizeof(saveStr));
+	sprintf(saveStr, "[SYSTEMPROXYPORT]: %s\n", gProxyPort);
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-		strcpy(saveStr, "[PERSKEY]:");
-        strncat(saveStr, trcPersKey, 32);
-		strcat(saveStr, "\n");
-		strcat(saveBuffer, saveStr);
-		ZeroMemory(saveStr, sizeof(saveStr));
-		
-		FILE *savingFile = fopen("restore", "w");
+	strcpy(saveStr, "[PERSKEY]:");
+	strncat(saveStr, trcPersKey, 32);
+	strcat(saveStr, "\n");
+	strcat(saveBuffer, saveStr);
+	ZeroMemory(saveStr, sizeof(saveStr));
 
-		if (savingFile != NULL)
-		{	
-			fputs(saveBuffer, savingFile);
-			fclose(savingFile);
-		}
-		else stt->doEmitionRedFoundData("[_saver] Cannot open file.");
+	FILE *savingFile = fopen("restore", "w");
 
-		ZeroMemory(saveStr, strlen(saveStr));
-		ZeroMemory(saveBuffer, strlen(saveBuffer));
+	if (savingFile != NULL)
+	{
+		fputs(saveBuffer, savingFile);
+		fclose(savingFile);
+	}
+	else stt->doEmitionRedFoundData("[_saver] Cannot open file.");
+
+	ZeroMemory(saveStr, strlen(saveStr));
+	ZeroMemory(saveBuffer, strlen(saveBuffer));
 }
 
-void _saver()	
+void _saver()
 {
-    Sleep(1000);
-	while(globalScanFlag)
+	Sleep(1000);
+	while (globalScanFlag)
 	{
 		__savingBackUpFile = true;
 		_SaveBackupToFile();
@@ -318,397 +319,397 @@ void _saver()
 }
 
 void _timer() {
-	char dbuffer[32] = {0}, timeLeft[64] = {0}, b[32] = {0};
+	char dbuffer[32] = { 0 }, timeLeft[64] = { 0 }, b[32] = { 0 };
 	int ticks = 0;
 	int ovrlIPs = 0;
 	ips = 1;
 	Sleep(50);
 
-	while(globalScanFlag)
+	while (globalScanFlag)
 	{
 		++ticks;
 		ovrlIPs += ipCounter;
 		ipCounter = 0;
-		ips = ovrlIPs/ticks;
+		ips = ovrlIPs / ticks;
 		strncpy(b, QString::number(ips).toLocal8Bit().data(), 5);
 
 		strcpy(metaIPS, b);
 		strcat(timeLeft, b);
 		strcat(timeLeft, "/s (");
 
-		if(ips > 0) 
+		if (ips > 0)
 		{
-			strncpy(dbuffer, std::to_string(((gTargets + 1)/ips/3600/24)).c_str(), 5);
+			strncpy(dbuffer, std::to_string(((gTargets + 1) / ips / 3600 / 24)).c_str(), 5);
 		}
 		else strcpy(dbuffer, "INF");
 		strcpy(metaETA, dbuffer);
 		strcat(dbuffer, "d)");
-		strcat(timeLeft,  (strcmp(dbuffer, "1.$d)") == 0 ? "INF)" : dbuffer));
+		strcat(timeLeft, (strcmp(dbuffer, "1.$d)") == 0 ? "INF)" : dbuffer));
 
 
-        stt->doEmitionIPS(QString(timeLeft));
+		stt->doEmitionIPS(QString(timeLeft));
 
 		ZeroMemory(timeLeft, sizeof(timeLeft));
 		ZeroMemory(dbuffer, sizeof(dbuffer));
 
-        Sleep(1000);
+		Sleep(1000);
 	};
 }
 
 void _tracker() {
-    while(true) {
-        while(!trackerOK) Sleep(1000);
+	while (true) {
+		while (!trackerOK) Sleep(1000);
 
-        if(!globalScanFlag && jsonArr->size() == 0) break;
-        char rBuffT[250000] = {0};
-        char *msg = new char[4096];
-        ZeroMemory(msg, sizeof(*msg));
-        char ndbServer[64] = {0};
-        char ndbScriptT[64] = {0};
-        char ndbScript[64] = {0};
+		if (!globalScanFlag && jsonArr->size() == 0) break;
+		char rBuffT[250000] = { 0 };
+		char *msg = new char[4096];
+		ZeroMemory(msg, sizeof(*msg));
+		char ndbServer[64] = { 0 };
+		char ndbScriptT[64] = { 0 };
+		char ndbScript[64] = { 0 };
 
-        sockaddr_in sockAddr;
-        sockAddr.sin_family = AF_INET;
-        sockAddr.sin_port = htons(atoi(trcSrvPortLine));
+		sockaddr_in sockAddr;
+		sockAddr.sin_family = AF_INET;
+		sockAddr.sin_port = htons(atoi(trcSrvPortLine));
 
-        strcpy(msg, "GET /");
-        strcat(msg, trcScr);
-        strcat(msg, " HTTP/1.1\r\nHost: ");
-        strcat(msg, trcSrv);
-        strcat(msg, "\r\nX-Nescav3: True\r\nContent-Type: application/x-www-form-urlencoded\r\nConnection: close\r\n\r\n");
+		strcpy(msg, "GET /");
+		strcat(msg, trcScr);
+		strcat(msg, " HTTP/1.1\r\nHost: ");
+		strcat(msg, trcSrv);
+		strcat(msg, "\r\nX-Nescav3: True\r\nContent-Type: application/x-www-form-urlencoded\r\nConnection: close\r\n\r\n");
 
-        HOSTENT *host;
+		HOSTENT *host;
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-        if(inet_addr(trcSrv) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(trcSrv);
-        else if(host=gethostbyname (trcSrv)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
+		if (inet_addr(trcSrv) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(trcSrv);
+		else if (host = gethostbyname(trcSrv)) ((unsigned long*)&sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 #else
-        if(inet_addr(trcSrv) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(trcSrv);
-        else if(host=gethostbyname (trcSrv)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
+		if(inet_addr(trcSrv) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(trcSrv);
+		else if(host=gethostbyname (trcSrv)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 #endif
-        SOCKET sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+		SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-        if(connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr)) == -1)
-        {
-            CSSOCKET(sock);
+		if (connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr)) == -1)
+		{
+			CSSOCKET(sock);
 
-            stt->doEmitionRedFoundData("[NS-Track] -Cannot connect to balancer! " + QString::number(WSAGetLastError()) + ".");
+			stt->doEmitionRedFoundData("[NS-Track] -Cannot connect to balancer! " + QString::number(WSAGetLastError()) + ".");
 
-            continue;
-        };
+			continue;
+		};
 
-        if(send(sock, msg, strlen(msg), 0) == -1)
-        {
-            CSSOCKET(sock);
+		if (send(sock, msg, strlen(msg), 0) == -1)
+		{
+			CSSOCKET(sock);
 
-            stt->doEmitionRedFoundData("[NS-Track] -Cannot send to balancer! " + QString::number(WSAGetLastError()) + ".");
+			stt->doEmitionRedFoundData("[NS-Track] -Cannot send to balancer! " + QString::number(WSAGetLastError()) + ".");
 
-            continue;
-        };
+			continue;
+		};
 
-        ZeroMemory(rBuffT, sizeof(rBuffT));
-        char rBuff[512] = {0};
-        int test = recv(sock, rBuff, sizeof(rBuff), 0);
-        strcpy(rBuffT, rBuff);
+		ZeroMemory(rBuffT, sizeof(rBuffT));
+		char rBuff[512] = { 0 };
+		int test = recv(sock, rBuff, sizeof(rBuff), 0);
+		strcpy(rBuffT, rBuff);
 
-        while((test = recv(sock, rBuff, sizeof(rBuff), 0)) != 0)
-        {
-            if(strlen(rBuffT) > 200000)
-            {
-                stt->doEmitionRedFoundData("[NS-Track] (Outer) -Large error received from server (>200000b) " + QString::number(WSAGetLastError()) + ".");
-                SaveErrorLog("NS-Track", msg, rBuffT);
-                break;
-            };
-            strcat(rBuffT, rBuff);
-        };
+		while ((test = recv(sock, rBuff, sizeof(rBuff), 0)) != 0)
+		{
+			if (strlen(rBuffT) > 200000)
+			{
+				stt->doEmitionRedFoundData("[NS-Track] (Outer) -Large error received from server (>200000b) " + QString::number(WSAGetLastError()) + ".");
+				SaveErrorLog("NS-Track", msg, rBuffT);
+				break;
+			};
+			strcat(rBuffT, rBuff);
+		};
 
-        if(test == -1)
-        {
-            CSSOCKET(sock);
+		if (test == -1)
+		{
+			CSSOCKET(sock);
 
-            stt->doEmitionRedFoundData("[NS-Track] -Cannot recv from balancer! " + QString::number(WSAGetLastError()) + ".");
+			stt->doEmitionRedFoundData("[NS-Track] -Cannot recv from balancer! " + QString::number(WSAGetLastError()) + ".");
 
-            continue;
-        };
+			continue;
+		};
 
-        char *t1;
-        char *t2;
-        if(strstr(rBuffT, "http://") != NULL)
-        {
-            t1 = strstr(rBuffT, "http://");
-            if(strstr((char*)(t1 + 7), "/") != NULL)
-            {
-                t2 = strstr((char*)(t1 + 7), "/");
-                int ln = t2 - t1 - 7;
-                if(ln > 64)
-                {
-                    CSSOCKET(sock);
+		char *t1;
+		char *t2;
+		if (strstr(rBuffT, "http://") != NULL)
+		{
+			t1 = strstr(rBuffT, "http://");
+			if (strstr((char*)(t1 + 7), "/") != NULL)
+			{
+				t2 = strstr((char*)(t1 + 7), "/");
+				int ln = t2 - t1 - 7;
+				if (ln > 64)
+				{
+					CSSOCKET(sock);
 
-                    stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
-                    SaveErrorLog("NS-Track", msg, rBuffT);
+					stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
+					SaveErrorLog("NS-Track", msg, rBuffT);
 
-                    continue;
-                }
-                else strncpy(ndbServer, (char*)(t1 + 7), ln);
+					continue;
+				}
+				else strncpy(ndbServer, (char*)(t1 + 7), ln);
 
-                if(strlen(t2) > 64)
-                {
+				if (strlen(t2) > 64)
+				{
 
-                    stt->doEmitionYellowFoundData("[NS-Track] -Fragmentation detected!");
+					stt->doEmitionYellowFoundData("[NS-Track] -Fragmentation detected!");
 
-                    if(strstr(t2, "\r\n") != NULL)
-                    {
-                        char *t3 = strstr(t2, "\r\n");
-                        int y = (int)(t3 - t2);
+					if (strstr(t2, "\r\n") != NULL)
+					{
+						char *t3 = strstr(t2, "\r\n");
+						int y = (int)(t3 - t2);
 
-                        if(y > 64)
-                        {
-                            CSSOCKET(sock);
+						if (y > 64)
+						{
+							CSSOCKET(sock);
 
-                            stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
+							stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
 
-                            SaveErrorLog("NS-Track", msg, rBuffT);
-                            continue;
-                        }
-                        else
-                        {
-                            strncpy(ndbScriptT, t2, y);
-                            CSSOCKET(sock);
+							SaveErrorLog("NS-Track", msg, rBuffT);
+							continue;
+						}
+						else
+						{
+							strncpy(ndbScriptT, t2, y);
+							CSSOCKET(sock);
 
-                            stt->doEmitionGreenFoundData("[NS-Track] -OK! -Fragmented server string aquired! Starting NS-Track loop...");
+							stt->doEmitionGreenFoundData("[NS-Track] -OK! -Fragmented server string aquired! Starting NS-Track loop...");
 
-                            strncpy(ndbScript, ndbScriptT, strlen(ndbScriptT) );
-                        };
-                    }
-                    else
-                    {
-                        CSSOCKET(sock);
+							strncpy(ndbScript, ndbScriptT, strlen(ndbScriptT));
+						};
+					}
+					else
+					{
+						CSSOCKET(sock);
 
-                        stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
+						stt->doEmitionRedFoundData("[NS-Track] -Received server string is not valid!");
 
-                        SaveErrorLog("NS-Track", msg, rBuffT);
-                        continue;
-                    };
-                }
-                else
-                {
-                    strcpy(ndbScriptT, t2);
+						SaveErrorLog("NS-Track", msg, rBuffT);
+						continue;
+					};
+				}
+				else
+				{
+					strcpy(ndbScriptT, t2);
 
-                    stt->doEmitionGreenFoundData("[NS-Track] -OK! -Server string aquired! Starting NS-Track loop...");
+					stt->doEmitionGreenFoundData("[NS-Track] -OK! -Server string aquired! Starting NS-Track loop...");
 
-                    CSSOCKET(sock);
-                    strncpy(ndbScript, ndbScriptT, strlen(ndbScriptT) - 2 );
-                };
-            }
-            else
-            {
-                CSSOCKET(sock);
+					CSSOCKET(sock);
+					strncpy(ndbScript, ndbScriptT, strlen(ndbScriptT) - 2);
+				};
+			}
+			else
+			{
+				CSSOCKET(sock);
 
-                stt->doEmitionRedFoundData("[NS-Track] -Cannot receive script value!");
+				stt->doEmitionRedFoundData("[NS-Track] -Cannot receive script value!");
 
-                continue;
-            };
+				continue;
+			};
 
-            ZeroMemory(rBuffT, sizeof(rBuffT));
-            CSSOCKET(sock);
+			ZeroMemory(rBuffT, sizeof(rBuffT));
+			CSSOCKET(sock);
 
-            while(true)
-            {
-                if(!globalScanFlag && jsonArr->size() == 0) break;
-                if(!trackerOK) {
-                    Sleep(1000);
-                    continue;
-                };
+			while (true)
+			{
+				if (!globalScanFlag && jsonArr->size() == 0) break;
+				if (!trackerOK) {
+					Sleep(1000);
+					continue;
+				};
 
-                if(jsonArr->size() > 0)
-                {
-                    QJsonObject jsonKey;
-                    if(jsonArr == NULL) jsonArr = new QJsonArray();
+				if (jsonArr->size() > 0)
+				{
+					QJsonObject jsonKey;
+					if (jsonArr == NULL) jsonArr = new QJsonArray();
 
-                    QJsonObject jsonMeta;
-                    if(gMode == 0) jsonMeta.insert("mode", QJsonValue(QString("IP")));					//
+					QJsonObject jsonMeta;
+					if (gMode == 0) jsonMeta.insert("mode", QJsonValue(QString("IP")));					//
 					else if (gMode == 1) jsonMeta.insert("mode", QJsonValue(QString("DNS")));			//Mode
 					else if (gMode == -1) jsonMeta.insert("mode", QJsonValue(QString("Import")));		//
-                    jsonMeta.insert("range", QJsonValue(QString(metaRange)) );
-                    jsonMeta.insert("current", QJsonValue(QString(currentIP)) );
+					jsonMeta.insert("range", QJsonValue(QString(metaRange)));
+					jsonMeta.insert("current", QJsonValue(QString(currentIP)));
 					if (gMode == 1) jsonMeta.insert("tld", QJsonValue(QString(gTLD)));					//TLD
-                    jsonMeta.insert("targets", QJsonValue(QString(metaTargets)) );
-                    jsonMeta.insert("percent", QJsonValue(QString(metaPercent)) );
-                    jsonMeta.insert("saved", QJsonValue(QString::number(saved)) );
-                    jsonMeta.insert("found", QJsonValue(QString::number(found)) );
-                    jsonMeta.insert("speed", QJsonValue(QString(metaIPS)) );
-                    jsonMeta.insert("eta", QJsonValue(QString(metaETA)) );
-                    jsonMeta.insert("threads", QJsonValue(QString::number(cons) + "/" + QString::number(gThreads)) );
-                    jsonMeta.insert("bads", QJsonValue(QString::number(offlines)) );
-                    jsonMeta.insert("version", QJsonValue(QString(gVER)) );
+					jsonMeta.insert("targets", QJsonValue(QString(metaTargets)));
+					jsonMeta.insert("percent", QJsonValue(QString(metaPercent)));
+					jsonMeta.insert("saved", QJsonValue(QString::number(saved)));
+					jsonMeta.insert("found", QJsonValue(QString::number(found)));
+					jsonMeta.insert("speed", QJsonValue(QString(metaIPS)));
+					jsonMeta.insert("eta", QJsonValue(QString(metaETA)));
+					jsonMeta.insert("threads", QJsonValue(QString::number(cons) + "/" + QString::number(gThreads)));
+					jsonMeta.insert("bads", QJsonValue(QString::number(offlines)));
+					jsonMeta.insert("version", QJsonValue(QString(gVER)));
 
-                    jsonArr->push_front(QJsonValue(jsonMeta) );
-                    memset(trcPersKey + 32, '\0', 1);
-                    jsonKey.insert("key", QJsonValue(QString(trcPersKey)) );
-                    jsonArr->push_front(jsonKey);
+					jsonArr->push_front(QJsonValue(jsonMeta));
+					memset(trcPersKey + 32, '\0', 1);
+					jsonKey.insert("key", QJsonValue(QString(trcPersKey)));
+					jsonArr->push_front(jsonKey);
 
-                    QJsonDocument js;
-                    js.setArray(*jsonArr);
-                    QByteArray r = js.toJson();
+					QJsonDocument js;
+					js.setArray(*jsonArr);
+					QByteArray r = js.toJson();
 
-                    sockAddr.sin_family = AF_INET;
-                    sockAddr.sin_port = htons(atoi(trcSrvPortLine));
+					sockAddr.sin_family = AF_INET;
+					sockAddr.sin_port = htons(atoi(trcSrvPortLine));
 
-                    if(msg != NULL)
-                    {
-                        delete []msg;
-                        msg = 0;
-                    };
+					if (msg != NULL)
+					{
+						delete[]msg;
+						msg = 0;
+					};
 
-                    msg = new char[r.size() + 1024];
-                    ZeroMemory(msg, sizeof(*msg));
+					msg = new char[r.size() + 1024];
+					ZeroMemory(msg, sizeof(*msg));
 
-                    strcpy(msg, "POST /");
-                    strcat(msg, ndbScript);
-                    strcat(msg, " HTTP/1.1\r\nHost: ");
-                    strcat(msg, ndbServer);
-                    strcat(msg, "\r\nContent-Type: application/json\r\nAccept-Encoding: application/json\r\nContent-Length: ");
-                    strcat(msg, std::to_string(r.size()).c_str());
-                    strcat(msg, "\r\nConnection: close\r\n\r\n");
+					strcpy(msg, "POST /");
+					strcat(msg, ndbScript);
+					strcat(msg, " HTTP/1.1\r\nHost: ");
+					strcat(msg, ndbServer);
+					strcat(msg, "\r\nContent-Type: application/json\r\nAccept-Encoding: application/json\r\nContent-Length: ");
+					strcat(msg, std::to_string(r.size()).c_str());
+					strcat(msg, "\r\nConnection: close\r\n\r\n");
 
-                    strcat(msg, r.data());
+					strcat(msg, r.data());
 
-                    delete jsonArr;
-                    jsonArr = new QJsonArray();
+					delete jsonArr;
+					jsonArr = new QJsonArray();
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-                    if(inet_addr(ndbServer) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ndbServer);
-                    else if(host=gethostbyname (ndbServer)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
+					if (inet_addr(ndbServer) != INADDR_NONE) sockAddr.sin_addr.S_un.S_addr = inet_addr(ndbServer);
+					else if (host = gethostbyname(ndbServer)) ((unsigned long*)&sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 #else
-                    if(inet_addr(ndbServer) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ndbServer);
-                    else if(host=gethostbyname (ndbServer)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
+					if(inet_addr(ndbServer) != INADDR_NONE) sockAddr.sin_addr.s_addr = inet_addr(ndbServer);
+					else if(host=gethostbyname (ndbServer)) ((unsigned long*) &sockAddr.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 #endif
-                    sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+					sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-                    if(gDebugMode)
-                    {
-                        stt->doEmitionDebugFoundData("Connecting to " + QString(ndbServer));
-                    };
+					if (gDebugMode)
+					{
+						stt->doEmitionDebugFoundData("Connecting to " + QString(ndbServer));
+					};
 
-                    if(connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr)) == -1)
-                    {
-                        CSSOCKET(sock);
+					if (connect(sock, (sockaddr*)&sockAddr, sizeof(sockAddr)) == -1)
+					{
+						CSSOCKET(sock);
 
 
-                        stt->doEmitionRedFoundData("[NS-Track] -connect() returned " + QString::number(WSAGetLastError()) + ".");
+						stt->doEmitionRedFoundData("[NS-Track] -connect() returned " + QString::number(WSAGetLastError()) + ".");
 
-                        continue;
-                    };
+						continue;
+					};
 
-                    if(gDebugMode)
-                    {
-                        stt->doEmitionDebugFoundData("Sending!");
-                        stt->doEmitionDebugFoundData("Key: [" + QString(trcPersKey) + "]");
-                        stt->doEmitionDebugFoundData("MSG: [" + QString(msg) + "]");
-                    };
+					if (gDebugMode)
+					{
+						stt->doEmitionDebugFoundData("Sending!");
+						stt->doEmitionDebugFoundData("Key: [" + QString(trcPersKey) + "]");
+						stt->doEmitionDebugFoundData("MSG: [" + QString(msg) + "]");
+					};
 
-                    if(send(sock, msg, strlen(msg), 0) == -1)
-                    {
-                        CSSOCKET(sock);
+					if (send(sock, msg, strlen(msg), 0) == -1)
+					{
+						CSSOCKET(sock);
 
-                        stt->doEmitionRedFoundData("[NS-Track] -send() returned " + QString::number(WSAGetLastError()) + ".");
+						stt->doEmitionRedFoundData("[NS-Track] -send() returned " + QString::number(WSAGetLastError()) + ".");
 
-                        SaveErrorLog("NS-Track", msg, "");
-                        continue;
-                    };
+						SaveErrorLog("NS-Track", msg, "");
+						continue;
+					};
 
-                    ZeroMemory(rBuffT, sizeof(rBuffT));
-                    char msgR[32] = {0};
+					ZeroMemory(rBuffT, sizeof(rBuffT));
+					char msgR[32] = { 0 };
 
-                    if(gDebugMode)
-                    {
-                        stt->doEmitionDebugFoundData("Receiving...");
-                    };
+					if (gDebugMode)
+					{
+						stt->doEmitionDebugFoundData("Receiving...");
+					};
 
-                    test = recv(sock, rBuff, 512, 0);
+					test = recv(sock, rBuff, 512, 0);
 
-                    if(gDebugMode)
-                    {
-                        stt->doEmitionDebugFoundData("Received: " + QString(rBuff));
-                    };
+					if (gDebugMode)
+					{
+						stt->doEmitionDebugFoundData("Received: " + QString(rBuff));
+					};
 
-                    strncpy(msgR, rBuff, 32);
-                    strcpy(rBuffT, rBuff);
-                    while(test > 0)
-                    {
-                        if(test <= 0) break;
+					strncpy(msgR, rBuff, 32);
+					strcpy(rBuffT, rBuff);
+					while (test > 0)
+					{
+						if (test <= 0) break;
 
-                        if(strlen(rBuffT) > 200000)
-                        {
-                            stt->doEmitionRedFoundData("[NS-Track] (Inner) -Large error received from server (>200000b) " + QString::number(WSAGetLastError()) + ".");
-                            SaveErrorLog("NS-Track", msg, rBuffT);
-                            break;
-                        };
-                        strcat(rBuffT, rBuff);
-                        test = recv(sock, rBuff, 512, 0);
-                        if(gDebugMode)
-                        {
-                            stt->doEmitionDebugFoundData("Received: " + QString(rBuff));
-                        };
-                    };
+						if (strlen(rBuffT) > 200000)
+						{
+							stt->doEmitionRedFoundData("[NS-Track] (Inner) -Large error received from server (>200000b) " + QString::number(WSAGetLastError()) + ".");
+							SaveErrorLog("NS-Track", msg, rBuffT);
+							break;
+						};
+						strcat(rBuffT, rBuff);
+						test = recv(sock, rBuff, 512, 0);
+						if (gDebugMode)
+						{
+							stt->doEmitionDebugFoundData("Received: " + QString(rBuff));
+						};
+					};
 
-                    if(test == -1)
-                    {
-                        CSSOCKET(sock);
+					if (test == -1)
+					{
+						CSSOCKET(sock);
 
-                        stt->doEmitionRedFoundData("[NS-Track] -recv() returned " + QString::number(WSAGetLastError()) + ".");
+						stt->doEmitionRedFoundData("[NS-Track] -recv() returned " + QString::number(WSAGetLastError()) + ".");
 
-                        SaveErrorLog("NS-Track", msg, "");
-                        continue;
-                    };
+						SaveErrorLog("NS-Track", msg, "");
+						continue;
+					};
 
-                    if(strstr(rBuffT, "201 Created") != NULL)
-                    {
+					if (strstr(rBuffT, "201 Created") != NULL)
+					{
 
-                        if(gDebugMode) stt->doEmitionYellowFoundData("[NS-Track] -OK. Data saved!");
-                        stt->doEmitionDataSaved(true);
-                        Sleep(1000);
-                        stt->doEmitionDataSaved(false);
+						if (gDebugMode) stt->doEmitionYellowFoundData("[NS-Track] -OK. Data saved!");
+						stt->doEmitionDataSaved(true);
+						Sleep(1000);
+						stt->doEmitionDataSaved(false);
 
-                    }
-                    else if(strstr(rBuffT, "400 Bad Request") != NULL)
-                    {
+					}
+					else if (strstr(rBuffT, "400 Bad Request") != NULL)
+					{
 
-                        QString errorDef = GetNSErrorDefinition(rBuffT, "notify");
-                        if(errorDef == "Invalid access key") stt->doEmitionYellowFoundData("[NS-Track] [Key is unauthorized] A valid key is required.");
-                        else stt->doEmitionYellowFoundData("[NS-Track] -FAIL! [400 Bad Request : " + errorDef + "]");
+						QString errorDef = GetNSErrorDefinition(rBuffT, "notify");
+						if (errorDef == "Invalid access key") stt->doEmitionYellowFoundData("[NS-Track] [Key is unauthorized] A valid key is required.");
+						else stt->doEmitionYellowFoundData("[NS-Track] -FAIL! [400 Bad Request : " + errorDef + "]");
 
-                        SaveErrorLog("NS-Track", msg, rBuffT);
-                    }
-                    else
-                    {
-                        stt->doEmitionYellowFoundData("[NS-Track] -FAIL! An error occured [" + QString(msgR) + "]");
-                        SaveErrorLog("NS-Track", msg, rBuffT);
-                    };
+						SaveErrorLog("NS-Track", msg, rBuffT);
+					}
+					else
+					{
+						stt->doEmitionYellowFoundData("[NS-Track] -FAIL! An error occured [" + QString(msgR) + "]");
+						SaveErrorLog("NS-Track", msg, rBuffT);
+					};
 
-                    ZeroMemory(msgR, sizeof(msgR));
-                    ZeroMemory(rBuffT, sizeof(rBuffT));
-                    ZeroMemory(msg, sizeof(*msg));
+					ZeroMemory(msgR, sizeof(msgR));
+					ZeroMemory(rBuffT, sizeof(rBuffT));
+					ZeroMemory(msg, sizeof(*msg));
 
-                    if(msg != NULL)
-                    {
-                        delete msg;
-                        msg = NULL;
-                    };
+					if (msg != NULL)
+					{
+						delete msg;
+						msg = NULL;
+					};
 
-                    CSSOCKET(sock);
-                };
-                Sleep(10000);
-            };
-        }
-        else
-        {
-            stt->doEmitionRedFoundData("[NS-Track] -Balancer replied with invalid string.");
-            SaveErrorLog("NS-Track", msg, rBuffT);
-        };
+					CSSOCKET(sock);
+				};
+				Sleep(10000);
+			};
+		}
+		else
+		{
+			stt->doEmitionRedFoundData("[NS-Track] -Balancer replied with invalid string.");
+			SaveErrorLog("NS-Track", msg, rBuffT);
+		};
 
-        CSSOCKET(sock);
-    }
+		CSSOCKET(sock);
+	}
 }
 
 unsigned long int numOfIps(int ipsstart[], int ipsend[]) {
@@ -716,7 +717,7 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[]) {
 	gTargets += 65536 * (ipsend[1] - ipsstart[1]);
 	gTargets += 256 * (ipsend[2] - ipsstart[2]);
 	gTargets += (ipsend[3] - ipsstart[3]);
-	gTargetsOverall = gTargets - 1;
+	gTargetsOverall = gTargets;
 
 	//unsigned long ip1 = (ipsstart[0] * 16777216) + (ipsstart[1] * 65536) + (ipsstart[2] * 256) + ipsstart[3];
 	//unsigned long ip2 = (ipsend[0] * 16777216) + (ipsend[1] * 65536) + (ipsend[2] * 256) + ipsend[3];
@@ -727,56 +728,56 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[]) {
 
 void verboseProgress(unsigned long target) {
 
-    stt->doEmitionIPRANGE(QString(currentIP));
+	stt->doEmitionIPRANGE(QString(currentIP));
 
-    char targetNPers[128] = {0};
-    float percent = (gTargetsOverall != 0 ? (100 - target/(double)gTargetsOverall * 100) : 0);
+	char targetNPers[128] = { 0 };
+	float percent = (gTargetsOverall != 0 ? (100 - target / (double)gTargetsOverall * 100) : 0);
 
-    sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
-    stt->doEmitionTargetsLeft(QString(targetNPers));
+	sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
+	stt->doEmitionTargetsLeft(QString(targetNPers));
 
-    sprintf(metaTargets, "%Lu", target);
-    sprintf(metaPercent, "%.1f",
-            percent);
+	sprintf(metaTargets, "%Lu", target);
+	sprintf(metaPercent, "%.1f",
+		percent);
 }
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-unsigned char* ASCIItoUNICODE (unsigned char ch)
+unsigned char* ASCIItoUNICODE(unsigned char ch)
 {
-    unsigned char Val[2];
-    if ((ch < 192)&&(ch != 168)&&(ch != 184))  {Val[0] = 0; Val[1] = ch;    return Val;}
-    if (ch == 168) {Val[0] = 208;   Val[1] = 129;   return Val;}
-    if (ch == 184) {Val[0] = 209;   Val[1] = 145;   return Val;}
-    if (ch < 240)  {Val[0] = 208;   Val[1] = ch-48; return Val;}
-    if (ch < 249)  {Val[0] = 209;   Val[1] = ch-112;        return Val;}
+	unsigned char Val[2];
+	if ((ch < 192) && (ch != 168) && (ch != 184))  { Val[0] = 0; Val[1] = ch;    return Val; }
+	if (ch == 168) { Val[0] = 208;   Val[1] = 129;   return Val; }
+	if (ch == 184) { Val[0] = 209;   Val[1] = 145;   return Val; }
+	if (ch < 240)  { Val[0] = 208;   Val[1] = ch - 48; return Val; }
+	if (ch < 249)  { Val[0] = 209;   Val[1] = ch - 112;        return Val; }
 }
 #endif
 
 std::string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage) {
-    std::string res;
+	std::string res;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-    int wsize = MultiByteToWideChar(srcCodePage, 0, src, -1, 0, 0);
-    LPWSTR wbuf = (LPWSTR)new char[wsize * sizeof(WCHAR)];
-    MultiByteToWideChar(srcCodePage, 0, src, -1, wbuf, wsize);
-    int size = WideCharToMultiByte(dstCodePage, 0, wbuf, -1, 0, 0, 0, 0);
-    char * buf = (char *)new char[size];
-    WideCharToMultiByte(dstCodePage, 0, wbuf, -1, buf, size, 0, 0);
-    delete wbuf;
+	int wsize = MultiByteToWideChar(srcCodePage, 0, src, -1, 0, 0);
+	LPWSTR wbuf = (LPWSTR)new char[wsize * sizeof(WCHAR)];
+	MultiByteToWideChar(srcCodePage, 0, src, -1, wbuf, wsize);
+	int size = WideCharToMultiByte(dstCodePage, 0, wbuf, -1, 0, 0, 0, 0);
+	char * buf = (char *)new char[size];
+	WideCharToMultiByte(dstCodePage, 0, wbuf, -1, buf, size, 0, 0);
+	delete wbuf;
 
 	res.append(buf);
-    delete buf;
+	delete buf;
 #else
-    unsigned int size = 0;
-    while (src[size++]!=0);
-    char * buf = (char *)new char[size];
-    unsigned char uni[16] = {0};
+	unsigned int size = 0;
+	while (src[size++]!=0);
+	char * buf = (char *)new char[size];
+	unsigned char uni[16] = {0};
 
-    size=0;
-    while (src[size]!=0)
-    {
+	size=0;
+	while (src[size]!=0)
+	{
 
-    };
-    delete buf;
+	};
+	delete buf;
 #endif
 	return res;
 }
@@ -787,10 +788,10 @@ void CheckMaskBits(char *res, int index) {
 	int finalBit = 1;
 	int bitCounter = 0;
 
-	if(bitsNum <= 32 && bitsNum > 24) //4 octet
+	if (bitsNum <= 32 && bitsNum > 24) //4 octet
 	{
 		bitCounter = 32 - bitsNum;
-		for(int i = 0; i < bitCounter; i++) finalBit *= 2;
+		for (int i = 0; i < bitCounter; i++) finalBit *= 2;
 		ipsstartfl[index][0] = ipsendfl[index][0] = octet[0];
 		ipsstartfl[index][1] = ipsendfl[index][1] = octet[1];
 		ipsstartfl[index][2] = ipsendfl[index][2] = octet[2];
@@ -798,10 +799,10 @@ void CheckMaskBits(char *res, int index) {
 		ipsendfl[index][3] = octet[3] + finalBit - 1;
 
 	}
-	else if(bitsNum <= 24 && bitsNum > 16) //3 octet
+	else if (bitsNum <= 24 && bitsNum > 16) //3 octet
 	{
 		bitCounter = 24 - bitsNum;
-		for(int i = 0; i < bitCounter; i++) finalBit *= 2;
+		for (int i = 0; i < bitCounter; i++) finalBit *= 2;
 		ipsstartfl[index][0] = ipsendfl[index][0] = octet[0];
 		ipsstartfl[index][1] = ipsendfl[index][1] = octet[1];
 		ipsstartfl[index][2] = octet[2];
@@ -809,45 +810,45 @@ void CheckMaskBits(char *res, int index) {
 		ipsstartfl[index][3] = octet[3];
 		ipsendfl[index][3] = 255;
 	}
-	else if(bitsNum <= 16 && bitsNum > 8) //2 octet
+	else if (bitsNum <= 16 && bitsNum > 8) //2 octet
 	{
 		bitCounter = 16 - bitsNum;
-		for(int i = 0; i < bitCounter; i++) finalBit *= 2;
+		for (int i = 0; i < bitCounter; i++) finalBit *= 2;
 		ipsstartfl[index][0] = ipsendfl[index][0] = octet[0];
 		ipsstartfl[index][1] = octet[1];
 		ipsendfl[index][1] = octet[1] + finalBit - 1;
 		ipsstartfl[index][2] = octet[2];
-		ipsendfl[index][2] = 255;		
+		ipsendfl[index][2] = 255;
 		ipsstartfl[index][3] = octet[3];
 		ipsendfl[index][3] = 255;
 
 	}
-	else if(bitsNum <= 8 && bitsNum > 0) //1 octet
+	else if (bitsNum <= 8 && bitsNum > 0) //1 octet
 	{
 		bitCounter = 8 - bitsNum;
-		for(int i = 0; i < bitCounter; i++) finalBit *= 2;
+		for (int i = 0; i < bitCounter; i++) finalBit *= 2;
 		ipsstartfl[index][0] = octet[0];
 		ipsendfl[index][0] = octet[0] + finalBit - 1;
 		ipsstartfl[index][1] = octet[1];
 		ipsendfl[index][1] = 255;
 		ipsstartfl[index][2] = octet[2];
-		ipsendfl[index][2] = 255;		
+		ipsendfl[index][2] = 255;
 		ipsstartfl[index][3] = octet[3];
 		ipsendfl[index][3] = 255;
 	}
 	else
 	{
-        stt->doEmitionRedFoundData("[CheckMaskBits] Cannot parse IP list");
-        stt->doEmitionKillSttThread();
+		stt->doEmitionRedFoundData("[CheckMaskBits] Cannot parse IP list");
+		stt->doEmitionKillSttThread();
 	};
 }
 
 void GetOctets(char *curIP) {
 	char *str1;
 	char *str2;
-	char temp[8] = {0};
+	char temp[8] = { 0 };
 
-	if(strstr(curIP, ".") != NULL) 
+	if (strstr(curIP, ".") != NULL)
 	{
 		str1 = strstr(curIP, "."); //1
 		strncpy(temp, curIP, str1 - curIP);
@@ -867,7 +868,7 @@ void GetOctets(char *curIP) {
 		return;
 	};
 
-	if(strstr(str1 + 1, ".") != NULL)
+	if (strstr(str1 + 1, ".") != NULL)
 	{
 		str2 = strstr(str1 + 1, "."); //2
 		strncpy(temp, str1 + 1, str2 - str1);
@@ -876,7 +877,7 @@ void GetOctets(char *curIP) {
 		ZeroMemory(temp, sizeof(temp));
 	}
 	else
-	{		
+	{
 		str2 = strstr(str1 + 1, "/");
 		strncpy(temp, str1 + 1, str2 - str1);
 
@@ -886,7 +887,7 @@ void GetOctets(char *curIP) {
 		return;
 	};
 
-	if(strstr(str2 + 1, ".") != NULL) 
+	if (strstr(str2 + 1, ".") != NULL)
 	{
 		str1 = strstr(str2 + 1, "."); //3
 		strncpy(temp, str2 + 1, str1 - str2);
@@ -904,7 +905,7 @@ void GetOctets(char *curIP) {
 		return;
 	};
 
-	if(strstr(str1 + 1, ".") != NULL) 
+	if (strstr(str1 + 1, ".") != NULL)
 	{
 		str2 = strstr(str1 + 1, "."); //4
 		strncpy(temp, str1 + 1, str2 - str1);
@@ -923,15 +924,15 @@ void GetOctets(char *curIP) {
 }
 
 void FileLoader(char *str) {
-    char curIP[256] = {0}, curIPCopy[256] = {0};
+	char curIP[256] = { 0 }, curIPCopy[256] = { 0 };
 	unsigned int importFileSize = 0;
 
 	FILE *fl = fopen(str, "r");
-	if(fl != NULL)
+	if (fl != NULL)
 	{
-		while(fgets((char*)curIP, sizeof(curIP), fl) != NULL)
+		while (fgets((char*)curIP, sizeof(curIP), fl) != NULL)
 		{
-			if(curIP[0] != '#' && curIP[0] != ' ' && curIP[0] != '\n' && curIP[0] != '\r' && strcmp(curIP, "") != 0 && 
+			if (curIP[0] != '#' && curIP[0] != ' ' && curIP[0] != '\n' && curIP[0] != '\r' && strcmp(curIP, "") != 0 &&
 				((curIP[0] == '/' && curIP[1] == '/') == false) && ((curIP[0] == '\t' && curIP[1] == '\t' && curIP[2] == '\t' && (curIP[3] == 13 || curIP[3] == 10 || curIP[3] == '#')) == false)
 				&& (curIP[0] == '\t' && curIP[1] == '\t' && curIP[2] == '\t' && (curIP[3] == '/' && curIP[4] == '/')) == false)
 			{
@@ -946,12 +947,12 @@ void FileLoader(char *str) {
 		ZeroMemory(ipsstartfl, importFileSize);
 		ZeroMemory(ipsendfl, importFileSize);
 		ZeroMemory(starterIP, importFileSize);
-		for(int i = 0; i < importFileSize; ++i)
+		for (int i = 0; i < importFileSize; ++i)
 		{
 			ipsstartfl[i] = new unsigned char[4];
 			ipsendfl[i] = new unsigned char[4];
 			starterIP[i] = new unsigned char[4];
-			
+
 			ZeroMemory(ipsstartfl[i], 4);
 			ZeroMemory(ipsendfl[i], 4);
 			ZeroMemory(starterIP[i], 4);
@@ -959,39 +960,39 @@ void FileLoader(char *str) {
 
 		rewind(fl);
 
-		while(fgets(curIP, 256, fl) != NULL)
+		while (fgets(curIP, 256, fl) != NULL)
 		{
-			if(curIP[0] != '#' && curIP[0] != ' ' && curIP[0] != '\n' && curIP[0] != '\r' && strcmp(curIP, "") != 0 && 
+			if (curIP[0] != '#' && curIP[0] != ' ' && curIP[0] != '\n' && curIP[0] != '\r' && strcmp(curIP, "") != 0 &&
 				((curIP[0] == '/' && curIP[1] == '/') == false) && ((curIP[0] == '\t' && curIP[1] == '\t' && curIP[2] == '\t' && (curIP[3] == 13 || curIP[3] == 10 || curIP[3] == '#')) == false)
 				&& (curIP[0] == '\t' && curIP[1] == '\t' && curIP[2] == '\t' && (curIP[3] == '/' && curIP[4] == '/')) == false)
 			{
 				strcpy(curIPCopy, curIP);
 				char *ptr1 = strstr(curIP, " ");
-				if(ptr1 != NULL) curIP[(int)(ptr1 - curIP)] = '\0';
+				if (ptr1 != NULL) curIP[(int)(ptr1 - curIP)] = '\0';
 				ptr1 = strstr(curIP, "	");
-				if(ptr1 != NULL) curIP[(int)(ptr1 - curIP) - 1] = '\0';
+				if (ptr1 != NULL) curIP[(int)(ptr1 - curIP) - 1] = '\0';
 				ptr1 = strstr(curIP, "#");
-				if(ptr1 != NULL) curIP[(int)(ptr1 - curIP) - 1] = '\0';
-				if(strcmp(curIP, "") == 0 || strcmp(curIP, " ") == 0 || strcmp(curIP, "\r\n") == 0 || strcmp(curIP, "\n") == 0 || curIP[0] == ' ' || curIP[0] == '#') 
+				if (ptr1 != NULL) curIP[(int)(ptr1 - curIP) - 1] = '\0';
+				if (strcmp(curIP, "") == 0 || strcmp(curIP, " ") == 0 || strcmp(curIP, "\r\n") == 0 || strcmp(curIP, "\n") == 0 || curIP[0] == ' ' || curIP[0] == '#')
 				{
 					ZeroMemory(curIPCopy, sizeof(curIPCopy));
 					ZeroMemory(curIP, sizeof(curIP));
 					continue;
 				};
 
-				if(strstr(curIP, "-") != NULL)
+				if (strstr(curIP, "-") != NULL)
 				{
 					bool firstPart = true;
 					int offset = 0;
 					int curNIndex = 0;
 					char curS;
-					char curN[32] = {0};
-					for(int i = 0; i < strlen(curIP); ++i)
+					char curN[32] = { 0 };
+					for (int i = 0; i < strlen(curIP); ++i)
 					{
 						curS = curIP[i];
-						if(curS == '.') 
+						if (curS == '.')
 						{
-							if(firstPart) 
+							if (firstPart)
 							{
 								starterIP[flCounter][offset] = atoi(curN);
 								ipsstartfl[flCounter][offset] = atoi(curN);
@@ -1002,9 +1003,9 @@ void FileLoader(char *str) {
 							ZeroMemory(curN, 32);
 							continue;
 						}
-						else if(curS == '-') 
+						else if (curS == '-')
 						{
-							if(firstPart) 
+							if (firstPart)
 							{
 								starterIP[flCounter][offset] = atoi(curN);
 								ipsstartfl[flCounter][offset] = atoi(curN);
@@ -1017,28 +1018,28 @@ void FileLoader(char *str) {
 							continue;
 						};
 						curN[curNIndex++] = curS;
-						if(i == strlen(curIP) - 1)
+						if (i == strlen(curIP) - 1)
 						{
 							ipsendfl[flCounter][offset] = atoi(curN);
 						};
 					};
 
-					if(ipsstartfl[flCounter][0] > ipsendfl[flCounter][0]
-					|| (ipsstartfl[flCounter][0] >= ipsendfl[flCounter][0] 
+					if (ipsstartfl[flCounter][0] > ipsendfl[flCounter][0]
+						|| (ipsstartfl[flCounter][0] >= ipsendfl[flCounter][0]
 						&& ipsstartfl[flCounter][1] > ipsendfl[flCounter][1]
 						)
-					|| (ipsstartfl[flCounter][0] >= ipsendfl[flCounter][0] 
+						|| (ipsstartfl[flCounter][0] >= ipsendfl[flCounter][0]
 						&& ipsstartfl[flCounter][1] >= ipsendfl[flCounter][1]
 						&& ipsstartfl[flCounter][2] > ipsendfl[flCounter][2]
 						)
-					|| (ipsstartfl[flCounter][0] >= ipsendfl[flCounter][0] 
+						|| (ipsstartfl[flCounter][0] >= ipsendfl[flCounter][0]
 						&& ipsstartfl[flCounter][1] >= ipsendfl[flCounter][1]
 						&& ipsstartfl[flCounter][2] >= ipsendfl[flCounter][2]
 						&& ipsstartfl[flCounter][3] > ipsendfl[flCounter][3]
 						)
-					)
+						)
 					{
-						char tempMsg[256] = {0};
+						char tempMsg[256] = { 0 };
 						strcpy(tempMsg, "[IP Loader]Wrong list format. Line-> [");
 						strcat(tempMsg, std::to_string(flCounter).c_str());
 						strcat(tempMsg, "] String-> [");
@@ -1048,14 +1049,14 @@ void FileLoader(char *str) {
 						return;
 					};
 
-					gTargets += 256*256*256*(ipsendfl[flCounter][0] - ipsstartfl[flCounter][0]);
-					gTargets += 256*256*(ipsendfl[flCounter][1] - ipsstartfl[flCounter][1]);
-					gTargets += 256*(ipsendfl[flCounter][2] - ipsstartfl[flCounter][2]);
+					gTargets += 256 * 256 * 256 * (ipsendfl[flCounter][0] - ipsstartfl[flCounter][0]);
+					gTargets += 256 * 256 * (ipsendfl[flCounter][1] - ipsstartfl[flCounter][1]);
+					gTargets += 256 * (ipsendfl[flCounter][2] - ipsstartfl[flCounter][2]);
 					gTargets += (ipsendfl[flCounter][3] - ipsstartfl[flCounter][3]);
 					++flCounter;
 				}
-				else if(strstr(curIP, "/") != NULL)
-                {
+				else if (strstr(curIP, "/") != NULL)
+				{
 					int mask = 0;
 					char *ptr1 = strstr(curIP, "/");
 					GetOctets(curIP);
@@ -1067,23 +1068,23 @@ void FileLoader(char *str) {
 					mOctet[2] = 1;
 					mOctet[3] = 1;
 
-					if(mask >= 24)
+					if (mask >= 24)
 					{
 						mOctet[0] = 255;
 						mOctet[1] = 255;
 						mOctet[2] = 255;
-						for(int i = 0; i < mask - 24 - 1; ++i)
+						for (int i = 0; i < mask - 24 - 1; ++i)
 						{
 							mOctet[3] = mOctet[3] << 1;
 							mOctet[3] |= 1;
 						};
 						mOctet[3] = mOctet[3] << 8 - (mask - 24);
 					}
-					else if(mask >= 16)
+					else if (mask >= 16)
 					{
 						mOctet[0] = 255;
 						mOctet[1] = 255;
-						for(int i = 0; i < mask - 16 - 1; ++i)
+						for (int i = 0; i < mask - 16 - 1; ++i)
 						{
 							mOctet[2] = mOctet[2] << 1;
 							mOctet[2] |= 1;
@@ -1091,10 +1092,10 @@ void FileLoader(char *str) {
 						mOctet[2] = mOctet[2] << 8 - (mask - 16);
 						mOctet[3] = 0;
 					}
-					else if(mask >= 8)
+					else if (mask >= 8)
 					{
 						mOctet[0] = 255;
-						for(int i = 0; i < mask - 8 - 1; ++i)
+						for (int i = 0; i < mask - 8 - 1; ++i)
 						{
 							mOctet[1] = mOctet[1] << 1;
 							mOctet[1] |= 1;
@@ -1105,9 +1106,9 @@ void FileLoader(char *str) {
 					}
 					else
 					{
-						for(int i = 0; i < mask - 1; ++i)
+						for (int i = 0; i < mask - 1; ++i)
 						{
-							mOctet[0] = mOctet[0]<< 1;
+							mOctet[0] = mOctet[0] << 1;
 							mOctet[0] |= 1;
 						};
 						mOctet[0] = mOctet[0] << 8 - mask;
@@ -1115,27 +1116,27 @@ void FileLoader(char *str) {
 						mOctet[2] = 0;
 						mOctet[3] = 0;
 					};
-				
+
 					unsigned char ocRes = 0;
-					for(int i = 0; i < 4; ++i)
+					for (int i = 0; i < 4; ++i)
 					{
-						ocRes = octet[i]&mOctet[i];
+						ocRes = octet[i] & mOctet[i];
 						starterIP[flCounter][i] = ocRes;
 						ipsstartfl[flCounter][i] = ocRes;
-						if(mOctet[i] == 255) ipsendfl[flCounter][i] = octet[i];
-						else ipsendfl[flCounter][i] = octet[i]|~mOctet[i];
+						if (mOctet[i] == 255) ipsendfl[flCounter][i] = octet[i];
+						else ipsendfl[flCounter][i] = octet[i] | ~mOctet[i];
 					};
 
 					gTargets += pow((float)2, (32 - mask));
 					++flCounter;
 				}
-				else if(strstr(curIP, "RESTORE_IMPORT_SESSION") != NULL)
+				else if (strstr(curIP, "RESTORE_IMPORT_SESSION") != NULL)
 				{
 					///DUMMY///
 				}
 				else
 				{
-					char tempMsg[256] = {0};
+					char tempMsg[256] = { 0 };
 					strcpy(tempMsg, "[IP Loader]Wrong list format. Line-> [");
 					strcat(tempMsg, std::to_string(flCounter).c_str());
 					strcat(tempMsg, "] String-> [");
@@ -1161,9 +1162,9 @@ void FileLoader(char *str) {
 }
 
 char *GetCIDRRangeStr(char *str) {
-	char result[128] = {0};
-	char start[32] = {0};
-    char end[32] = {0};
+	char result[128] = { 0 };
+	char start[32] = { 0 };
+	char end[32] = { 0 };
 
 	int mask = 0;
 	char *ptr1 = strstr(str, "/");
@@ -1176,23 +1177,23 @@ char *GetCIDRRangeStr(char *str) {
 	mOctet[2] = 1;
 	mOctet[3] = 1;
 
-	if(mask >= 24)
+	if (mask >= 24)
 	{
 		mOctet[0] = 255;
 		mOctet[1] = 255;
 		mOctet[2] = 255;
-		for(int i = 0; i < mask - 24 - 1; ++i)
+		for (int i = 0; i < mask - 24 - 1; ++i)
 		{
 			mOctet[3] = mOctet[3] << 1;
 			mOctet[3] |= 1;
 		};
 		mOctet[3] = mOctet[3] << 8 - (mask - 24);
 	}
-	else if(mask >= 16)
+	else if (mask >= 16)
 	{
 		mOctet[0] = 255;
 		mOctet[1] = 255;
-		for(int i = 0; i < mask - 16 - 1; ++i)
+		for (int i = 0; i < mask - 16 - 1; ++i)
 		{
 			mOctet[2] = mOctet[2] << 1;
 			mOctet[2] |= 1;
@@ -1200,10 +1201,10 @@ char *GetCIDRRangeStr(char *str) {
 		mOctet[2] = mOctet[2] << 8 - (mask - 16);
 		mOctet[3] = 0;
 	}
-	else if(mask >= 8)
+	else if (mask >= 8)
 	{
 		mOctet[0] = 255;
-		for(int i = 0; i < mask - 8 - 1; ++i)
+		for (int i = 0; i < mask - 8 - 1; ++i)
 		{
 			mOctet[1] = mOctet[1] << 1;
 			mOctet[1] |= 1;
@@ -1214,9 +1215,9 @@ char *GetCIDRRangeStr(char *str) {
 	}
 	else
 	{
-		for(int i = 0; i < mask - 1; ++i)
+		for (int i = 0; i < mask - 1; ++i)
 		{
-			mOctet[0] = mOctet[0]<< 1;
+			mOctet[0] = mOctet[0] << 1;
 			mOctet[0] |= 1;
 		};
 		mOctet[0] = mOctet[0] << 8 - mask;
@@ -1226,274 +1227,274 @@ char *GetCIDRRangeStr(char *str) {
 	};
 
 
-    sprintf(start, "%d.%d.%d.%d", octet[0]&mOctet[0],
-            octet[1]&mOctet[1],
-            octet[2]&mOctet[2],
-            octet[3]&mOctet[3]);
+	sprintf(start, "%d.%d.%d.%d", octet[0] & mOctet[0],
+		octet[1] & mOctet[1],
+		octet[2] & mOctet[2],
+		octet[3] & mOctet[3]);
 
-    unsigned char tempRes0 = 0;
-    unsigned char tempRes1 = 0;
-    unsigned char tempRes2 = 0;
-    unsigned char tempRes3 = 0;
+	unsigned char tempRes0 = 0;
+	unsigned char tempRes1 = 0;
+	unsigned char tempRes2 = 0;
+	unsigned char tempRes3 = 0;
 
-    if(mOctet[0] == 255) tempRes0 = octet[0];
-    else tempRes0 = octet[0]|~mOctet[0];
-    if(mOctet[1] == 255) tempRes1 = octet[1];
-    else tempRes1 = octet[1]|~mOctet[1];
-    if(mOctet[2] == 255) tempRes2 = octet[2];
-    else tempRes2 = octet[2]|~mOctet[2];
-    if(mOctet[3] == 255) tempRes3 = octet[3];
-    else tempRes3 = octet[3]|~mOctet[3];
+	if (mOctet[0] == 255) tempRes0 = octet[0];
+	else tempRes0 = octet[0] | ~mOctet[0];
+	if (mOctet[1] == 255) tempRes1 = octet[1];
+	else tempRes1 = octet[1] | ~mOctet[1];
+	if (mOctet[2] == 255) tempRes2 = octet[2];
+	else tempRes2 = octet[2] | ~mOctet[2];
+	if (mOctet[3] == 255) tempRes3 = octet[3];
+	else tempRes3 = octet[3] | ~mOctet[3];
 
-    sprintf(end, "%d.%d.%d.%d", tempRes0,
-            tempRes1,
-            tempRes2,
-            tempRes3);
+	sprintf(end, "%d.%d.%d.%d", tempRes0,
+		tempRes1,
+		tempRes2,
+		tempRes3);
 
-    sprintf(result, "%s-%s", start, end);
+	sprintf(result, "%s-%s", start, end);
 
 	return result;
 }
 
 int fInit(int InitMode, char *gR) {
-    strcpy(metaRange, gR);
-    if (InitMode == 0)
-    {
-        if(strstr(gR, "/") != NULL)
-        {
-            ++flCounter;
+	strcpy(metaRange, gR);
+	if (InitMode == 0)
+	{
+		if (strstr(gR, "/") != NULL)
+		{
+			++flCounter;
 
-            char *str1;
-            char *str2;
-            char res[8] = {0};
+			char *str1;
+			char *str2;
+			char res[8] = { 0 };
 
-            GetOctets(gR);
+			GetOctets(gR);
 
-            if(strstr(gR, ".") != NULL)
-            {
-                str1 = strstr(gR, ".");  //1 byte
-                strncpy(res, gR, (int)((char*)str1 - gR));
-            }
-            else strcpy(res, gR);
+			if (strstr(gR, ".") != NULL)
+			{
+				str1 = strstr(gR, ".");  //1 byte
+				strncpy(res, gR, (int)((char*)str1 - gR));
+			}
+			else strcpy(res, gR);
 
-            if(strstr(res, "/") != NULL)
-            {
-                CheckMaskBits(res, flCounter);
-            }
-            else
-            {
-                starterIP[flCounter][0] = atoi(res);
-                ipsstartfl[flCounter][0] = atoi(res);
-                ipsendfl[flCounter][0] = atoi(res);
-            };
-            ZeroMemory(res, sizeof(res));
+			if (strstr(res, "/") != NULL)
+			{
+				CheckMaskBits(res, flCounter);
+			}
+			else
+			{
+				starterIP[flCounter][0] = atoi(res);
+				ipsstartfl[flCounter][0] = atoi(res);
+				ipsendfl[flCounter][0] = atoi(res);
+			};
+			ZeroMemory(res, sizeof(res));
 
-            if(strstr(str1 + 1, ".") != NULL)
-            {
-                str2 = strstr(str1 + 1, "."); //2 byte
-                strncpy(res, str1 + 1, (int)((char*)str2 - str1) - 1);
-            }
-            else strcpy(res, str1 + 1);
+			if (strstr(str1 + 1, ".") != NULL)
+			{
+				str2 = strstr(str1 + 1, "."); //2 byte
+				strncpy(res, str1 + 1, (int)((char*)str2 - str1) - 1);
+			}
+			else strcpy(res, str1 + 1);
 
-            if(strstr(res, "/") != NULL)
-            {
-                CheckMaskBits(res, flCounter);
-            }
-            else
-            {
-                starterIP[flCounter][1] = atoi(res);
-                ipsstartfl[flCounter][1] = atoi(res);
-                ipsendfl[flCounter][1] = atoi(res);
-            };
+			if (strstr(res, "/") != NULL)
+			{
+				CheckMaskBits(res, flCounter);
+			}
+			else
+			{
+				starterIP[flCounter][1] = atoi(res);
+				ipsstartfl[flCounter][1] = atoi(res);
+				ipsendfl[flCounter][1] = atoi(res);
+			};
 
-            ZeroMemory(res, sizeof(res));
+			ZeroMemory(res, sizeof(res));
 
-            if(strstr(str2 + 1, ".") != NULL)
-            {
-                str1 = strstr(str2 + 1, "."); //3 byte
-                strncpy(res, str2 + 1, (int)((char*)str1 - str2) - 1);
-            }
-            else strcpy(res, str2 + 1);
+			if (strstr(str2 + 1, ".") != NULL)
+			{
+				str1 = strstr(str2 + 1, "."); //3 byte
+				strncpy(res, str2 + 1, (int)((char*)str1 - str2) - 1);
+			}
+			else strcpy(res, str2 + 1);
 
-            if(strstr(res, "/") != NULL)
-            {
-                CheckMaskBits(res, flCounter);
-            }
-            else
-            {
-                starterIP[flCounter][2] = atoi(res);
-                ipsstartfl[flCounter][2] = atoi(res);
-                ipsendfl[flCounter][2] = atoi(res);
-            };
-            ZeroMemory(res, sizeof(res));
+			if (strstr(res, "/") != NULL)
+			{
+				CheckMaskBits(res, flCounter);
+			}
+			else
+			{
+				starterIP[flCounter][2] = atoi(res);
+				ipsstartfl[flCounter][2] = atoi(res);
+				ipsendfl[flCounter][2] = atoi(res);
+			};
+			ZeroMemory(res, sizeof(res));
 
-            if(strstr(str1 + 1, ".") != NULL)
-            {
-                str2 = strstr(str1 + 1, "."); //4 byte
-                strncpy(res, str1 + 1, (int)((char*)str2 - str1) - 1);
-            }
-            else strcpy(res, str1 + 1);
+			if (strstr(str1 + 1, ".") != NULL)
+			{
+				str2 = strstr(str1 + 1, "."); //4 byte
+				strncpy(res, str1 + 1, (int)((char*)str2 - str1) - 1);
+			}
+			else strcpy(res, str1 + 1);
 
-            if(strstr(res, "/") != NULL)
-            {
-                CheckMaskBits(res, flCounter);
-            }
-            else
-            {
-                starterIP[flCounter][3] = atoi(res);
-                ipsstartfl[flCounter][3] = atoi(res);
-                ipsendfl[flCounter][3] = atoi(res);
-            };
+			if (strstr(res, "/") != NULL)
+			{
+				CheckMaskBits(res, flCounter);
+			}
+			else
+			{
+				starterIP[flCounter][3] = atoi(res);
+				ipsstartfl[flCounter][3] = atoi(res);
+				ipsendfl[flCounter][3] = atoi(res);
+			};
 
-            ipsstart[0] = ipsstartfl[flCounter][0];
-            ipsstart[1] = ipsstartfl[flCounter][1];
-            ipsstart[2] = ipsstartfl[flCounter][2];
-            ipsstart[3] = ipsstartfl[flCounter][3];
+			ipsstart[0] = ipsstartfl[flCounter][0];
+			ipsstart[1] = ipsstartfl[flCounter][1];
+			ipsstart[2] = ipsstartfl[flCounter][2];
+			ipsstart[3] = ipsstartfl[flCounter][3];
 
-            ipsend[0] = ipsendfl[flCounter][0];
-            ipsend[1] = ipsendfl[flCounter][1];
-            ipsend[2] = ipsendfl[flCounter][2];
-            ipsend[3] = ipsendfl[flCounter][3];
-        }
-        else
-        {
-            int x;
-            char des1[64] = {0};
+			ipsend[0] = ipsendfl[flCounter][0];
+			ipsend[1] = ipsendfl[flCounter][1];
+			ipsend[2] = ipsendfl[flCounter][2];
+			ipsend[3] = ipsendfl[flCounter][3];
+		}
+		else
+		{
+			int x;
+			char des1[64] = { 0 };
 
-            for(int i = 0; i < 3; i++)																		//Filling the range-starting ip mass.
-            {
-                x = strcspn(gR, ".");
-                memcpy(des1, gR, x*sizeof(int));
-                memset(gR, ' ', x + 1);
-                ipsstart[i] = atoi(des1);
-                ZeroMemory(des1, sizeof(des1));
-                if(ipsstart[i] > 255)
-                {
-                    stt->doEmitionRedFoundData("[Error] Incorrect range.");
-                    stt->doEmitionKillSttThread();
-                    return -1;
-                };
-            };
+			for (int i = 0; i < 3; i++)																		//Filling the range-starting ip mass.
+			{
+				x = strcspn(gR, ".");
+				memcpy(des1, gR, x*sizeof(int));
+				memset(gR, ' ', x + 1);
+				ipsstart[i] = atoi(des1);
+				ZeroMemory(des1, sizeof(des1));
+				if (ipsstart[i] > 255)
+				{
+					stt->doEmitionRedFoundData("[Error] Incorrect range.");
+					stt->doEmitionKillSttThread();
+					return -1;
+				};
+			};
 
-            x = strcspn(gR, "-");
-            if(strstr(gR, "-") == NULL)
-            {
-                stt->doEmitionRedFoundData("[Error] Incorrect range.");
-                stt->doEmitionKillSttThread();
-                return -1;
-            };
+			x = strcspn(gR, "-");
+			if (strstr(gR, "-") == NULL)
+			{
+				stt->doEmitionRedFoundData("[Error] Incorrect range.");
+				stt->doEmitionKillSttThread();
+				return -1;
+			};
 
-            memcpy(des1, gR, x);
-            ipsstart[3] = atoi(des1);
-            memset(gR, ' ', x + 1);
+			memcpy(des1, gR, x);
+			ipsstart[3] = atoi(des1);
+			memset(gR, ' ', x + 1);
 
-            if(strstr(gR, ".") == NULL)
-            {
-                stt->doEmitionRedFoundData("[Error] Incorrect range.");
-                stt->doEmitionKillSttThread();
-                return -1;
-            };
+			if (strstr(gR, ".") == NULL)
+			{
+				stt->doEmitionRedFoundData("[Error] Incorrect range.");
+				stt->doEmitionKillSttThread();
+				return -1;
+			};
 
-            for(int i = 0; i < 4; i++)																		//Filling the range-closing ip mass.
-            {
-                x = strcspn(gR, ".");
-                memcpy(des1, gR, x);
-                memset(gR, ' ', x + 1);
-                ipsend[i] = atoi(des1);
+			for (int i = 0; i < 4; i++)																		//Filling the range-closing ip mass.
+			{
+				x = strcspn(gR, ".");
+				memcpy(des1, gR, x);
+				memset(gR, ' ', x + 1);
+				ipsend[i] = atoi(des1);
 
-                if(ipsend[i] > 255)
-                {
-                    stt->doEmitionRedFoundData("[Error] Incorrect range.");
-                    stt->doEmitionKillSttThread();
-                    return -1;
-                };
-            };
+				if (ipsend[i] > 255)
+				{
+					stt->doEmitionRedFoundData("[Error] Incorrect range.");
+					stt->doEmitionKillSttThread();
+					return -1;
+				};
+			};
 
-        };
-        if((ipsstart[0] > ipsend[0])
-            ||
-            (
-            (ipsstart[0] >= ipsend[0]) && (ipsstart[1] > ipsend[1])
-            ) ||
-            (
-            (ipsstart[0] >= ipsend[0]) && (ipsstart[1] >= ipsend[1]) && (ipsstart[2] > ipsend[2])
-            ) ||
-            (
-            (ipsstart[0] >= ipsend[0]) && (ipsstart[1] >= ipsend[1]) && (ipsstart[2] >= ipsend[2]) && (ipsstart[3] > ipsend[3])
-            )
-            )
-        {
-            stt->doEmitionRedFoundData("[Error] Incorrect range.");
-            stt->doEmitionKillSttThread();
-            return -1;
-        };
+		};
+		if ((ipsstart[0] > ipsend[0])
+			||
+			(
+			(ipsstart[0] >= ipsend[0]) && (ipsstart[1] > ipsend[1])
+			) ||
+			(
+			(ipsstart[0] >= ipsend[0]) && (ipsstart[1] >= ipsend[1]) && (ipsstart[2] > ipsend[2])
+			) ||
+			(
+			(ipsstart[0] >= ipsend[0]) && (ipsstart[1] >= ipsend[1]) && (ipsstart[2] >= ipsend[2]) && (ipsstart[3] > ipsend[3])
+			)
+			)
+		{
+			stt->doEmitionRedFoundData("[Error] Incorrect range.");
+			stt->doEmitionKillSttThread();
+			return -1;
+		};
 
-        targets = numOfIps(ipsstart, ipsend);
-    };
+		targets = numOfIps(ipsstart, ipsend);
+	};
 }
 
 int ParseArgs(int argc, char *argv[]) {
 	int s = 0;
 	int indexPorts = 0;
-	
-	if(strstr(argv[1], "-f") != NULL)
-    {
-        FileLoader(argv[2]);
-    }
 
-	if(gMode == 0)
+	if (strstr(argv[1], "-f") != NULL)
 	{
-		if(strstr(argv[2], "-") != NULL)
-		{
-            strcpy(gRange, argv[2]);
-		}
-        else  if(strstr(argv[2], "/") != NULL)
-        {
-            strcpy(gRange, GetCIDRRangeStr(argv[2]));
-        }
-        else
-        {
-            strcpy(gRange, argv[2]);
-            strcat(gRange, "-");
-            strcat(gRange, argv[2]);
-        };
-
-        strcpy(saveEndIP, gRange);
-        strcpy(finalIP, strstr(gRange, "-") + 1);
+		FileLoader(argv[2]);
 	}
-	else if(gMode == 1)
+
+	if (gMode == 0)
 	{
-		if(strstr(argv[2], "/") != NULL)
+		if (strstr(argv[2], "-") != NULL)
 		{
 			strcpy(gRange, argv[2]);
-            strcpy(saveEndIP, argv[2]);
+		}
+		else  if (strstr(argv[2], "/") != NULL)
+		{
+			strcpy(gRange, GetCIDRRangeStr(argv[2]));
 		}
 		else
 		{
 			strcpy(gRange, argv[2]);
-            strcpy(saveEndIP, gRange);
+			strcat(gRange, "-");
+			strcat(gRange, argv[2]);
+		};
+
+		strcpy(saveEndIP, gRange);
+		strcpy(finalIP, strstr(gRange, "-") + 1);
+	}
+	else if (gMode == 1)
+	{
+		if (strstr(argv[2], "/") != NULL)
+		{
+			strcpy(gRange, argv[2]);
+			strcpy(saveEndIP, argv[2]);
+		}
+		else
+		{
+			strcpy(gRange, argv[2]);
+			strcpy(saveEndIP, gRange);
 		};
 	};
 
-	for(int i = 1; i <= argc - 1; i++)
+	for (int i = 1; i <= argc - 1; i++)
 	{
 		s += strlen(argv[i]) + 2;
 	};
 
-	char *argString = new char [s + 1];
-    ZeroMemory(argString, sizeof(*argString));
+	char *argString = new char[s + 1];
+	ZeroMemory(argString, sizeof(*argString));
 
-	for(int i = 1; i <= argc - 1; i++)
+	for (int i = 1; i <= argc - 1; i++)
 	{
 		strcat(argString, argv[i]);
-		if(i != argc - 1) strcat(argString, "::");
+		if (i != argc - 1) strcat(argString, "::");
 	};
 
-	if(strstr(argString, "-p") != NULL)
+	if (strstr(argString, "-p") != NULL)
 	{
 		char *portString = strstr(argString, "-p");
-		char p[4096] = {0};
-		if(strstr(portString, "::") != NULL) 
+		char p[4096] = { 0 };
+		if (strstr(portString, "::") != NULL)
 		{
 			strncpy(gPorts, portString, (int)(strstr(portString, "::") - portString));
 			strncpy(p, strstr(argString, "-p") + 2, (int)(strstr(portString, "::") - portString));
@@ -1505,32 +1506,32 @@ int ParseArgs(int argc, char *argv[]) {
 		};
 		char *lex;
 
-		if(strstr(p, ",") != NULL)
+		if (strstr(p, ",") != NULL)
 		{
-			
-			lex = strtok(p, ",");
-			portArr[indexPorts++] = atoi(lex);	
 
-			while ((lex = strtok(NULL, ",")) != NULL) 
-			{ 
+			lex = strtok(p, ",");
+			portArr[indexPorts++] = atoi(lex);
+
+			while ((lex = strtok(NULL, ",")) != NULL)
+			{
 				portArr[indexPorts++] = atoi(lex);
 				overallPorts++;
 			};
 		}
-		else if(strstr(p, "-") != NULL)
+		else if (strstr(p, "-") != NULL)
 		{
 			char *startp;
 			char *endp;
-			char buffForPorts[16] = {0};
-			
+			char buffForPorts[16] = { 0 };
+
 			lex = strtok(p, "-p");
 			startp = lex;
 			lex = strtok(NULL, "-");
 			endp = lex;
 
-			for(int i = atoi(startp); i <= atoi(endp); i++ )
+			for (int i = atoi(startp); i <= atoi(endp); i++)
 			{
-				portArr[indexPorts++] = i;				
+				portArr[indexPorts++] = i;
 				overallPorts++;
 			};
 
@@ -1538,7 +1539,7 @@ int ParseArgs(int argc, char *argv[]) {
 		}
 		else
 		{
-			
+
 			lex = strtok(p, "-p");
 			portArr[indexPorts++] = atoi(lex);
 		};
@@ -1568,21 +1569,21 @@ int ParseArgs(int argc, char *argv[]) {
 		strcpy(gPorts, "--DEFAULT");
 	};
 
-    ZeroMemory(argString, sizeof(*argString));
+	ZeroMemory(argString, sizeof(*argString));
 
 	delete[] argString;
 
-return 0;
+	return 0;
 }
-	
-char charAll[38] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '_', '-',
-			'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 
-            'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+
+char charAll[38] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '_', '-',
+'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
 int _getPos(char l) {
-	for(int i = 0; i < 38; ++i)
+	for (int i = 0; i < 38; ++i)
 	{
-		if(l == charAll[i]) return i;
+		if (l == charAll[i]) return i;
 	};
 	return -1;
 }
@@ -1597,94 +1598,94 @@ int _getChunkCount(char *data) {
 void ConInc()
 {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-__asm
-    {
-        lock inc cons;
-    };
+	__asm
+	{
+		lock inc cons;
+	};
 #else
-    asm("lock; incl cons");
+	asm("lock; incl cons");
 #endif
-    stt->doEmitionThreads(QString::number(cons) + "/" +
-                          QString::number(gThreads));
+	stt->doEmitionThreads(QString::number(cons) + "/" +
+		QString::number(gThreads));
 }
 void ConDec()
 {
-    if(cons > 0)
-    {
+	if (cons > 0)
+	{
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-    __asm
-        {
-            lock dec cons;
-        };
+		__asm
+		{
+			lock dec cons;
+		};
 #else
-        asm("lock; decl cons");
+		asm("lock; decl cons");
 #endif
 
-    };
-    stt->doEmitionThreads(QString::number(cons) + "/" +
-                          QString::number(gThreads));
+	};
+	stt->doEmitionThreads(QString::number(cons) + "/" +
+		QString::number(gThreads));
 }
 
 void _connect() {
 
-    std::string ip = "";
-    while (globalScanFlag) {
-        std::unique_lock<std::mutex> lk(Threader::m);
-        Threader::cv.wait(lk, []{return Threader::ready; });
+	std::string ip = "";
+	while (globalScanFlag) {
+		std::unique_lock<std::mutex> lk(Threader::m);
+		Threader::cv.wait(lk, []{return Threader::ready; });
 
-        if (Threader::threadId > gThreads || !globalScanFlag) {
-            --Threader::threadId;
-            Threader::ready = false;
-            lk.unlock();
-            Threader::cv.notify_one();
-            return;
-        }
+		if (Threader::threadId > gThreads || !globalScanFlag) {
+			--Threader::threadId;
+			Threader::ready = false;
+			lk.unlock();
+			Threader::cv.notify_one();
+			return;
+		}
 
-        if (!Threader::ipQueue.empty()) {
-            ip = Threader::ipQueue.front();
-            Threader::ipQueue.pop();
-            Threader::ready = false;
-            lk.unlock();
-            Threader::cv.notify_one();
+		if (!Threader::ipQueue.empty()) {
+			ip = Threader::ipQueue.front();
+			Threader::ipQueue.pop();
+			Threader::ready = false;
+			lk.unlock();
+			Threader::cv.notify_one();
 
-            ++ipCounter;
-            ConInc();
-            for (int i = 0; i <= overallPorts; ++i)
-            {
-                if (!globalScanFlag) break;
-                if (Connector::_ConnectToPort((char*)ip.c_str(), portArr[i]) == -2) break;
-            };
-            ConDec();
-        }
-    }
+			++ipCounter;
+			ConInc();
+			for (int i = 0; i <= overallPorts; ++i)
+			{
+				if (!globalScanFlag) break;
+				if (Connector::_ConnectToPort((char*)ip.c_str(), portArr[i]) == -2) break;
+			};
+			ConDec();
+		}
+	}
 }
 
 int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 
-	if(strstr(mask, "[") != NULL)
-    {
-		char maskEnd[1024] = {0};
-		char maskRes[1024] = {0};
+	if (strstr(mask, "[") != NULL)
+	{
+		char maskEnd[1024] = { 0 };
+		char maskRes[1024] = { 0 };
 		char *ptr1 = strstr(mask, "[");
 		char *ptr2 = strstr(ptr1, "]");
 		int sz = ptr2 - ptr1;
-		char chunk[8] = {0};
+		char chunk[8] = { 0 };
 		strncpy(chunk, ptr1, sz + 1);
 		int firstPos = _getPos(chunk[1]);
 		int secondPos = _getPos(chunk[2]);
 
-		if(firstPos > secondPos)
+		if (firstPos > secondPos)
 		{
 			stt->doEmitionRedFoundData("Error at mask (Wrong letter sequence)");
 			return -1;
 		};
 
-		char maskStart[1024] = {0};
+		char maskStart[1024] = { 0 };
 		int startPosition = strstr(mask, "[") - mask;
 		strncpy(maskStart, mask, startPosition);
 
-		char maskEntry[1024] = {0};
-		if(saveMaskEnder != NULL) 
+		char maskEntry[1024] = { 0 };
+		if (saveMaskEnder != NULL)
 		{
 			int startSavePosition = strstr(saveMaskEnder, "[") - saveMaskEnder;
 			strncpy(maskEntry, saveMaskEnder, startSavePosition);
@@ -1692,15 +1693,15 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 
 		int szMask = strlen(mask);
 		int szOffset = startPosition + 2;
-		if(szMask != szOffset) strcpy(maskEnd, strstr(mask, "]") + 1);
-        else ZeroMemory(maskEnd, sizeof(maskEnd));;
+		if (szMask != szOffset) strcpy(maskEnd, strstr(mask, "]") + 1);
+		else ZeroMemory(maskEnd, sizeof(maskEnd));;
 
-		char maskSaver[128] = {0};
-		if(firstPos != -1 && secondPos != -1)
+		char maskSaver[128] = { 0 };
+		if (firstPos != -1 && secondPos != -1)
 		{
-			for(int i = firstPos; i <= secondPos; ++i)
+			for (int i = firstPos; i <= secondPos; ++i)
 			{
-                if(!globalScanFlag) break;
+				if (!globalScanFlag) break;
 
 				strcpy(maskSaver, saveMask);
 				strcat(maskSaver, maskEntry);
@@ -1710,40 +1711,40 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 				maskRes[startPosition] = charAll[i];
 				strcat(maskRes, maskEnd);
 
-				if(_GetDNSFromMask(maskRes, maskSaver, maskEnd) == -1) return -1;
+				if (_GetDNSFromMask(maskRes, maskSaver, maskEnd) == -1) return -1;
 
-				ZeroMemory(maskSaver, sizeof(maskSaver));	
-				ZeroMemory(maskRes, sizeof(maskRes));	
+				ZeroMemory(maskSaver, sizeof(maskSaver));
+				ZeroMemory(maskRes, sizeof(maskRes));
 			};
 		};
 	}
 	else
-    {
-        strcpy(currentMask, saveMask);
-        while(cons >= gThreads && globalScanFlag) Sleep(300);
-        if(!globalScanFlag) return 0;
+	{
+		strcpy(currentMask, saveMask);
+		while (cons >= gThreads && globalScanFlag) Sleep(300);
+		if (!globalScanFlag) return 0;
 
-        ++indexIP;
-        sprintf(currentIP, "%s%s", mask, gTLD);
-        verboseProgress(--gTargets);
+		++indexIP;
+		sprintf(currentIP, "%s%s", mask, gTLD);
+		verboseProgress(gTargets--);
 
-        Threader::fireThread(currentIP, (void*(*)(void))_connect);
+		Threader::fireThread(currentIP, (void*(*)(void))_connect);
 	};
 }
 
 void runAuxiliaryThreads() {
 
-    FileUpdater::loadOnce();
+	FileUpdater::loadOnce();
 	if (!FileUpdater::running) {
 		std::thread lpThread(FileUpdater::updateLists);
-        lpThread.detach();
-    }
+		lpThread.detach();
+	}
 	std::thread trackerThread(_tracker);
-    trackerThread.detach();
-    std::thread timerThread(_timer);
-    timerThread.detach();
-    std::thread saverThread(_saver);
-    saverThread.detach();
+	trackerThread.detach();
+	std::thread timerThread(_timer);
+	timerThread.detach();
+	std::thread saverThread(_saver);
+	saverThread.detach();
 }
 
 
@@ -1766,7 +1767,7 @@ int startScan(char* args) {
 	ZeroMemory(octet, sizeof(octet));
 	ZeroMemory(ipsstart, sizeof(ipsstart));
 	ZeroMemory(ipsend, sizeof(ipsend));
-	
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	CreateDirectoryA(RESULT_DIR_NAME, NULL);
 #else
@@ -1800,10 +1801,10 @@ int startScan(char* args) {
 	stt->doEmitionIPRANGE(QString("--"));
 	stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
 
-    runAuxiliaryThreads();
+	runAuxiliaryThreads();
 
 	if (gMode == 0)
-    {
+	{
 		unsigned long ip1 = (ipsstart[0] * 16777216) + (ipsstart[1] * 65536) + (ipsstart[2] * 256) + ipsstart[3];
 		unsigned long ip2 = (ipsend[0] * 16777216) + (ipsend[1] * 65536) + (ipsend[2] * 256) + ipsend[3];
 
@@ -1814,11 +1815,11 @@ int startScan(char* args) {
 
 					   for (unsigned long i = ip1; i <= ip2; ++i) {
 
-                           if (!globalScanFlag) break;
+						   if (!globalScanFlag) break;
 						   unsigned long offset = ip2 - i;
 
 						   tAddr.s_addr = ntohl(i);
-                           ipVec.push_back(inet_ntoa(tAddr));
+						   ipVec.push_back(inet_ntoa(tAddr));
 
 						   if (ipVec.size() >= (offset < 1000 ? offset : 1000)) {
 
@@ -1826,15 +1827,15 @@ int startScan(char* args) {
 							   while (ipVec.size() != 0) {
 
 								   while (cons >= gThreads && globalScanFlag) Sleep(500);
-                                   if (!globalScanFlag) goto haters_gonna_hate_IPM;
+								   if (!globalScanFlag) goto haters_gonna_hate_IPM;
 
-                                   ++indexIP;
-                                   strcpy(currentIP, ipVec[0].c_str());
+								   ++indexIP;
+								   strcpy(currentIP, ipVec[0].c_str());
 								   ipVec.erase(ipVec.begin());
 
-                                   verboseProgress(--gTargets);
+								   verboseProgress(gTargets--);
 
-                                   Threader::fireThread(currentIP, (void*(*)(void))_connect);
+								   Threader::fireThread(currentIP, (void*(*)(void))_connect);
 							   }
 						   }
 					   }
@@ -1847,22 +1848,22 @@ int startScan(char* args) {
 						for (unsigned long i = ip1; i <= ip2; ++i) {
 
 							while (cons >= gThreads && globalScanFlag) Sleep(500);
-                            if (!globalScanFlag) break;
+							if (!globalScanFlag) break;
 
 							++indexIP;
 
 							tAddr.s_addr = ntohl(i);
-                            strcpy(currentIP, inet_ntoa(tAddr));
-                            verboseProgress(--gTargets);
+							strcpy(currentIP, inet_ntoa(tAddr));
+							verboseProgress(gTargets--);
 
-                            Threader::fireThread(currentIP, (void*(*)(void))_connect);
+							Threader::fireThread(currentIP, (void*(*)(void))_connect);
 						}
 						break;
 		}
 		}
 	}
 	else if (gMode == 1)
-    {
+	{
 		char dataEntry[1024] = { 0 };
 		int innerCounter = 0;
 		int sz = strlen(saveEndIP);
@@ -1913,8 +1914,8 @@ int startScan(char* args) {
 			};
 		};
 
-        memset(dataEntry + innerCounter + 1, '\0', 1);
-        strcpy(currentMask, dataEntry);
+		memset(dataEntry + innerCounter + 1, '\0', 1);
+		strcpy(currentMask, dataEntry);
 
 		for (int i = 0; i < sz; ++i)
 		{
@@ -1972,7 +1973,7 @@ int startScan(char* args) {
 		stt->doEmitionYellowFoundData("Starting DNS-scan...");
 		stt->doEmitionChangeStatus("Scanning...");
 
-        int y = _GetDNSFromMask(dataEntry, "", dataEntry);
+		int y = _GetDNSFromMask(dataEntry, "", dataEntry);
 		if (y == -1)
 		{
 			stt->doEmitionRedFoundData("DNS-Mode error");
@@ -2018,11 +2019,11 @@ int startScan(char* args) {
 
 						   for (unsigned long i = ip1; i <= ip2; ++i) {
 
-                               if (!globalScanFlag) break;
+							   if (!globalScanFlag) break;
 							   unsigned long offset = ip2 - i;
 
 							   tAddr.s_addr = ntohl(i);
-                               ipVec.push_back(inet_ntoa(tAddr));
+							   ipVec.push_back(inet_ntoa(tAddr));
 
 							   if (ipVec.size() >= (offset < 1000 ? offset : 1000)) {
 
@@ -2030,14 +2031,14 @@ int startScan(char* args) {
 								   while (ipVec.size() != 0) {
 
 									   while (cons >= gThreads && globalScanFlag) Sleep(500);
-                                       if (!globalScanFlag) goto haters_gonna_hate_IM;
+									   if (!globalScanFlag) goto haters_gonna_hate_IM;
 
-                                       ++indexIP;
-                                       strcpy(currentIP, ipVec[0].c_str());
-                                       ipVec.erase(ipVec.begin());
-                                       verboseProgress(--gTargets);
+									   ++indexIP;
+									   strcpy(currentIP, ipVec[0].c_str());
+									   ipVec.erase(ipVec.begin());
+									   verboseProgress(gTargets--);
 
-                                       Threader::fireThread(currentIP, (void*(*)(void))_connect);
+									   Threader::fireThread(currentIP, (void*(*)(void))_connect);
 								   }
 							   }
 						   }
@@ -2049,14 +2050,14 @@ int startScan(char* args) {
 							for (unsigned long i = ip1; i <= ip2; ++i) {
 
 								while (cons >= gThreads && globalScanFlag) Sleep(500);
-                                if (!globalScanFlag) break;
+								if (!globalScanFlag) break;
 
 								++indexIP;
 
-                                tAddr.s_addr = ntohl(i);
-                                strcpy(currentIP, inet_ntoa(tAddr));
-                                verboseProgress(--gTargets);
-                                Threader::fireThread(currentIP, (void*(*)(void))_connect);
+								tAddr.s_addr = ntohl(i);
+								strcpy(currentIP, inet_ntoa(tAddr));
+								verboseProgress(gTargets--);
+								Threader::fireThread(currentIP, (void*(*)(void))_connect);
 							}
 							break;
 			};
@@ -2069,79 +2070,79 @@ int startScan(char* args) {
 	};
 
 	Sleep(gTimeOut + 1);
-	
+
 	stt->doEmitionYellowFoundData("Stopping threads...");
 	stt->doEmitionChangeStatus("Stopping...");
-	
-    while(cons > 0 || jsonArr->size() > 0) {
-        Sleep(2000);
-    };
-	
+
+	while (cons > 0 || jsonArr->size() > 0) {
+		Sleep(2000);
+	};
+
 	stt->doEmitionGreenFoundData("Done. Saved: " + QString::number(saved) + "; Alive: " + QString::number(found) + ".");
 	stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
 	stt->doEmitionChangeStatus("Idle");
 
 	Sleep(1000);									//Wait for lock release
-    stt->doEmitionKillSttThread();
+	stt->doEmitionKillSttThread();
 }
 
 void nCleanup(){
-    FileUpdater::FUClear();
-    Threader::cleanUp();
-    curl_global_cleanup();
+	FileUpdater::FUClear();
+	Threader::cleanUp();
+	curl_global_cleanup();
 
-	if(loginLst != NULL)
+	if (loginLst != NULL)
 	{
-		for(int i = 0; i < MaxLogin; ++i) delete []loginLst[i];
-		delete []loginLst;
+		for (int i = 0; i < MaxLogin; ++i) delete[]loginLst[i];
+		delete[]loginLst;
 		loginLst = NULL;
 	};
-	if(passLst != NULL)
+	if (passLst != NULL)
 	{
-		for(int i = 0; i < MaxPass; ++i) delete []passLst[i];
-		delete []passLst;
+		for (int i = 0; i < MaxPass; ++i) delete[]passLst[i];
+		delete[]passLst;
 		passLst = NULL;
 	};
-	if(GlobalNegatives != NULL)
-    {
-        for(int i = 0; i < GlobalNegativeSize; ++i) delete []GlobalNegatives[i];
-		delete []GlobalNegatives;
+	if (GlobalNegatives != NULL)
+	{
+		for (int i = 0; i < GlobalNegativeSize; ++i) delete[]GlobalNegatives[i];
+		delete[]GlobalNegatives;
 		GlobalNegatives = NULL;
 	};
-	if(wfPassLst != NULL)
+	if (wfPassLst != NULL)
 	{
-		for(int i = 0; i < MaxWFPass; ++i) delete []wfPassLst[i];
-		delete []wfPassLst;
+		for (int i = 0; i < MaxWFPass; ++i) delete[]wfPassLst[i];
+		delete[]wfPassLst;
 		wfPassLst = NULL;
 	};
-	if(wfLoginLst != NULL)
+	if (wfLoginLst != NULL)
 	{
-		for(int i = 0; i < MaxWFLogin; ++i) delete []wfLoginLst[i];
-		delete []wfLoginLst;
+		for (int i = 0; i < MaxWFLogin; ++i) delete[]wfLoginLst[i];
+		delete[]wfLoginLst;
 		wfLoginLst = NULL;
 	};
-	if(sshlpLst != NULL)
+	if (sshlpLst != NULL)
 	{
-		for(int i = 0; i < MaxSSHPass; ++i) delete []sshlpLst[i];
-		delete []sshlpLst;
+		for (int i = 0; i < MaxSSHPass; ++i) delete[]sshlpLst[i];
+		delete[]sshlpLst;
 		sshlpLst = NULL;
 	};
-	if(ipsstartfl != NULL)
+	if (ipsstartfl != NULL)
 	{
-		for(int i = 0; i < flCounter; ++i) delete []ipsstartfl[i];
-		delete []ipsstartfl;
+		for (int i = 0; i < flCounter; ++i) delete[]ipsstartfl[i];
+		delete[]ipsstartfl;
 		ipsstartfl = NULL;
 	};
-	if(ipsendfl != NULL)
+	if (ipsendfl != NULL)
 	{
-		for(int i = 0; i < flCounter; ++i) delete []ipsendfl[i];
-		delete []ipsendfl;
+		for (int i = 0; i < flCounter; ++i) delete[]ipsendfl[i];
+		delete[]ipsendfl;
 		ipsendfl = NULL;
 	};
-	if(starterIP != NULL)
+	if (starterIP != NULL)
 	{
-		for(int i = 0; i < flCounter; ++i) delete []starterIP[i];
-		delete []starterIP;
+		for (int i = 0; i < flCounter; ++i) delete[]starterIP[i];
+		delete[]starterIP;
 		starterIP = NULL;
 	};
 }

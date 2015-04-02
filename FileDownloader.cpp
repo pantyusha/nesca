@@ -36,7 +36,6 @@ void checkWeb(const char *fileName, std::string *oldLM) {
     if(lm.compare(*oldLM) != 0) {
         *oldLM = lm;
         std::string res(buffer.substr(buffer.find("\r\n\r\n") + 4).c_str());
-		//std::replace(res.begin(), res.end(), '\r', '\n');
 		res.erase(std::remove(res.begin(), res.end(), '\r'), res.end());
         std::ofstream out(fileName);
         out << std::string(res);

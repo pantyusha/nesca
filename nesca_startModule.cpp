@@ -171,39 +171,6 @@ QString GetNSErrorDefinition(const char *str, const char *elem)
 	else return QString("No definition found!");
 }
 
-void ConInc()
-{
-    ++ipCounter;
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-__asm
-    {
-        lock inc cons;
-    };
-#else
-    asm("lock; incl cons");
-#endif
-
-    stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
-}
-
-void ConDec()
-{
-	if(cons > 0)
-	{
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-    __asm
-        {
-            lock dec cons;
-        };
-#else
-        asm("lock; decl cons");
-#endif
-
-	};
-	
-	stt->doEmitionThreads(QString::number(cons) + "/" + QString::number(gThreads));
-}
-
 void _SaveBackupToFile()
 {
 	char saveStr[512] = {0};
@@ -384,7 +351,8 @@ void _timer() {
 
 		ZeroMemory(timeLeft, sizeof(timeLeft));
 		ZeroMemory(dbuffer, sizeof(dbuffer));
-		Sleep(1000);
+
+        Sleep(1000);
 	};
 }
 
@@ -1626,6 +1594,38 @@ int _getChunkCount(char *data) {
 	return secondPos - firstPos + 1;
 }
 
+
+void ConInc()
+{
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+__asm
+    {
+        lock inc cons;
+    };
+#else
+    asm("lock; incl cons");
+#endif
+    stt->doEmitionThreads(QString::number(cons) + "/" +
+                          QString::number(gThreads));
+}
+void ConDec()
+{
+    if(cons > 0)
+    {
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+    __asm
+        {
+            lock dec cons;
+        };
+#else
+        asm("lock; decl cons");
+#endif
+
+    };
+    stt->doEmitionThreads(QString::number(cons) + "/" +
+                          QString::number(gThreads));
+}
+
 void _connect() {
 
     std::string ip = "";
@@ -1637,6 +1637,7 @@ void _connect() {
             --Threader::threadId;
             Threader::ready = false;
             lk.unlock();
+            Threader::cv.notify_one();
             return;
         }
 
@@ -1645,7 +1646,9 @@ void _connect() {
             Threader::ipQueue.pop();
             Threader::ready = false;
             lk.unlock();
+            Threader::cv.notify_one();
 
+            ++ipCounter;
             ConInc();
             for (int i = 0; i <= overallPorts; ++i)
             {
@@ -1743,14 +1746,6 @@ void runAuxiliaryThreads() {
     std::thread saverThread(_saver);
     saverThread.detach();
 }
-
-
-
-
-
-
-
-
 
 
 int startScan(char* args) {

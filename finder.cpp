@@ -188,31 +188,28 @@ char *GetCodePage(const char *str)
 
 int globalSearchNeg(const char *buffcpy, const char *ip, int port)
 {
-	char negWord[256] = {0};
+    QTextCodec *nCodec = QTextCodec::codecForName("Windows-1251");
     for(int i = 0; i < GlobalNegativeSize; ++i)
 	{
         FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
         if(!globalScanFlag) return -1;
 
-            strcpy(negWord, GlobalNegatives[i]);
-			if(strstr(buffcpy, negWord) != NULL) 
+            if(strstr(buffcpy, GlobalNegatives[i]) != NULL)
 			{
 				if(gNegDebugMode)
-				{
-                    QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
-                    QString neg = codec->toUnicode(negWord);
+                {
                     stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) +
                                                  "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) +
-                                                 "</font></a>" + "]\tNegative hit: \"" + neg.toHtmlEscaped() + "\"");
-					if(strlen(negWord) < 2) 
+                                                 "</font></a>" + "]\tNegative hit: \"" + nCodec->toUnicode(GlobalNegatives[i]).toHtmlEscaped() + "\"");
+                    if(strlen(GlobalNegatives[i]) < 2)
 					{
-						stt->doEmitionDebugFoundData("		Len:" + QString::number(strlen(negWord)));
+                        stt->doEmitionDebugFoundData("		Len:" + QString::number(strlen(GlobalNegatives[i])));
 					};
-					if(strcmp(negWord, "") == 0) 
+                    if(strcmp(GlobalNegatives[i], "") == 0)
 					{
 						stt->doEmitionDebugFoundData("Empty hit!");
 					};
-					if(strcmp(negWord, " ") == 0) 
+                    if(strcmp(GlobalNegatives[i], " ") == 0)
 					{
 						stt->doEmitionDebugFoundData("Space hit!");
 					};
@@ -220,9 +217,7 @@ int globalSearchNeg(const char *buffcpy, const char *ip, int port)
 
 				++Filt;
 				return -1;
-			};
-
-		ZeroMemory(negWord, 256);
+            };
 	};
 }
 

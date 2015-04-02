@@ -8,7 +8,6 @@ std::queue<std::string> Threader::ipQueue;
 
 void Threader::fireThread(std::string ip, void *func(void)) {
 
-    std::unique_lock<std::mutex> lk(m);
     ipQueue.push(ip);
 
     if(threadId < gThreads) {
@@ -18,7 +17,7 @@ void Threader::fireThread(std::string ip, void *func(void)) {
     }
 
     ready = true;
-    Threader::cv.notify_one();
+    cv.notify_one();
     Sleep(gThreadDelay);
 }
 

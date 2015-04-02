@@ -65,11 +65,16 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 }
 
 lopaStr FTPA::FTPLobby(const char *ip, const int port, PathStr *ps) {
-    while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
+    if(gMaxBrutingThreads > 0) {
+        while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
-    BruteUtils::BConInc();
-    const lopaStr &lps = FTPBrute(ip, port, ps);
-    BruteUtils::BConDec();
+        BruteUtils::BConInc();
+        const lopaStr &lps = FTPBrute(ip, port, ps);
+        BruteUtils::BConDec();
 
-    return lps;
+        return lps;
+    } else {
+        lopaStr lps;
+        return lps;
+    }
 }

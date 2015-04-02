@@ -68,11 +68,17 @@ lopaStr BA::BABrute(const char *ip, const int port) {
 }
 
 lopaStr BA::BALobby(const char *ip, const int port) {
-    while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
+    if(gMaxBrutingThreads > 0) {
 
-    BruteUtils::BConInc();
-    const lopaStr &lps = BABrute(ip, port);
-    BruteUtils::BConDec();
+        while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
-    return lps;
+        BruteUtils::BConInc();
+        const lopaStr &lps = BABrute(ip, port);
+        BruteUtils::BConDec();
+
+        return lps;
+    } else {
+        lopaStr lps;
+        return lps;
+    }
 }

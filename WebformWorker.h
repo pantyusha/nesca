@@ -21,12 +21,13 @@ private:
 
 public:
     WFClass(){
+        if(gMaxBrutingThreads > 0) {
+            while(BrutingThrds >= gMaxBrutingThreads) Sleep(700);
 
-        while(BrutingThrds >= gMaxBrutingThreads) Sleep(700);
-
-        ++WF;
-        BConInc();
-        passCounter = 1;
+            ++WF;
+            BConInc();
+            passCounter = 1;
+        }
     }
 
     ~WFClass(){

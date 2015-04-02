@@ -28,7 +28,7 @@ int ipsstart[4], ipsend[4],
 	overallPorts, flCounter, octet[4];
 int BA = 0;
 int gPingTimeout = 1;
-int gMaxBrutingThreads = 200;
+int gMaxBrutingThreads = 50;
 unsigned int Activity = 0;
 
 unsigned char **ipsstartfl = NULL, **ipsendfl = NULL, **starterIP = NULL;

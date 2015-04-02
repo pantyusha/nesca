@@ -256,8 +256,8 @@ lopaStr _IPCameraBrute(const char *ip, int port, char *SPEC)
 
 			if(res == 1)
             {
-				strcpy(lps.login, loginLst[i]);
-				strcpy(lps.pass, passLst[j]);
+                strcpy(lps.login, login);
+                strcpy(lps.pass, pass);
 				return lps;
 			}
 			else if(res == -1)
@@ -275,11 +275,16 @@ lopaStr _IPCameraBrute(const char *ip, int port, char *SPEC)
 
 lopaStr _IPCameraBLobby(const char *ip, int port, char *SPEC)
 {
-	while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
+    if(gMaxBrutingThreads > 0) {
+        while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
-    BruteUtils::BConInc();
-	lopaStr res = _IPCameraBrute(ip, port, SPEC);
-    BruteUtils::BConDec();
-	
-	return res;
+        BruteUtils::BConInc();
+        lopaStr lps = _IPCameraBrute(ip, port, SPEC);
+        BruteUtils::BConDec();
+
+        return lps;
+    } else {
+        lopaStr lps;
+        return lps;
+    }
 }

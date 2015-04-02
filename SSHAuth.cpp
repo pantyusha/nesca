@@ -171,13 +171,18 @@ QString strIP;
 QString strPort;
 int SSHAuth::SSHLobby(const char *ip, int port, std::string *buffer)
 {
-    const char &banner = _get_ssh_banner(ip, port);
-    if(strlen(&banner) > 0)
-    {
-        BruteUtils::BConInc();
-        int res = SSHBrute(ip, port, buffer, &banner);
-        BruteUtils::BConDec();
-        return res;
-    };
-    return -1;
+    if(gMaxBrutingThreads > 0) {
+
+        while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
+
+        const char &banner = _get_ssh_banner(ip, port);
+        if(strlen(&banner) > 0)
+        {
+            BruteUtils::BConInc();
+            int res = SSHBrute(ip, port, buffer, &banner);
+            BruteUtils::BConDec();
+            return res;
+        };
+        return -1;
+    } else return -1;
 }

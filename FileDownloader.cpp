@@ -1,41 +1,46 @@
 #include "FileDownloader.h"
-#include "Connector.h"
-#include "FileUpdater.h"
-#include "istream"
+#include "fstream"
 
-bool FileDownloader::running = false;
+std::string FileDownloader::lastModifiedNeg = "";
+std::string FileDownloader::lastModifiedL = "";
+std::string FileDownloader::lastModifiedP = "";
+std::string FileDownloader::lastModifiedSSH = "";
+std::string FileDownloader::lastModifiedWFL = "";
+std::string FileDownloader::lastModifiedWFP = "";
 
-int getCL(std::string *buffer) {
+std::string getLM(std::string *buffer) {
 
-    std::size_t pos1 = buffer->find("Content-Length:");
+    std::size_t pos1 = buffer->find("Last-Modified:");
     if(pos1 == std::string::npos) {
-        stt->doEmitionFoundData("<font color=\"Pink\">Cannot find Content-Length.</font>");
-        return -1;
+        stt->doEmitionFoundData("<font color=\"Pink\">Cannot find Last-Modified.</font>");
+        return "";
     }
     int pos2 = buffer->find("\r\n", pos1);
     if(pos2 == std::string::npos) {
         stt->doEmitionFoundData("<font color=\"Pink\">Weird reply.</font>");
-        return -1;
+        return "";
     }
 
     std::string res = buffer->substr(pos1 + 15, pos2 - pos1 - 15);
-    return stoi(res);
+    return res;
 }
 
-void checkWeb(const char *fileName, long *ptr) {
+void checkWeb(const char *fileName, std::string *oldLM) {
     std::string buffer;
     Connector::nConnect(std::string("http://nesca.d3w.org/files/" + std::string(fileName)).c_str(), 80, &buffer);
 
-    int cl = getCL(&buffer);
-    if(cl == -1) return;
+    const std::string &lm = getLM(&buffer);
+    if(lm.size() == 0) return;
 
-    if(cl != *ptr) {
-		QString res(buffer.substr(buffer.find("\r\n\r\n") + 4).c_str());
-		res.replace("\r\n", "\n");
-		QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
-		res = codec->toUnicode(res.toLocal8Bit().data());
-		std::ofstream out(fileName);
-		out << std::string(res.toLocal8Bit().data());
+    if(lm.compare(*oldLM) != 0) {
+        *oldLM = lm;
+        //QString res(buffer.substr(buffer.find("\r\n\r\n") + 4).c_str());
+        std::string res(buffer.substr(buffer.find("\r\n\r\n") + 4).c_str());
+        //res.replace("\r\n", "\n");
+        //QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
+        //res = codec->toUnicode(res.toLocal8Bit().data());
+        std::ofstream out(fileName);
+        out << std::string(res);
         out.close();
 
         stt->doEmitionFoundData("<font color=\"Pink\">File " + QString(fileName) + " downloaded.</font>");
@@ -43,16 +48,14 @@ void checkWeb(const char *fileName, long *ptr) {
 }
 
 void FileDownloader::checkWebFiles() {
-	running = true;
-	while (globalScanFlag) {
-		checkWeb("negatives.txt", &FileUpdater::oldNegLstSize);
-		checkWeb("login.txt", &FileUpdater::oldLoginLstSize);
-		checkWeb("pass.txt", &FileUpdater::oldPassLstSize);
-		checkWeb("sshpass.txt", &FileUpdater::oldSSHLstSize);
-		checkWeb("wflogin.txt", &FileUpdater::oldWFLoginLstSize);
-		checkWeb("wfpass.txt", &FileUpdater::oldWFPassLstSize);
-		Sleep(600000);
-	}
-	running = false;
+    while (true) {
+        checkWeb("negatives.txt", &lastModifiedNeg);
+        checkWeb("login.txt", &lastModifiedL);
+        checkWeb("pass.txt", &lastModifiedP);
+        checkWeb("sshpass.txt", &lastModifiedSSH);
+        checkWeb("wflogin.txt", &lastModifiedWFL);
+        checkWeb("wfpass.txt", &lastModifiedWFP);
+        Sleep(6000);
+    }
 }
 

@@ -5,7 +5,6 @@
 #include "Connector.h"
 #include "Threader.h"
 #include "FileUpdater.h"
-#include "FileDownloader.h"
 #include <thread>
 
 QJsonArray *jsonArr = new QJsonArray();
@@ -342,6 +341,7 @@ void _SaveBackupToFile()
 
 void _saver()	
 {
+    Sleep(100);
 	while(globalScanFlag)
 	{
 		__savingBackUpFile = true;
@@ -1730,20 +1730,16 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 }
 
 void runAuxiliaryThreads() {
+
+    FileUpdater::loadOnce();
 	if (!FileUpdater::running) {
 		std::thread lpThread(FileUpdater::updateLists);
-		lpThread.detach();
-		Sleep(500);
-	}
-	if (!FileDownloader::running) {
-		std::thread fuThread(FileDownloader::checkWebFiles);
-		fuThread.detach();
-	}
+        lpThread.detach();
+    }
 	std::thread trackerThread(_tracker);
     trackerThread.detach();
     std::thread timerThread(_timer);
-	timerThread.detach();
-    Sleep(500);
+    timerThread.detach();
     std::thread saverThread(_saver);
     saverThread.detach();
 }
@@ -1801,7 +1797,7 @@ int startScan(char* args) {
 
 	stt->doEmitionIPRANGE(QString("--"));
 	stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
-    FileUpdater::loadOnce();
+
     runAuxiliaryThreads();
 
 	if (gMode == 0)

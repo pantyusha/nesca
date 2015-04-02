@@ -191,16 +191,20 @@ int globalSearchNeg(const char *buffcpy, const char *ip, int port)
 	char negWord[256] = {0};
     for(int i = 0; i < GlobalNegativeSize; ++i)
 	{
-
         FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
         if(!globalScanFlag) return -1;
 
 			strcpy(negWord, GlobalNegatives[i]);
+            printf("%s", buffcpy);
 			if(strstr(buffcpy, negWord) != NULL) 
 			{
 				if(gNegDebugMode)
 				{
-					stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>" + "]\tNegative hit: \"" + QString::fromLocal8Bit(negWord).toHtmlEscaped() + "\"");
+                    QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
+                    QString neg = codec->toUnicode(negWord);
+                    stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) +
+                                                 "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) +
+                                                 "</font></a>" + "]\tNegative hit: \"" + neg.toHtmlEscaped() + "\"");
 					if(strlen(negWord) < 2) 
 					{
 						stt->doEmitionDebugFoundData("		Len:" + QString::number(strlen(negWord)));

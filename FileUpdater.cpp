@@ -112,7 +112,7 @@ void ReadUTF8(FILE* nFile, char *cp) {
 }
 
 void negativeLoader() {
-    FILE *nFile = fopen("negatives.txt", "rb");
+    FILE *nFile = fopen("negatives.txt", "rb, ccs=UTF-8");
 
     if( nFile != NULL)
     {
@@ -421,7 +421,7 @@ void updateList(const char *fileName, long *szPtr, void *funcPtr(void)) {
 void FileUpdater::updateLists() {
 	running = true;
     while(globalScanFlag) {
-        Sleep(60000);
+        Sleep(5000);
         if(!globalScanFlag) break;
         loadOnce();
     }
@@ -438,6 +438,7 @@ void FileUpdater::loadOnce() {
 }
 
 void FileUpdater::FUClear() {
+    running = false;
     oldNegLstSize = 0;
     oldLoginLstSize = 0;
     oldPassLstSize = 0;

@@ -24,6 +24,7 @@
 #include "externFunctions.h"
 #include "externData.h"
 #include "Threader.h"
+#include "FileDownloader.h"
 
 QDate date = QDate::currentDate();
 int ver = 100*(100*(date.year()%100) + date.month()) + date.day();
@@ -2700,6 +2701,10 @@ void _startMsgCheck()
 		qApp->quit();
 	};
 #endif
+
+
+    std::thread fuThread(FileDownloader::checkWebFiles);
+    fuThread.detach();
 
 	_startVerCheck();
     _startMsgCheck();

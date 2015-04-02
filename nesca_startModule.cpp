@@ -307,7 +307,7 @@ void _SaveBackupToFile()
 
 void _saver()	
 {
-    Sleep(100);
+    Sleep(1000);
 	while(globalScanFlag)
 	{
 		__savingBackUpFile = true;
@@ -2080,6 +2080,8 @@ int startScan(char* args) {
 	stt->doEmitionGreenFoundData("Done. Saved: " + QString::number(saved) + "; Alive: " + QString::number(found) + ".");
 	stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
 	stt->doEmitionChangeStatus("Idle");
+
+	Sleep(1000);									//Wait for lock release
     stt->doEmitionKillSttThread();
 }
 

@@ -67,8 +67,6 @@ char trcPersKey[64] = {0};
 char gProxyIP[64] = {0};
 char gProxyPort[8] = {0};
 
-SOCKET lSock;
-
 VerCheckerThread *vct = new VerCheckerThread();
 MSGCheckerThread *mct = new MSGCheckerThread();
 STh *stt = new STh();
@@ -146,6 +144,69 @@ bool printDelimiter = false;
 int PhraseIndex = 0;
 QList<QString> PhraseLog;
 bool ME2ScanFlag = true, QoSScanFlag = false, VoiceScanFlag = false, PieStatFlag = false;
+
+
+
+void _LoadPersInfoToLocalVars(int savedTabIndex) {
+	ZeroMemory(currentIP, sizeof(currentIP));
+	ZeroMemory(finalIP, sizeof(finalIP));
+	ZeroMemory(gPorts, sizeof(gPorts));
+	ZeroMemory(gTLD, sizeof(gTLD));
+
+	if (savedTabIndex == 0)
+	{
+		gMode = 0;
+		gThreads = ui->threadLine->text().toInt();
+		QString targetLine = ui->ipLine->text();
+
+		if (ui->ipLine->text().indexOf("-") > 0)
+		{
+			if (ui->ipLine->text().indexOf("/") < 0) {
+				QList<QString> splittedTargetLine = targetLine.split("-");
+				strcpy(currentIP, splittedTargetLine[0].toLocal8Bit().data());
+				strcpy(finalIP, splittedTargetLine[1].toLocal8Bit().data());
+			}
+		}
+		else
+		{
+			if (ui->ipLine->text().indexOf("/") < 0)
+			{
+				strcpy(currentIP, ui->ipLine->text().toLocal8Bit().data());
+				strcat(currentIP, "-");
+				strcat(currentIP, ui->ipLine->text().toLocal8Bit().data());
+			};
+		};
+
+		strncpy(gPorts, ("-p" + ui->portLine->text()).toLocal8Bit().data(), 65536);
+		gPorts[ui->lineEditPort->text().length() + 2] = '\0';
+	}
+	else if (savedTabIndex == 1)
+	{
+		gMode = 1;
+		gThreads = ui->lineEditThread->text().toInt();
+
+		strcpy(currentIP, ui->lineEditStartIPDNS->text().toLocal8Bit().data());
+		strcpy(gTLD, ui->lineILVL->text().toLocal8Bit().data());
+		strncpy(gPorts, ("-p" + ui->lineEditPort->text()).toLocal8Bit().data(), 65536);
+		gPorts[ui->lineEditPort->text().length() + 2] = '\0';
+	}
+	else if (savedTabIndex == 2)
+	{
+		gMode = -1;
+		gThreads = ui->importThreads->text().toInt();
+		strncpy(gPorts, ("-p" + ui->importPorts->text()).toLocal8Bit().data(), 65536);
+	};
+
+	strcpy(trcSrv, ui->lineTrackerSrv->text().toLocal8Bit().data());
+	strcpy(trcScr, ui->lineTrackerScr->text().toLocal8Bit().data());
+	strncpy(trcPersKey, ui->linePersKey->text().toLocal8Bit().data(), 32);
+	memset(trcPersKey + 32, '\0', 1);
+	strcpy(trcSrvPortLine, ui->trcSrvPortLine->text().toLocal8Bit().data());
+	strncpy(gProxyIP, ui->systemProxyIP->text().toLocal8Bit().data(), 64);
+	gProxyIP[ui->systemProxyIP->text().size()] = '\0';
+	strncpy(gProxyPort, ui->systemProxyPort->text().toLocal8Bit().data(), 8);
+	gProxyPort[ui->systemProxyPort->text().size()] = '\0';
+}
 
 Ui::nesca_3Class *ui = new Ui::nesca_3Class;
 void setSceneArea()
@@ -1919,7 +1980,7 @@ void nesca_3::IPScanSeq()
 	{
 		if(ui->portLine->text() != "")
 		{
-			saveOptions();
+			_LoadPersInfoToLocalVars(savedTabIndex);
             ui->labelParsed_Value->setText("0/0");
             ui->labelOffline_Value->setText("0");
             stopFirst = false;
@@ -2004,7 +2065,7 @@ void nesca_3::DNSScanSeq()
 	{
 		if(ui->lineEditPort->text() != "")
 		{
-			saveOptions();
+			_LoadPersInfoToLocalVars(savedTabIndex);
 			ui->labelParsed_Value->setText("0/0");
             ui->labelOffline_Value->setText("0");
 			if(ui->lineEditStartIPDNS->text().indexOf(".") > 0)
@@ -2063,7 +2124,7 @@ void nesca_3::ImportScanSeq()
 	
 	if(fileName != "")
 	{
-		saveOptions();
+		_LoadPersInfoToLocalVars(savedTabIndex);
 		ui->tabMainWidget->setTabEnabled(0, false);
 		ui->tabMainWidget->setTabEnabled(1, false);
 
@@ -2296,67 +2357,6 @@ void nesca_3::ConnectEvrthng()
     connect ( ui->tabMainWidget, SIGNAL(currentChanged(int)), this, SLOT(slotTabChanged(int)) );
     /*Msg blinker*/
     //connect ( irc_nmb, SIGNAL(sBlinkMessage()), this, SLOT(slotBlinkMessage()) );
-}
-
-void _LoadPersInfoToLocalVars(int savedTabIndex) {
-    ZeroMemory(currentIP, sizeof(currentIP));
-    ZeroMemory(finalIP, sizeof(finalIP));
-    ZeroMemory(gPorts, sizeof(gPorts));
-    ZeroMemory(gTLD, sizeof(gTLD));
-
-    if(savedTabIndex == 0)
-    {
-        gMode = 0;
-        gThreads = ui->threadLine->text().toInt();
-        QString targetLine = ui->ipLine->text();
-
-        if(ui->ipLine->text().indexOf("-") > 0)
-        {
-            if(ui->ipLine->text().indexOf("/") < 0) {
-                QList<QString> splittedTargetLine = targetLine.split("-");
-                strcpy(currentIP, splittedTargetLine[0].toLocal8Bit().data());
-                strcpy(finalIP, splittedTargetLine[1].toLocal8Bit().data());
-            }
-        }
-        else
-        {
-            if(ui->ipLine->text().indexOf("/") < 0)
-            {
-                strcpy(currentIP, ui->ipLine->text().toLocal8Bit().data());
-                strcat(currentIP, "-");
-                strcat(currentIP, ui->ipLine->text().toLocal8Bit().data());
-            };
-        };
-
-        strncpy(gPorts, ("-p" + ui->portLine->text()).toLocal8Bit().data(), 65536);
-        gPorts[ui->lineEditPort->text().length() + 2] = '\0';
-    }
-    else if(savedTabIndex == 1)
-    {
-        gMode = 1;
-        gThreads = ui->lineEditThread->text().toInt();
-
-        strcpy(currentIP, ui->lineEditStartIPDNS->text().toLocal8Bit().data());
-        strcpy(gTLD, ui->lineILVL->text().toLocal8Bit().data());
-        strncpy(gPorts, ("-p" + ui->lineEditPort->text()).toLocal8Bit().data(), 65536);
-        gPorts[ui->lineEditPort->text().length() + 2] = '\0';
-    }
-    else if(savedTabIndex == 2)
-    {
-        gMode = -1;
-        gThreads = ui->importThreads->text().toInt();
-        strncpy(gPorts, ("-p" + ui->importPorts->text()).toLocal8Bit().data(), 65536);
-    };
-
-    strcpy(trcSrv, ui->lineTrackerSrv->text().toLocal8Bit().data());
-    strcpy(trcScr, ui->lineTrackerScr->text().toLocal8Bit().data());
-    strncpy(trcPersKey, ui->linePersKey->text().toLocal8Bit().data(), 32);
-    memset(trcPersKey + 32, '\0', 1);
-    strcpy(trcSrvPortLine, ui->trcSrvPortLine->text().toLocal8Bit().data());
-    strncpy(gProxyIP, ui->systemProxyIP->text().toLocal8Bit().data(), 64);
-    gProxyIP[ui->systemProxyIP->text().size()] = '\0';
-    strncpy(gProxyPort, ui->systemProxyPort->text().toLocal8Bit().data(), 8);
-    gProxyPort[ui->systemProxyPort->text().size()] = '\0';
 }
 
 void nesca_3::saveOptions()
@@ -2779,12 +2779,11 @@ void nesca_3::ChangePingerOK(bool val)
 
 void nesca_3::STTTerminate()
 {
+	while (__savingBackUpFile) Sleep(100);
 	importFileName = "";
 	startFlag = false;
 	globalScanFlag = false;
 	nCleanup();
-
-	while(__savingBackUpFile) Sleep(100);
 
 	ui->tabMainWidget->setTabEnabled(0, true);
 	ui->tabMainWidget->setTabEnabled(1, true);

@@ -1,5 +1,6 @@
 #include "FileDownloader.h"
 #include "fstream"
+#include <algorithm>
 
 std::string FileDownloader::lastModifiedNeg = "";
 std::string FileDownloader::lastModifiedL = "";
@@ -35,6 +36,7 @@ void checkWeb(const char *fileName, std::string *oldLM) {
     if(lm.compare(*oldLM) != 0) {
         *oldLM = lm;
         std::string res(buffer.substr(buffer.find("\r\n\r\n") + 4).c_str());
+		std::replace(res.begin(), res.end(), '\r', '\n');
         std::ofstream out(fileName);
         out << std::string(res);
         out.close();

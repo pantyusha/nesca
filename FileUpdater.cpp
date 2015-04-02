@@ -421,7 +421,7 @@ void updateList(const char *fileName, long *szPtr, void *funcPtr(void)) {
 void FileUpdater::updateLists() {
 	running = true;
     while(globalScanFlag) {
-        Sleep(5000);
+        Sleep(600000);
         if(!globalScanFlag) break;
         loadOnce();
     }

@@ -55,7 +55,7 @@ void FileDownloader::checkWebFiles() {
         checkWeb("sshpass.txt", &lastModifiedSSH);
         checkWeb("wflogin.txt", &lastModifiedWFL);
         checkWeb("wfpass.txt", &lastModifiedWFP);
-        Sleep(6000);
+        Sleep(600000);
     }
 }
 

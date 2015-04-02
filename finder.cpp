@@ -369,40 +369,20 @@ int ContentFilter(const char *buff, int port, const char *ip, char *cp, int sz)
     if(buff != NULL)
 	{
 		int res = 0;
-		std::string tempString = "";
-
-		if(strstr(cp, "1251") != NULL)
-		{
-			tempString = toLowerStr(buff);
-		}
-		else
-		{
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-            tempString = toLowerStr(xcode(buff, CP_UTF8, CP_ACP).c_str());
-#else
-            tempString = toLowerStr(buff);
-#endif
-		};
-
-		char *lBuff = new char[sz + 1];
-		ZeroMemory(lBuff, sz + 1);
-		strcpy(lBuff, tempString.c_str());
-		memset(lBuff + sz, '\0', 1);
 
 		if(sz <= 500)
 		{
-            res = _mainFinderFirst(lBuff, 1, port, ip, sz);
+			res = _mainFinderFirst(toLowerStr(buff).c_str(), 1, port, ip, sz);
 		}
 		else if((sz > 500 && sz <= 3500) || sz > 180000) 
 		{	
-            res = _mainFinderFirst(lBuff, 0, port, ip, sz);
+			res = _mainFinderFirst(toLowerStr(buff).c_str(), 0, port, ip, sz);
 		}
 		else if(sz > 3500 && sz <= 180000)
 		{
-            res = _mainFinderSecond(lBuff, port, ip);
+			res = _mainFinderSecond(toLowerStr(buff).c_str(), port, ip);
 		};
 
-		delete []lBuff;
 		return res;
 	}
 	else return -1;

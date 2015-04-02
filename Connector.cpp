@@ -151,7 +151,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
         }
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut + 5);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut + 3);
 
         if(postData != NULL) {
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
@@ -255,8 +255,7 @@ int Connector::_ConnectToPort(char* ip, int port)
     if(size > 0)
     {
         ++Alive;
-        ++found;
-        stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
+        stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(++found));
         Lexems lx;
         lx._filler(port, buffer.c_str(), ip, size, &lx);
     };

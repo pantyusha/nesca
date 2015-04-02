@@ -194,8 +194,7 @@ int globalSearchNeg(const char *buffcpy, const char *ip, int port)
         FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
         if(!globalScanFlag) return -1;
 
-			strcpy(negWord, GlobalNegatives[i]);
-            printf("%s", buffcpy);
+            strcpy(negWord, GlobalNegatives[i]);
 			if(strstr(buffcpy, negWord) != NULL) 
 			{
 				if(gNegDebugMode)

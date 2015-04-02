@@ -758,37 +758,6 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[]) {
 	return gTargets;
 }
 
-void _connect() {
-
-    std::string ip = "";
-	while (globalScanFlag) {
-		std::unique_lock<std::mutex> lk(Threader::m);
-		Threader::cv.wait(lk, []{return Threader::ready; });
-
-        if (Threader::threadId > gThreads || !globalScanFlag) {
-			--Threader::threadId;
-			Threader::ready = false;
-			lk.unlock();
-			return;
-		}
-
-		if (!Threader::ipQueue.empty()) {
-            ip = Threader::ipQueue.front();
-			Threader::ipQueue.pop();
-			Threader::ready = false;
-			lk.unlock();
-
-            ConInc();
-			for (int i = 0; i <= overallPorts; ++i)
-			{
-                if (!globalScanFlag) break;
-                if (Connector::_ConnectToPort((char*)ip.c_str(), portArr[i]) == -2) break;
-			};
-			ConDec();
-		}
-    }
-}
-
 void verboseProgress(unsigned long target) {
 
     stt->doEmitionIPRANGE(QString(currentIP));
@@ -1657,6 +1626,37 @@ int _getChunkCount(char *data) {
 	return secondPos - firstPos + 1;
 }
 
+void _connect() {
+
+    std::string ip = "";
+    while (globalScanFlag) {
+        std::unique_lock<std::mutex> lk(Threader::m);
+        Threader::cv.wait(lk, []{return Threader::ready; });
+
+        if (Threader::threadId > gThreads || !globalScanFlag) {
+            --Threader::threadId;
+            Threader::ready = false;
+            lk.unlock();
+            return;
+        }
+
+        if (!Threader::ipQueue.empty()) {
+            ip = Threader::ipQueue.front();
+            Threader::ipQueue.pop();
+            Threader::ready = false;
+            lk.unlock();
+
+            ConInc();
+            for (int i = 0; i <= overallPorts; ++i)
+            {
+                if (!globalScanFlag) break;
+                if (Connector::_ConnectToPort((char*)ip.c_str(), portArr[i]) == -2) break;
+            };
+            ConDec();
+        }
+    }
+}
+
 int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 
 	if(strstr(mask, "[") != NULL)
@@ -1743,6 +1743,15 @@ void runAuxiliaryThreads() {
     std::thread saverThread(_saver);
     saverThread.detach();
 }
+
+
+
+
+
+
+
+
+
 
 int startScan(char* args) {
 	curl_global_init(CURL_GLOBAL_ALL);

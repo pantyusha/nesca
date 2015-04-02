@@ -34,11 +34,7 @@ void checkWeb(const char *fileName, std::string *oldLM) {
 
     if(lm.compare(*oldLM) != 0) {
         *oldLM = lm;
-        //QString res(buffer.substr(buffer.find("\r\n\r\n") + 4).c_str());
         std::string res(buffer.substr(buffer.find("\r\n\r\n") + 4).c_str());
-        //res.replace("\r\n", "\n");
-        //QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
-        //res = codec->toUnicode(res.toLocal8Bit().data());
         std::ofstream out(fileName);
         out << std::string(res);
         out.close();

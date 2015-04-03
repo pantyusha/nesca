@@ -77,9 +77,7 @@ Web-Based Configurator
 Willkommen!
 Error 503
 403 forbidden
-404 not found
-is not found
-document not found
+not found
 504 gateway timeout
 Defaultpage
 500 internal server error
@@ -541,7 +539,6 @@ produc
 produtos
 symfony-project
 professions
-File not found
 sonicwall
 promo
 product_id
@@ -600,7 +597,6 @@ site offline
 site_manager
 site just created
 sitemap
-site or Page Not Found
 site is not
 site_map
 saitmap
@@ -647,7 +643,6 @@ taobao
 TopPageFinder.com
 Sun Microsystems, Inc
 421 Service is unavailable
-404 Page not found
 Echo Service
 CareerVision
 teamportal
@@ -881,7 +876,6 @@ Seo
 Fatal error:
 mc.yandex.ru
 UNKNOWN HOST
-host not found
 Сайт закрыт
 ?partner
 хокке

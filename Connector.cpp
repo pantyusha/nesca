@@ -185,6 +185,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 			Activity += buffer->size();
             return buffer->size();
 		} else {
+			if (gMode == 1 && res == 6) return - 2;
 			if (res != 28 &&
 				res != 6 &&
 				res != 7 &&
@@ -256,7 +257,7 @@ int Connector::_ConnectToPort(char* ip, int port)
         ++Alive;
         Lexems lx;
         lx._filler(port, buffer.c_str(), ip, size, &lx);
-    };
-
+	}
+	else if (size == -2) return -2;
     return 0;
 }

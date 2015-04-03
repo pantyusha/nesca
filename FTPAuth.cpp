@@ -13,7 +13,7 @@ bool FTPA::checkOutput(const string *buffer) {
 lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
     string buffer;
     string lpString;
-    lopaStr lps;
+    lopaStr lps{"UNKNOWN", "", ""};;
     ZeroMemory(lps.login, sizeof(lps.login));
     ZeroMemory(lps.pass, sizeof(lps.pass));
     ZeroMemory(lps.other, sizeof(lps.other));
@@ -74,7 +74,7 @@ lopaStr FTPA::FTPLobby(const char *ip, const int port, PathStr *ps) {
 
         return lps;
     } else {
-        lopaStr lps;
+        lopaStr lps{"UNKNOWN", "", ""};;
         return lps;
     }
 }

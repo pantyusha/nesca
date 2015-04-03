@@ -146,6 +146,10 @@ QList<QString> PhraseLog;
 bool ME2ScanFlag = true, QoSScanFlag = false, VoiceScanFlag = false, PieStatFlag = false;
 
 
+QVector<qreal> dots;
+QVector<qreal> dotsThreads;
+QFont multiFontSmallFontPie;
+QFont multiFontSmallFontArc;
 
 void _LoadPersInfoToLocalVars(int savedTabIndex) {
 	ZeroMemory(currentIP, sizeof(currentIP));
@@ -209,6 +213,84 @@ void _LoadPersInfoToLocalVars(int savedTabIndex) {
 }
 
 Ui::nesca_3Class *ui = new Ui::nesca_3Class;
+QGraphicsScene *testScene;
+
+qreal sharedY = 50;
+qreal sharedheight = sharedY + 120;
+QPen penAllThreads(QColor(255,255,255, 30), 10, Qt::CustomDashLine);
+QPen penThreads(QColor(82,180,229), 10, Qt::SolidLine);
+QPen penBAThreads(QColor(250,32,61), 5, Qt::CustomDashLine);
+QPen penAllTargets(QColor(255,255,255, 30), 10, Qt::SolidLine);
+QPen penTargets(QColor(250,94,32), 6, Qt::SolidLine);
+QPen penSaved(QColor(72,255,0), 3, Qt::SolidLine);
+void nesca_3::drawVerboseArcs(unsigned long gTargets) {
+    testScene->clear();
+    qreal leftX = 185;
+    qreal rightX = -165;
+    int fSz = 10;
+
+    QPainterPath pathAllThreads;
+    pathAllThreads.arcMoveTo(leftX, sharedY, rightX, sharedheight, 0);
+    pathAllThreads.arcTo(leftX, sharedY, rightX, sharedheight, 0, 180);
+    QGraphicsPathItem* itmAllThreads = new QGraphicsPathItem(pathAllThreads);
+    itmAllThreads->setPen(penAllThreads);
+    testScene->addItem(itmAllThreads);
+
+    QPainterPath pathThreads;
+    pathThreads.arcMoveTo(leftX, sharedY, rightX, sharedheight, 0);
+    pathThreads.arcTo(leftX, sharedY, rightX, sharedheight, 0, cons*((float)(180/(float)gThreads)));
+    QGraphicsPathItem* itmThreads = new QGraphicsPathItem(pathThreads);
+    itmThreads->setPen(penThreads);
+    testScene->addItem(itmThreads);
+
+    fSz = 5;
+    QPainterPath pathBAThreads;
+    pathBAThreads.arcMoveTo(leftX, sharedY, rightX, sharedheight, 0);
+    pathBAThreads.arcTo(leftX, sharedY, rightX, sharedheight, 0, BrutingThrds*((float)(180/(float)gThreads)));
+    QGraphicsPathItem* itmBAThreads = new QGraphicsPathItem(pathBAThreads);
+    itmBAThreads->setPen(penBAThreads);
+    testScene->addItem(itmBAThreads);
+
+    fSz = 10;
+    int xOffsetl = fSz + 2;
+    int xOffsetr = xOffsetl * 2;
+    leftX += xOffsetl;
+    rightX -= xOffsetr;
+    qreal sharedheight1 = sharedheight - xOffsetl;
+    qreal sharedheight2 = sharedheight + xOffsetr;
+    qreal nSharedY = sharedY - xOffsetl;
+
+    QPainterPath pathAllTargets;
+    pathAllTargets.arcMoveTo(leftX, sharedY, rightX, sharedheight1, 0);
+    pathAllTargets.arcTo(leftX, nSharedY, rightX, sharedheight2, 0, 180);
+    QGraphicsPathItem* itmAllTargets = new QGraphicsPathItem(pathAllTargets);
+    itmAllTargets->setPen(penAllTargets);
+    testScene->addItem(itmAllTargets);
+
+    fSz = 6;
+    QPainterPath pathTargets;
+    pathTargets.arcMoveTo(leftX, sharedY, rightX, sharedheight1, 0);
+    pathTargets.arcTo(leftX, nSharedY, rightX, sharedheight2, 0, indexIP*((float)(180/(float)gTargetsOverall)));
+    QGraphicsPathItem* itmTargets = new QGraphicsPathItem(pathTargets);
+    itmTargets->setPen(penTargets);
+    testScene->addItem(itmTargets);
+
+    fSz = 3;
+    QPainterPath pathSaved;
+    pathSaved.arcMoveTo(leftX, sharedY, rightX, sharedheight1, 0);
+    pathSaved.arcTo(leftX, nSharedY, rightX, sharedheight2, 0, saved*((float)(180/(float)gTargetsOverall)));
+    QGraphicsPathItem* itmSaved = new QGraphicsPathItem(pathSaved);
+    itmSaved->setPen(penSaved);
+    testScene->addItem(itmSaved);
+
+    ui->ipLabel->setText(QString(currentIP));
+    ui->labelSavedValue->setText(QString::number(saved));
+    ui->labelPendingTargets->setText(QString::number(gTargets));
+    ui->labelRunningThreads->setText(QString::number(cons) + "/" +
+                                     QString::number(BrutingThrds) + "/" +
+                                     QString::number(gThreads));
+}
+
 void setSceneArea()
 {
 	delete ui->graphicsVoice;
@@ -256,16 +338,22 @@ void setSceneArea()
 	ui->pbgv->setScene(pbScene);
 	ui->jobRangeVisual->setScene(jobRangeVisualScene);
 	
-	ui->graphicLog->setSceneRect(0, 0, ui->graphicLog->width(), ui->graphicLog->height());
-	ui->graphicLog_2->setSceneRect(0, 0, ui->graphicLog_2->width(), ui->graphicLog_2->height());
-	ui->graphicDelim->setSceneRect(0, 0, ui->graphicDelim->width(), ui->graphicDelim->height());
-	ui->graphicLog_Upper->setSceneRect(0, 0, ui->graphicLog_Upper->width(), ui->graphicLog_Upper->height());
-	ui->graphicActivity->setSceneRect(0, 0, ui->graphicActivity->width(), ui->graphicActivity->height());
-	ui->graphicActivityGrid->setSceneRect(0, 0, ui->graphicActivityGrid->width(), ui->graphicActivityGrid->height());
-	ui->graphicTextPlacer->setSceneRect(0, 0, ui->graphicTextPlacer->width(), ui->graphicTextPlacer->height());
-	ui->graphicsVoice->setSceneRect(0, 0, ui->graphicsVoice->width(), ui->graphicsVoice->height());
-	ui->pbgv->setSceneRect(0, 0, ui->pbgv->width(), ui->pbgv->height());	
-	ui->jobRangeVisual->setSceneRect(0, 0, ui->jobRangeVisual->width(), ui->jobRangeVisual->height());	
+    ui->graphicLog->setSceneRect(0, 0, ui->graphicLog->width(), ui->graphicLog->height());
+    ui->graphicLog_2->setSceneRect(0, 0, ui->graphicLog_2->width(), ui->graphicLog_2->height());
+    ui->graphicDelim->setSceneRect(0, 0, ui->graphicDelim->width(), ui->graphicDelim->height());
+    ui->graphicLog_Upper->setSceneRect(0, 0, ui->graphicLog_Upper->width(), ui->graphicLog_Upper->height());
+    ui->graphicActivity->setSceneRect(0, 0, ui->graphicActivity->width(), ui->graphicActivity->height());
+    ui->graphicActivityGrid->setSceneRect(0, 0, ui->graphicActivityGrid->width(), ui->graphicActivityGrid->height());
+    ui->graphicTextPlacer->setSceneRect(0, 0, ui->graphicTextPlacer->width(), ui->graphicTextPlacer->height());
+    ui->graphicsVoice->setSceneRect(0, 0, ui->graphicsVoice->width(), ui->graphicsVoice->height());
+    ui->pbgv->setSceneRect(0, 0, ui->pbgv->width(), ui->pbgv->height());
+    ui->jobRangeVisual->setSceneRect(0, 0, ui->jobRangeVisual->width(), ui->jobRangeVisual->height());
+
+
+    testScene = new QGraphicsScene();
+    ui->graphicsTest->setScene(testScene);
+    ui->graphicsTest->setSceneRect(0, 0, ui->graphicsTest->width(), ui->graphicsTest->height());
+    ui->graphicsTest->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
 }
 
 void setButtonStyleArea()
@@ -1020,64 +1108,60 @@ void nesca_3::slotUpdatePie()
 	float perc5 = ((float)PieWF/(float)(found) * 100) * degree;
 	float perc6 = ((float)PieSSH/(float)(found) * 100) * degree;
 
-	QFont fnt;
-	fnt.setFamily("Eurostile");
-	fnt.setPixelSize(10);
-
 	QString dataSaved = "Saved:           "		+ QString::number(goods/(float)(found > 0 ? found : 1) * 100) + "%(" + QString::number(goods) + ")";
 	QString dataParsed = "Filtered:         "	+ QString::number((found - goods)/(float)(found > 0 ? found : 1) * 100) + "%(" + QString::number(found - goods) + ")";
 	QString dataOnline = "Online:           "	+ QString::number(found);
 	QString dataAnom = "Anomalies:    "			+ QString::number(PieAnomC1/(float)(goods > 0 ? goods : 1) * 100) + "%";
 	QString dataBA = "Basic Auth:    "			+ QString::number(PieBA/(float)(goods > 0 ? goods : 1) * 100) + "%";
 	QString dataSusp = "Suspicious:    "		+ QString::number(PieSusp/(float)(goods > 0 ? goods : 1) * 100) + "%";
-	QString dataLowl = "Lowload:       "		+ QString::number(PieLowl/(float)(goods > 0 ? goods : 1) * 100) + "%";
-	QString dataWF = "WebForms:   "				+ QString::number(PieWF/(float)(goods > 0 ? goods : 1) * 100) + "%";
-	QString dataSSH = "SSH:            "		+ QString::number(PieSSH/(float)(goods > 0 ? goods : 1) * 100) + "%";
+    QString dataLowl = "Lowload:        "		+ QString::number(PieLowl/(float)(goods > 0 ? goods : 1) * 100) + "%";
+    QString dataWF = "WebForms:     "			+ QString::number(PieWF/(float)(goods > 0 ? goods : 1) * 100) + "%";
+    QString dataSSH = "SSH:              "		+ QString::number(PieSSH/(float)(goods > 0 ? goods : 1) * 100) + "%";
 
 	int dataX = 1;
 	int dataY = 13;
 	
-	QGraphicsTextItem *titem = sceneGraph->addText(dataOnline, fnt);
+    QGraphicsTextItem *titem = sceneGraph->addText(dataOnline, multiFontSmallFontPie);
 	titem->setX(dataX);
 	titem->setY(-5);
 	titem->setDefaultTextColor(QColor(255, 255, 255, 130));
 
-	titem = sceneGraph->addText(dataSaved, fnt);
+    titem = sceneGraph->addText(dataSaved, multiFontSmallFontPie);
 	titem->setX(dataX);
 	titem->setY(5);
 	titem->setDefaultTextColor(QColor(255, 255, 255, 130));
 	
-	titem = sceneGraph->addText(dataParsed, fnt);
+    titem = sceneGraph->addText(dataParsed, multiFontSmallFontPie);
 	titem->setX(dataX);
 	titem->setY(15);
 	titem->setDefaultTextColor(QColor(255, 255, 255, 255));
 
-	titem = sceneGraph->addText(dataAnom, fnt);
+    titem = sceneGraph->addText(dataAnom, multiFontSmallFontPie);
 	titem->setX(dataX);
 	titem->setY(dataY + 17);
 	titem->setDefaultTextColor(QColor("red"));
 
-	titem = sceneGraph->addText(dataBA, fnt);
+    titem = sceneGraph->addText(dataBA, multiFontSmallFontPie);
 	titem->setX(dataX);
 	titem->setY(dataY + 27);
 	titem->setDefaultTextColor(Qt::darkCyan);
 
-	titem = sceneGraph->addText(dataSusp, fnt);
+    titem = sceneGraph->addText(dataSusp, multiFontSmallFontPie);
 	titem->setX(dataX);
 	titem->setY(dataY + 37);
 	titem->setDefaultTextColor(Qt::darkRed);
 
-	titem = sceneGraph->addText(dataLowl, fnt);
+    titem = sceneGraph->addText(dataLowl, multiFontSmallFontPie);
 	titem->setX(dataX);
 	titem->setY(dataY + 47);
 	titem->setDefaultTextColor(Qt::magenta);
 
-	titem = sceneGraph->addText(dataWF, fnt);
+    titem = sceneGraph->addText(dataWF, multiFontSmallFontPie);
 	titem->setX(dataX);
 	titem->setY(dataY + 56);
 	titem->setDefaultTextColor(Qt::darkGray);
 
-	titem = sceneGraph->addText(dataSSH, fnt);
+    titem = sceneGraph->addText(dataSSH, multiFontSmallFontPie);
 	titem->setX(dataX);
 	titem->setY(dataY + 66);
 	titem->setDefaultTextColor(Qt::darkRed);
@@ -1419,7 +1503,6 @@ void nesca_3::slotClearLogs()
 
 
 int c = 1;
-
 void nesca_3::slotSaveImage(QAction *qwe)
 {
 	QObject *smB = this->sender();
@@ -1641,7 +1724,6 @@ QRegExp _rOutProt(" HTTP/1.\\d+");
 QRegExp _rOutPath(" /(\\w|\\.|,|/|:|-|_|\\?|!|\\@|#|\\$|%|\\^|&|\\*|\\(|\\)|=|\\+|<|>|;|:|\"|'|~|\\[|\\])* ");
 QRegExp _rOutHost("Host: ((\\w|\\d|\\.|:|/)*)\\r\\n");
 QRegExp qrp("\\n(.+):");
-
 void nesca_3::slotOutData(QString str)
 {
 	if(SendData != NULL) 
@@ -1980,9 +2062,7 @@ void nesca_3::IPScanSeq()
 	{
 		if(ui->portLine->text() != "")
 		{
-			_LoadPersInfoToLocalVars(savedTabIndex);
-            ui->labelParsed_Value->setText("0/0");
-            ui->labelOffline_Value->setText("0");
+            _LoadPersInfoToLocalVars(savedTabIndex);
             stopFirst = false;
 			ui->tabMainWidget->setTabEnabled(1, false);
 			ui->tabMainWidget->setTabEnabled(2, false);
@@ -2064,10 +2144,7 @@ void nesca_3::DNSScanSeq()
 	if(ui->lineEditStartIPDNS->text() != "")
 	{
 		if(ui->lineEditPort->text() != "")
-		{
-			_LoadPersInfoToLocalVars(savedTabIndex);
-			ui->labelParsed_Value->setText("0/0");
-            ui->labelOffline_Value->setText("0");
+        {
 			if(ui->lineEditStartIPDNS->text().indexOf(".") > 0)
 			{
 				QStringList lst = ui->lineEditStartIPDNS->text().split(".");
@@ -2078,9 +2155,10 @@ void nesca_3::DNSScanSeq()
 					topLevelDomainStr += ".";
 					topLevelDomainStr += lst[i];
 				};
-				ui->lineILVL->setText(topLevelDomainStr);
+                ui->lineILVL->setText(topLevelDomainStr);
 			};
 
+            _LoadPersInfoToLocalVars(savedTabIndex);
             stopFirst = false;
 
 			ui->tabMainWidget->setTabEnabled(0, false);
@@ -2127,9 +2205,6 @@ void nesca_3::ImportScanSeq()
 		_LoadPersInfoToLocalVars(savedTabIndex);
 		ui->tabMainWidget->setTabEnabled(0, false);
 		ui->tabMainWidget->setTabEnabled(1, false);
-
-        ui->labelParsed_Value->setText("0/0");
-        ui->labelOffline_Value->setText("0");
 
 		strcpy(inputStr, ("DUMMY|-f|" + fileName + "|" + ui->importThreads->text() + "|-p" + ui->importPorts->text().replace(" ", "")).toLocal8Bit().data());	
 
@@ -2327,15 +2402,11 @@ void nesca_3::ConnectEvrthng()
 	connect ( stt, SIGNAL(changeRedFoundData(QString)), this, SLOT(appendErrText(QString)));
 	connect ( stt, SIGNAL(changeGreenFoundData(QString)), this, SLOT(appendOKText(QString)));
 	connect ( stt, SIGNAL(killSttThread()), this, SLOT(STTTerminate()));
-	connect ( stt, SIGNAL(changeParsedValue(QString)), ui->labelParsed_Value, SLOT(setText(QString)));		
-	connect ( stt, SIGNAL(changeIpRange(QString)), ui->labelIpRange_Value, SLOT(setText(QString)));
-	connect ( stt, SIGNAL(changeThreads(QString)), ui->labelThreads_Value, SLOT(setText(QString)));
-	connect ( stt, SIGNAL(changeIPS(QString)), ui->labelIPS_Value, SLOT(setText(QString)));
-	connect ( stt, SIGNAL(changeFoundData(QString)), this, SLOT(appendDefaultText(QString)));
-	connect ( stt, SIGNAL(changeBAValue(QString)), ui->labelBAThreads_Value, SLOT(setText(QString)));
-	connect ( stt, SIGNAL(changeStatus(QString)), ui->labelStatus_Value, SLOT(setText(QString)));
-	connect ( stt, SIGNAL(changeTargetsLeft(QString)), ui->labelTargetsLeft_Value, SLOT(setText(QString)));
-	connect ( stt, SIGNAL(changeOffline(QString)), ui->labelOffline_Value, SLOT(setText(QString)));
+
+    connect ( stt, SIGNAL(signalUpdateArc(unsigned long)), this, SLOT(drawVerboseArcs(unsigned long)));
+
+    connect ( stt, SIGNAL(changeFoundData(QString)), this, SLOT(appendDefaultText(QString)));
+    connect ( stt, SIGNAL(changeStatus(QString)), ui->labelStatus_Value, SLOT(setText(QString)));
 	connect ( stt, SIGNAL(changeBAData(QString)), ui->BAText, SLOT(append(QString)));
 	connect ( stt, SIGNAL(changeGreenBAData(QString)), this, SLOT(appendGreenBAData(QString)));
 	connect ( stt, SIGNAL(changeRedBAData(QString)), this, SLOT(appendRedBAData(QString)));
@@ -2665,8 +2736,26 @@ void _startMsgCheck()
 	ui->dataText->setOpenExternalLinks(true);
 	ui->dataText->setOpenLinks(false);
 	ui->rVerLabel->hide();
-	setSceneArea();
-		
+    setSceneArea();
+
+    dots << 0.5 << 0.3 << 0.5 << 0.3;
+    dotsThreads << 0.1 << 0.2 << 0.1 << 0.2;
+    penAllThreads.setCapStyle(Qt::FlatCap);
+    penAllThreads.setDashPattern(dotsThreads);
+    penThreads.setCapStyle(Qt::FlatCap);
+    penBAThreads.setDashPattern(dots);
+    penBAThreads.setCapStyle(Qt::FlatCap);
+    penAllTargets.setCapStyle(Qt::FlatCap);
+    penTargets.setCapStyle(Qt::FlatCap);
+    penSaved.setCapStyle(Qt::FlatCap);
+
+    multiFontSmallFontPie.setFamily("small_fonts");
+    multiFontSmallFontPie.setPixelSize(9);
+    multiFontSmallFontArc.setFamily("small_fonts");
+    multiFontSmallFontArc.setPixelSize(10);
+    multiFontSmallFontArc.setUnderline(true);
+    ui->ipLabel->setFont(multiFontSmallFontArc);
+
     tray = new QSystemTrayIcon(QIcon(":/nesca_3/nesca.ico"), this);
 	tray->hide();
 
@@ -2678,8 +2767,7 @@ void _startMsgCheck()
 
     const std::string &gVERStr = GetVer();
     strcpy(gVER, gVERStr.c_str());
-    QString QVER(gVER);
-	ui->logoLabel->setToolTip("v3-" + QVER);
+    ui->logoLabel->setToolTip("v3-" + QString(gVER));
 	ui->logoLabel->setStyleSheet("color:white; border: none;background-color:black;");
     ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
 
@@ -2690,9 +2778,6 @@ void _startMsgCheck()
 	dtHN->start();
 	dtME2->start();
 	adtHN->start();
-
-	pbPointerFont.setFamily("Eurostile");
-	pbPointerFont.setPixelSize(8);
 	
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	WSADATA wsda;
@@ -2710,6 +2795,7 @@ void _startMsgCheck()
 	_startVerCheck();
     _startMsgCheck();
     qrp.setMinimal(true);
+    drawVerboseArcs(0);
 }
 
 void nesca_3::mousePressEvent(QMouseEvent *event)
@@ -2789,9 +2875,7 @@ void nesca_3::STTTerminate()
 	ui->tabMainWidget->setTabEnabled(1, true);
 	ui->tabMainWidget->setTabEnabled(2, true);
 	ui->tabMainWidget->setTabEnabled(3, true);
-	stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
-	stt->doEmitionIPS("0");
-	stt->doEmitionChangeBA("0");
+    stt->doEmitionUpdateArc(0);
 	BrutingThrds = 0;
 	cons = 0;
 	setButtonStyleArea();
@@ -2965,8 +3049,7 @@ void nesca_3::appendErrText(QString str)
 	if(stt->isRunning() == false)
 	{
 		startFlag = false;
-		stt->doEmitionChangeStatus("Idle");
-		stt->doEmitionIPS("0");
+        stt->doEmitionChangeStatus("Idle");
 		ui->startScanButton_3->setText("Start");
 		stt->terminate();
     };

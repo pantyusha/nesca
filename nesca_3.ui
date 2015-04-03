@@ -1445,9 +1445,9 @@ border-radius: 3px;</string>
     <widget class="QLabel" name="labelNesca_3">
      <property name="geometry">
       <rect>
-       <x>95</x>
-       <y>10</y>
-       <width>306</width>
+       <x>123</x>
+       <y>11</y>
+       <width>271</width>
        <height>20</height>
       </rect>
      </property>
@@ -1535,52 +1535,22 @@ border-radius: 3px;</string>
       <string>X</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelIpRange">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>230</y>
-       <width>61</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-       <weight>50</weight>
-       <italic>false</italic>
-       <bold>false</bold>
-       <underline>true</underline>
-       <kerning>false</kerning>
-      </font>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="text">
-      <string>Current IP:</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="labelThreads">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>255</y>
-       <width>61</width>
-       <height>20</height>
+       <x>89</x>
+       <y>325</y>
+       <width>15</width>
+       <height>15</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
+       <family>Sans</family>
+       <pointsize>10</pointsize>
        <weight>50</weight>
        <bold>false</bold>
-       <underline>true</underline>
+       <underline>false</underline>
        <kerning>false</kerning>
       </font>
      </property>
@@ -1588,40 +1558,15 @@ border-radius: 3px;</string>
       <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
      </property>
      <property name="text">
-      <string>Threads:</string>
+      <string>⇶:</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelBaThreads">
+    <widget class="QLabel" name="ipLabel">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>280</y>
-       <width>71</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-       <underline>true</underline>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="text">
-      <string>Brute threads:</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelIpRange_Value">
-     <property name="geometry">
-      <rect>
-       <x>95</x>
-       <y>230</y>
-       <width>394</width>
+       <x>37</x>
+       <y>351</y>
+       <width>150</width>
        <height>20</height>
       </rect>
      </property>
@@ -1637,7 +1582,7 @@ border-radius: 3px;</string>
        <pointsize>7</pointsize>
        <weight>50</weight>
        <bold>false</bold>
-       <underline>false</underline>
+       <underline>true</underline>
       </font>
      </property>
      <property name="autoFillBackground">
@@ -1649,13 +1594,16 @@ border-radius: 3px;</string>
      <property name="text">
       <string>--</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
     </widget>
-    <widget class="QLabel" name="labelThreads_Value">
+    <widget class="QLabel" name="labelRunningThreads">
      <property name="geometry">
       <rect>
-       <x>95</x>
-       <y>255</y>
-       <width>91</width>
+       <x>104</x>
+       <y>324</y>
+       <width>67</width>
        <height>20</height>
       </rect>
      </property>
@@ -1672,82 +1620,7 @@ border-radius: 3px;</string>
       <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
      </property>
      <property name="text">
-      <string>0/0</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelBAThreads_Value">
-     <property name="geometry">
-      <rect>
-       <x>95</x>
-       <y>280</y>
-       <width>61</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-       <underline>false</underline>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelIPS">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>330</y>
-       <width>61</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-       <underline>true</underline>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="text">
-      <string>IP/s:</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelIPS_Value">
-     <property name="geometry">
-      <rect>
-       <x>95</x>
-       <y>330</y>
-       <width>106</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-       <underline>false</underline>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="text">
-      <string>0</string>
+      <string>0/0/0</string>
      </property>
     </widget>
     <widget class="QTextBrowser" name="dataText">
@@ -1812,78 +1685,10 @@ p, li { white-space: pre-wrap; }
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QLabel" name="labelParsed">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>355</y>
-       <width>73</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-       <underline>true</underline>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="lineWidth">
-      <number>1</number>
-     </property>
-     <property name="text">
-      <string>Saved/Online:</string>
-     </property>
-     <property name="wordWrap">
-      <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelParsed_Value">
-     <property name="geometry">
-      <rect>
-       <x>95</x>
-       <y>355</y>
-       <width>108</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-       <underline>false</underline>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="text">
-      <string>0/0</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="labelStatus">
      <property name="geometry">
       <rect>
-       <x>11</x>
+       <x>19</x>
        <y>783</y>
        <width>41</width>
        <height>10</height>
@@ -1923,7 +1728,7 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="labelStatus_Value">
      <property name="geometry">
       <rect>
-       <x>51</x>
+       <x>58</x>
        <y>783</y>
        <width>101</width>
        <height>10</height>
@@ -1945,34 +1750,34 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="labelTargetsLeft">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>305</y>
-       <width>61</width>
+       <x>89</x>
+       <y>335</y>
+       <width>16</width>
        <height>20</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
+       <family>Sans</family>
+       <pointsize>10</pointsize>
        <weight>50</weight>
        <bold>false</bold>
-       <underline>true</underline>
+       <underline>false</underline>
       </font>
      </property>
      <property name="styleSheet">
       <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
      </property>
      <property name="text">
-      <string>Targets:</string>
+      <string>⌬:</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelTargetsLeft_Value">
+    <widget class="QLabel" name="labelPendingTargets">
      <property name="geometry">
       <rect>
-       <x>95</x>
-       <y>305</y>
-       <width>114</width>
+       <x>104</x>
+       <y>337</y>
+       <width>71</width>
        <height>20</height>
       </rect>
      </property>
@@ -2551,74 +2356,6 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="cacheMode">
       <set>QGraphicsView::CacheNone</set>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelBadAddr">
-     <property name="geometry">
-      <rect>
-       <x>19</x>
-       <y>380</y>
-       <width>73</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-       <underline>true</underline>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="lineWidth">
-      <number>1</number>
-     </property>
-     <property name="text">
-      <string>Offline:</string>
-     </property>
-     <property name="wordWrap">
-      <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelOffline_Value">
-     <property name="geometry">
-      <rect>
-       <x>95</x>
-       <y>380</y>
-       <width>71</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-       <underline>false</underline>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="text">
-      <string>0</string>
      </property>
     </widget>
     <widget class="QTextBrowser" name="BAText">
@@ -3229,9 +2966,9 @@ background-color: #000000;</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>36</x>
-       <y>15</y>
-       <width>86</width>
+       <x>31</x>
+       <y>16</y>
+       <width>82</width>
        <height>10</height>
       </rect>
      </property>
@@ -3291,27 +3028,97 @@ background-color: #000000;</string>
       <string/>
      </property>
     </widget>
+    <widget class="QGraphicsView" name="graphicsTest">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>229</y>
+       <width>210</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Small Fonts</family>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border:1px white solid;background-color: rgba(26, 26,26, 0);</string>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="renderHints">
+      <set>QPainter::TextAntialiasing</set>
+     </property>
+     <property name="cacheMode">
+      <set>QGraphicsView::CacheNone</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelSavedValue">
+     <property name="geometry">
+      <rect>
+       <x>104</x>
+       <y>311</y>
+       <width>67</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Small Fonts</family>
+       <pointsize>7</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216); background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelSaved">
+     <property name="geometry">
+      <rect>
+       <x>89</x>
+       <y>312</y>
+       <width>15</width>
+       <height>15</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Sans</family>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <underline>false</underline>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string>✔:</string>
+     </property>
+    </widget>
     <zorder>graphicTextPlacer</zorder>
     <zorder>BAText</zorder>
     <zorder>labelNesca_3</zorder>
     <zorder>tabMainWidget</zorder>
     <zorder>line</zorder>
     <zorder>exitButton</zorder>
-    <zorder>labelIpRange</zorder>
-    <zorder>labelThreads</zorder>
-    <zorder>labelBaThreads</zorder>
-    <zorder>labelIpRange_Value</zorder>
-    <zorder>labelThreads_Value</zorder>
-    <zorder>labelBAThreads_Value</zorder>
-    <zorder>labelIPS</zorder>
-    <zorder>labelIPS_Value</zorder>
     <zorder>dataText</zorder>
-    <zorder>labelParsed</zorder>
-    <zorder>labelParsed_Value</zorder>
     <zorder>labelStatus</zorder>
     <zorder>labelStatus_Value</zorder>
-    <zorder>labelTargetsLeft</zorder>
-    <zorder>labelTargetsLeft_Value</zorder>
     <zorder>line_2</zorder>
     <zorder>RedLabel</zorder>
     <zorder>YellowLabel</zorder>
@@ -3334,8 +3141,6 @@ background-color: #000000;</string>
     <zorder>graphicDelim</zorder>
     <zorder>graphicLog_2</zorder>
     <zorder>graphicLog_Upper</zorder>
-    <zorder>labelBadAddr</zorder>
-    <zorder>labelOffline_Value</zorder>
     <zorder>switcherBut</zorder>
     <zorder>labelTracker</zorder>
     <zorder>graphicActivityGrid</zorder>
@@ -3358,6 +3163,14 @@ background-color: #000000;</string>
     <zorder>labelSSH</zorder>
     <zorder>rVerLabel</zorder>
     <zorder>NSTrackStatusLabel</zorder>
+    <zorder>graphicsTest</zorder>
+    <zorder>ipLabel</zorder>
+    <zorder>labelTargetsLeft</zorder>
+    <zorder>labelPendingTargets</zorder>
+    <zorder>labelThreads</zorder>
+    <zorder>labelRunningThreads</zorder>
+    <zorder>labelSavedValue</zorder>
+    <zorder>labelSaved</zorder>
    </widget>
    <widget class="QWidget" name="widgetJOB" native="true">
     <property name="geometry">
@@ -3488,10 +3301,10 @@ background-color: #000000;</string>
      <string>:Jobs</string>
     </property>
    </widget>
-   <zorder>widget</zorder>
    <zorder>widgetJOB</zorder>
-   <zorder>JobModeBut</zorder>
+   <zorder>widget</zorder>
    <zorder>DataflowModeBut</zorder>
+   <zorder>JobModeBut</zorder>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

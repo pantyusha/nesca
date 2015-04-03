@@ -35,7 +35,6 @@ SOURCES +=\
     finder.cpp \
     WebformWorker.cpp \
     Connector.cpp \
-    connector_old.cpp \
     Utils.cpp \
     BruteUtils.cpp \
     BasicAuth.cpp \

@@ -33,13 +33,11 @@ bool BA::checkOutput(const string *buffer, const char *ip, const int port) {
 lopaStr BA::BABrute(const char *ip, const int port) {
     string buffer;
     string lpString;
-    lopaStr lps;
+    lopaStr lps{"UNKNOWN", "", ""};
     ZeroMemory(lps.login, sizeof(lps.login));
     ZeroMemory(lps.pass, sizeof(lps.pass));
     ZeroMemory(lps.other, sizeof(lps.other));
     int passCounter = 0;
-
-    strcpy(lps.login, "UNKNOWN");
 
     for(int i = 0; i < MaxLogin; ++i) {
         for (int j = 0; j < MaxPass; ++j) {
@@ -78,7 +76,7 @@ lopaStr BA::BALobby(const char *ip, const int port) {
 
         return lps;
     } else {
-        lopaStr lps;
+        lopaStr lps{"UNKNOWN", "", ""};
         return lps;
     }
 }

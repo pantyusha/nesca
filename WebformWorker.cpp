@@ -158,12 +158,12 @@ lopaStr WFClass::_WFBrute( const char *ip,
                                 char *passVal,
                                 char *formVal) {
 
-    lopaStr result = {"UNKNOWN", "UNKNOWN", "UNKNOWN"};
+    lopaStr lps{"UNKNOWN", "", ""};
 
     if(strstri(methodVal, "get") != NULL) {
-        result = doGetCheck(ip, port, actionVal, userVal, passVal, formVal);
+        lps = doGetCheck(ip, port, actionVal, userVal, passVal, formVal);
     } else if(strstri(methodVal, "post") != NULL) {
-        result = doPostCheck(ip, port, actionVal, userVal, passVal, formVal);
+        lps = doPostCheck(ip, port, actionVal, userVal, passVal, formVal);
     } else {
         stt->doEmitionFoundData("<a href=\"http://" + QString(ip) +
                                 ":" + QString::number(port)
@@ -172,5 +172,5 @@ lopaStr WFClass::_WFBrute( const char *ip,
                                 "</font></a> - [WF]: Unknown method.");
     };
 
-    return result;
+    return lps;
 }

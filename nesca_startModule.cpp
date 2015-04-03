@@ -20,7 +20,7 @@ int PieAnomC1 = 0, PieBA = 0, PieSusp = 0, PieLowl = 0, PieWF = 0, PieSSH = 0;
 int AnomC1 = 0, Filt = 0, Overl = 0, Lowl = 0, Alive = 0, saved = 0, Susp = 0, WF = 0, offlines = 0, ssh = 0;
 int GlobalNegativeSize = 0;
 int ipCounter = 0;
-int found = 0, indexIP = 1;
+int found = 0, indexIP = 0;
 int gMode;
 int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSSHPass = 0;
 int ipsstart[4], ipsend[4],
@@ -334,23 +334,20 @@ void _timer() {
 		strncpy(b, QString::number(ips).toLocal8Bit().data(), 5);
 
 		strcpy(metaIPS, b);
-		strcat(timeLeft, b);
-		strcat(timeLeft, "/s (");
+        //strcat(timeLeft, b);
+        //strcat(timeLeft, "/s (");
 
-		if (ips > 0)
-		{
-			strncpy(dbuffer, std::to_string(((gTargets + 1) / ips / 3600 / 24)).c_str(), 5);
-		}
-		else strcpy(dbuffer, "INF");
-		strcpy(metaETA, dbuffer);
-		strcat(dbuffer, "d)");
-		strcat(timeLeft, (strcmp(dbuffer, "1.$d)") == 0 ? "INF)" : dbuffer));
+        //if (ips > 0)
+        //{
+        //	strncpy(dbuffer, std::to_string(((gTargets + 1) / ips / 3600 / 24)).c_str(), 5);
+        //}
+        //else strcpy(dbuffer, "INF");
+        //strcpy(metaETA, dbuffer);
+        //strcat(dbuffer, "d)");
+        //strcat(timeLeft, (strcmp(dbuffer, "1.$d)") == 0 ? "INF)" : dbuffer));
 
-
-		stt->doEmitionIPS(QString(timeLeft));
-
-		ZeroMemory(timeLeft, sizeof(timeLeft));
-		ZeroMemory(dbuffer, sizeof(dbuffer));
+        //ZeroMemory(timeLeft, sizeof(timeLeft));
+        //ZeroMemory(dbuffer, sizeof(dbuffer));
 
 		Sleep(1000);
 	};
@@ -717,7 +714,7 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[]) {
 	gTargets += 65536 * (ipsend[1] - ipsstart[1]);
 	gTargets += 256 * (ipsend[2] - ipsstart[2]);
 	gTargets += (ipsend[3] - ipsstart[3]);
-	gTargetsOverall = gTargets;
+    gTargetsOverall = gTargets + 1;
 
 	//unsigned long ip1 = (ipsstart[0] * 16777216) + (ipsstart[1] * 65536) + (ipsstart[2] * 256) + ipsstart[3];
 	//unsigned long ip2 = (ipsend[0] * 16777216) + (ipsend[1] * 65536) + (ipsend[2] * 256) + ipsend[3];
@@ -728,13 +725,13 @@ unsigned long int numOfIps(int ipsstart[], int ipsend[]) {
 
 void verboseProgress(unsigned long target) {
 
-	stt->doEmitionIPRANGE(QString(currentIP));
+    stt->doEmitionUpdateArc(gTargets);
+    if(gTargets > 0) --gTargets;
 
 	char targetNPers[128] = { 0 };
 	float percent = (gTargetsOverall != 0 ? (100 - target / (double)gTargetsOverall * 100) : 0);
 
-	sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
-	stt->doEmitionTargetsLeft(QString(targetNPers));
+    sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
 
 	sprintf(metaTargets, "%Lu", target);
 	sprintf(metaPercent, "%.1f",
@@ -1508,7 +1505,6 @@ int ParseArgs(int argc, char *argv[]) {
 
 		if (strstr(p, ",") != NULL)
 		{
-
 			lex = strtok(p, ",");
 			portArr[indexPorts++] = atoi(lex);
 
@@ -1539,7 +1535,6 @@ int ParseArgs(int argc, char *argv[]) {
 		}
 		else
 		{
-
 			lex = strtok(p, "-p");
 			portArr[indexPorts++] = atoi(lex);
 		};
@@ -1605,8 +1600,6 @@ void ConInc()
 #else
 	asm("lock; incl cons");
 #endif
-	stt->doEmitionThreads(QString::number(cons) + "/" +
-		QString::number(gThreads));
 }
 void ConDec()
 {
@@ -1622,8 +1615,7 @@ void ConDec()
 #endif
 
 	};
-	stt->doEmitionThreads(QString::number(cons) + "/" +
-		QString::number(gThreads));
+    stt->doEmitionUpdateArc(gTargets);
 }
 
 void _connect() {
@@ -1726,7 +1718,7 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 
 		++indexIP;
 		sprintf(currentIP, "%s%s", mask, gTLD);
-		verboseProgress(gTargets--);
+        verboseProgress(gTargets);
 
 		Threader::fireThread(currentIP, (void*(*)(void))_connect);
 	};
@@ -1796,10 +1788,7 @@ int startScan(char* args) {
 		stt->doEmitionKillSttThread();
 
 		return -1;
-	};
-
-	stt->doEmitionIPRANGE(QString("--"));
-	stt->doEmitionThreads(QString::number(0) + "/" + QString::number(gThreads));
+    };
 
 	runAuxiliaryThreads();
 
@@ -1833,7 +1822,7 @@ int startScan(char* args) {
 								   strcpy(currentIP, ipVec[0].c_str());
 								   ipVec.erase(ipVec.begin());
 
-								   verboseProgress(gTargets--);
+                                   verboseProgress(gTargets);
 
 								   Threader::fireThread(currentIP, (void*(*)(void))_connect);
 							   }
@@ -1854,7 +1843,7 @@ int startScan(char* args) {
 
 							tAddr.s_addr = ntohl(i);
 							strcpy(currentIP, inet_ntoa(tAddr));
-							verboseProgress(gTargets--);
+                            verboseProgress(gTargets);
 
 							Threader::fireThread(currentIP, (void*(*)(void))_connect);
 						}
@@ -2036,7 +2025,7 @@ int startScan(char* args) {
 									   ++indexIP;
 									   strcpy(currentIP, ipVec[0].c_str());
 									   ipVec.erase(ipVec.begin());
-									   verboseProgress(gTargets--);
+                                       verboseProgress(gTargets);
 
 									   Threader::fireThread(currentIP, (void*(*)(void))_connect);
 								   }
@@ -2056,7 +2045,7 @@ int startScan(char* args) {
 
 								tAddr.s_addr = ntohl(i);
 								strcpy(currentIP, inet_ntoa(tAddr));
-								verboseProgress(gTargets--);
+                                verboseProgress(gTargets);
 								Threader::fireThread(currentIP, (void*(*)(void))_connect);
 							}
 							break;
@@ -2079,7 +2068,6 @@ int startScan(char* args) {
 	};
 
 	stt->doEmitionGreenFoundData("Done. Saved: " + QString::number(saved) + "; Alive: " + QString::number(found) + ".");
-	stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(found));
 	stt->doEmitionChangeStatus("Idle");
 
 	Sleep(1000);									//Wait for lock release

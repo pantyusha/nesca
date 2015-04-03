@@ -3,38 +3,26 @@
 void STh::doEmitionShowRedVersion()
 {
 	emit stt->showRedVersion();	
-};
+}
 void STh::doEmitionStartScanIP()
 {
 	emit stt->startScanIP();	
-};
+}
 void STh::doEmitionStartScanDNS()
 {
 	emit stt->startScanDNS();		
-};
+}
 void STh::doEmitionStartScanImport()
 {
 	emit stt->startScanImport();		
-};
+}
 void STh::doEmitionAddIncData(QString(ip), QString str)
 {
 	emit stt->sIncData(ip, str);
-};
+}
 void STh::doEmitionAddOutData( QString str)
 {
 	emit stt->sOutData(str);
-};
-void STh::doEmitionIPRANGE(QString str)
-{
-	emit stt->changeIpRange(str);
-}
-void STh::doEmitionThreads(QString str)
-{
-	emit stt->changeThreads(str);
-}
-void STh::doEmitionIPS(QString str)
-{
-	emit stt->changeIPS(str);
 }
 void STh::doEmitionFoundData(QString str)
 {
@@ -47,7 +35,7 @@ void STh::doEmitionBAData(QString str)
 void STh::doEmition_BARedData(QString str)
 {
 	emit stt->changeRedBAData(str);	
-};
+}
 void STh::doEmition_BAGreenData(QString str)
 {
 	emit stt->changeGreenBAData(str);
@@ -72,30 +60,19 @@ void STh::doEmitionChangeStatus(QString str)
 {
 	emit stt->changeStatus(str);
 }
-void STh::doEmitionTargetsLeft(QString str)
-{
-	emit stt->changeTargetsLeft(str);
-}
 void STh::doEmitionKillSttThread()
 {
 	emit stt->killSttThread();	
-};
-void STh::doEmitionChangeParsed(QString str)
-{
-	emit stt->changeParsedValue(str);	
-};
-void STh::doEmitionChangeBA(QString str)
-{
-	emit stt->changeBAValue(str);	
-};
-void STh::doEmitionOffline(QString str)
-{
-	emit stt->changeOffline(str);		
-};
+}
 void STh::doEmitionDataSaved(bool status)
 {
-	emit stt->signalDataSaved(status);		
-};
+    emit stt->signalDataSaved(status);
+}
+void STh::doEmitionUpdateArc(unsigned long gTargets)
+{
+    emit stt->signalUpdateArc(gTargets);
+}
+
 void STh::run() 
 {
 	startScan(inputStr);

@@ -13,8 +13,7 @@ __asm
 #else
     asm("lock incl BrutingThrds");
 #endif
-
-    stt->doEmitionChangeBA(QString::number(BrutingThrds));
+    stt->doEmitionUpdateArc(gTargets);
 }
 
 void BruteUtils::BConDec()
@@ -30,6 +29,5 @@ void BruteUtils::BConDec()
         asm("lock decl BrutingThrds");
 #endif
     }
-
-    stt->doEmitionChangeBA(QString::number(BrutingThrds));
+    stt->doEmitionUpdateArc(gTargets);
 }

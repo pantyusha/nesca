@@ -223,7 +223,6 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
                 if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString("[OVERFLOW]"));
                 return buffer->size();
             } else {
-                stt->doEmitionOffline(QString::number(++offlines));
                 return -1;
             }
 		}
@@ -255,7 +254,6 @@ int Connector::_ConnectToPort(char* ip, int port)
     if(size > 0)
     {
         ++Alive;
-        stt->doEmitionChangeParsed(QString::number(saved) + "/" + QString::number(++found));
         Lexems lx;
         lx._filler(port, buffer.c_str(), ip, size, &lx);
     };

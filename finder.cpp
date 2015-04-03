@@ -1134,16 +1134,16 @@ void _specWFBrute(const char *ip, int port, const char *buff, int flag, char *pa
 		}
 		else
 		{
-			if(gNegDebugMode) stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: Cannot find user/pass field.");		
-            ///fillGlobalLogData(ip, tport, std::to_string(size).c_str(), title, "", "", "UnknownWebform", cp, tclass);
-            ///putInFile(flag, ip, tport, size, title, cp);
+            if(gNegDebugMode) stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) +
+                                                      "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) +
+                                                      "</font></a> - [WF]: Cannot find user/pass field.");
 		};
     };
 }
 
 void _specWEBIPCAMBrute(const char *ip, int port, char *finalstr, int flag, char *comment, char *cp, int size, char *SPEC)
 {
-	lopaStr lps;
+    lopaStr lps{"UNKNOWN", "", ""};
 	ZeroMemory(lps.login, sizeof(lps.login));
 	ZeroMemory(lps.pass, sizeof(lps.pass));
 	ZeroMemory(lps.other, sizeof(lps.other));

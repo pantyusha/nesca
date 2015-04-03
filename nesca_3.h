@@ -124,6 +124,7 @@ protected:
 		void appendGreenBAData(QString str);
 		void appendRedBAData(QString str);
         void STTTerminate();
+        void drawVerboseArcs(unsigned long gTargets);
 private:
 	QPoint dragPosition;
 };

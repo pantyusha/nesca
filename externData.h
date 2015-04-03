@@ -21,6 +21,7 @@
 extern QJsonArray *jsonArr;
 
 extern unsigned long long gTargetsOverall;
+extern long long unsigned int gTargets;
 extern volatile int cons, BrutingThrds, gThreads;
 extern char **loginLst, **passLst, **wfLoginLst, **wfPassLst, **sshlpLst, **GlobalNegatives;
 extern bool trackerOK, __savingBackUpFile, globalScanFlag, MapWidgetOpened,

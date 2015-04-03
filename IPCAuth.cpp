@@ -5,7 +5,7 @@
 
 lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 {
-    lopaStr lps;
+    lopaStr lps{"UNKNOWN", "", ""};
     bool result = true;
     ZeroMemory(lps.login, sizeof(lps.login));
     ZeroMemory(lps.pass, sizeof(lps.pass));
@@ -172,7 +172,6 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
         };
     };
 
-    strcpy(lps.login, "UNKNOWN");
     return lps;
 }
 
@@ -186,7 +185,7 @@ lopaStr IPC::IPCLobby(const char *ip, int port, char *SPEC) {
 
         return lps;
     } else {
-        lopaStr lps;
+        lopaStr lps{"UNKNOWN", "", ""};
         return lps;
     }
 }

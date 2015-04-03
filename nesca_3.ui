@@ -1546,7 +1546,7 @@ border-radius: 3px;</string>
      </property>
      <property name="font">
       <font>
-       <family>Sans</family>
+       <family>MS Sans Serif</family>
        <pointsize>10</pointsize>
        <weight>50</weight>
        <bold>false</bold>
@@ -1558,7 +1558,7 @@ border-radius: 3px;</string>
       <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
      </property>
      <property name="text">
-      <string>⇶:</string>
+      <string>⇉:</string>
      </property>
     </widget>
     <widget class="QLabel" name="ipLabel">
@@ -1601,7 +1601,7 @@ border-radius: 3px;</string>
     <widget class="QLabel" name="labelRunningThreads">
      <property name="geometry">
       <rect>
-       <x>104</x>
+       <x>105</x>
        <y>324</y>
        <width>67</width>
        <height>20</height>
@@ -1750,17 +1750,18 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="labelTargetsLeft">
      <property name="geometry">
       <rect>
-       <x>89</x>
-       <y>335</y>
+       <x>90</x>
+       <y>338</y>
        <width>16</width>
-       <height>20</height>
+       <height>15</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <family>Sans</family>
+       <family>MS Sans Serif</family>
        <pointsize>10</pointsize>
        <weight>50</weight>
+       <italic>false</italic>
        <bold>false</bold>
        <underline>false</underline>
       </font>
@@ -1769,13 +1770,13 @@ p, li { white-space: pre-wrap; }
       <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
      </property>
      <property name="text">
-      <string>⌬:</string>
+      <string>⌾:</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelPendingTargets">
      <property name="geometry">
       <rect>
-       <x>104</x>
+       <x>105</x>
        <y>337</y>
        <width>71</width>
        <height>20</height>
@@ -3062,7 +3063,7 @@ background-color: #000000;</string>
     <widget class="QLabel" name="labelSavedValue">
      <property name="geometry">
       <rect>
-       <x>104</x>
+       <x>105</x>
        <y>311</y>
        <width>67</width>
        <height>20</height>
@@ -3087,16 +3088,16 @@ background-color: #000000;</string>
     <widget class="QLabel" name="labelSaved">
      <property name="geometry">
       <rect>
-       <x>89</x>
+       <x>88</x>
        <y>312</y>
-       <width>15</width>
+       <width>16</width>
        <height>15</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <family>Sans</family>
-       <pointsize>10</pointsize>
+       <family>MS Sans Serif</family>
+       <pointsize>8</pointsize>
        <weight>50</weight>
        <bold>false</bold>
        <underline>false</underline>

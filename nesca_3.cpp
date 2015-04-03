@@ -1374,22 +1374,6 @@ void nesca_3::switchDataFields()
 	};
 }
 
-//void nesca_3::slotBlinkMessage()
-//{
-//	if(blinkFlag)
-//	{
-//		blinkFlag = false;
-//		ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
-//		ui->IRCModeBut->setStyleSheet("color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);");
-//	}
-//	else
-//	{
-//		blinkFlag = true;
-//		ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 255);background-color: rgba(2, 2, 2, 0);");
-//		ui->IRCModeBut->setStyleSheet("color: rgb(255, 0, 0);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 0, 0, 255);");
-//	};
-//}
-
 void nesca_3::slotTabChanged(int index){
     if(index <= 2) savedTabIndex = index;
 }
@@ -2742,7 +2726,8 @@ void _startMsgCheck()
     dotsThreads << 0.1 << 0.2 << 0.1 << 0.2;
     penAllThreads.setCapStyle(Qt::FlatCap);
     penAllThreads.setDashPattern(dotsThreads);
-    penThreads.setCapStyle(Qt::FlatCap);
+	penThreads.setCapStyle(Qt::FlatCap);
+	penThreads.setDashPattern(dotsThreads);
     penBAThreads.setDashPattern(dots);
     penBAThreads.setCapStyle(Qt::FlatCap);
     penAllTargets.setCapStyle(Qt::FlatCap);

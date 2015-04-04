@@ -218,9 +218,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 				else stt->doEmitionRedFoundData("CURL error: (" + QString::number(res) + ") " + 
 					QString(ip) + ":" + QString::number(port));
 			}
-			else if (gMode == 1 && res == 6) {
-				return -2;
-			}
+			else if (gMode == 1 && res == 6) return -2;
 
             if(res == 23 && buffer->size() > 0) {
                 if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString("[OVERFLOW]"));

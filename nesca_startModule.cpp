@@ -1624,6 +1624,7 @@ void _connect() {
 				if (Connector::_ConnectToPort((char*)ip.c_str(), portArr[i]) == -2) break;
 			};
 			--cons;
+			stt->doEmitionUpdateArc(gThreads);
 		}
 		else lk.unlock();
 	}

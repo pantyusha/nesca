@@ -386,6 +386,11 @@ int ContentFilter(const char *buff, int port, const char *ip, char *cp, int sz)
 			codec = QTextCodec::codecForName("Windows-1251");
 			strLower = codec->toUnicode(buff);
 		}
+		else if (strstri(cp, "gb") != NULL)
+		{
+			codec = QTextCodec::codecForName("GB2312");
+			strLower = codec->toUnicode(buff);
+		}
 		else strLower = QString(buff);
 		strLower = strLower.toLower();
 
@@ -699,9 +704,14 @@ void putInFile(int flag, const char *ip, char *port, int size, char *finalstr, c
 		codec = QTextCodec::codecForName("UTF-8");
 		strf = codec->toUnicode(finalstr);
 	}
-	else if(strstri(cp, "cp") != NULL || strstri(cp, "windows") != NULL)
+	else if (strstri(cp, "cp") != NULL || strstri(cp, "windows") != NULL)
 	{
 		codec = QTextCodec::codecForName("Windows-1251");
+		strf = codec->toUnicode(finalstr);
+	}
+	else if (strstri(cp, "gb") != NULL)
+	{
+		codec = QTextCodec::codecForName("GB2312");
 		strf = codec->toUnicode(finalstr);
 	}
 	else strf = QString(finalstr);

@@ -185,7 +185,6 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 			Activity += buffer->size();
             return buffer->size();
 		} else {
-			if (gMode == 1 && res == 6) return - 2;
 			if (res != 28 &&
 				res != 6 &&
 				res != 7 &&
@@ -218,6 +217,9 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 				}
 				else stt->doEmitionRedFoundData("CURL error: (" + QString::number(res) + ") " + 
 					QString(ip) + ":" + QString::number(port));
+			}
+			else if (gMode == 1 && res == 6) {
+				return -2;
 			}
 
             if(res == 23 && buffer->size() > 0) {

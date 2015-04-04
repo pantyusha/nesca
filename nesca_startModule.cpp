@@ -1625,7 +1625,7 @@ void _connect() {
 		std::unique_lock<std::mutex> lk(Threader::m);
 		Threader::cv.wait(lk, []{return Threader::ready; });
 
-		if (Threader::threadId > gThreads || !globalScanFlag) {
+		if (!globalScanFlag || Threader::threadId > gThreads) {
 			--Threader::threadId;
 			Threader::ready = false;
 			lk.unlock();

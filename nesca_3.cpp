@@ -2859,7 +2859,7 @@ void nesca_3::STTTerminate()
 {
 	globalScanFlag = false;
 	startFlag = false;
-	importFileName = "";
+	importFileName = "";	
 	ui->tabMainWidget->setTabEnabled(0, true);
 	ui->tabMainWidget->setTabEnabled(1, true);
 	ui->tabMainWidget->setTabEnabled(2, true);

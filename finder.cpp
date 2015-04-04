@@ -189,7 +189,7 @@ char *GetCodePage(const char *str)
 
 int globalSearchNeg(const char *buffcpy, const char *ip, int port)
 {
-    QTextCodec *nCodec = QTextCodec::codecForName("Windows-1251");
+	QTextCodec *nCodec = QTextCodec::codecForName("Windows-1251");
     for(int i = 0; i < GlobalNegativeSize; ++i)
 	{
         FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});

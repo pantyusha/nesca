@@ -251,7 +251,8 @@ int Connector::_ConnectToPort(char* ip, int port)
 
     if(size > 0)
     {
-        ++Alive;
+        ++Alive;//ME2
+		++found;//PieStat
         Lexems lx;
         lx._filler(port, buffer.c_str(), ip, size, &lx);
 	}

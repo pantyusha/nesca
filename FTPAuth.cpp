@@ -13,10 +13,7 @@ bool FTPA::checkOutput(const string *buffer) {
 lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
     string buffer;
     string lpString;
-    lopaStr lps{"UNKNOWN", "", ""};;
-    ZeroMemory(lps.login, sizeof(lps.login));
-    ZeroMemory(lps.pass, sizeof(lps.pass));
-    ZeroMemory(lps.other, sizeof(lps.other));
+    lopaStr lps{"UNKNOWN", "", ""};
 
     strcpy(lps.login, "UNKNOWN");
 	int res = 0;
@@ -24,6 +21,7 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 
     char login[128] = {0};
     char pass[32] = {0};
+	char nip[128] = { 0 };
 
     for(int i = 0; i < MaxLogin; ++i)
     {
@@ -43,7 +41,9 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 
             lpString = string(login) + ":" + string(pass);
 			
-			res = Connector::nConnect((string("ftp://") + string(ip)).c_str(), port, &buffer, NULL, NULL, &lpString);
+			ZeroMemory(nip, 128);
+			sprintf(nip, "ftp://%s", ip);
+			res = Connector::nConnect(nip, port, &buffer, NULL, NULL, &lpString);
 			if (res == -2) return lps;
 			else if (res != -1) {
 				if (!globalScanFlag) return lps;

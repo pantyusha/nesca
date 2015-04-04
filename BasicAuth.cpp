@@ -38,6 +38,7 @@ lopaStr BA::BABrute(const char *ip, const int port) {
     ZeroMemory(lps.pass, sizeof(lps.pass));
     ZeroMemory(lps.other, sizeof(lps.other));
     int passCounter = 0;
+	int res = 0;
 
     for(int i = 0; i < MaxLogin; ++i) {
         for (int j = 0; j < MaxPass; ++j) {
@@ -46,13 +47,15 @@ lopaStr BA::BABrute(const char *ip, const int port) {
 
             lpString = string(loginLst[i]) + ":" + string(passLst[j]);
 
-			if (Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString) == -2) return lps;
-
-            if(checkOutput(&buffer, ip, port)) {
-                strcpy(lps.login, loginLst[i]);
-                strcpy(lps.pass, passLst[j]);
-                return lps;
-            };
+			res = Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString);
+			if (res == -2) return lps;
+			else if (res != -1) {
+				if (checkOutput(&buffer, ip, port)) {
+					strcpy(lps.login, loginLst[i]);
+					strcpy(lps.pass, passLst[j]);
+					return lps;
+				};
+			}
 
 			if (BALogSwitched) stt->doEmitionBAData("BA: " + QString(ip) + ":" + QString::number(port) + 
                 "; l/p: " + QString(loginLst[i]) + ":" + QString(passLst[j]) + ";	- Progress: (" +

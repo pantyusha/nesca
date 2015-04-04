@@ -368,19 +368,39 @@ int ContentFilter(const char *buff, int port, const char *ip, char *cp, int sz)
 {
     if(buff != NULL)
 	{
+		QTextCodec *codec;
+		QString strf;
+
+		if (strstri(cp, "shift_jis") != NULL)
+		{
+			codec = QTextCodec::codecForName("Shift-JIS");
+			strf = codec->toUnicode(buff).toLower();
+		}
+		else if (strstri(cp, "utf") != NULL)
+		{
+			codec = QTextCodec::codecForName("UTF-8");
+			strf = codec->toUnicode(buff).toLower();
+		}
+		else if (strstri(cp, "cp") != NULL || strstri(cp, "windows") != NULL)
+		{
+			codec = QTextCodec::codecForName("Windows-1251");
+			strf = codec->toUnicode(buff).toLower();
+		}
+		else strf = QString(buff);
+
 		int res = 0;
 
 		if(sz <= 500)
 		{
-			res = _mainFinderFirst(toLowerStr(buff).c_str(), 1, port, ip, sz);
+			res = _mainFinderFirst(strf.toLocal8Bit().data(), 1, port, ip, sz);
 		}
 		else if((sz > 500 && sz <= 3500) || sz > 180000) 
 		{	
-			res = _mainFinderFirst(toLowerStr(buff).c_str(), 0, port, ip, sz);
+			res = _mainFinderFirst(strf.toLocal8Bit().data(), 0, port, ip, sz);
 		}
 		else if(sz > 3500 && sz <= 180000)
 		{
-			res = _mainFinderSecond(toLowerStr(buff).c_str(), port, ip);
+			res = _mainFinderSecond(strf.toLocal8Bit().data(), port, ip);
 		};
 
 		return res;
@@ -2053,6 +2073,7 @@ void _getPopupTitle(PathStr *ps, char *str)
 
 void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int port)
 {
+	if (strstri(str, ".title") != NULL) return;
 	char *ptr1 = strstr(str, tag);
 	if(ptr1 != NULL)
 	{
@@ -2135,7 +2156,8 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 		}
 		else
 		{
-			stt->doEmitionRedFoundData("[JSLocator] _findFirst failed [" + QString(ip) + ":" + QString::number(port) + "]");			
+			stt->doEmitionRedFoundData("[JSLocator] Location extraction failed [<a href=\"http://" + 
+				QString(ip) + ":" + QString::number(port) + "/\">" + QString(ip) + ":" + QString::number(port) + "</a>]");
 		};
 	};
 }

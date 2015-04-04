@@ -181,7 +181,10 @@ void _SaveBackupToFile()
 	{
 		if (gMode == 1)
 		{
-			strcpy(endStr, currentMask);
+			if (strlen(currentMask) == 0) {
+				sprintf(endStr, "%s", currentIP);
+			}
+			else strcpy(endStr, currentMask);
 		}
 		else
 		{

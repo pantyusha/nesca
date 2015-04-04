@@ -185,8 +185,8 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 			Activity += buffer->size();
             return buffer->size();
 		} else {
-			if (res != 28 &&
-				res != 6 &&
+			if (res == 6) return -2;
+			else if (res != 28 &&
 				res != 7 &&
 				res != 67 &&
 				res != 52 &&
@@ -218,14 +218,11 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 				else stt->doEmitionRedFoundData("CURL error: (" + QString::number(res) + ") " + 
 					QString(ip) + ":" + QString::number(port));
 			}
-			else if (gMode == 1 && res == 6) return -2;
 
             if(res == 23 && buffer->size() > 0) {
                 if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString("[OVERFLOW]"));
                 return buffer->size();
-            } else {
-                return -1;
-            }
+            } else return -1;
 		}
     } else {
         stt->doEmitionRedFoundData("Curl error.");

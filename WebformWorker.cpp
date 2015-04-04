@@ -8,7 +8,7 @@ lopaStr WFClass::parseResponse(const char *ip,
                                const char *login,
                                const char *pass) {
 
-    lopaStr result = {"UNKNOWN", "UNKNOWN", "UNKNOWN"};
+    lopaStr result = {"UNKNOWN", "", ""};
 
     if(buffer->size() != 0)
     {
@@ -53,7 +53,7 @@ lopaStr WFClass::doGetCheck(const char *ip,
                                   char *passVal,
                                   char *formVal) {
 
-    lopaStr result = {"UNKNOWN", "UNKNOWN", "UNKNOWN"};
+    lopaStr result = {"UNKNOWN", "", ""};
     int passCounter = 0;
     int firstCycle = 0;
 
@@ -81,12 +81,12 @@ lopaStr WFClass::doGetCheck(const char *ip,
             sprintf(nip, "%s%s?%s=%s&%s=%s", ip, actionVal, userVal, login, passVal, pass);
 
             std::string buffer;
-            Connector::nConnect(nip, port, &buffer);
+            if(Connector::nConnect(nip, port, &buffer) <= 0) return result;
 
             if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) +
                                                    "; login/pass: "+ QString(login) + ":" + QString(pass) +
-                                                   ";	- Progress: (" + QString::number((passCounter/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
-            ++passCounter;
+                                                   ";	- Progress: (" + 
+												   QString::number((passCounter++/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
 
             result = parseResponse(ip, port, &buffer, formVal, login, pass);
             if(i == 0) ++i;
@@ -104,7 +104,7 @@ lopaStr WFClass::doPostCheck(const char *ip,
                                    char *passVal,
                                    char *formVal) {
 
-    lopaStr result = {"UNKNOWN", "UNKNOWN", "UNKNOWN"};
+    lopaStr result = {"UNKNOWN", "", ""};
     int passCounter = 0;
     int firstCycle = 0;
 
@@ -134,7 +134,7 @@ lopaStr WFClass::doPostCheck(const char *ip,
             sprintf(postData, "%s=%s&%s=%s", userVal, login, passVal, pass);
 
             std::string buffer;
-            Connector::nConnect(nip, port, &buffer, postData);
+            if(Connector::nConnect(nip, port, &buffer, postData) <= 0) return result;
 
             if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " +
                                                    QString(login) + ":" + QString(pass) + ";	- Progress: (" +

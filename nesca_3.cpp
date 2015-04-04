@@ -1498,7 +1498,9 @@ void nesca_3::slotSaveImage(QAction *qwe)
 	{
 		if(ME2ScanFlag || VoiceScanFlag)
 		{
-			QString fn = QString::number(QT.msec()) + "_" + (ME2ScanFlag ? QString("ME2") : QString("Voice")) + "_" + (ci == 0 ? ui->ipLine->text() : ui->lineEditStartIPDNS->text()) + ".png";
+			QString fn = QString::number(QT.msec()) + "_" + 
+				(ME2ScanFlag ? QString("ME2") : QString("Voice")) + "_" + 
+				(ci == 0 ? ui->ipLine->text() : ui->lineEditStartIPDNS->text()) + ".png";
 			int ax = 27;
 			int ay = 2;
 			int w = ui->graphicLog->width() + 30;
@@ -1539,7 +1541,9 @@ void nesca_3::slotSaveImage(QAction *qwe)
 		}
 		else
 		{
-            QString fn = QString::number(QT.msec()) + "_" + (PieStatFlag ? "PieStat" : "QoS") + "_" + (ci == 0 ? ui->ipLine->text() : ui->lineEditStartIPDNS->text()) + ".png";
+            QString fn = QString::number(QT.msec()) + "_" + 
+				(PieStatFlag ? "PieStat" : "QoS") + "_" + 
+				(ci == 0 ? ui->ipLine->text() : ui->lineEditStartIPDNS->text()) + ".png";
 
 			QPixmap pixmap(ui->graphicLog->width(), ui->graphicLog->height());
 			QPainter painter(&pixmap);
@@ -2046,7 +2050,6 @@ void nesca_3::IPScanSeq()
 	{
 		if(ui->portLine->text() != "")
 		{
-            _LoadPersInfoToLocalVars(savedTabIndex);
             stopFirst = false;
 			ui->tabMainWidget->setTabEnabled(1, false);
 			ui->tabMainWidget->setTabEnabled(2, false);
@@ -2068,6 +2071,7 @@ void nesca_3::IPScanSeq()
 				};
 			};
 
+			saveOptions();
 			strcpy(inputStr, ("DUMMY|0|" + rangeData + "|" + ui->threadLine->text() + "|-p" + ui->portLine->text().replace(" ", "")).toLocal8Bit().data());
 
 			stt->start();
@@ -2142,7 +2146,7 @@ void nesca_3::DNSScanSeq()
                 ui->lineILVL->setText(topLevelDomainStr);
 			};
 
-            _LoadPersInfoToLocalVars(savedTabIndex);
+			saveOptions();
             stopFirst = false;
 
 			ui->tabMainWidget->setTabEnabled(0, false);
@@ -2186,10 +2190,10 @@ void nesca_3::ImportScanSeq()
 	
 	if(fileName != "")
 	{
-		_LoadPersInfoToLocalVars(savedTabIndex);
 		ui->tabMainWidget->setTabEnabled(0, false);
 		ui->tabMainWidget->setTabEnabled(1, false);
 
+		saveOptions();
 		strcpy(inputStr, ("DUMMY|-f|" + fileName + "|" + ui->importThreads->text() + "|-p" + ui->importPorts->text().replace(" ", "")).toLocal8Bit().data());	
 
 		globalScanFlag = true;

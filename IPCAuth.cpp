@@ -7,9 +7,6 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 {
     lopaStr lps{"UNKNOWN", "", ""};
     bool result = true;
-    ZeroMemory(lps.login, sizeof(lps.login));
-    ZeroMemory(lps.pass, sizeof(lps.pass));
-    ZeroMemory(lps.other, sizeof(lps.other));
     char login[128] = {0};
     char pass[128] = {0};
     char request[1024] = {0};
@@ -69,18 +66,18 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
     {
         stt->doEmitionRedFoundData("[_IPCameraBrute] No \"SPEC\" specified!");
 
-        strcpy(lps.login, "UNKNOWN");
         return lps;
     };
 
-    for(int i = 0; i < MaxLogin; i++)
+	int res = 0;
+    for(int i = 0; i < MaxLogin; ++i)
     {
         if(!globalScanFlag) break;
         if(strcmp(loginLst[i], " ") == 0) continue;
         ZeroMemory(login, sizeof(login));
         strcpy(login, loginLst[i]);
 
-        for(int j = 0; j < MaxPass; j++)
+        for(int j = 0; j < MaxPass; ++j)
         {
             FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
             if(!globalScanFlag) break;
@@ -141,32 +138,33 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 
             std::string buffer;
             if(doPost) {
-                if (Connector::nConnect(request, port, &buffer, postData) == -2) return lps;
+				res = Connector::nConnect(request, port, &buffer, postData);
             } else {
-                if (Connector::nConnect(request, port, &buffer) == -2) return lps;
+				res = Connector::nConnect(request, port, &buffer);
             }
 
-            for(int i = 0; i < negVector.size(); ++i)
-            {
-                if(Utils::ci_find_substr(buffer, negVector[i]) != -1)
-                {
-                    result = false;
-                    break;
-                };
-            };
+			if (res == -2) return lps;
+			else if (res != -1) {
+				for (int i = 0; i < negVector.size(); ++i)
+				{
+					if (Utils::ci_find_substr(buffer, negVector[i]) != -1)
+					{
+						result = false;
+						break;
+					};
+				};
 
-            if(result)
-            {
-                strcpy(lps.login, loginLst[i]);
-                strcpy(lps.pass, passLst[j]);
-                return lps;
-            };
-
-            ++passCounter;
-
+				if (result)
+				{
+					strcpy(lps.login, loginLst[i]);
+					strcpy(lps.pass, passLst[j]);
+					return lps;
+				};
+			}
+			
             if (BALogSwitched) stt->doEmitionBAData("IPC: " + QString(ip) + ":" + QString::number(port) +
                 "; l/p: " + QString(login) + ":" + QString(pass) + ";	- Progress: (" +
-                QString::number((++passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
+                QString::number((passCounter++ / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
 
             Sleep(100);
         };

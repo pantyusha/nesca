@@ -158,7 +158,7 @@ lopaStr WFClass::_WFBrute( const char *ip,
                                 char *passVal,
                                 char *formVal) {
 
-    lopaStr lps{"UNKNOWN", "", ""};
+    lopaStr lps = {"UNKNOWN", "", ""};
 
     if(strstri(methodVal, "get") != NULL) {
         lps = doGetCheck(ip, port, actionVal, userVal, passVal, formVal);

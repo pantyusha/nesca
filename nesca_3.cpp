@@ -2813,9 +2813,12 @@ void nesca_3::mouseMoveEvent(QMouseEvent * event)
 void nesca_3::exitButtonClicked()
 {
 	STTTerminate();
+	while (__savingBackUpFile) Sleep(100);
+	//nCleanup();
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	WSACleanup();
 #endif
+//	stt->terminate();
 	qApp->quit();
 }
 
@@ -2854,25 +2857,21 @@ void nesca_3::ChangePingerOK(bool val)
 
 void nesca_3::STTTerminate()
 {
-	while (__savingBackUpFile) Sleep(100);
-	importFileName = "";
-	startFlag = false;
 	globalScanFlag = false;
-	nCleanup();
-
+	startFlag = false;
+	importFileName = "";
 	ui->tabMainWidget->setTabEnabled(0, true);
 	ui->tabMainWidget->setTabEnabled(1, true);
 	ui->tabMainWidget->setTabEnabled(2, true);
 	ui->tabMainWidget->setTabEnabled(3, true);
-    stt->doEmitionUpdateArc(0);
 	BrutingThrds = 0;
 	cons = 0;
+	stt->doEmitionUpdateArc(0);
 	setButtonStyleArea();
 	ui->startScanButton_3->setText("Start");
 	ui->startScanButton_4->setText("Start");
 	ui->importButton->setText("Import&&Scan");
 	ui->labelStatus_Value->setText("Idle");
-	stt->terminate();
 }
 
 void nesca_3::startScanButtonClicked()

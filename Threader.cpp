@@ -16,14 +16,16 @@ void Threader::fireThread(std::string ip, void *func(void)) {
         workerThread.detach();
     }
 
-    ready = true;
-    cv.notify_one();
+	ready = true;
+	cv.notify_one();
     Sleep(gThreadDelay);
 }
 
 void Threader::cleanUp() {
 	ready = true;
-	cv.notify_one();
+	cv.notify_all();
+	//Wait for threads to exit correctly
+	Sleep(gTimeOut*1000 + 2000);
 	std::unique_lock<std::mutex> lk(m);
 	lk.unlock();
 	lk.release();

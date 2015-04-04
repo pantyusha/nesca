@@ -61,9 +61,9 @@ int MakePolygonLine(int gWidth)
 
 		if(xtx > 74 && xtx < 112) 
 		{
-            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - BA * 2 - fact3 : ME2YPOS);
+			qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - baCount * 2 - fact3 : ME2YPOS);
 
-			if(BA > 0) 
+			if (baCount > 0)
 			{
                 if(xtx < 92 ) fact3+=2;
 				else fact3-=2;
@@ -120,7 +120,7 @@ int MakePolygonLine(int gWidth)
 
 	AnomC1 = 0;
 	WF = 0;
-	BA = 0;
+	baCount = 0;
 	Filt = 0;
 	Overl = 0;
 	Lowl = 0;
@@ -150,7 +150,7 @@ void DrawerTh_ME2Scanner::run()
 			msleep(1000);
 			AnomC1 = 0;
 			WF = 0;
-			BA = 0;
+			baCount = 0;
 			Filt = 0;
 			Overl = 0;
 			Lowl = 0;

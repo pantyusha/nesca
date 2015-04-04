@@ -104,13 +104,13 @@ void DrawerTh_VoiceScanner::run()
 	{
 		if(widgetIsHidden == false && tray->isVisible() == false)
 		{
-			makeVoiceLine(Alive, AnomC1, WF, Susp, Lowl, BA, Overl, WF, ssh);
+			makeVoiceLine(Alive, AnomC1, WF, Susp, Lowl, baCount, Overl, WF, ssh);
 			Alive = 0;
 			AnomC1 = 0;
 			WF = 0;
 			Filt = 0;
 			Lowl = 0;
-			BA = 0;
+			baCount = 0;
 			Overl = 0;
 			Susp = 0;
 			ssh = 0;
@@ -126,7 +126,7 @@ void DrawerTh_VoiceScanner::run()
 			WF = 0;
 			Filt = 0;
 			Lowl = 0;
-			BA = 0;
+			baCount = 0;
 			Overl = 0;
 			Susp = 0;
 			ssh = 0;

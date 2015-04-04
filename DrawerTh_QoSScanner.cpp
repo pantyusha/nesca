@@ -14,7 +14,7 @@ void DrawerTh_QoSScanner::run()
 			lstOfLabels.append(WF);
 			lstOfLabels.append(Susp);
 			lstOfLabels.append(Lowl);
-            lstOfLabels.append(BA);
+			lstOfLabels.append(baCount);
 			lstOfLabels.append(Overl);
 			lstOfLabels.append(ssh);
 			
@@ -29,7 +29,7 @@ void DrawerTh_QoSScanner::run()
 			msleep(500);
 			AnomC1 = 0;
 			WF = 0;
-			BA = 0;
+			baCount = 0;
 			Filt = 0;
 			Overl = 0;
 			Lowl = 0;
@@ -40,7 +40,7 @@ void DrawerTh_QoSScanner::run()
 		
 		AnomC1 = 0;
 		WF = 0;
-		BA = 0;
+		baCount = 0;
 		Filt = 0;
 		Overl = 0;
 		Lowl = 0;

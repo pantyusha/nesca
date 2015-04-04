@@ -35,7 +35,7 @@ extern int found, indexIP, gMode,
 	gThreadDelay, AnomC1, Filt, Overl, Lowl, Alive, saved, 
     Susp,
     WF,
-    BA,
+	baCount,
     offlines, ssh, globalPinger, gPingTimeout, nickFlag, offlineFlag;
 extern unsigned int Activity;
 extern char trcSrv[256], trcScr[256], trcProxy[128], trcPersKey[64],

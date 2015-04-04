@@ -25,13 +25,17 @@ public:
             while(BrutingThrds >= gMaxBrutingThreads) Sleep(700);
 
             ++WF;
-            BConInc();
+
+			++BrutingThrds; 
+			//BConInc();
             passCounter = 1;
         }
     }
 
     ~WFClass(){
-        BConDec();
+        //BConDec();
+
+		--BrutingThrds;
     }
 
     lopaStr _WFBrute(const char *ip,

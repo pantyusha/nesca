@@ -5,7 +5,7 @@
 
 lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 {
-    lopaStr lps{"UNKNOWN", "", ""};
+    lopaStr lps = {"UNKNOWN", "", ""};
     bool result = true;
     char login[128] = {0};
     char pass[128] = {0};
@@ -177,13 +177,16 @@ lopaStr IPC::IPCLobby(const char *ip, int port, char *SPEC) {
     if(gMaxBrutingThreads > 0) {
         while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
-        BruteUtils::BConInc();
-        lopaStr lps = IPCBrute(ip, port, SPEC);
-        BruteUtils::BConDec();
+		//BruteUtils::BConInc();
+		++baCount;
+		++BrutingThrds;
+		lopaStr lps = IPCBrute(ip, port, SPEC);
+		--BrutingThrds;
+        //BruteUtils::BConDec();
 
         return lps;
     } else {
-        lopaStr lps{"UNKNOWN", "", ""};
+        lopaStr lps = {"UNKNOWN", "", ""};
         return lps;
     }
 }

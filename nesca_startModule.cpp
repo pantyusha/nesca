@@ -25,7 +25,7 @@ int gMode;
 int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSSHPass = 0;
 int ipsstart[4], ipsend[4],
 overallPorts, flCounter, octet[4];
-int BA = 0;
+int baCount = 0;
 int gPingTimeout = 1;
 int gMaxBrutingThreads = 50;
 unsigned int Activity = 0;
@@ -358,7 +358,7 @@ void _timer() {
 
 void _tracker() {
 	while (true) {
-		while (!trackerOK) Sleep(1000);
+		while (globalScanFlag && !trackerOK) Sleep(1000);
 
 		if (!globalScanFlag && jsonArr->size() == 0) break;
 		char rBuffT[250000] = { 0 };
@@ -1592,66 +1592,40 @@ int _getChunkCount(char *data) {
 	return secondPos - firstPos + 1;
 }
 
-
-void ConInc()
-{
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	__asm
-	{
-		lock inc cons;
-	};
-#else
-	asm("lock; incl cons");
-#endif
-}
-void ConDec()
-{
-	if (cons > 0)
-	{
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-		__asm
-		{
-			lock dec cons;
-		};
-#else
-		asm("lock; decl cons");
-#endif
-
-	};
-    stt->doEmitionUpdateArc(gTargets);
-}
-
 void _connect() {
 
 	std::string ip = "";
+	std::unique_lock<std::mutex> lk;
 	while (globalScanFlag) {
-		std::unique_lock<std::mutex> lk(Threader::m);
+		lk = std::unique_lock<std::mutex>(Threader::m);
 		Threader::cv.wait(lk, []{return Threader::ready; });
 
 		if (!globalScanFlag || Threader::threadId > gThreads) {
 			--Threader::threadId;
-			Threader::ready = false;
 			lk.unlock();
-			Threader::cv.notify_one();
+			Threader::ready = true;
+			Threader::cv.notify_all();
 			return;
 		}
+
+		Threader::ready = false;
 
 		if (!Threader::ipQueue.empty()) {
 			ip = Threader::ipQueue.front();
 			Threader::ipQueue.pop();
-			Threader::ready = false;
 			lk.unlock();
-			Threader::cv.notify_one();
 
 			++ipCounter;
-			ConInc();
+
+			++cons;
 			for (int i = 0; i <= overallPorts; ++i)
 			{
 				if (!globalScanFlag) break;
 				if (Connector::_ConnectToPort((char*)ip.c_str(), portArr[i]) == -2) break;
 			};
-			ConDec();
+			--cons;
 		}
+		else lk.unlock();
 	}
 }
 
@@ -1749,7 +1723,7 @@ int startScan(char* args) {
 	horLineFlag = false;
 	flCounter = 0;
 	PieAnomC1 = 0, PieWF = 0, PieBA = 0, PieSusp = 0, PieLowl = 0, PieSSH = 0;
-	AnomC1 = 0, BA = 0, Filt = 0, Overl = 0, Lowl = 0, Alive = 0, Activity = 0, saved = 0, Susp = 0, WF = 0, offlines = 0;
+	AnomC1 = 0, baCount = 0, Filt = 0, Overl = 0, Lowl = 0, Alive = 0, Activity = 0, saved = 0, Susp = 0, WF = 0, offlines = 0;
 	BrutingThrds = 0;
 	found = 0;
 	gTargets = 0;
@@ -2072,9 +2046,11 @@ int startScan(char* args) {
 
 	stt->doEmitionGreenFoundData("Done. Saved: " + QString::number(saved) + "; Alive: " + QString::number(found) + ".");
 	stt->doEmitionChangeStatus("Idle");
-
-	Sleep(1000);									//Wait for lock release
+	
+	while (__savingBackUpFile) Sleep(100);
+	nCleanup();
 	stt->doEmitionKillSttThread();
+	//stt->terminate();
 }
 
 void nCleanup(){

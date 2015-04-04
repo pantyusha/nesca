@@ -61,8 +61,30 @@ char *_findLast(char *str, char *delim)
 char *GetCodePage(const char *str)
 {
 	char cdpg[32] = {0};
-    char *ptr1 = strstri(str, "<meta ");
+	char *ptr1 = strstri(str, "charset=");
 
+	if (ptr1 != NULL)
+	{
+		char *temp3 = _findFirst((char *)(ptr1 + 8), " \"'\n\r");
+		if (temp3 != NULL)
+		{
+			int ln = (int)(temp3 - ptr1 - 8);
+			if (ln > 16)
+			{
+				return "WTF?";
+			};
+			strncpy(cdpg, (char *)(ptr1 + 8), (ln > 32) ? 32 : ln);
+			if (strstri(cdpg, "%s") != NULL) return "UTF-8";
+			return cdpg;
+		}
+		else
+		{
+			stt->doEmitionRedFoundData("[GetCodePage] [" + QString(temp3).mid(0, 16) + "]");
+			return "NULL";
+		};
+	}
+
+	ptr1 = strstri(str, "<meta ");
     if(ptr1 != NULL)
     {
         char *ptr2 = strstri(ptr1 + 6, "charset=");
@@ -158,28 +180,6 @@ char *GetCodePage(const char *str)
 				return "NULL";
 			};
 		};	
-	}
-
-    ptr1 = strstri(str, "charset=");
-    if(ptr1 != NULL)
-    {
-        char *temp3 = _findFirst((char *)(ptr1 + 8), " \"'\n\r");
-		if(temp3 != NULL)
-		{
-            int ln = (int)(temp3 - ptr1 - 8);
-			if(ln > 16) 
-			{
-				return "WTF?";
-			};
-            strncpy(cdpg, (char *)(ptr1 + 8), (ln > 32) ? 32 : ln );
-			if(strstri(cdpg, "%s") != NULL) return "UTF-8";
-			return cdpg;
-		}
-		else
-		{
-			stt->doEmitionRedFoundData("[GetCodePage] [" + QString(temp3).mid(0, 16) + "]");
-            return "NULL";
-		};
 	}
 	else
 	{
@@ -1164,7 +1164,7 @@ void _specWFBrute(const char *ip, int port, const char *buff, int flag, char *pa
 
 void _specWEBIPCAMBrute(const char *ip, int port, char *finalstr, int flag, char *comment, char *cp, int size, char *SPEC)
 {
-    lopaStr lps{"UNKNOWN", "", ""};
+    lopaStr lps = {"UNKNOWN", "", ""};
 	ZeroMemory(lps.login, sizeof(lps.login));
 	ZeroMemory(lps.pass, sizeof(lps.pass));
 	ZeroMemory(lps.other, sizeof(lps.other));

@@ -13,9 +13,8 @@ bool FTPA::checkOutput(const string *buffer) {
 lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
     string buffer;
     string lpString;
-    lopaStr lps{"UNKNOWN", "", ""};
+    lopaStr lps = {"UNKNOWN", "", ""};
 
-    strcpy(lps.login, "UNKNOWN");
 	int res = 0;
 	int passCounter = 0;
 
@@ -68,13 +67,16 @@ lopaStr FTPA::FTPLobby(const char *ip, const int port, PathStr *ps) {
     if(gMaxBrutingThreads > 0) {
         while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
-        BruteUtils::BConInc();
-        const lopaStr &lps = FTPBrute(ip, port, ps);
-        BruteUtils::BConDec();
+		++baCount;
+		//BruteUtils::BConInc();
+		++BrutingThrds;
+		const lopaStr &lps = FTPBrute(ip, port, ps);
+		--BrutingThrds;
+        //BruteUtils::BConDec();
 
         return lps;
     } else {
-        lopaStr lps{"UNKNOWN", "", ""};;
+        lopaStr lps = {"UNKNOWN", "", ""};;
         return lps;
     }
 }

@@ -178,9 +178,11 @@ int SSHAuth::SSHLobby(const char *ip, int port, std::string *buffer)
         const char &banner = _get_ssh_banner(ip, port);
         if(strlen(&banner) > 0)
         {
-            BruteUtils::BConInc();
-            int res = SSHBrute(ip, port, buffer, &banner);
-            BruteUtils::BConDec();
+			//BruteUtils::BConInc();
+			++BrutingThrds;
+			int res = SSHBrute(ip, port, buffer, &banner);
+			--BrutingThrds;
+            //BruteUtils::BConDec();
             return res;
         };
         return -1;

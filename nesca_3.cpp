@@ -1325,7 +1325,6 @@ void nesca_3::importAndScan()
 		if(stopFirst == false)
 		{
 			stopFirst = true;
-			globalScanFlag = false;
 			ui->importButton->setStyleSheet(
 				" QPushButton {"
 				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
@@ -1340,7 +1339,6 @@ void nesca_3::importAndScan()
 		}
 		else
 		{
-			globalScanFlag = false;
 			ui->importButton->setStyleSheet(
 				" QPushButton {"
 				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
@@ -2076,7 +2074,6 @@ void nesca_3::IPScanSeq()
 
 			stt->start();
 			startFlag = true;
-			globalScanFlag = true;
 			ui->startScanButton_3->setText("Stop");
 			ui->startScanButton_3->setStyleSheet(
 				" QPushButton {"
@@ -2156,7 +2153,6 @@ void nesca_3::DNSScanSeq()
 
 			stt->start();
 			startFlag = true;
-			globalScanFlag = true;
 			ui->startScanButton_4->setText("Stop");
 			ui->startScanButton_4->setStyleSheet(
 				" QPushButton {"
@@ -2193,10 +2189,9 @@ void nesca_3::ImportScanSeq()
 		ui->tabMainWidget->setTabEnabled(0, false);
 		ui->tabMainWidget->setTabEnabled(1, false);
 
-		saveOptions();
+		_LoadPersInfoToLocalVars(savedTabIndex);
 		strcpy(inputStr, ("DUMMY|-f|" + fileName + "|" + ui->importThreads->text() + "|-p" + ui->importPorts->text().replace(" ", "")).toLocal8Bit().data());	
 
-		globalScanFlag = true;
 		stt->start();
 		startFlag = true;
 		stopFirst = false;
@@ -2814,11 +2809,9 @@ void nesca_3::exitButtonClicked()
 {
 	STTTerminate();
 	while (__savingBackUpFile) Sleep(100);
-	//nCleanup();
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	WSACleanup();
 #endif
-//	stt->terminate();
 	qApp->quit();
 }
 
@@ -2865,12 +2858,11 @@ void nesca_3::STTTerminate()
 	ui->tabMainWidget->setTabEnabled(2, true);
 	ui->tabMainWidget->setTabEnabled(3, true);
 	BrutingThrds = 0;
-	cons = 0;
-	stt->doEmitionUpdateArc(0);
 	setButtonStyleArea();
+	stt->doEmitionUpdateArc(0);
 	ui->startScanButton_3->setText("Start");
 	ui->startScanButton_4->setText("Start");
-	ui->importButton->setText("Import&&Scan");
+	ui->importButton->setText("Import");
 	ui->labelStatus_Value->setText("Idle");
 }
 

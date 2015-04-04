@@ -309,8 +309,10 @@ void _SaveBackupToFile()
 	ZeroMemory(saveBuffer, strlen(saveBuffer));
 }
 
+bool saverRunning = false;
 void _saver()
 {
+	saverRunning = true;
 	Sleep(1000);
 	while (globalScanFlag)
 	{
@@ -319,9 +321,12 @@ void _saver()
 		__savingBackUpFile = false;
 		Sleep(10000);
 	};
+	saverRunning = false;
 }
 
+bool timerRunning = false;
 void _timer() {
+	timerRunning = true;
 	char dbuffer[32] = { 0 }, timeLeft[64] = { 0 }, b[32] = { 0 };
 	int ticks = 0;
 	int ovrlIPs = 0;
@@ -354,9 +359,12 @@ void _timer() {
 
 		Sleep(1000);
 	};
+	timerRunning = false;
 }
 
+bool trackerRunning = false;
 void _tracker() {
+	trackerRunning = true;
 	while (true) {
 		while (globalScanFlag && !trackerOK) Sleep(1000);
 
@@ -710,6 +718,8 @@ void _tracker() {
 
 		CSSOCKET(sock);
 	}
+
+	trackerRunning = false;
 }
 
 unsigned long int numOfIps(int ipsstart[], int ipsend[]) {
@@ -1623,7 +1633,8 @@ void _connect() {
 				if (!globalScanFlag) break;
 				if (Connector::_ConnectToPort((char*)ip.c_str(), portArr[i]) == -2) break;
 			};
-			if (cons > 0) --cons;
+			//if (cons > 0) --cons;
+			--cons;
 			stt->doEmitionUpdateArc(gThreads);
 		}
 		else lk.unlock();
@@ -1709,12 +1720,18 @@ void runAuxiliaryThreads() {
 		std::thread lpThread(FileUpdater::updateLists);
 		lpThread.detach();
 	}
-	std::thread trackerThread(_tracker);
-	trackerThread.detach();
-	std::thread timerThread(_timer);
-	timerThread.detach();
-	std::thread saverThread(_saver);
-	saverThread.detach();
+	if (!trackerRunning) {
+		std::thread trackerThread(_tracker);
+		trackerThread.detach();
+	}
+	if (!timerRunning) {
+		std::thread timerThread(_timer);
+		timerThread.detach();
+	}
+	if (!saverRunning) {
+		std::thread saverThread(_saver);
+		saverThread.detach();
+	}
 }
 
 
@@ -1768,6 +1785,7 @@ int startScan(char* args) {
 		return -1;
     };
 
+	globalScanFlag = true;
 	runAuxiliaryThreads();
 
 	if (gMode == 0)
@@ -2048,16 +2066,16 @@ int startScan(char* args) {
 	stt->doEmitionGreenFoundData("Done. Saved: " + QString::number(saved) + "; Alive: " + QString::number(found) + ".");
 	stt->doEmitionChangeStatus("Idle");
 	
-	while (__savingBackUpFile) Sleep(100);
 	nCleanup();
 	stt->doEmitionKillSttThread();
-	//stt->terminate();
 }
 
 void nCleanup(){
 	FileUpdater::FUClear();
 	Threader::cleanUp();
 	curl_global_cleanup();
+
+	while (__savingBackUpFile) Sleep(100);
 
 	if (loginLst != NULL)
 	{

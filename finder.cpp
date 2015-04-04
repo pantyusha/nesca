@@ -369,38 +369,39 @@ int ContentFilter(const char *buff, int port, const char *ip, char *cp, int sz)
     if(buff != NULL)
 	{
 		QTextCodec *codec;
-		QString strf;
+		QString strLower;
 
 		if (strstri(cp, "shift_jis") != NULL)
 		{
 			codec = QTextCodec::codecForName("Shift-JIS");
-			strf = codec->toUnicode(buff).toLower();
+			strLower = codec->toUnicode(buff);
 		}
 		else if (strstri(cp, "utf") != NULL)
 		{
 			codec = QTextCodec::codecForName("UTF-8");
-			strf = codec->toUnicode(buff).toLower();
+			strLower = codec->toUnicode(buff);
 		}
 		else if (strstri(cp, "cp") != NULL || strstri(cp, "windows") != NULL)
 		{
 			codec = QTextCodec::codecForName("Windows-1251");
-			strf = codec->toUnicode(buff).toLower();
+			strLower = codec->toUnicode(buff);
 		}
-		else strf = QString(buff);
+		else strLower = QString(buff);
+		strLower = strLower.toLower();
 
 		int res = 0;
 
 		if(sz <= 500)
 		{
-			res = _mainFinderFirst(strf.toLocal8Bit().data(), 1, port, ip, sz);
+			res = _mainFinderFirst(strLower.toLocal8Bit().data(), 1, port, ip, sz);
 		}
 		else if((sz > 500 && sz <= 3500) || sz > 180000) 
 		{	
-			res = _mainFinderFirst(strf.toLocal8Bit().data(), 0, port, ip, sz);
+			res = _mainFinderFirst(strLower.toLocal8Bit().data(), 0, port, ip, sz);
 		}
 		else if(sz > 3500 && sz <= 180000)
 		{
-			res = _mainFinderSecond(strf.toLocal8Bit().data(), port, ip);
+			res = _mainFinderSecond(strLower.toLocal8Bit().data(), port, ip);
 		};
 
 		return res;

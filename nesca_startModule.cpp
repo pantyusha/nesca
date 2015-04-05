@@ -1635,7 +1635,7 @@ void _connect() {
 			};
 			//if (cons > 0) --cons;
 			--cons;
-			stt->doEmitionUpdateArc(gThreads);
+			stt->doEmitionUpdateArc(gTargets);
 		}
 		else lk.unlock();
 	}

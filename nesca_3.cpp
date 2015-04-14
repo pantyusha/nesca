@@ -45,7 +45,6 @@ bool smBit_7 = false;
 bool smBit_8 = false;
 bool privateMsgFlag = false;
 
-char inputStr[256] = {0};
 bool proxyEnabledFlag = false;
 bool disableBlink = false;
 char gVER[32] = {0};
@@ -175,10 +174,13 @@ void _LoadPersInfoToLocalVars(int savedTabIndex) {
 		{
 			if (ui->ipLine->text().indexOf("/") < 0)
 			{
-				strcpy(currentIP, ui->ipLine->text().toLocal8Bit().data());
-				strcat(currentIP, "-");
-				strcat(currentIP, ui->ipLine->text().toLocal8Bit().data());
-			};
+				sprintf(currentIP, "%s-%s",
+					ui->ipLine->text().toLocal8Bit().data(), ui->ipLine->text().toLocal8Bit().data());
+			}
+			else {
+				sprintf(currentIP, "%s",
+					ui->ipLine->text().toLocal8Bit().data());
+			}
 		};
 
 		strncpy(gPorts, ("-p" + ui->portLine->text()).toLocal8Bit().data(), 65536);
@@ -270,7 +272,7 @@ void nesca_3::drawVerboseArcs(unsigned long gTargets) {
     fSz = 6;
     QPainterPath pathTargets;
     pathTargets.arcMoveTo(leftX, sharedY, rightX, sharedheight1, 0);
-    pathTargets.arcTo(leftX, nSharedY, rightX, sharedheight2, 0, indexIP*((float)(180/(float)gTargetsOverall)));
+    pathTargets.arcTo(leftX, nSharedY, rightX, sharedheight2, 0, indexIP*((float)(180/(float)gTargetsNumber)));
     QGraphicsPathItem* itmTargets = new QGraphicsPathItem(pathTargets);
     itmTargets->setPen(penTargets);
     testScene->addItem(itmTargets);
@@ -278,7 +280,7 @@ void nesca_3::drawVerboseArcs(unsigned long gTargets) {
     fSz = 3;
     QPainterPath pathSaved;
     pathSaved.arcMoveTo(leftX, sharedY, rightX, sharedheight1, 0);
-    pathSaved.arcTo(leftX, nSharedY, rightX, sharedheight2, 0, saved*((float)(180/(float)gTargetsOverall)));
+    pathSaved.arcTo(leftX, nSharedY, rightX, sharedheight2, 0, saved*((float)(180/(float)gTargetsNumber)));
     QGraphicsPathItem* itmSaved = new QGraphicsPathItem(pathSaved);
     itmSaved->setPen(penSaved);
     testScene->addItem(itmSaved);
@@ -2052,27 +2054,15 @@ void nesca_3::IPScanSeq()
 			ui->tabMainWidget->setTabEnabled(1, false);
 			ui->tabMainWidget->setTabEnabled(2, false);
 
-			QString rangeData = ui->ipLine->text();
-			if(rangeData.indexOf("-") > 0)
-			{
-				rangeData = ui->ipLine->text();
-			}
-			else
-			{
-				if(rangeData.indexOf("/") < 0)
-				{
-					rangeData = ui->ipLine->text() + "-" + ui->ipLine->text();
-				}
-				else
-				{
-					rangeData = ui->ipLine->text();
-				};
-			};
-
 			saveOptions();
-			strcpy(inputStr, ("DUMMY|0|" + rangeData + "|" + ui->threadLine->text() + "|-p" + ui->portLine->text().replace(" ", "")).toLocal8Bit().data());
 
+			stt->setMode(0);
+			stt->setTarget((ui->ipLine->text().indexOf("-") > 0 ? ui->ipLine->text() :
+				(ui->ipLine->text().indexOf("/") < 0 ? ui->ipLine->text() + "-" + ui->ipLine->text() : ui->ipLine->text())
+				));
+			stt->setPorts(ui->portLine->text().replace(" ", ""));
 			stt->start();
+
 			startFlag = true;
 			ui->startScanButton_3->setText("Stop");
 			ui->startScanButton_3->setStyleSheet(
@@ -2132,6 +2122,10 @@ void nesca_3::DNSScanSeq()
         {
 			if(ui->lineEditStartIPDNS->text().indexOf(".") > 0)
 			{
+				stopFirst = false;
+				ui->tabMainWidget->setTabEnabled(0, false);
+				ui->tabMainWidget->setTabEnabled(2, false);
+
 				QStringList lst = ui->lineEditStartIPDNS->text().split(".");
 				ui->lineEditStartIPDNS->setText(lst[0]);
 				QString topLevelDomainStr;
@@ -2144,14 +2138,12 @@ void nesca_3::DNSScanSeq()
 			};
 
 			saveOptions();
-            stopFirst = false;
 
-			ui->tabMainWidget->setTabEnabled(0, false);
-			ui->tabMainWidget->setTabEnabled(2, false);
-			
-			strcpy(inputStr, ("DUMMY|1|" + ui->lineEditStartIPDNS->text() + "|" + ui->lineILVL->text() + "|" + ui->lineEditThread->text() + "|-p" + ui->lineEditPort->text().replace(" ", "")).toLocal8Bit().data());
-
+			stt->setMode(1);
+			stt->setTarget(ui->lineEditStartIPDNS->text());
+			stt->setPorts(ui->lineEditPort->text().replace(" ", ""));
 			stt->start();
+			
 			startFlag = true;
 			ui->startScanButton_4->setText("Stop");
 			ui->startScanButton_4->setStyleSheet(
@@ -2186,15 +2178,18 @@ void nesca_3::ImportScanSeq()
 	
 	if(fileName != "")
 	{
+		stopFirst = false;
 		ui->tabMainWidget->setTabEnabled(0, false);
 		ui->tabMainWidget->setTabEnabled(1, false);
 
 		_LoadPersInfoToLocalVars(savedTabIndex);
-		strcpy(inputStr, ("DUMMY|-f|" + fileName + "|" + ui->importThreads->text() + "|-p" + ui->importPorts->text().replace(" ", "")).toLocal8Bit().data());	
-
+		
+		stt->setMode(-1);
+		stt->setTarget(fileName);
+		stt->setPorts(ui->importPorts->text().replace(" ", ""));
 		stt->start();
+
 		startFlag = true;
-		stopFirst = false;
 		pbTh->start();
 		ui->importButton->setText("Stop");
 		ui->importButton->setStyleSheet(
@@ -2350,7 +2345,9 @@ void nesca_3::ConnectEvrthng()
 	connect ( ui->shuffle_onoff, SIGNAL(toggled(bool)), this, SLOT(ChangeShuffle(bool)));
     connect ( ui->trackerOnOff, SIGNAL(toggled(bool)), this, SLOT(ChangeTrackerOK(bool)));
 	connect ( ui->importThreads, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelThreads_ValueChanged(QString) ) );
-	connect ( ui->threadLine, SIGNAL( textChanged(QString) ), this, SLOT( ChangeLabelThreads_ValueChanged(QString) ) );
+	connect(ui->threadLine, SIGNAL(textChanged(QString)), this, SLOT(ChangeLabelThreads_ValueChanged(QString)));
+	connect(ui->lineILVL, SIGNAL(textChanged(QString)), this, SLOT(saveTLD(QString)));
+	
 	connect ( ui->PingTO, SIGNAL( textChanged(QString) ), this, SLOT( PingTO_ChangeValue(QString) ) );
 	connect ( ui->threadDelayBox, SIGNAL( textChanged(QString) ), this, SLOT( ThreadDelay_ChangeValue(QString) ) );
 	connect ( ui->maxBrutingThrBox, SIGNAL( textChanged(QString) ), this, SLOT( MaxBrutingThr_ChangeValue(QString) ) );
@@ -2416,7 +2413,6 @@ void nesca_3::ConnectEvrthng()
 void nesca_3::saveOptions()
 {
     _LoadPersInfoToLocalVars(savedTabIndex);
-    _SaveBackupToFile();
 }
 
 QString loadNescaSetup(const char *resStr, const char *option) {
@@ -2470,28 +2466,22 @@ void RestoreSession()
 				{
 					if(strstr(lex, "-") != NULL)
 					{
-						strncpy(gRange, lex, (int)(strstr(lex, "-") - lex));
-						strcat(gRange, "-");
-						strcat(gRange, strstr(lex, "-") + 1);
+						ui->ipLine->setText(QString(lex));
 
 						lex = strtok(NULL, " ");
 						gThreads = atoi(lex);
 
 						ui->threadLine->setText(QString(lex));
-						ui->ipLine->setText(QString(gRange));
 						ui->tabMainWidget->setCurrentIndex(0);
 					}
 					else if(strstr(lex, "/") != NULL)
 					{
-						strncpy(gRange, lex, (int)(strstr(lex, "/") - lex));
-						strcat(gRange, "/");
-						strcat(gRange, strstr(lex, "/") + 1);
+						ui->ipLine->setText(QString(lex));
 
 						lex = strtok(NULL, " ");
 						gThreads = atoi(lex);
 
 						ui->threadLine->setText(QString(lex));
-						ui->ipLine->setText(QString(gRange));
 						ui->tabMainWidget->setCurrentIndex(0);
 					};
 				}
@@ -2812,6 +2802,7 @@ void nesca_3::exitButtonClicked()
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	WSACleanup();
 #endif
+	Threader::cleanUp();
 	qApp->quit();
 }
 
@@ -2990,6 +2981,10 @@ void nesca_3::ChangeLabelTO_ValueChanged(QString str)
 void nesca_3::ChangeLabelThreads_ValueChanged(QString str)
 {
     gThreads = str.toInt();
+}
+
+void nesca_3::saveTLD(QString str){
+	strncpy(gTLD, str.toLocal8Bit().data(), 128);
 }
 
 void nesca_3::PingTO_ChangeValue(QString str)

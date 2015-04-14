@@ -29,7 +29,6 @@ extern bool widgetIsHidden, blinkFlag, disableBlink, QOSWait,
 	smBit_8, smBit_7, smBit_6, smBit_5, smBit_4, smBit_3, smBit_2, smBit_1, printDelimiter;
 extern float QoSStep;
 extern int MaxDataVal;
-extern char inputStr[256];
 extern SOCKET lSock;
 
 extern QVector<int> vAlivLst, vAnomLst, vWFLst, vSuspLst, vLowlLst, vBALst, vSSHLst, vOvrlLst, actLst;
@@ -61,6 +60,7 @@ protected:
 	QString GetSSLContent(QString str);
 	void SSLConnect(QString str);
 	protected slots:
+		void saveTLD(QString str);
 		void onLinkClicked(QUrl);
 		void MaxBrutingThr_ChangeValue(QString str);
 		void ThreadDelay_ChangeValue(QString val);

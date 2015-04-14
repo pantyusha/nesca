@@ -1,4 +1,5 @@
 #include "STh.h"
+#include "externData.h"
 
 void STh::doEmitionShowRedVersion()
 {
@@ -73,7 +74,20 @@ void STh::doEmitionUpdateArc(unsigned long gTargets)
     emit stt->signalUpdateArc(gTargets);
 }
 
+void STh::setMode(short mode) {
+	gMode = mode;
+}
+void STh::setTarget(QString target) {
+	this->target = target;
+}
+void STh::setPorts(QString ports) {
+	this->ports = ports;
+}
 void STh::run() 
 {
-	startScan(inputStr);
+	MainStarter ms(gMode, 
+		this->target.toLocal8Bit().data(),
+		this->ports.toLocal8Bit().data()
+		);
+	ms.start();
 }

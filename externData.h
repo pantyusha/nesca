@@ -20,7 +20,7 @@
 
 extern QJsonArray *jsonArr;
 
-extern unsigned long long gTargetsOverall;
+extern unsigned long long gTargetsNumber;
 extern long long unsigned int gTargets;
 extern volatile int cons, BrutingThrds, gThreads;
 extern char **loginLst, **passLst, **wfLoginLst, **wfPassLst, **sshlpLst, **GlobalNegatives;
@@ -40,7 +40,7 @@ extern int found, indexIP, gMode,
 extern unsigned int Activity;
 extern char trcSrv[256], trcScr[256], trcProxy[128], trcPersKey[64],
     trcPort[32], trcSrvPortLine[32], saveEndIP[128],
-    gRange[128], gTLD[128], gPorts[65536],
+    gTLD[128], gPorts[65536],
     gProxyIP[64], gProxyPort[8],
     currentIP[MAX_ADDR_LEN],
     finalIP[32];

@@ -4,15 +4,22 @@
 #pragma once
 #include "nesca_3.h"
 #include "externFunctions.h"
+#include "MainStarter.h"
 
 extern int tMax;
 
 class STh : public QThread
 {
 	Q_OBJECT
-public:
+private:
+	QString target = "";
+	QString ports = "";
 
 public:
+	void setMode(short mode);
+	void setTarget(QString target);
+	void setPorts(QString ports);
+
 	static void doEmitionDataSaved(bool status);
 	static void doEmitionStartScanIP();
 	static void doEmitionStartScanDNS();

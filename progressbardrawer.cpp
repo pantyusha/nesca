@@ -12,7 +12,7 @@ void ProgressbarDrawer::run()
 	while(globalScanFlag)
 	{
 		msleep(1000);
-		nesca_3::perc = (unsigned long)100*indexIP/(gTargetsOverall == 0 ? 1 : gTargetsOverall);
+		nesca_3::perc = (unsigned long)100*indexIP/(gTargetsNumber == 0 ? 1 : gTargetsNumber);
 		update();
 	};
 };

@@ -63,7 +63,6 @@ int _sshConnect(const char *user, const char *pass, const char *host, int port) 
                 ssh_disconnect(ssh_session);
                 ssh_free(ssh_session);
                 curl_easy_cleanup(curl);
-                ++offlines;
                 return -2;
             }
             else

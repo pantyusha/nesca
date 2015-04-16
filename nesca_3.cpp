@@ -1,5 +1,4 @@
-﻿#include <QGridLayout>
-#include <QFileDialog>
+﻿#include <QFileDialog>
 #include "nesca_3.h"
 #include "CheckKey_Th.h"
 #include "DrawerTh_QoSScanner.h"
@@ -13,17 +12,9 @@
 #include "DrawerTh_VoiceScanner.h"
 #include "piestat.h"
 #include <QMenu>
-#include <QGraphicsSceneContextMenuEvent>
-#include <QDesktopWidget>
-#include <QtMultimedia/qsound.h>
-#include <QtMultimedia/qsoundeffect.h>
-#include <qscrollbar.h>
 #include <qdesktopservices.h>
 #include <qmessagebox.h>
 #include "progressbardrawer.h"
-#include "externFunctions.h"
-#include "externData.h"
-#include "Threader.h"
 #include "FileDownloader.h"
 
 QDate date = QDate::currentDate();
@@ -43,18 +34,10 @@ bool smBit_5 = false;
 bool smBit_6 = false;
 bool smBit_7 = false;
 bool smBit_8 = false;
-bool privateMsgFlag = false;
-
-bool proxyEnabledFlag = false;
-bool disableBlink = false;
 char gVER[32] = {0};
-int nickFlag;
-int offlineFlag;
-bool OnlineMsgSentFlag = false;
 int globalPinger = 0;
 int nesca_3::savedTabIndex = 0;
 
-bool dFlag = false;
 bool startFlag = false;
 bool trackerOK = true;
 char trcPort[32] = {0};
@@ -83,7 +66,6 @@ ProgressbarDrawer *pbTh = new ProgressbarDrawer();
 bool MapWidgetOpened = false;
 bool globalScanFlag;
 float QoSStep = 1;
-int MaxDataVal = 1;
 QGraphicsScene *sceneGrid;
 QGraphicsScene *sceneGrid2;
 QGraphicsScene *sceneGraph;
@@ -138,12 +120,7 @@ QVector<QString> NodeAddrs;
 const nesca_3 *gthis;
 bool BALogSwitched = false;
 bool widgetIsHidden = false;
-bool blinkFlag = false;
-bool printDelimiter = false;
-int PhraseIndex = 0;
-QList<QString> PhraseLog;
 bool ME2ScanFlag = true, QoSScanFlag = false, VoiceScanFlag = false, PieStatFlag = false;
-
 
 QVector<qreal> dots;
 QVector<qreal> dotsThreads;
@@ -745,11 +722,11 @@ void nesca_3::slotQoSAddLine()
 
     float gHeight = ui->graphicLog->height();
 	
-	float fact = (float)100 / (float)MaxDataVal;
+	float fact = (float)100 / (float)DrawerTh_QoSScanner::MaxDataVal;
 	
 	if(QoSStep > 268) 
 	{
-		MaxDataVal = 1;
+		DrawerTh_QoSScanner::MaxDataVal = 1;
 		QoSStep = 1;
 		gLOL0.clear();
 		gLOL1.clear();
@@ -813,7 +790,7 @@ void nesca_3::slotQoSAddLine()
 	fnt.setFamily("Eurostile");
 	fnt.setPixelSize(10);
 
-    QGraphicsTextItem *item = sceneUpper->addText("Max = " + QString::number(MaxDataVal), fnt);
+	QGraphicsTextItem *item = sceneUpper->addText("Max = " + QString::number(DrawerTh_QoSScanner::MaxDataVal), fnt);
 	item->setX(215);
 	item->setDefaultTextColor(Qt::white);
 	QOSWait = false;
@@ -824,8 +801,8 @@ void nesca_3::slotQoSAddGrid()
 	sceneGrid->clear();
 
     int gWidth = ui->graphicLog->width();
-	if(MaxDataVal > 100) MaxDataVal = 100;
-	float fact = (float)100/(float)MaxDataVal;
+	if (DrawerTh_QoSScanner::MaxDataVal > 100) DrawerTh_QoSScanner::MaxDataVal = 100;
+	float fact = (float)100 / (float)DrawerTh_QoSScanner::MaxDataVal;
 
 	float th = 0;
 	for(int i = 0; i < 100; ++i)
@@ -1036,7 +1013,7 @@ void nesca_3::activateQoSScanBut()
 		PieStatFlag = false;
 
 		QoSStep = 1;
-		MaxDataVal = 1;
+		DrawerTh_QoSScanner::MaxDataVal = 1;
 
 		sceneGrid2->clear();
 		sceneGraph->clear();
@@ -1438,18 +1415,12 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 			QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
 			if(keyEvent->modifiers() == Qt::ControlModifier)
 			{
-				privateMsgFlag = true;
 				event->accept();
                 return true;
 			};
             return false;
 		}
-		else if (event->type() == QEvent::KeyRelease)
-		{
-			privateMsgFlag = false;	
-			event->accept();
-            return true;
-		};
+		else if (event->type() == QEvent::KeyRelease) return true;
         return false;
     }
 	else
@@ -1459,7 +1430,6 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 			QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
 			if(keyEvent->modifiers() == Qt::ControlModifier)
 			{
-				privateMsgFlag = true;
 				event->accept();
                 return true;
 			};
@@ -1467,7 +1437,6 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 		}
 		else if(event->type() == QEvent::KeyRelease)
 		{
-			privateMsgFlag = false;	
 			event->accept();
             return true;
         }
@@ -2699,79 +2668,6 @@ void _startMsgCheck()
 	mct->start();
 }
 
-	nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
-{
-	setWindowFlags			( Qt::FramelessWindowHint );
-
-    gthis = this;
-    ui->setupUi(this);
-    setSomeStyleArea();
-	ui->dataText->setOpenExternalLinks(true);
-	ui->dataText->setOpenLinks(false);
-	ui->rVerLabel->hide();
-    setSceneArea();
-
-    dots << 0.5 << 0.3 << 0.5 << 0.3;
-    dotsThreads << 0.1 << 0.2 << 0.1 << 0.2;
-    penAllThreads.setCapStyle(Qt::FlatCap);
-    penAllThreads.setDashPattern(dotsThreads);
-	penThreads.setCapStyle(Qt::FlatCap);
-	penThreads.setDashPattern(dotsThreads);
-    penBAThreads.setDashPattern(dots);
-    penBAThreads.setCapStyle(Qt::FlatCap);
-    penAllTargets.setCapStyle(Qt::FlatCap);
-    penTargets.setCapStyle(Qt::FlatCap);
-    penSaved.setCapStyle(Qt::FlatCap);
-
-    multiFontSmallFontPie.setFamily("small_fonts");
-    multiFontSmallFontPie.setPixelSize(9);
-    multiFontSmallFontArc.setFamily("small_fonts");
-    multiFontSmallFontArc.setPixelSize(10);
-    multiFontSmallFontArc.setUnderline(true);
-    ui->ipLabel->setFont(multiFontSmallFontArc);
-
-    tray = new QSystemTrayIcon(QIcon(":/nesca_3/nesca.ico"), this);
-	tray->hide();
-
-	SetValidators();
-	ConnectEvrthng();
-
-	QTime time = QTime::currentTime();
-	qsrand((uint)time.msec());
-
-    const std::string &gVERStr = GetVer();
-    strcpy(gVER, gVERStr.c_str());
-    ui->logoLabel->setToolTip("v3-" + QString(gVER));
-	ui->logoLabel->setStyleSheet("color:white; border: none;background-color:black;");
-    ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
-
-	CreateVerFile();
-    RestoreSession();
-    PhraseLog.push_back("");
-
-	dtHN->start();
-	dtME2->start();
-	adtHN->start();
-	
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	WSADATA wsda;
-	if (WSAStartup(0x0101, &wsda)) 
-    {
-		stt->doEmitionRedFoundData("WSAStartup failed.");
-		qApp->quit();
-	};
-#endif
-
-
-    std::thread fuThread(FileDownloader::checkWebFiles);
-    fuThread.detach();
-
-	_startVerCheck();
-    _startMsgCheck();
-    qrp.setMinimal(true);
-    drawVerboseArcs(0);
-}
-
 void nesca_3::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton) {
@@ -2783,7 +2679,6 @@ void nesca_3::mousePressEvent(QMouseEvent *event)
 void nesca_3::mouseReleaseEvent(QMouseEvent * event)
 {
 	if (event->modifiers() == Qt::ControlModifier) {
-		privateMsgFlag = false;
 		event->accept();
 	};
 }
@@ -2798,7 +2693,7 @@ void nesca_3::mouseMoveEvent(QMouseEvent * event)
 void nesca_3::exitButtonClicked()
 {
 	STTTerminate();
-	while (__savingBackUpFile) Sleep(100);
+	while (MainStarter::savingBackUpFile) Sleep(100);
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	WSACleanup();
 #endif
@@ -2994,7 +2889,7 @@ void nesca_3::PingTO_ChangeValue(QString str)
 
 void nesca_3::ThreadDelay_ChangeValue(QString str)
 {
-	gThreadDelay = str.toInt();
+	Threader::gThreadDelay = str.toInt();
 }
 
 void nesca_3::MaxBrutingThr_ChangeValue(QString str)
@@ -3089,6 +2984,78 @@ QString GetColorCode(int mode, QString str)
 	else result = "#AFAFAF";
 
 	return result;
+}
+
+nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
+{
+	setWindowFlags(Qt::FramelessWindowHint);
+
+	gthis = this;
+	ui->setupUi(this);
+	setSomeStyleArea();
+	ui->dataText->setOpenExternalLinks(true);
+	ui->dataText->setOpenLinks(false);
+	ui->rVerLabel->hide();
+	setSceneArea();
+
+	dots << 0.5 << 0.3 << 0.5 << 0.3;
+	dotsThreads << 0.1 << 0.2 << 0.1 << 0.2;
+	penAllThreads.setCapStyle(Qt::FlatCap);
+	penAllThreads.setDashPattern(dotsThreads);
+	penThreads.setCapStyle(Qt::FlatCap);
+	penThreads.setDashPattern(dotsThreads);
+	penBAThreads.setDashPattern(dots);
+	penBAThreads.setCapStyle(Qt::FlatCap);
+	penAllTargets.setCapStyle(Qt::FlatCap);
+	penTargets.setCapStyle(Qt::FlatCap);
+	penSaved.setCapStyle(Qt::FlatCap);
+
+	multiFontSmallFontPie.setFamily("small_fonts");
+	multiFontSmallFontPie.setPixelSize(9);
+	multiFontSmallFontArc.setFamily("small_fonts");
+	multiFontSmallFontArc.setPixelSize(10);
+	multiFontSmallFontArc.setUnderline(true);
+	ui->ipLabel->setFont(multiFontSmallFontArc);
+
+	tray = new QSystemTrayIcon(QIcon(":/nesca_3/nesca.ico"), this);
+	tray->hide();
+
+	SetValidators();
+	ConnectEvrthng();
+
+	QTime time = QTime::currentTime();
+	qsrand((uint)time.msec());
+
+	const std::string &gVERStr = GetVer();
+	strcpy(gVER, gVERStr.c_str());
+	ui->logoLabel->setToolTip("v3-" + QString(gVER));
+	ui->logoLabel->setStyleSheet("color:white; border: none;background-color:black;");
+	ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
+
+	CreateVerFile();
+	RestoreSession();
+
+	dtHN->start();
+	dtME2->start();
+	adtHN->start();
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	WSADATA wsda;
+	if (WSAStartup(0x0101, &wsda))
+	{
+		stt->doEmitionRedFoundData("WSAStartup failed.");
+		qApp->quit();
+	};
+#endif
+
+
+	std::thread fuThread(FileDownloader::checkWebFiles);
+	fuThread.detach();
+
+	_startVerCheck();
+	_startMsgCheck();
+	qrp.setMinimal(true);
+	drawVerboseArcs(0);
 }
 
 nesca_3::~nesca_3()

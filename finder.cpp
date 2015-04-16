@@ -10,6 +10,40 @@
 #include <memory>
 #include "FileUpdater.h"
 #include "IPCAuth.h"
+#include <qjsonobject.h>
+
+unsigned char tl(unsigned char d)
+{
+	if (d >= 192 && d <= 223)
+	{
+		return (unsigned char)(d + 32);
+	}
+	else
+	{
+		return tolower(d);
+	};
+}
+
+std::string toLowerStr(const char *str)
+{
+	if (str != NULL) {
+		int tsz = strlen(str);
+		char *strr = new char[tsz + 1];
+		ZeroMemory(strr, tsz);
+
+		for (int i = 0; i < tsz; i++)
+		{
+			strr[i] = tl(str[i]);
+		};
+
+		memset(strr + tsz, '\0', 1);
+
+		std::string tstr = std::string(strr);
+		delete[]strr;
+		return tstr;
+	}
+	else return "";
+}
 
 char* strstri(const char *_Str, const char *_SubStr)
 {
@@ -187,60 +221,69 @@ char *GetCodePage(const char *str)
 	};
 }
 
-int globalSearchNeg(const char *buffcpy, const char *ip, int port)
+int globalSearchNeg(const std::string buff, const char *ip, int port, const char *cp)
 {
-	QTextCodec *nCodec = QTextCodec::codecForName("Windows-1251");
-    for(int i = 0; i < GlobalNegativeSize; ++i)
+	QTextCodec *codec;
+	QString codedStr;
+
+	if (strstri(cp, "shift_jis") != NULL)
 	{
-        FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
-        if(!globalScanFlag) return -1;
+		codec = QTextCodec::codecForName("Shift-JIS");
+		codedStr = codec->toUnicode(buff.c_str());
+	}
+	else if (strstri(cp, "utf") != NULL)
+	{
+		codec = QTextCodec::codecForName("UTF-8");
+		codedStr = codec->toUnicode(buff.c_str());
+	}
+	else if (strstri(cp, "cp") != NULL || strstri(cp, "windows") != NULL)
+	{
+		codec = QTextCodec::codecForName("Windows-1251");
+		codedStr = codec->toUnicode(buff.c_str());
+	}
+	else if (strstri(cp, "gb") != NULL)
+	{
+		codec = QTextCodec::codecForName("GB2312");
+		codedStr = codec->toUnicode(buff.c_str());
+	}
+	else codedStr = QString(buff.c_str());
 
-            if(strstr(buffcpy, GlobalNegatives[i]) != NULL)
+	for (auto negEntry : FileUpdater::negativeVector) {
+		FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready; });
+		if (!globalScanFlag) return -1;
+
+		if (Utils::ustrstr(std::string(codedStr.toLocal8Bit().data()), negEntry) != -1){
+			if (gNegDebugMode)
 			{
-				if(gNegDebugMode)
-                {
-                    stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) +
-                                                 "/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) +
-                                                 "</font></a>" + "]\tNegative hit: \"" + nCodec->toUnicode(GlobalNegatives[i]).toHtmlEscaped() + "\"");
-                    if(strlen(GlobalNegatives[i]) < 2)
-					{
-                        stt->doEmitionDebugFoundData("		Len:" + QString::number(strlen(GlobalNegatives[i])));
-					};
-                    if(strcmp(GlobalNegatives[i], "") == 0)
-					{
-						stt->doEmitionDebugFoundData("Empty hit!");
-					};
-                    if(strcmp(GlobalNegatives[i], " ") == 0)
-					{
-						stt->doEmitionDebugFoundData("Space hit!");
-					};
-				};
+				QTextCodec *nCodec = QTextCodec::codecForName("Windows-1251");
+				stt->doEmitionDebugFoundData("[<a href=\"http://" + QString(ip) + ":" + QString::number(port) +
+					"/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) +
+					"</font></a>" + "]\tNegative hit: \"" + nCodec->toUnicode(negEntry.c_str()).toHtmlEscaped()
+					+ "\"");
+			}
 
-				++Filt;
-				return -1;
-            };
-	};
+			++filtered;
+			return -1;
+		}
+	}
 }
 
-int globalSearchPrnt(const char *buffcpy)
+int globalSearchPrnt(const std::string buffcpy)
 {
-	if(strstr(buffcpy, "en/_top.htm") != NULL || strstr(buffcpy, "cannon http server") != NULL
-		|| strstr(buffcpy, "konica minolta") != NULL || strstr(buffcpy, "/eng/home_frm.htm") != NULL
-		|| strstr(buffcpy, "networkScanner webserver") != NULL || strstr(buffcpy, "/eng/htm/top.htm") != NULL
-		|| strstr(buffcpy, "pages/t_ixdmy.htm") != NULL
-		|| strstr(buffcpy, "/web/guest/") != NULL || strstr(buffcpy, "printerInfo") != NULL
-		|| strstr(buffcpy, "hp photosmart") != NULL
-		|| strstr(buffcpy, "menu and") != NULL
-		|| strstr(buffcpy, "hewlett packard") != NULL
-		|| strstr(buffcpy, "laserjet") != NULL || strstr(buffcpy, "supplies summary") != NULL
-		|| strstr(buffcpy, "seiko epson") != NULL || strstr(buffcpy, "ink_y.png") != NULL
-		|| strstr(buffcpy, "epsonnet") != NULL || strstr(buffcpy, "printer name") != NULL
+	if(Utils::ustrstr(buffcpy, "en/_top.htm") != -1 || Utils::ustrstr(buffcpy, "cannon http server") != -1
+		|| Utils::ustrstr(buffcpy, "konica minolta") != -1 || Utils::ustrstr(buffcpy, "/eng/home_frm.htm") != -1
+		|| Utils::ustrstr(buffcpy, "networkScanner webserver") != -1 || Utils::ustrstr(buffcpy, "/eng/htm/top.htm") != -1
+		|| Utils::ustrstr(buffcpy, "pages/t_ixdmy.htm") != -1
+		|| Utils::ustrstr(buffcpy, "/web/guest/") != -1 || Utils::ustrstr(buffcpy, "printerInfo") != -1
+		|| Utils::ustrstr(buffcpy, "hp photosmart") != -1
+		|| Utils::ustrstr(buffcpy, "menu and") != -1
+		|| Utils::ustrstr(buffcpy, "hewlett packard") != -1
+		|| Utils::ustrstr(buffcpy, "laserjet") != -1 || Utils::ustrstr(buffcpy, "supplies summary") != -1
+		|| Utils::ustrstr(buffcpy, "seiko epson") != -1 || Utils::ustrstr(buffcpy, "ink_y.png") != -1
+		|| Utils::ustrstr(buffcpy, "epsonnet") != -1 || Utils::ustrstr(buffcpy, "printer name") != -1
 		) 
 		{
-			if(gNegDebugMode)
-			{
-				stt->doEmitionDebugFoundData("Printer detected.");		
-			};
+			if(gNegDebugMode) stt->doEmitionDebugFoundData("Printer detected.");	
 
 			return -1;
 	};
@@ -248,95 +291,95 @@ int globalSearchPrnt(const char *buffcpy)
     return 0;
 }
 
-int sharedDetector(const char * ip, int port, const char *buffcpy) {
+int sharedDetector(const char * ip, int port, const std::string buffcpy, const char *cp) {
 
-    if(strstr(buffcpy, "401 authorization") != NULL || strstr(buffcpy, "401 unauthorized") != NULL
-        || (strstr(buffcpy, "www-authenticate") != NULL && strstr(buffcpy, "401 ") != NULL )
-        || strstr(buffcpy, "401 unauthorized access denied") != NULL
-        || strstr(buffcpy, "401 unauthorised") != NULL || (strstr(buffcpy, "www-authenticate") != NULL
-        && strstr(buffcpy, " 401\r\n") != NULL)
+    if(Utils::ustrstr(buffcpy, "401 authorization") != -1 || Utils::ustrstr(buffcpy, "401 unauthorized") != -1
+        || (Utils::ustrstr(buffcpy, "www-authenticate") != -1 && Utils::ustrstr(buffcpy, "401 ") != -1 )
+        || Utils::ustrstr(buffcpy, "401 unauthorized access denied") != -1
+        || Utils::ustrstr(buffcpy, "401 unauthorised") != -1 || (Utils::ustrstr(buffcpy, "www-authenticate") != -1
+        && Utils::ustrstr(buffcpy, " 401\r\n") != -1)
         ) {
-            if(strstr(buffcpy, "digest realm") != NULL && strstr(buffcpy, "basic realm") == NULL) {
+            if(Utils::ustrstr(buffcpy, "digest realm") != -1 && Utils::ustrstr(buffcpy, "basic realm") == -1) {
                                                                                                                                                     return 101;
             } else                                                                                                                                  return 1;
     };
-    if(strstr(buffcpy, "netwave ip camera"))																										return 11;
-    if(strstr(buffcpy, "live view / - axis"))																										return 12;
-    if(strstr(buffcpy, "vilar ipcamera"))																											return 13;
-    if(strstr(buffcpy, "window.location = \"rdr.cgi\""))																							return 14;
-    if(strstr(buffcpy, "httpfileserver"))																											return 15;
-    if(strstr(buffcpy, "real-time ip camera monitoring system") != NULL
-            || strstr(buffcpy, "server push mode") != NULL
+	if (Utils::ustrstr(buffcpy, "netwave ip camera") != -1)																										return 11;
+	if (Utils::ustrstr(buffcpy, "live view / - axis") != -1)																										return 12;
+	if (Utils::ustrstr(buffcpy, "vilar ipcamera") != -1)																											return 13;
+	if (Utils::ustrstr(buffcpy, "window.location = \"rdr.cgi\"") != -1)																							return 14;
+	if (Utils::ustrstr(buffcpy, "httpfileserver") != -1)																											return 15;
+    if(Utils::ustrstr(buffcpy, "real-time ip camera monitoring system") != -1
+            || Utils::ustrstr(buffcpy, "server push mode") != -1
         )																																			return 17; //Real-time IP Camera Monitoring System
-    if(strstr(buffcpy, "linksys.com") != NULL && strstr(buffcpy, "tm05") != NULL)																	return 18; //linksys.com cameras
-    if(strstr(buffcpy, "reecam ip camera") != NULL)																									return 19; //reecam cameras
-    if(strstr(buffcpy, "/view/viewer_index.shtml") != NULL)																							return 20; //axis cameras
-    if(strstr(buffcpy, "bridge eyeon") != NULL)																										return 21; //Bridge Eyeon
-    if(strstr(buffcpy, "ip camera control webpage") != NULL && strstr(buffcpy, "/main/cs_motion.asp") != NULL)										return 22; //ip camera control
-    if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/live/index2.html") != NULL)													return 23; //network camera BB-SC384
-    if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/viewer/live/en/live.html") != NULL)											return 24; //Network Camera VB-M40
-    if(strstr(buffcpy, "panasonic ") != NULL && strstr(buffcpy, ":60002/snapshotjpeg") != NULL)														return 25; //Panasonic wtfidonteven-camera
-    if(strstr(buffcpy, "sony network camera") != NULL && strstr(buffcpy, "/command/inquiry.cgi?") != NULL)											return 26; //Sony Network Camera
-    if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "src=\"webs.cgi?") != NULL)														return 27; //UA Network Camera
-    if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/viewer/live/index.html") != NULL)												return 28; //Network Camera VB-M40
-    if(strstr(buffcpy, "lg smart ip device") != NULL)																								return 29; //LG Smart IP Device Camera
-    if(strstr(buffcpy, "/view/viewer_index.shtml") != NULL)																							return 20; //axis cameras
-    if(strstr(buffcpy, "nas") != NULL && strstr(buffcpy, "/cgi-bin/data/viostor-220/viostor/viostor.cgi") != NULL)									return 30; //NAX
-    if(strstr(buffcpy, "ip camera") != NULL && strstr(buffcpy, "check_user.cgi") != NULL)															return 31; //axis cameras
-    if(strstr(buffcpy, "ws(\"user\");") != NULL && strstr(buffcpy, "src=\"/tool.js") != NULL
-            && strstr(buffcpy, "<b class=\"xb1\"></b>") != NULL)                                                                                    return 32; //web ip cam
-    if(strstr(buffcpy, "geovision") != NULL
-            && (strstr(buffcpy, "ip camera") != NULL
-                || strstr(buffcpy, "ssi.cgi/login.htm") != NULL))                                                                                   return 33; //GEO web ip cam
+    if(Utils::ustrstr(buffcpy, "linksys.com") != -1 && Utils::ustrstr(buffcpy, "tm05") != -1)																	return 18; //linksys.com cameras
+    if(Utils::ustrstr(buffcpy, "reecam ip camera") != -1)																									return 19; //reecam cameras
+    if(Utils::ustrstr(buffcpy, "/view/viewer_index.shtml") != -1)																							return 20; //axis cameras
+    if(Utils::ustrstr(buffcpy, "bridge eyeon") != -1)																										return 21; //Bridge Eyeon
+    if(Utils::ustrstr(buffcpy, "ip camera control webpage") != -1 && Utils::ustrstr(buffcpy, "/main/cs_motion.asp") != -1)										return 22; //ip camera control
+    if(Utils::ustrstr(buffcpy, "network camera") != -1 && Utils::ustrstr(buffcpy, "/live/index2.html") != -1)													return 23; //network camera BB-SC384
+    if(Utils::ustrstr(buffcpy, "network camera") != -1 && Utils::ustrstr(buffcpy, "/viewer/live/en/live.html") != -1)											return 24; //Network Camera VB-M40
+    if(Utils::ustrstr(buffcpy, "panasonic ") != -1 && Utils::ustrstr(buffcpy, ":60002/snapshotjpeg") != -1)														return 25; //Panasonic wtfidonteven-camera
+    if(Utils::ustrstr(buffcpy, "sony network camera") != -1 && Utils::ustrstr(buffcpy, "/command/inquiry.cgi?") != -1)											return 26; //Sony Network Camera
+    if(Utils::ustrstr(buffcpy, "network camera") != -1 && Utils::ustrstr(buffcpy, "src=\"webs.cgi?") != -1)														return 27; //UA Network Camera
+    if(Utils::ustrstr(buffcpy, "network camera") != -1 && Utils::ustrstr(buffcpy, "/viewer/live/index.html") != -1)												return 28; //Network Camera VB-M40
+    if(Utils::ustrstr(buffcpy, "lg smart ip device") != -1)																								return 29; //LG Smart IP Device Camera
+    if(Utils::ustrstr(buffcpy, "/view/viewer_index.shtml") != -1)																							return 20; //axis cameras
+    if(Utils::ustrstr(buffcpy, "nas") != -1 && Utils::ustrstr(buffcpy, "/cgi-bin/data/viostor-220/viostor/viostor.cgi") != -1)									return 30; //NAX
+    if(Utils::ustrstr(buffcpy, "ip camera") != -1 && Utils::ustrstr(buffcpy, "check_user.cgi") != -1)															return 31; //axis cameras
+    if(Utils::ustrstr(buffcpy, "ws(\"user\");") != -1 && Utils::ustrstr(buffcpy, "src=\"/tool.js") != -1
+            && Utils::ustrstr(buffcpy, "<b class=\"xb1\"></b>") != -1)                                                                                    return 32; //web ip cam
+    if(Utils::ustrstr(buffcpy, "geovision") != -1
+            && (Utils::ustrstr(buffcpy, "ip camera") != -1
+                || Utils::ustrstr(buffcpy, "ssi.cgi/login.htm") != -1))                                                                                   return 33; //GEO web ip cam
 
-    if(strstr(buffcpy, "hikvision-webs") != NULL
-        || (strstr(buffcpy, "hikvision digital") != NULL && strstr(buffcpy, "dvrdvs-webs") != NULL)
-        || (strstr(buffcpy, "lapassword") != NULL && strstr(buffcpy, "lausername") != NULL && strstr(buffcpy, "dologin()") != NULL))				return 34; //hikvision cam
-    if((strstr(buffcpy, "easy cam") != NULL && strstr(buffcpy, "easy life") != NULL)
-        || (strstr(buffcpy, "ipcamera") != NULL && strstr(buffcpy, "/tool.js") != NULL))															return 35; //EasyCam
-    if(strstr(buffcpy, "/config/cam_portal.cgi") != NULL || strstr(buffcpy, "/config/easy_index.cgi") != NULL)										return 36; //Panasonic Cam
-    if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/view/getuid.cgi") != NULL)															return 37; //Panasonic Cam WJ-HD180
-    if(strstr(buffcpy, "ipcam client") != NULL && strstr(buffcpy, "plugins.xpi") != NULL && strstr(buffcpy, "js/upfile.js") != NULL)				return 38; //Foscam
-    if(strstr(buffcpy, "ip surveillance") != NULL && strstr(buffcpy, "customer login") != NULL)														return 39; //EagleEye
-    if(strstr(buffcpy, "network camera") != NULL && strstr(buffcpy, "/admin/index.shtml?") != NULL)													return 40; //Network Camera VB-C300
-    if(strstr(buffcpy, "sq-webcam") != NULL && strstr(buffcpy, "liveview.html") != NULL)															return 41; //AVIOSYS-camera
-    if(strstr(buffcpy, "nw_camera") != NULL && strstr(buffcpy, "/cgi-bin/getuid") != NULL)															return 42; //NW_camera
-    if(strstr(buffcpy, "micros") != NULL && strstr(buffcpy, "/gui/gui_outer_frame.shtml") != NULL)													return 43; //NW_camera
-    if(strstr(buffcpy, "lapassword") != NULL
-        && strstr(buffcpy, "lausername") != NULL
-        && strstr(buffcpy, "g_ologin.dologin()") != NULL
+    if(Utils::ustrstr(buffcpy, "hikvision-webs") != -1
+        || (Utils::ustrstr(buffcpy, "hikvision digital") != -1 && Utils::ustrstr(buffcpy, "dvrdvs-webs") != -1)
+        || (Utils::ustrstr(buffcpy, "lapassword") != -1 && Utils::ustrstr(buffcpy, "lausername") != -1 && Utils::ustrstr(buffcpy, "dologin()") != -1))				return 34; //hikvision cam
+    if((Utils::ustrstr(buffcpy, "easy cam") != -1 && Utils::ustrstr(buffcpy, "easy life") != -1)
+        || (Utils::ustrstr(buffcpy, "ipcamera") != -1 && Utils::ustrstr(buffcpy, "/tool.js") != -1))															return 35; //EasyCam
+    if(Utils::ustrstr(buffcpy, "/config/cam_portal.cgi") != -1 || Utils::ustrstr(buffcpy, "/config/easy_index.cgi") != -1)										return 36; //Panasonic Cam
+    if(Utils::ustrstr(buffcpy, "panasonic") != -1 && Utils::ustrstr(buffcpy, "/view/getuid.cgi") != -1)															return 37; //Panasonic Cam WJ-HD180
+    if(Utils::ustrstr(buffcpy, "ipcam client") != -1 && Utils::ustrstr(buffcpy, "plugins.xpi") != -1 && Utils::ustrstr(buffcpy, "js/upfile.js") != -1)				return 38; //Foscam
+    if(Utils::ustrstr(buffcpy, "ip surveillance") != -1 && Utils::ustrstr(buffcpy, "customer login") != -1)														return 39; //EagleEye
+    if(Utils::ustrstr(buffcpy, "network camera") != -1 && Utils::ustrstr(buffcpy, "/admin/index.shtml?") != -1)													return 40; //Network Camera VB-C300
+    if(Utils::ustrstr(buffcpy, "sq-webcam") != -1 && Utils::ustrstr(buffcpy, "liveview.html") != -1)															return 41; //AVIOSYS-camera
+    if(Utils::ustrstr(buffcpy, "nw_camera") != -1 && Utils::ustrstr(buffcpy, "/cgi-bin/getuid") != -1)															return 42; //NW_camera
+    if(Utils::ustrstr(buffcpy, "micros") != -1 && Utils::ustrstr(buffcpy, "/gui/gui_outer_frame.shtml") != -1)													return 43; //NW_camera
+    if(Utils::ustrstr(buffcpy, "lapassword") != -1
+        && Utils::ustrstr(buffcpy, "lausername") != -1
+        && Utils::ustrstr(buffcpy, "g_ologin.dologin()") != -1
         )																																			return 44; //hikvision cam 2
-    if(strstr(buffcpy, "panasonic") != NULL && strstr(buffcpy, "/config/index.cgi") != NULL)														return 45; //Panasonic Cam BB-HG???
-    if(strstr(buffcpy, "/ui/") != NULL && strstr(buffcpy, "sencha-touch") != NULL)																	return 46; //BUFFALO disk
-    if(strstr(buffcpy, "digital video server") != NULL && strstr(buffcpy, "gui.css") != NULL)														return 47; //Digital Video Server
-        if(strstr(buffcpy, "/ipcamerasetup.zip") != NULL && strstr(buffcpy, "download player") != NULL
-        && strstr(buffcpy, "ipcam") != NULL)																										return 48; //ipCam
-    if(strstr(buffcpy, "dvr") != NULL && strstr(buffcpy, "ieorforefox") != NULL
-        && strstr(buffcpy, "sofari") != NULL)                                                                                                       return 49; //IEORFOREFOX
-    if (strstr(buffcpy, "seyeon") != NULL && (strstr(buffcpy, "/app/multi/single.asp") != NULL
-        || strstr(buffcpy, "/app/live/sim/single.asp") != NULL))																					return 50; //Network Video System
+    if(Utils::ustrstr(buffcpy, "panasonic") != -1 && Utils::ustrstr(buffcpy, "/config/index.cgi") != -1)														return 45; //Panasonic Cam BB-HG???
+    if(Utils::ustrstr(buffcpy, "/ui/") != -1 && Utils::ustrstr(buffcpy, "sencha-touch") != -1)																	return 46; //BUFFALO disk
+    if(Utils::ustrstr(buffcpy, "digital video server") != -1 && Utils::ustrstr(buffcpy, "gui.css") != -1)														return 47; //Digital Video Server
+        if(Utils::ustrstr(buffcpy, "/ipcamerasetup.zip") != -1 && Utils::ustrstr(buffcpy, "download player") != -1
+        && Utils::ustrstr(buffcpy, "ipcam") != -1)																										return 48; //ipCam
+    if(Utils::ustrstr(buffcpy, "dvr") != -1 && Utils::ustrstr(buffcpy, "ieorforefox") != -1
+        && Utils::ustrstr(buffcpy, "sofari") != -1)                                                                                                       return 49; //IEORFOREFOX
+    if (Utils::ustrstr(buffcpy, "seyeon") != -1 && (Utils::ustrstr(buffcpy, "/app/multi/single.asp") != -1
+        || Utils::ustrstr(buffcpy, "/app/live/sim/single.asp") != -1))																					return 50; //Network Video System
 
-    if(((strstr(buffcpy, "220") != NULL) && (port == 21)) ||
-        (strstr(buffcpy, "220 diskStation ftp server ready") != NULL) ||
-        (strstr(buffcpy, "220 ftp server ready") != NULL)
-        || strstr(buffcpy, "500 'get': command not understood") != NULL
+    if(((Utils::ustrstr(buffcpy, "220") != -1) && (port == 21)) ||
+        (Utils::ustrstr(buffcpy, "220 diskStation ftp server ready") != -1) ||
+        (Utils::ustrstr(buffcpy, "220 ftp server ready") != -1)
+        || Utils::ustrstr(buffcpy, "500 'get': command not understood") != -1
         )                                                                                                                                           return 16; // 16 - FTP
 
-    if((strstr(buffcpy, "camera web server") != NULL	|| strstr(buffcpy, "webcamxp 5") != NULL
-        || strstr(buffcpy, "ip box camera") != NULL		|| strstr(buffcpy, "snaff") != NULL
-        || strstr(buffcpy, "hfs /") != NULL				|| strstr(buffcpy, "httpfileserver") != NULL
-		|| strstr(buffcpy, "network camera") != NULL	|| strstr(buffcpy, "index of") != NULL
-        || strstr(buffcpy, "$lock extended") != NULL	|| strstr(buffcpy, "ip camera") != NULL
-        || strstr(buffcpy, "/viewer/video.jpg") != NULL || strstr(buffcpy, "smart ip device") != NULL
-        || strstr(buffcpy, "sanpshot_icon") != NULL		|| strstr(buffcpy, "snapshot_icon") != NULL
-        || strstr(buffcpy, "ipcam") != NULL)
-        && strstr(buffcpy, "customer") == NULL
-        && strstr(buffcpy, "purchase") == NULL
-        && strstr(buffcpy, "contac") == NULL
-        && strstr(buffcpy, "company") == NULL
+    if((Utils::ustrstr(buffcpy, "camera web server") != -1	|| Utils::ustrstr(buffcpy, "webcamxp 5") != -1
+        || Utils::ustrstr(buffcpy, "ip box camera") != -1		|| Utils::ustrstr(buffcpy, "snaff") != -1
+        || Utils::ustrstr(buffcpy, "hfs /") != -1				|| Utils::ustrstr(buffcpy, "httpfileserver") != -1
+		|| Utils::ustrstr(buffcpy, "network camera") != -1	|| Utils::ustrstr(buffcpy, "index of") != -1
+        || Utils::ustrstr(buffcpy, "$lock extended") != -1	|| Utils::ustrstr(buffcpy, "ip camera") != -1
+        || Utils::ustrstr(buffcpy, "/viewer/video.jpg") != -1 || Utils::ustrstr(buffcpy, "smart ip device") != -1
+        || Utils::ustrstr(buffcpy, "sanpshot_icon") != -1		|| Utils::ustrstr(buffcpy, "snapshot_icon") != -1
+        || Utils::ustrstr(buffcpy, "ipcam") != -1)
+        && Utils::ustrstr(buffcpy, "customer") == -1
+        && Utils::ustrstr(buffcpy, "purchase") == -1
+        && Utils::ustrstr(buffcpy, "contac") == -1
+        && Utils::ustrstr(buffcpy, "company") == -1
         )																																			return 0;
 
-    if(globalSearchNeg(buffcpy, ip, port) == -1)                                                                                                    return -1;
+    if(globalSearchNeg(buffcpy, ip, port, cp) == -1)                                                                                                    return -1;
     if(globalSearchPrnt(buffcpy) == -1)																					                            return -1;
     //if(strstr(buffcpy, "<form ") != NULL && strstr(buffcpy, "302 found") == NULL)                                                                   return 10;
 	//nic.sucks, etc
@@ -345,76 +388,35 @@ int sharedDetector(const char * ip, int port, const char *buffcpy) {
 }
 
 // 500 < 1600
-int _mainFinderFirst(const char *buffcpy, int f, int port, const char *ip, int sz)
+int _mainFinderFirst(const std::string buffcpy, int f, int port, const char *ip, const char *cp)
 {
-    int flag = sharedDetector(ip, port, buffcpy);
+    int flag = sharedDetector(ip, port, buffcpy, cp);
     if(flag != -2) return flag;
     if(f) return 7;
-    if(sz > 180000) return 2;
 
 	return 0;
 }
 
 //> 1600
-int _mainFinderSecond(const char *buffcpy, int port, const char *ip)
+int _mainFinderSecond(const std::string buffcpy, int port, const char *ip, const char *cp)
 {
-    int flag = sharedDetector(ip, port, buffcpy);
+    int flag = sharedDetector(ip, port, buffcpy, cp);
     if(flag != -2) return flag;
 
 	return 3; //Suspicious
 }
 
-int ContentFilter(const char *buff, int port, const char *ip, char *cp, int sz)
+int ContentFilter(const std::string buff, int port, const char *ip, const char *cp, int sz)
 {
-    if(buff != NULL)
-	{
-		QTextCodec *codec;
-		QString strLower;
+	int res = 0;
+	if (sz <= 500)										res = _mainFinderFirst(buff, 1, port, ip, cp);
+	else if ((sz > 500 && sz <= 3500) || sz > 180000)	res = _mainFinderFirst(buff, 0, port, ip, cp);
+	else if (sz > 3500 && sz <= 180000)					res = _mainFinderSecond(buff, port, ip, cp);
 
-		if (strstri(cp, "shift_jis") != NULL)
-		{
-			codec = QTextCodec::codecForName("Shift-JIS");
-			strLower = codec->toUnicode(buff);
-		}
-		else if (strstri(cp, "utf") != NULL)
-		{
-			codec = QTextCodec::codecForName("UTF-8");
-			strLower = codec->toUnicode(buff);
-		}
-		else if (strstri(cp, "cp") != NULL || strstri(cp, "windows") != NULL)
-		{
-			codec = QTextCodec::codecForName("Windows-1251");
-			strLower = codec->toUnicode(buff);
-		}
-		else if (strstri(cp, "gb") != NULL)
-		{
-			codec = QTextCodec::codecForName("GB2312");
-			strLower = codec->toUnicode(buff);
-		}
-		else strLower = QString(buff);
-		strLower = strLower.toLower();
-
-		int res = 0;
-
-		if(sz <= 500)
-		{
-			res = _mainFinderFirst(strLower.toLocal8Bit().data(), 1, port, ip, sz);
-		}
-		else if((sz > 500 && sz <= 3500) || sz > 180000) 
-		{	
-			res = _mainFinderFirst(strLower.toLocal8Bit().data(), 0, port, ip, sz);
-		}
-		else if(sz > 3500 && sz <= 180000)
-		{
-			res = _mainFinderSecond(strLower.toLocal8Bit().data(), port, ip);
-		};
-
-		return res;
-	}
-	else return -1;
+	return res;
 }
 
-void fillGlobalLogData(const char *ip, char *port, const char *sz, char *title,
+void fillGlobalLogData(const char *ip, int port, const char *sz, char *title,
                        const char *login, const char *pass, char *comment, char *cdpg, char *clss)
 {
 	if(trackerOK == true)
@@ -437,8 +439,8 @@ void fillGlobalLogData(const char *ip, char *port, const char *sz, char *title,
 				jsonData.insert("hostname", QJsonValue(QString(ip)) );
 			};
 
-			jsonData.insert("port", QJsonValue(QString(port).replace(":", "")) );
-			jsonData.insert("recv", QJsonValue(QString(sz)) );
+			jsonData.insert("port", QJsonValue(QString::number(port)) );
+			jsonData.insert("recv", QJsonValue(QString(sz)));
 			QString tt = QString(base64_encode((const unsigned char *)title, strlen(title)).c_str());
 			if(strlen(title) == 0) jsonData.insert("title", QJsonValue(QString("NULL")) );
 			else jsonData.insert("title", QJsonValue(QString(base64_encode((const unsigned char *)title, strlen(title)).c_str())) );
@@ -453,9 +455,7 @@ void fillGlobalLogData(const char *ip, char *port, const char *sz, char *title,
 			if(strlen(clss) > 0) jsonData.insert("Class", QJsonValue(QString(clss)) );
 			else jsonData.insert("Class", QJsonValue(QString("")) );
 
-		while(jsonArr == NULL);
 		jsonArr->push_front(jsonData);
-
 		gGlobalTrackLocked = false;
 	};
 }
@@ -684,12 +684,12 @@ void fputsf(char *text, int flag, char *msg)
 	};
 }
 
-void putInFile(int flag, const char *ip, char *port, int size, char *finalstr, char *cp)
+void putInFile(int flag, const char *ip, int port, int size, char *finalstr, char *cp)
 {
 	char log[4096] = {0}, msg[512] = {0};
 		
 	QTextCodec *codec;
-	sprintf(msg, "<a href=\"http://%s:%s/\"><span style=\"color: #a1a1a1;\">%s:%s</span></a>",
+	sprintf(msg, "<a href=\"http://%s:%d/\"><span style=\"color: #a1a1a1;\">%s:%d</span></a>",
 		ip, port, ip, port);
 
 	QString resMes(msg);
@@ -727,7 +727,7 @@ void putInFile(int flag, const char *ip, char *port, int size, char *finalstr, c
 
 	stt->doEmitionFoundData(resMes);
 
-	sprintf(log, "<span id=\"hostSpan\"><a href=\"http://%s:%s\"/><font color=MediumSeaGreen>%s:%s</font></a>;</span> <span id=\"recvSpan\">Received: <font color=SteelBlue>%d</font>",
+	sprintf(log, "<span id=\"hostSpan\"><a href=\"http://%s:%d\"/><font color=MediumSeaGreen>%s:%d</font></a>;</span> <span id=\"recvSpan\">Received: <font color=SteelBlue>%d</font>",
         ip, port, ip, port, size);
 	
 	if(flag == 666 || flag == 350)	
@@ -773,17 +773,17 @@ void putInFile(int flag, const char *ip, char *port, int size, char *finalstr, c
 	ZeroMemory(msg, strlen(msg));
 }
 
-void _specFillerBA(const char *ip, char *port, char *finalstr, const char *login, const char *pass, int flag)
+void _specFillerBA(const char *ip, int port, char *finalstr, const char *login, const char *pass, int flag)
 {
     char log[512] = {0};
 	
 	++PieBA;
     if(strcmp(login, "NULL") != 0 && strcmp(pass, "NULL") != 0)
     {
-        sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"http://%s:%s@%s%s\"><font color=MediumSeaGreen>%s:%s@%s%s</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+        sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"http://%s:%s@%s:%d\"><font color=MediumSeaGreen>%s:%s@%s:%d</font></a></span> T: <font color=GoldenRod>%s</font>\n",
                 login, pass, ip, port, login, pass, ip, port, finalstr);
     } else {
-        sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"http://%s%s\"><font color=MediumSeaGreen>%s%s</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+        sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"http://%s:%d\"><font color=MediumSeaGreen>%s:%d</font></a></span> T: <font color=GoldenRod>%s</font>\n",
                 ip, port, ip, port, finalstr);
     }
 
@@ -792,7 +792,7 @@ void _specFillerBA(const char *ip, char *port, char *finalstr, const char *login
     fputsf (log , flag, "Basic Authorization");
 }
 
-void _specFillerWF(const char *ip, char *port, char *finalstr, char *login, char *pass, int flag)
+void _specFillerWF(const char *ip, int port, char *finalstr, char *login, char *pass, int flag)
 {
 	char log[512] = {0};
 	
@@ -1022,9 +1022,7 @@ void _specWFBrute(const char *ip, int port, const char *buff, int flag, char *pa
 	char *fBlock = strstri(buff, "<form ");
 	char formVal[128] = {0};
 	int fbsz = 0;
-	char tport[16] = {0};
 
-    sprintf(tport, "%d", port);
 	std::vector<std::string> inputVec;
 	if(fBlock != NULL)
 	{
@@ -1091,8 +1089,8 @@ void _specWFBrute(const char *ip, int port, const char *buff, int flag, char *pa
 	else
 	{
 		stt->doEmitionFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: Cannot find form block.");
-        fillGlobalLogData(ip, tport, std::to_string(size).c_str(), title, "NULL", "NULL", comment, cp, tclass);
-        putInFile(flag, ip, tport, size, title, cp);
+        fillGlobalLogData(ip, port, std::to_string(size).c_str(), title, "NULL", "NULL", comment, cp, tclass);
+        putInFile(flag, ip, port, size, title, cp);
 	};
 	
 	if(strlen(methodVal) == 0)
@@ -1157,10 +1155,10 @@ void _specWFBrute(const char *ip, int port, const char *buff, int flag, char *pa
 
 			if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 			{
-                _specFillerWF(ip, tport, title, lps.login, lps.pass, flag);
+                _specFillerWF(ip, port, title, lps.login, lps.pass, flag);
 		
-                fillGlobalLogData(ip, tport, std::to_string(size).c_str(), title, lps.login, lps.pass, comment, cp, tclass);
-                putInFile(flag, ip, tport, size, title, cp);
+                fillGlobalLogData(ip, port, std::to_string(size).c_str(), title, lps.login, lps.pass, comment, cp, tclass);
+                putInFile(flag, ip, port, size, title, cp);
 			};
 		}
 		else
@@ -1178,17 +1176,15 @@ void _specWEBIPCAMBrute(const char *ip, int port, char *finalstr, int flag, char
 	ZeroMemory(lps.login, sizeof(lps.login));
 	ZeroMemory(lps.pass, sizeof(lps.pass));
 	ZeroMemory(lps.other, sizeof(lps.other));
-    char tport[32] = {0};
-    sprintf(tport, ":%d", port);
 
     IPC ipc;
     lps = ipc.IPCLobby(ip, port, SPEC);
 
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
-        _specFillerBA(ip, tport, finalstr, lps.login, lps.pass, flag);
+		_specFillerBA(ip, port, finalstr, lps.login, lps.pass, flag);
 
-        fillGlobalLogData(ip, tport, std::to_string(size).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");
+		fillGlobalLogData(ip, port, std::to_string(size).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");
 	};
 }
 
@@ -1196,20 +1192,14 @@ void _specBrute(const char *ip, int port,
                 char *finalstr, int flag,
                 char *path, char *comment, char *cp, int size)
 {
-	char temp[64] = {0};
-    char tport[32] = {0};
-    sprintf(tport, ":%d", port);
-
     const lopaStr &lps = BA::BALobby((string(ip) + string(path)).c_str(), port);
 	
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
-        _specFillerBA(ip, tport, finalstr, lps.login, lps.pass, flag);
+        _specFillerBA(ip, port, finalstr, lps.login, lps.pass, flag);
 
-        fillGlobalLogData(ip, tport, std::to_string(size).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");
+        fillGlobalLogData(ip, port, std::to_string(size).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");
 	};
-
-	ZeroMemory(temp, sizeof(temp));
 }
 
 const char *GetTitle(const char* str)
@@ -1343,8 +1333,6 @@ void _saveSSH(const char *ip, int port, int size, const char *buffcpy)
 			int gsz = ptr1 - buffcpy;
 			strncpy(goodStr, buffcpy, gsz);
 			if(strlen(ptr1 + 3) > 0) strcpy(banner, ptr1 + 3);
-            char portString[16] = {0};
-            sprintf(portString, "%d", port);
             sprintf(log, "[SSH] <font color=\"#00a8ff\"> %s:%d </font><font color=\"#323232\">; Banner:</font> <font color=\"#9cff00\"> %s </font>", goodStr, port, banner);
             sprintf(logEmit, "[SSH] <span style=\"color: #00a8ff;\"> %s:%d </span>", goodStr, port);
 
@@ -1359,7 +1347,7 @@ void _saveSSH(const char *ip, int port, int size, const char *buffcpy)
 			const char *ptrl2 = strstr(buffcpy, "@");
 			lpsz = ptrl2 - ptrl1;
 			strncpy(passSSH, ptrl1 + 1, lpsz);
-            fillGlobalLogData(ip, portString, std::to_string(size).c_str(), "[SSH service]", loginSSH, passSSH, "NULL", "UTF-8", "SSH");
+			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[SSH service]", loginSSH, passSSH, "NULL", "UTF-8", "SSH");
 			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
 		}
 		else
@@ -1373,10 +1361,10 @@ void _saveSSH(const char *ip, int port, int size, const char *buffcpy)
 	};
 }
 
-int Lexems::_filler(int p, const char* buffcpy, char* ip, int size, Lexems *lx)
+int Lexems::_filler(int p, const std::string buffcpy, char* ip, int size, Lexems *lx)
 {
-    if(	strstr(buffcpy, "SSH-2.0-OpenSSH") != NULL ||
-            strstr(buffcpy, "SSH-2.0-mod_sftp") != NULL)
+	if (Utils::ustrstr(buffcpy, "SSH-2.0-OpenSSH") != -1 ||
+		Utils::ustrstr(buffcpy, "SSH-2.0-mod_sftp") != -1)
     {
         std::string sshBuff;
         int res = SSHAuth::SSHLobby(ip, p, &sshBuff);
@@ -1386,7 +1374,7 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int size, Lexems *lx)
 	
 	if(p == 22)
 	{
-        _saveSSH(ip, p, size, buffcpy);
+        _saveSSH(ip, p, size, buffcpy.c_str());
 		return -1;
 	};
 
@@ -1397,15 +1385,14 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int size, Lexems *lx)
 	ZeroMemory(ps.path, sizeof(ps.path));
 
 	char finalstr[TITLE_MAX_SIZE] = {0};
-	char port[32] = {0};
 	int flag = 0;
 	char cp[32] = {0};
 
-    strcpy(cp, GetCodePage(buffcpy));
+	strcpy(cp, GetCodePage(buffcpy.c_str()));
     flag = ContentFilter(buffcpy, p, ip, cp, size);
 	if(flag == -1 ) return -1;
 	
-	strcpy(ps.headr, GetTitle(buffcpy));
+	strcpy(ps.headr, GetTitle(buffcpy.c_str()));
 	ps.flag = flag;
 
     char baPath[256] = {0};
@@ -1414,7 +1401,7 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int size, Lexems *lx)
     std::vector<std::string> redirStrLst;
 	if(flag == 0 || flag == 3 || flag == 7 )
 	{
-        int rh = _header(ip, p, buffcpy, lx, &ps, &redirStrLst, size);
+        int rh = _header(ip, p, buffcpy.c_str(), lx, &ps, &redirStrLst, size);
 		strcpy(cp, ps.codepage);
 		if (rh == -1) {
 			return -1;
@@ -1430,9 +1417,7 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int size, Lexems *lx)
 		int sz = strlen(ps.path);
         strncpy(baPath, ps.path, (sz < 256 ? sz : 256));
     };
-
-    sprintf(port, "%d", p);
-
+	
 	if(strstr(finalstr, ps.headr) == NULL) strcat(finalstr, ps.headr);
 	if (flag == -1 || flag == 6) {
 		return -1;
@@ -1449,14 +1434,14 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int size, Lexems *lx)
 		{
 			++PieBA;
 
-            sprintf(log, "[FTP]:<font color=\"#0f62e2\">%s:%s</font>; Received: %d<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> <font color=\"#43EC00\"><a href=\"http://%s\" style=\"color:#43EC00;\">[ROUTER]</a></font>%s",
-                    ip, port, size, lps.login, lps.pass, ip, lps.login, lps.pass, ip, ip, ps.headr);
+            sprintf(log, "[FTP]:<font color=\"#0f62e2\">%s:%d</font>; Received: %d<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> <font color=\"#43EC00\"><a href=\"http://%s\" style=\"color:#43EC00;\">[ROUTER]</a></font>%s",
+                    ip, p, size, lps.login, lps.pass, ip, lps.login, lps.pass, ip, ip, ps.headr);
             sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> <font color=\"#43EC00\"><a href=\"http://%s/\" style=\"color:#43EC00;\">[ROUTER]</a></font>",
                     lps.login, lps.pass, ip, lps.login, lps.pass, ip, ip);
 
             fputsf (log, flag, "FTP");
 	
-            fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "Router FTP detected.", cp, "FTP");
+            fillGlobalLogData(ip, p, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "Router FTP detected.", cp, "FTP");
 						
 			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
 		}
@@ -1464,14 +1449,14 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int size, Lexems *lx)
 		{
 			++PieBA;
 
-            sprintf(log, "[FTP]:<font color=\"#0f62e2\">%s:%s</font>; Received: %d<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a>%s",
-                    ip, port, size, lps.login, lps.pass, ip, lps.login, lps.pass, ip, ps.headr);
+            sprintf(log, "[FTP]:<font color=\"#0f62e2\">%s:%d</font>; Received: %d<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a>%s",
+                    ip, p, size, lps.login, lps.pass, ip, lps.login, lps.pass, ip, ps.headr);
             sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> (F:%d)",
                     lps.login, lps.pass, ip, lps.login, lps.pass, ip, ps.directoryCount);
 
             fputsf(log, flag, "FTP");
 	
-            fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "NULL", cp, "FTP");
+            fillGlobalLogData(ip, p, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "NULL", cp, "FTP");
 
 			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
 
@@ -1644,10 +1629,10 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int size, Lexems *lx)
 		++AnomC1;
 
         const lopaStr &lps = BA::BALobby((string(ip) + "/~login").c_str(), p);
-        sprintf(log, "[HFS]:<a href=\"http://%s:%s/\"><span style=\"color: #a1a1a1;\">%s:%s</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">%s Pass: %s:%s</font>",
-                ip, port, ip, port, finalstr, lps.login, lps.pass);
+        sprintf(log, "[HFS]:<a href=\"http://%s:%d/\"><span style=\"color: #a1a1a1;\">%s:%d</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">%s Pass: %s:%s</font>",
+                ip, p, ip, p, finalstr, lps.login, lps.pass);
 
-        fillGlobalLogData(ip, port, std::to_string(size).c_str(), finalstr, lps.login, lps.pass, "HFS-FTP", cp, "Basic Authorization");
+        fillGlobalLogData(ip, p, std::to_string(size).c_str(), finalstr, lps.login, lps.pass, "HFS-FTP", cp, "Basic Authorization");
         fputsf (log , flag, "HFS");
         stt->doEmitionFoundData(QString::fromLocal8Bit(log));
 	}
@@ -1661,15 +1646,15 @@ int Lexems::_filler(int p, const char* buffcpy, char* ip, int size, Lexems *lx)
 	}
 	else if(flag == 10) 
 	{
-        _specWFBrute(ip, p, buffcpy, flag, baPath, "Web Form", "Web Form", cp, size, finalstr);
+        _specWFBrute(ip, p, buffcpy.c_str(), flag, baPath, "Web Form", "Web Form", cp, size, finalstr);
 	}
     else if(flag == 2)
     {
-        putInFile(0, ip, port, size, "[OVERFLOW]", cp);
+        putInFile(0, ip, p, size, "[OVERFLOW]", cp);
     }
 	else 
 	{
-        putInFile(flag, ip, port, size, finalstr, cp);
+        putInFile(flag, ip, p, size, finalstr, cp);
 	};
 
 	return flag;
@@ -2621,7 +2606,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 						"] Rejecting in _header::Lowload_body (&lt;15b)");
 				};
 
-				++Filt;
+				++filtered;
 				strcpy(ps->path, "/"); 
 				return -1; 
 			};

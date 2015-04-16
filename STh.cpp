@@ -85,8 +85,7 @@ void STh::setPorts(QString ports) {
 }
 void STh::run() 
 {
-	MainStarter ms(gMode, 
-		this->target.toLocal8Bit().data(),
+	MainStarter ms(this->target.toLocal8Bit().data(),
 		this->ports.toLocal8Bit().data()
 		);
 	ms.start();

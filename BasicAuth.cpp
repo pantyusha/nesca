@@ -2,24 +2,24 @@
 #include "FileUpdater.h"
 
 bool BA::checkOutput(const string *buffer, const char *ip, const int port) {
-    if((Utils::ci_find_substr(*buffer, "200 ok") != -1 ||
-            Utils::ci_find_substr(*buffer, "http/1.0 200") != -1 ||
-			Utils::ci_find_substr(*buffer, "http/1.1 200") != -1)
-			&& Utils::ci_find_substr(*buffer, "http/1.1 401 ") == -1
-			&& Utils::ci_find_substr(*buffer, "http/1.0 401 ") == -1
-			&& Utils::ci_find_substr(*buffer, "<statusValue>401</statusValue>") == -1
-			&& Utils::ci_find_substr(*buffer, "<statusString>Unauthorized</statusString>") == -1
-			&& Utils::ci_find_substr(*buffer, "неправильны") == -1
-			&& Utils::ci_find_substr(*buffer, "РќРµРїСЂР°РІРёР»СЊРЅС‹") == -1
+    if((Utils::ustrstr(*buffer, "200 ok") != -1 ||
+            Utils::ustrstr(*buffer, "http/1.0 200") != -1 ||
+			Utils::ustrstr(*buffer, "http/1.1 200") != -1)
+			&& Utils::ustrstr(*buffer, "http/1.1 401 ") == -1
+			&& Utils::ustrstr(*buffer, "http/1.0 401 ") == -1
+			&& Utils::ustrstr(*buffer, "<statusValue>401</statusValue>") == -1
+			&& Utils::ustrstr(*buffer, "<statusString>Unauthorized</statusString>") == -1
+			&& Utils::ustrstr(*buffer, "неправильны") == -1
+			&& Utils::ustrstr(*buffer, "РќРµРїСЂР°РІРёР»СЊРЅС‹") == -1
             ) {
         return true;
 	}
-	else if (Utils::ci_find_substr(*buffer, "503 service unavailable") != -1
-		|| Utils::ci_find_substr(*buffer, "http/1.1 503") != -1
-		|| Utils::ci_find_substr(*buffer, "http/1.0 503") != -1
-		|| Utils::ci_find_substr(*buffer, "400 BAD_REQUEST") != -1
-		|| Utils::ci_find_substr(*buffer, "400 bad request") != -1
-		|| Utils::ci_find_substr(*buffer, "403 Forbidden") != -1
+	else if (Utils::ustrstr(*buffer, "503 service unavailable") != -1
+		|| Utils::ustrstr(*buffer, "http/1.1 503") != -1
+		|| Utils::ustrstr(*buffer, "http/1.0 503") != -1
+		|| Utils::ustrstr(*buffer, "400 BAD_REQUEST") != -1
+		|| Utils::ustrstr(*buffer, "400 bad request") != -1
+		|| Utils::ustrstr(*buffer, "403 Forbidden") != -1
 		)
 	{
 		stt->doEmition_BARedData("[.] 503/400/403 - Waiting 30sec (" + QString(ip) + ":" + QString::number(port) + ")");

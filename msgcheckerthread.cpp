@@ -21,11 +21,11 @@ void _getNewMsg()
     char *ptr1 = NULL;
     if(buffer.size() > 0)
 	{
-        if(Utils::ci_find_substr(buffer, std::string("\r\n\r\n")) != -1
-                && Utils::ci_find_substr(buffer, std::string("404 Not Found")) == -1
-                && Utils::ci_find_substr(buffer, std::string("502 Bad Gateway")) == -1
-                && Utils::ci_find_substr(buffer, std::string("400 Bad Request")) == -1
-                && Utils::ci_find_substr(buffer, std::string("\r\n\r\nEmpty")) == -1
+        if(Utils::ustrstr(buffer, std::string("\r\n\r\n")) != -1
+                && Utils::ustrstr(buffer, std::string("404 Not Found")) == -1
+                && Utils::ustrstr(buffer, std::string("502 Bad Gateway")) == -1
+                && Utils::ustrstr(buffer, std::string("400 Bad Request")) == -1
+                && Utils::ustrstr(buffer, std::string("\r\n\r\nEmpty")) == -1
                 )
         {
                 ptr1 = strstr((char*)buffer.c_str(), "\r\n\r\n");

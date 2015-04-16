@@ -108,7 +108,7 @@ void DrawerTh_VoiceScanner::run()
 			Alive = 0;
 			AnomC1 = 0;
 			WF = 0;
-			Filt = 0;
+			filtered = 0;
 			Lowl = 0;
 			baCount = 0;
 			Overl = 0;
@@ -124,7 +124,7 @@ void DrawerTh_VoiceScanner::run()
 			Alive = 0;
 			AnomC1 = 0;
 			WF = 0;
-			Filt = 0;
+			filtered = 0;
 			Lowl = 0;
 			baCount = 0;
 			Overl = 0;

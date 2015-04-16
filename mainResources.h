@@ -131,10 +131,8 @@ public:
         std::vector<std::string> *lst, int size);
 
     int _filler(int port,
-        const char *buffcpy,
+		const std::string buffcpy,
         char* ip,
         int size,
         Lexems *lx);
 };
-
-extern std::string xcode(LPCSTR src, UINT srcCodePage, UINT dstCodePage);

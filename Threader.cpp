@@ -1,5 +1,6 @@
 #include "Threader.h"
 
+int Threader::gThreadDelay = 10;
 int Threader::threadId = 0;
 std::mutex Threader::m;
 bool Threader::ready = false;
@@ -27,6 +28,7 @@ void Threader::cleanUp() {
 	std::unique_lock<std::mutex> lk(m);
 	lk.unlock();
 	lk.release();
+	Sleep(1500);
     threadId = 0;
     std::queue<std::string> empty = {};
 	std::swap(ipQueue, empty);

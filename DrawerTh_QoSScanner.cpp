@@ -2,6 +2,8 @@
 #include "STh.h"
 #include "externData.h"
 
+int DrawerTh_QoSScanner::MaxDataVal = 1;
+
 void DrawerTh_QoSScanner::run()
 {
 	while(QoSScanFlag)
@@ -30,7 +32,7 @@ void DrawerTh_QoSScanner::run()
 			AnomC1 = 0;
 			WF = 0;
 			baCount = 0;
-			Filt = 0;
+			filtered = 0;
 			Overl = 0;
 			Lowl = 0;
 			Alive = 0;
@@ -41,7 +43,7 @@ void DrawerTh_QoSScanner::run()
 		AnomC1 = 0;
 		WF = 0;
 		baCount = 0;
-		Filt = 0;
+		filtered = 0;
 		Overl = 0;
 		Lowl = 0;
 		Alive = 0;

@@ -9,6 +9,8 @@ class DrawerTh_QoSScanner : public QThread
 	Q_OBJECT
 
 public:
+	static int MaxDataVal;
+public:
 	static void doEmitionAddLine();
 
 public: signals: void sAddLine();

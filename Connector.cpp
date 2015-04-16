@@ -237,10 +237,7 @@ int Connector::_ConnectToPort(char* ip, int port)
 {
     if(gPingNScan)
     {
-        if(_pingMyTarget(ip) == 0)
-        {
-            return -2;
-        };
+        if(_pingMyTarget(ip) == 0) return -2;
     };
 
     std::string buffer;
@@ -254,7 +251,13 @@ int Connector::_ConnectToPort(char* ip, int port)
         ++Alive;//ME2
 		++found;//PieStat
         Lexems lx;
-        lx._filler(port, buffer.c_str(), ip, size, &lx);
+        lx._filler(port, buffer, ip, size, &lx);
+
+		//if (Filter::negativeFilter(&buffer)) {
+		//	if (Filter::resultFilter(&buffer)) {
+		//		saveNode();
+		//	}
+		//}
 	}
 	else if (size == -2) return -2;
     return 0;

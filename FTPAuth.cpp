@@ -2,7 +2,7 @@
 #include "FileUpdater.h"
 
 bool FTPA::checkOutput(const string *buffer) {
-    if(Utils::ci_find_substr(*buffer, "230") != -1) {
+    if(Utils::ustrstr(*buffer, "230") != -1) {
 
         return true;
     }

@@ -16,6 +16,7 @@ public:
     static bool ready;
     static std::condition_variable cv;
     static std::queue<std::string> ipQueue;
+	static int gThreadDelay;
 
 public:
     static void fireThread(std::string ip, void *func(void));

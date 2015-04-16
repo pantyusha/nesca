@@ -1,5 +1,6 @@
 #ifndef EXTERNDATA_H
 #define EXTERNDATA_H
+#include <atomic>
 
 #include <qjsonarray.h>
 #define RECV_MAX_SIZE 350000
@@ -22,34 +23,29 @@ extern QJsonArray *jsonArr;
 
 extern unsigned long long gTargetsNumber;
 extern long long unsigned int gTargets;
-extern volatile int cons, BrutingThrds, gThreads;
-extern char **loginLst, **passLst, **wfLoginLst, **wfPassLst, **sshlpLst, **GlobalNegatives;
-extern bool trackerOK, __savingBackUpFile, globalScanFlag, MapWidgetOpened,
-    widgetIsHidden, OnlineMsgSentFlag, HTMLDebugMode, gNegDebugMode,
+extern std::atomic<int> cons, BrutingThrds, gThreads;
+extern char **loginLst, **passLst, **wfLoginLst, **wfPassLst, **sshlpLst;
+extern bool trackerOK, globalScanFlag, MapWidgetOpened,
+    widgetIsHidden, gNegDebugMode,
     gDebugMode, horLineFlag, gPingNScan, gShuffle,
-BALogSwitched;
+	BALogSwitched;
 extern int found, indexIP, gMode, 
 	MaxPass, MaxLogin, MaxWFLogin, MaxWFPass, MaxSSHPass,
-    GlobalNegativeSize, gMaxBrutingThreads,
+    gMaxBrutingThreads,
 	gTimeOut, PieAnomC1, PieSusp, PieBA, PieLowl, PieWF, PieSSH, 
-	gThreadDelay, AnomC1, Filt, Overl, Lowl, Alive, saved, 
+	AnomC1, filtered, Overl, Lowl, Alive, saved,
     Susp,
     WF,
 	baCount,
-    offlines, ssh, globalPinger, gPingTimeout, nickFlag, offlineFlag;
+    ssh, globalPinger, gPingTimeout;
 extern unsigned int Activity;
 extern char trcSrv[256], trcScr[256], trcProxy[128], trcPersKey[64],
-    trcPort[32], trcSrvPortLine[32], saveEndIP[128],
+    trcPort[32], trcSrvPortLine[32],
     gTLD[128], gPorts[65536],
     gProxyIP[64], gProxyPort[8],
     currentIP[MAX_ADDR_LEN],
     finalIP[32];
 
 extern char gVER[32];
-
-struct pl{
-	int loginCounter;
-	int passCounter;
-};
 
 #endif // EXTERNDATA

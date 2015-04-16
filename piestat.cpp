@@ -14,7 +14,7 @@ void PieStat::run()
 		AnomC1 = 0;
 		WF = 0;
 		baCount = 0;
-		Filt = 0;
+		filtered = 0;
 		Overl = 0;
 		Lowl = 0;
 		Alive = 0;

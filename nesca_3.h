@@ -15,27 +15,18 @@
 #include <QSystemTrayIcon>
 #include <QtGui/qevent.h>
 #include <qthread.h>
-#include <qjsonobject.h>
-#include <qjsonvalue.h>
-#include <qjsonarray.h>
 #include <qtextcodec.h>
-#include <qjsondocument.h>
 #include <libssh/libssh.h>
-#include "mainResources.h"
 
 extern Ui::nesca_3Class *ui;
-extern bool widgetIsHidden, blinkFlag, disableBlink, QOSWait,
-    ME2ScanFlag, QoSScanFlag, VoiceScanFlag, PieStatFlag, proxyEnabledFlag,
-	smBit_8, smBit_7, smBit_6, smBit_5, smBit_4, smBit_3, smBit_2, smBit_1, printDelimiter;
+extern bool widgetIsHidden, QOSWait,
+    ME2ScanFlag, QoSScanFlag, VoiceScanFlag, PieStatFlag,
+	smBit_8, smBit_7, smBit_6, smBit_5, smBit_4, smBit_3, smBit_2, smBit_1;
 extern float QoSStep;
-extern int MaxDataVal;
-extern SOCKET lSock;
 
 extern QVector<int> vAlivLst, vAnomLst, vWFLst, vSuspLst, vLowlLst, vBALst, vSSHLst, vOvrlLst, actLst;
 extern QList<int> lstOfLabels;
 extern QSystemTrayIcon *tray;
-
-extern void ShowMsgPopup(QString str);
 
 class nesca_3 : public QMainWindow
 {
@@ -157,7 +148,6 @@ protected:
 			}
 			else if (evt->button() == Qt::RightButton)
 			{
-				disableBlink = true;
 				ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");	
 				this->hide();
 			};

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <qstring.h>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ private:
 class Utils {
 public:
     // find substring (case insensitive)
-    template<typename T> static int ci_find_substr(const T& str1,
+    template<typename T> static int ustrstr(const T& str1,
                                             const T& str2,
                                             const locale& loc = locale()) {
 
@@ -33,7 +34,7 @@ public:
         else return -1;
     }
 
-    template<typename T> static int ci_find_substr(const T& str1,
+	template<typename T> static int ustrstr(const T& str1,
                                             const char* str2c,
                                             const locale& loc = locale()) {
 
@@ -43,6 +44,24 @@ public:
         if(it != str1.end()) return it - str1.begin();
         else return -1;
     }
+
+	static QString GetNSErrorDefinition(const char *str, const char *elem){
+		const char *temp = strstr(str, elem);
+
+		if (temp != NULL)
+		{
+			char definition[128] = { 0 };
+			const char *firstComma = strstr(temp + strlen(elem) + 1, "\"");
+			const char *lastComma = strstr(firstComma + 1, "\"");
+
+			int sz = lastComma - firstComma - 1;
+
+			strncpy(definition, firstComma + 1, (sz < 128 ? sz : 128));
+
+			return QString(definition);
+		}
+		else return QString("No definition found!");
+	}
 
     char * getProxy();
     int getProxyPort();

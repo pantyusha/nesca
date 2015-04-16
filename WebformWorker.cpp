@@ -12,20 +12,20 @@ lopaStr WFClass::parseResponse(const char *ip,
 
     if(buffer->size() != 0)
     {
-        if(Utils::ci_find_substr(*buffer, std::string(formVal)) == -1
-                && Utils::ci_find_substr(*buffer, std::string("denied")) == -1
-                && Utils::ci_find_substr(*buffer, std::string("Location:")) == -1
-                && Utils::ci_find_substr(*buffer, std::string("Authentication required")) == -1
-                && Utils::ci_find_substr(*buffer, std::string("invalid")) == -1
-                && Utils::ci_find_substr(*buffer, std::string("err")) == -1
-                && Utils::ci_find_substr(*buffer, std::string(".href")) == -1
-                && Utils::ci_find_substr(*buffer, std::string(".replace")) == -1
-                && Utils::ci_find_substr(*buffer, std::string(".location")) == -1
-                && Utils::ci_find_substr(*buffer, std::string("501 not implemented")) == -1
-                && Utils::ci_find_substr(*buffer, std::string("http-equiv")) == -1
-                && Utils::ci_find_substr(*buffer, std::string("busy")) == -1
-                && Utils::ci_find_substr(*buffer, std::string("later")) == -1
-                && Utils::ci_find_substr(*buffer, std::string("forbidden")) == -1
+        if(Utils::ustrstr(*buffer, std::string(formVal)) == -1
+                && Utils::ustrstr(*buffer, std::string("denied")) == -1
+                && Utils::ustrstr(*buffer, std::string("Location:")) == -1
+                && Utils::ustrstr(*buffer, std::string("Authentication required")) == -1
+                && Utils::ustrstr(*buffer, std::string("invalid")) == -1
+                && Utils::ustrstr(*buffer, std::string("err")) == -1
+                && Utils::ustrstr(*buffer, std::string(".href")) == -1
+                && Utils::ustrstr(*buffer, std::string(".replace")) == -1
+                && Utils::ustrstr(*buffer, std::string(".location")) == -1
+                && Utils::ustrstr(*buffer, std::string("501 not implemented")) == -1
+                && Utils::ustrstr(*buffer, std::string("http-equiv")) == -1
+                && Utils::ustrstr(*buffer, std::string("busy")) == -1
+                && Utils::ustrstr(*buffer, std::string("later")) == -1
+                && Utils::ustrstr(*buffer, std::string("forbidden")) == -1
                 ) {
 
             stt->doEmition_BAGreenData("[+] " + QString(ip) + ":" + QString::number(port) + " - WF pass: " +
@@ -36,9 +36,9 @@ lopaStr WFClass::parseResponse(const char *ip,
 
         } else {
 
-            if(Utils::ci_find_substr(*buffer, std::string("501 not implemented")) != -1) stt->doEmitionRedFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: 501 Not Implemented.");
+            if(Utils::ustrstr(*buffer, std::string("501 not implemented")) != -1) stt->doEmitionRedFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: 501 Not Implemented.");
 
-            if(Utils::ci_find_substr(*buffer, std::string("404 not found")) != -1) stt->doEmitionRedFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: 404 Not Found.");
+            if(Utils::ustrstr(*buffer, std::string("404 not found")) != -1) stt->doEmitionRedFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: 404 Not Found.");
 
             return result;
         }

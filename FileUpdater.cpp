@@ -10,135 +10,22 @@ long FileUpdater::oldPassLstSize = 0;
 long FileUpdater::oldSSHLstSize = 0;
 long FileUpdater::oldWFLoginLstSize = 0;
 long FileUpdater::oldWFPassLstSize = 0;
+int FileUpdater::gNegativeSize = 0;
 std::mutex FileUpdater::filesUpdatingMutex;
 std::condition_variable FileUpdater::cv;
 bool FileUpdater::ready = false;
 std::unique_lock<std::mutex> FileUpdater::lk;
-
-void ReadUTF8(FILE* nFile, char *cp) {
-    char buffFG[256] = {0};
-    int i = 0;
-    GlobalNegativeSize = 0;
-
-    if(nFile != NULL)
-    {
-        while(fgets((char*)buffFG, sizeof(buffFG), nFile) != NULL)
-        {
-            if(buffFG[0] != '#' && buffFG[0] != ' ' && buffFG[0] != '\n' && buffFG[0] != '\r' && strcmp(buffFG, "") != 0 &&
-                ((buffFG[0] == '/' && buffFG[1] == '/') == false) && ((buffFG[0] == '\t' && buffFG[1] == '\t' && buffFG[2] == '\t' && (buffFG[3] == 13 || buffFG[3] == 10 || buffFG[3] == '#')) == false)
-                && (buffFG[0] == '\t' && buffFG[1] == '\t' && buffFG[2] == '\t' && (buffFG[3] == '/' && buffFG[4] == '/')) == false)
-            {
-                ++GlobalNegativeSize;
-            }
-            ZeroMemory(buffFG, sizeof(buffFG));
-        };
-
-        rewind(nFile);
-        if(strcmp(cp, "UTF") == 0) fseek(nFile, 3, 0);
-
-        GlobalNegatives = new char*[GlobalNegativeSize + 2];
-
-        while(fgets(buffFG, sizeof(buffFG), nFile) != NULL)
-        {
-            if(buffFG[0] == '#' || buffFG[0] == ' ' || buffFG[0] == '\n' || buffFG[0] == '\r' || strcmp(buffFG, "") == 0 ||
-                (buffFG[0] == '/' && buffFG[1] == '/'))
-            {
-                ZeroMemory(buffFG, sizeof(buffFG));
-                continue;
-            };
-
-            if(buffFG[0] == '\t' && buffFG[1] == '\t' && buffFG[2] == '\t')
-            {
-                char buffFGT[256] = {0};
-                strcpy(buffFGT, buffFG);
-                char *ptr1 = strstr(buffFGT, "\t\t\t");
-                ZeroMemory(buffFG, sizeof(buffFG));
-                strcpy(buffFG, ptr1 + 3);
-            };
-
-            int bSz = strlen(buffFG);
-            if((bSz == 2 && buffFG[0] == 13 && buffFG[1] == 10) || (bSz == 1 && (buffFG[0] == 13 || buffFG[0] == 10)))
-            {
-                ZeroMemory(buffFG, sizeof(buffFG));
-                continue;
-            };
-            if(buffFG[bSz] == 13 || buffFG[bSz] == 10)
-            {
-                buffFG[bSz] = '\0';
-            };
-            if(buffFG[bSz - 1] == 13 || buffFG[bSz - 1] == 10)
-            {
-                buffFG[bSz - 1] = '\0';
-            };
-            if(buffFG[bSz - 2] == 13 || buffFG[bSz - 2] == 10)
-            {
-                buffFG[bSz - 2] = '\0';
-            };
-
-            if(strstr((char*)buffFG, "\n") != 0)
-            {
-                std::string res = std::string(buffFG);
-                int sz = res.size();
-                GlobalNegatives[i] = new char[sz + 1];
-                ZeroMemory(GlobalNegatives[i], sizeof(*GlobalNegatives[i]));
-                memcpy(GlobalNegatives[i], toLowerStr(res.c_str()).c_str(), sz - 1);
-                memset(GlobalNegatives[i] + sz - 1, '\0', 1);
-                ++i;
-            }
-            else
-            {
-                std::string res = std::string(buffFG);
-                int sz = res.size();
-                GlobalNegatives[i] = new char[sz + 1];
-                ZeroMemory(GlobalNegatives[i], sizeof(*GlobalNegatives[i]));
-                memcpy(GlobalNegatives[i], toLowerStr(res.c_str()).c_str(), sz);
-                memset(GlobalNegatives[i] + sz, '\0', 1);
-                ++i;
-            };
-            ZeroMemory(buffFG, sizeof(buffFG));
-        };
-
-        if(FileUpdater::oldNegLstSize == 0) stt->doEmitionGreenFoundData("Negative list loaded (" + QString::number(GlobalNegativeSize) + " entries)");
-        else stt->doEmitionFoundData("<font color=\"Pink\">Negative list updated (" + QString::number(GlobalNegativeSize) + " entries)</font>");
-
-        ZeroMemory(buffFG, sizeof(buffFG));
-        fclose(nFile);
-    }
-    else
-    {
-        stt->doEmitionRedFoundData("No negative list found");
-        stt->doEmitionKillSttThread();
-    };
-}
+std::vector<std::string> FileUpdater::negativeVector;
 
 void negativeLoader() {
-    FILE *nFile = fopen("negatives.txt", "rb, ccs=UTF-8");
+	std::ifstream file("negatives.txt");
+	std::string line;
 
-    if( nFile != NULL)
-    {
-        unsigned char b[3] = {0};
-        fread(b,1,2, nFile);
-        if( b[0] == 0xEF && b[1] == 0xBB)
-        {
-            fread(b,1,1,nFile); // 0xBF
-            ReadUTF8(nFile, "UTF");
-        }
-        else
-        {
-            rewind(nFile);
-            ReadUTF8(nFile, "1251");
-        };
-    }
+	while (std::getline(file, line)) FileUpdater::negativeVector.push_back(line);
 }
 
 void updateNegatives() {
-    if(GlobalNegatives != NULL)
-    {
-        for(int i = 0; i < GlobalNegativeSize; ++i) delete []GlobalNegatives[i];
-        delete []GlobalNegatives;
-        GlobalNegatives = NULL;
-    };
-
+	FileUpdater::negativeVector.clear();
     negativeLoader();
 }
 void updateLogin() {

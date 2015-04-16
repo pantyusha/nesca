@@ -15,7 +15,7 @@ void _checkVer()
         char *ptr1 = NULL;
         if(buffer.size() > 0)
         {
-            if(Utils::ci_find_substr(buffer, std::string("\r\n\r\n")) != -1)
+            if(Utils::ustrstr(buffer, std::string("\r\n\r\n")) != -1)
             {
                 ptr1 = strstr((char*)buffer.c_str(), "\r\n\r\n");
                 if(strcmp(gVER, ptr1 + 4) != 0)

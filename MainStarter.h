@@ -24,18 +24,15 @@ private:
 public:
 	static std::vector<int> portVector;
 	static int flCounter;
+	static bool savingBackUpFile;
 
 public:
-	MainStarter(short mode, 
-		const char* targets,
-		const char* ports,
-		const char* tld = nullptr
-		)
+	MainStarter(const char* targets, const char* ports)
 	{
 		horLineFlag = false;
 		PieAnomC1 = 0, PieWF = 0, PieBA = 0, PieSusp = 0, PieLowl = 0, PieSSH = 0;
-		AnomC1 = 0, baCount = 0, Filt = 0, Overl = 0, Lowl = 0, Alive = 0, Activity = 0, saved = 0, Susp = 0,
-			WF = 0, offlines = 0;
+		AnomC1 = 0, baCount = 0, filtered = 0, Overl = 0, Lowl = 0, Alive = 0, Activity = 0, saved = 0, Susp = 0,
+			WF = 0;
 		BrutingThrds = 0;
 		found = 0;
 		gTargets = 0;
@@ -68,8 +65,9 @@ public:
 		Threader::cleanUp();
 		curl_global_cleanup();
 
-		while (__savingBackUpFile) Sleep(100);
+		while (savingBackUpFile) Sleep(100);
 
+		FileUpdater::negativeVector.clear();
 		if (loginLst != NULL)
 		{
 			for (int i = 0; i < MaxLogin; ++i) delete[]loginLst[i];
@@ -81,12 +79,6 @@ public:
 			for (int i = 0; i < MaxPass; ++i) delete[]passLst[i];
 			delete[]passLst;
 			passLst = NULL;
-		};
-		if (GlobalNegatives != NULL)
-		{
-			for (int i = 0; i < GlobalNegativeSize; ++i) delete[]GlobalNegatives[i];
-			delete[]GlobalNegatives;
-			GlobalNegatives = NULL;
 		};
 		if (wfPassLst != NULL)
 		{

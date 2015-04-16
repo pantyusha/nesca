@@ -2,9 +2,36 @@
 #include "MainStarter.h"
 #include "Connector.h"
 #include <sstream>
+#include "Utils.h"
+#include <qjsonobject.h>
+#include <qjsonvalue.h>
+#include <qjsonarray.h>
+#include <qjsondocument.h>
+
+int gTimeOut = 3;
+int gPingTimeout = 1;
+int gMode;
+int PieAnomC1 = 0, PieBA = 0, PieSusp = 0, PieLowl = 0, PieWF = 0, PieSSH = 0;
+int AnomC1 = 0, filtered = 0, Overl = 0, Lowl = 0, Alive = 0, saved = 0, Susp = 0, WF = 0, ssh = 0;
+int found = 0, indexIP = 0;
+int MaxPass = 0, MaxLogin = 0, MaxTags = 0, MaxWFLogin = 0, MaxWFPass = 0, MaxSSHPass = 0;
+int baCount = 0;
+int gMaxBrutingThreads = 50;
+unsigned int Activity = 0;
+char **loginLst, **passLst;
+char **wfLoginLst, **wfPassLst;
+char **sshlpLst;
+char gTLD[128] = { 0 };
+char gPorts[65536] = { 0 };
+char currentIP[MAX_ADDR_LEN] = { 0 };
+char finalIP[32] = { 0 };
+
+bool gPingNScan = false;
+std::atomic<int> cons = 0, BrutingThrds = 0, gThreads;
 
 std::vector<int> MainStarter::portVector;
 int MainStarter::flCounter = 0;
+bool MainStarter::savingBackUpFile = false;
 
 QJsonArray *jsonArr = new QJsonArray();
 
@@ -331,7 +358,7 @@ int MainStarter::loadTargets(const char *data) {
 			ipsendfl[0], ipsendfl[1], ipsendfl[2], ipsendfl[3]);
 	}
 
-	if (ip1 > ip2) {
+	if (gMode != 1 && ip1 > ip2) {
 		stt->doEmitionRedFoundData("Malformed input: check your range");
 		return -1;
 	}
@@ -461,7 +488,7 @@ void MainStarter::saveBackupToFile()
 	strcat(saveBuffer, saveStr);
 	ZeroMemory(saveStr, sizeof(saveStr));
 
-	sprintf(saveStr, "[THREAD_DELAY]: %d\n", gThreadDelay);
+	sprintf(saveStr, "[THREAD_DELAY]: %d\n", Threader::gThreadDelay);
 	strcat(saveBuffer, saveStr);
 	ZeroMemory(saveStr, sizeof(saveStr));
 
@@ -487,17 +514,20 @@ void MainStarter::saveBackupToFile()
 	strcat(saveBuffer, saveStr);
 	ZeroMemory(saveStr, sizeof(saveStr));
 
-	FILE *savingFile = fopen("restore", "w");
+	std::string finalSaveStr(saveBuffer);
+	std::ofstream file("restore");
+	file << finalSaveStr;
+	ZeroMemory(saveBuffer, strlen(saveBuffer));
+
+	/*FILE *savingFile = fopen("restore", "w");
 
 	if (savingFile != NULL)
 	{
 		fputs(saveBuffer, savingFile);
 		fclose(savingFile);
 	}
-	else stt->doEmitionRedFoundData("[_saver] Cannot open file.");
+	else stt->doEmitionRedFoundData("[_saver] Cannot open file.");*/
 
-	ZeroMemory(saveStr, strlen(saveStr));
-	ZeroMemory(saveBuffer, strlen(saveBuffer));
 }
 
 bool saverRunning = false;
@@ -507,9 +537,9 @@ void MainStarter::saver()
 	Sleep(1000);
 	while (globalScanFlag)
 	{
-		__savingBackUpFile = true;
+		savingBackUpFile = true;
 		saveBackupToFile();
-		__savingBackUpFile = false;
+		savingBackUpFile = false;
 		Sleep(10000);
 	};
 	saverRunning = false;
@@ -714,7 +744,7 @@ void _tracker() {
 					jsonMeta.insert("speed", QJsonValue(QString(metaIPS)));
 					jsonMeta.insert("eta", QJsonValue(QString(metaETA)));
 					jsonMeta.insert("threads", QJsonValue(QString::number(cons) + "/" + QString::number(gThreads)));
-					jsonMeta.insert("bads", QJsonValue(QString::number(offlines)));
+					jsonMeta.insert("bads", QJsonValue("-1"));
 					jsonMeta.insert("version", QJsonValue(QString(gVER)));
 
 					jsonArr->push_front(QJsonValue(jsonMeta));
@@ -770,7 +800,8 @@ void _tracker() {
 						CSSOCKET(sock);
 
 
-						stt->doEmitionRedFoundData("[NS-Track] -connect() returned " + QString::number(WSAGetLastError()) + ".");
+						stt->doEmitionRedFoundData("[NS-Track] connect() returned " + 
+							QString::number(WSAGetLastError()) + ".");
 
 						continue;
 					};
@@ -786,7 +817,8 @@ void _tracker() {
 					{
 						CSSOCKET(sock);
 
-						stt->doEmitionRedFoundData("[NS-Track] -send() returned " + QString::number(WSAGetLastError()) + ".");
+						stt->doEmitionRedFoundData("[NS-Track] send() returned " + 
+							QString::number(WSAGetLastError()) + ".");
 
 						continue;
 					};
@@ -814,7 +846,7 @@ void _tracker() {
 
 						if (strlen(rBuffT) > 200000)
 						{
-							stt->doEmitionRedFoundData("[NS-Track] (Inner) -Large error received from server (>200000b) " + 
+							stt->doEmitionRedFoundData("[NS-Track] (Inner) Large error received from server (>200000b) " + 
 								QString::number(WSAGetLastError()) + ".");
 							break;
 						};
@@ -830,7 +862,7 @@ void _tracker() {
 					{
 						CSSOCKET(sock);
 
-						stt->doEmitionRedFoundData("[NS-Track] -recv() returned " + QString::number(WSAGetLastError()) + ".");
+						stt->doEmitionRedFoundData("[NS-Track] recv() returned " + QString::number(WSAGetLastError()) + ".");
 
 						continue;
 					};
@@ -838,7 +870,7 @@ void _tracker() {
 					if (strstr(rBuffT, "201 Created") != NULL)
 					{
 
-						if (gDebugMode) stt->doEmitionYellowFoundData("[NS-Track] -OK. Data saved!");
+						if (gDebugMode) stt->doEmitionYellowFoundData("[NS-Track] OK. Data saved!");
 						stt->doEmitionDataSaved(true);
 						Sleep(1000);
 						stt->doEmitionDataSaved(false);
@@ -846,15 +878,14 @@ void _tracker() {
 					}
 					else if (strstr(rBuffT, "400 Bad Request") != NULL)
 					{
-
-						QString errorDef = GetNSErrorDefinition(rBuffT, "notify");
+						QString errorDef = Utils::GetNSErrorDefinition(rBuffT, "notify");
 						if (errorDef == "Invalid access key") stt->doEmitionYellowFoundData("[NS-Track] [Key is unauthorized] A valid key is required.");
-						else stt->doEmitionYellowFoundData("[NS-Track] -FAIL! [400 Bad Request : " + errorDef + "]");
+						else stt->doEmitionYellowFoundData("[NS-Track] FAIL! [400 Bad Request : " + errorDef + "]");
 
 					}
 					else
 					{
-						stt->doEmitionYellowFoundData("[NS-Track] -FAIL! An error occured [" + QString(msgR) + "]");
+						stt->doEmitionYellowFoundData("[NS-Track] FAIL! An error occured [" + QString(msgR) + "]");
 					};
 
 					ZeroMemory(msgR, sizeof(msgR));
@@ -874,7 +905,7 @@ void _tracker() {
 		}
 		else
 		{
-			stt->doEmitionRedFoundData("[NS-Track] -Balancer replied with invalid string.");
+			stt->doEmitionRedFoundData("[NS-Track] Balancer replied with invalid string.");
 		};
 
 		CSSOCKET(sock);

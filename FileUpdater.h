@@ -4,8 +4,7 @@
 #include <fstream>
 #include <mutex>
 #include <condition_variable>
-#include "externData.h"
-#include "externFunctions.h"
+#include <vector>
 
 class FileUpdater {
 public:
@@ -20,6 +19,8 @@ public:
     static std::condition_variable cv;
     static std::mutex filesUpdatingMutex;
     static std::unique_lock<std::mutex> lk;
+	static int gNegativeSize;
+	static std::vector<std::string> negativeVector;
 
 public:
     static void updateLists();

@@ -147,7 +147,7 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 			else if (res != -1) {
 				for (int i = 0; i < negVector.size(); ++i)
 				{
-					if (Utils::ci_find_substr(buffer, negVector[i]) != -1)
+					if (Utils::ustrstr(buffer, negVector[i]) != -1)
 					{
 						result = false;
 						break;

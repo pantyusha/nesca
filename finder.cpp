@@ -516,7 +516,7 @@ void fputsf(char *text, int flag, char *msg)
 	else if(flag == 7) 
 	{
 		if(ftsLL) ftsLL					= __checkFileExistence(flag);
-        file = fopen(RESULT_DIR_NAME"/low_loads.html", "a");
+		file = fopen(RESULT_DIR_NAME"/low_loads.html", "a");
 	}
 	else if(flag == 10) 
 	{
@@ -535,10 +535,7 @@ void fputsf(char *text, int flag, char *msg)
 		if(ftsBA) ftsBA					= __checkFileExistence(flag);
         file = fopen(RESULT_DIR_NAME"/Basicauth.html", "a");
 	}
-	else
-	{
-		stt->doEmitionRedFoundData("[WUT!?] Unknown flag [FLAG: " + QString::number(flag) + "]");	
-	};
+	else stt->doEmitionRedFoundData("[WUT!?] Unknown flag [FLAG: " + QString::number(flag) + "]");
 
 	if(file != NULL)
 	{
@@ -558,8 +555,10 @@ void fputsf(char *text, int flag, char *msg)
 			strcat(delimiter, "</font></h5></center><hr>");
 			fputs (delimiter, file);
 		};
+
 		++saved;
 		char *string = new char[strlen(text) + 512];
+
 		if(flag != -22) 
 		{
 			strcpy (string, "<div id=\"ipd\" style=\"color:#707070;text-decoration: none;\">");
@@ -680,7 +679,7 @@ void fputsf(char *text, int flag, char *msg)
 	}
 	else
 	{
-		stt->doEmitionRedFoundData("Cannot open file [FLAG: " + QString::number(flag) + "]");
+		stt->doEmitionRedFoundData("Cannot open file [FLAG: " + QString::number(flag) + "] " + QString::number(GetLastError()));
 	};
 }
 
@@ -2158,7 +2157,7 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 	};
 }
 
-int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps, std::vector<std::string> *redirStrLst, int size)
+int Lexems::_header(char *ip, int port, const char *str, Lexems *l, PathStr *ps, std::vector<std::string> *redirStrLst, int size)
 {
 	std::string redirectStr = "";
 
@@ -2187,12 +2186,8 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 		&& strstr(str, "company") == NULL
 		) 
 	{
-		if (strstr(str, "CgiStart?page=Single") != NULL) {
-			strcpy(ps->headr, "[IP Camera (Unibrowser)]");
-		}
-		else {
-			strcpy(ps->headr, "[IP Camera]");
-		}
+		if (strstr(str, "CgiStart?page=Single") != NULL) strcpy(ps->headr, "[IP Camera (Unibrowser)]");
+		else strcpy(ps->headr, "[IP Camera]");
 		l->flag = 0;
 		ps->flag = 0;
 	};
@@ -2251,6 +2246,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
                         strncpy(temp3, (char*)(temp + 4), sz < 128 ? sz : 127);
                     };
                 };
+
                 if(strstri(temp3, "http://") == NULL && strstri(temp3, "https://") == NULL)
                 {
                     if(temp3[0] != '.')
@@ -2369,8 +2365,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 				if(ps->flag >= 17 || ps->flag == 11 || ps->flag == 12 
 				|| ps->flag == 13 || ps->flag == 14 || ps->flag == 1 
 				|| ps->flag == 10
-				) 
-				return -2;
+				) return -2;
 				else if(ps->flag == -1) return -1;
 			};
 		};
@@ -2379,25 +2374,13 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 	if(strstri(str, "ActiveXObject") != NULL 
 		|| strstri(str, ".cab") != NULL 
 		|| strstri(str, "clsid:") != NULL
-		)
-	{
-		strcat(ps->headr, "[ActiveX]");
-	};
+		) strcat(ps->headr, "[ActiveX]");
 
 	if(strstri(str, "<applet") != NULL 
 		&& strstri(str, ".jar") != NULL
-		)
-	{
-		strcat(ps->headr, "[Java]");
-	};
-	if(strstri(str, "<script") != NULL)
-	{
-		strcat(ps->headr, "[Javascript]");
-	};
-	if(strstri(str, "<video") != NULL)
-	{
-		strcat(ps->headr, "[Video]");
-	};
+		) strcat(ps->headr, "[Java]");
+	if(strstri(str, "<script") != NULL) strcat(ps->headr, "[Javascript]");
+	if(strstri(str, "<video") != NULL) strcat(ps->headr, "[Video]");
 	
 	if(strstri(str, "<frameset") != NULL || strstri(str, "<frame") != NULL || strstri(str, "<iframe") != NULL)
 	{
@@ -2489,25 +2472,21 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 
 					flag = ps->flag;
 					if(flag == 1 || flag == 11 || flag == 12
-						|| flag == 13 || flag == 14 || flag >= 17 || flag == 10)
-					{
-						return -2;
-					}
+						|| flag == 13 || flag == 14 || flag >= 17 || flag == 10) return -2;
 					else if(ps->flag == -1) return -1;
 				}
 				else
 				{
-					stt->doEmitionRedFoundData("[FrameLocator] Corrupted tag. [" + QString(ip) +":" + QString::number(port) + "]");
+					stt->doEmitionRedFoundData("[FrameLocator] Corrupted tag. [" + QString(ip) + ":" + 
+						QString::number(port) + "]");
 				};
 			};
 		}
 		while(str1 != NULL);
 		return -2;
 	};
-	if (strstri(str, "<form ") != NULL)
-	{
-		strcat(ps->headr, "[Form]");
-	}
+
+	if (strstri(str, "<form ") != NULL) strcat(ps->headr, "[Form]");
 	//if(strstri(str, "<form ") != NULL) 
 	//{
 	//	strcat(ps->headr, " [Login form detected]");
@@ -2565,14 +2544,8 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 	if(strlen(ps->headr) == 0)
 	{
 		strcat(ps->headr, "[Empty title]");
-		if(strstri(str, "<html") == NULL && strstri(str, "<!doctype html") == NULL) 
-		{
-			strcat(ps->headr, "[No html]"); 
-		};
-		if(strstri(str, "<body") == NULL) 
-		{
-			strcat(ps->headr, "[No body]");
-		};
+		if(strstri(str, "<html") == NULL && strstri(str, "<!doctype html") == NULL) strcat(ps->headr, "[No html]");
+		if(strstri(str, "<body") == NULL) strcat(ps->headr, "[No body]");
 
 		const char *ptr1 = strstr(str, "\r\n\r\n");
 		if( ptr1 != NULL) 
@@ -2582,16 +2555,10 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 				strcat(ps->headr, " [Data: ");
 
 				char *ptr2 = strstri(ptr1 + 4, "<body");
-				if (ptr2 != NULL)
-				{
-					strncat(ps->headr, ptr2 + 5, 64);
-				}
+				if (ptr2 != NULL) strncat(ps->headr, ptr2 + 5, 64);
 				else {
 					ptr2 = strstri(ptr1 + 4, "<html");
-					if (ptr2 != NULL)
-					{
-						strncat(ps->headr, strstri(ptr1, "<html") + 5, 64);
-					}
+					if (ptr2 != NULL) strncat(ps->headr, strstri(ptr1, "<html") + 5, 64);
 					else strncat(ps->headr, ptr1 + 4, 64);
 				};
 
@@ -2621,10 +2588,7 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 
     ps->flag = ContentFilter(str, port, ip, ps->codepage, size);
 
-	if(strstri(str, "window.open(") != NULL)
-	{
-		_getPopupTitle(ps, strstri(str, "window.open("));
-	};
+	if(strstri(str, "window.open(") != NULL) _getPopupTitle(ps, strstri(str, "window.open("));
 
 	strcpy(ps->path, "/");
 	return 0;

@@ -2914,7 +2914,7 @@ void nesca_3::appendDefaultText(QString str)
 
 void nesca_3::appendErrText(QString str)
 {
-	ui->dataText->append("<span style=\"color:red;background-color:#313131;\">[" + QTime::currentTime().toString() + "]" + QString::fromUtf8(str.toLocal8Bit().data()) + "</span>");
+	ui->dataText->append("<span style=\"color:red;\">[" + QTime::currentTime().toString() + "]" + QString::fromUtf8(str.toLocal8Bit().data()) + "</span>");
 
 	if(stt->isRunning() == false)
 	{

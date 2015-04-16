@@ -51,7 +51,7 @@ public:
 		curl_global_init(CURL_GLOBAL_ALL);
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-		CreateDirectoryA(RESULT_DIR_NAME, NULL);
+		bool res = CreateDirectoryA(RESULT_DIR_NAME, NULL);
 #else
 		struct stat str = { 0 };
 		if (stat(RESULT_DIR_NAME, &str) == -1) {

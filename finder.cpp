@@ -2180,8 +2180,8 @@ int Lexems::_header(char *ip, int port, const char str[], Lexems *l, PathStr *ps
 		|| strstri(str, "lan camera") != NULL			|| strstri(str, "cgiuserlogin?") != NULL
 		|| strstri(str, "web camera") != NULL			|| strstri(str, "smart ip device") != NULL
 		|| strstri(str, "pan/tilt camera") != NULL		|| strstri(str, "/cgi-bin/viewer/getparam.cgi?") != NULL
-		|| strstri(str, "IPCamera") != NULL)
-		&& strstr(str, "customer") == NULL
+		|| strstri(str, "IPCam") != NULL				|| strstri(str, "/camera-cgi/admin") != NULL
+		) && strstr(str, "customer") == NULL
 		&& strstr(str, "purchase") == NULL
 		&& strstr(str, "contac") == NULL
 		&& strstr(str, "company") == NULL

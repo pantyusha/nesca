@@ -9,6 +9,7 @@ void ProgressbarDrawer::update()
 int nesca_3::perc = 0;
 void ProgressbarDrawer::run()
 {
+	globalScanFlag = true;
 	while(globalScanFlag)
 	{
 		msleep(1000);

@@ -72,7 +72,7 @@ std::vector<int> splitToIntVector(const std::string &s, char delim) {
 
 	return elems;
 }
-void MainStarter::fileLoader(const char *fileName) {
+int MainStarter::fileLoader(const char *fileName) {
 
 	char curIP[256] = { 0 }, curIPCopy[256] = { 0 };
 	unsigned int importFileSize = 0;
@@ -84,20 +84,28 @@ void MainStarter::fileLoader(const char *fileName) {
 		{
 			if (curIP[0] != '#' && curIP[0] != ' ' && curIP[0] != '\n' && curIP[0] != '\r' && strcmp(curIP, "") != 0 &&
 				((curIP[0] == '/' && curIP[1] == '/') == false) && ((curIP[0] == '\t' && curIP[1] == '\t' && curIP[2] == '\t' && (curIP[3] == 13 || curIP[3] == 10 || curIP[3] == '#')) == false)
-				&& (curIP[0] == '\t' && curIP[1] == '\t' && curIP[2] == '\t' && (curIP[3] == '/' && curIP[4] == '/')) == false)
-			{
-				++importFileSize;
-			};
+				&& (curIP[0] == '\t' && curIP[1] == '\t' && curIP[2] == '\t' && (curIP[3] == '/' && curIP[4] == '/')) == false
+				) ++importFileSize;
 			ZeroMemory(curIP, sizeof(curIP));
 		};
 
-		ipsstartfl = new unsigned int*[importFileSize + 1];
-		ipsendfl = new unsigned int*[importFileSize + 1];
+		if (importFileSize == 0) {
+			fclose(fl);
+			return -1;
+		}
+
+		ipsstartfl = new unsigned int*[importFileSize + 1000];
+		ipsendfl = new unsigned int*[importFileSize + 1000];
+		ZeroMemory(ipsstartfl, sizeof(ipsstartfl));
+		ZeroMemory(ipsendfl, sizeof(ipsendfl));
 
 		for (int i = 0; i < importFileSize; ++i)
 		{
 			ipsstartfl[i] = new unsigned int[4];
 			ipsendfl[i] = new unsigned int[4];
+
+			ZeroMemory(ipsstartfl[i], sizeof(ipsstartfl[i]));
+			ZeroMemory(ipsendfl[i], sizeof(ipsendfl[i]));
 		};
 
 		rewind(fl);
@@ -157,7 +165,7 @@ void MainStarter::fileLoader(const char *fileName) {
 							QString::number(MainStarter::flCounter) + 
 							"] String-> [" +
 							QString(curIPCopy) + "]");
-						return;
+						return -1;
 					};
 
 					unsigned long ip1 = (ipsstartfl[MainStarter::flCounter][0] * 16777216) +
@@ -179,9 +187,16 @@ void MainStarter::fileLoader(const char *fileName) {
 				}
 				else if (strstr(curIP, "/") != NULL)
 				{
+					if (strlen(curIP) > 18) {
+						stt->doEmitionRedFoundData("[IP Loader]Wrong list format. Line-> [" +
+							QString::number(MainStarter::flCounter) +
+							"] String-> [" +
+							QString(curIPCopy) +
+							"]");
+						continue;
+					}
 					unsigned int ip[4] = { 0 }, ip_min[4] = { 0 }, ip_max[4] = { 0 }, tmp1, tmp2;
 					unsigned int netmask = atoi(strstr(curIP, "/") + 1);
-					char ip_string[19];
 
 					std::vector<int> tmpIPVec = splitToIntVector(curIP, '.');
 
@@ -238,18 +253,12 @@ void MainStarter::fileLoader(const char *fileName) {
 				}
 				else
 				{
-					char tempMsg[256] = { 0 };
-					strcpy(tempMsg, "[IP Loader]Wrong list format. Line-> [");
-					strcat(tempMsg, std::to_string(MainStarter::flCounter).c_str());
-					strcat(tempMsg, "] String-> [");
-					strcat(tempMsg, curIPCopy);
-					strcat(tempMsg, "]");
 					stt->doEmitionRedFoundData("[IP Loader]Wrong list format. Line-> [" + 
 						QString::number(MainStarter::flCounter) + 
 						"] String-> [" + 
 						QString(curIPCopy) + 
 						"]");
-					return;
+					return -1;
 				};
 				ZeroMemory(curIP, sizeof(curIP));
 			};
@@ -270,7 +279,6 @@ int MainStarter::loadTargets(const char *data) {
 
 			unsigned int ip[4] = { 0 }, ip_min[4] = { 0 }, ip_max[4] = { 0 }, tmp1, tmp2;
 			unsigned int netmask = atoi(strstr(data, "/") + 1);
-			char ip_string[19];
 
 			std::vector<int> tmpIPVec = splitToIntVector(data, '.');
 
@@ -341,7 +349,10 @@ int MainStarter::loadTargets(const char *data) {
 		gTargetsNumber = gTargets;
 	} 
 	else {
-		fileLoader(data);
+		if (fileLoader(data) == -1) {
+			stt->doEmitionRedFoundData("IP list is empty.");
+			return -1;
+		}
 		sprintf(finalIP, "%d.%d.%d.%d", 
 			ipsendfl[gflIndex][0], ipsendfl[gflIndex][1], ipsendfl[gflIndex][2], ipsendfl[gflIndex][3]);
 	}
@@ -1306,7 +1317,14 @@ void MainStarter::runAuxiliaryThreads() {
 	}
 }
 
-void MainStarter::start() {
+void MainStarter::start(const char* targets, const char* ports) {
+
+	if (loadTargets(targets) == -1 ||
+		loadPorts(ports, ',') == -1) {
+		stt->doEmitionKillSttThread();
+		return;
+	}
+
 	globalScanFlag = true;
 	runAuxiliaryThreads();
 
@@ -1317,9 +1335,7 @@ void MainStarter::start() {
 	stt->doEmitionYellowFoundData("Stopping threads...");
 	stt->doEmitionChangeStatus("Stopping...");
 
-	while (cons > 0 || jsonArr->size() > 0) {
-		Sleep(2000);
-	};
+	while (cons > 0 || jsonArr->size() > 0) Sleep(2000);
 
 	stt->doEmitionGreenFoundData("Done. Saved <u>" + QString::number(saved) + 
 		"</u> of <u>" + QString::number(found) + "</u> nodes.");

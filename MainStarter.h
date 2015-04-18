@@ -27,7 +27,7 @@ public:
 	static bool savingBackUpFile;
 
 public:
-	MainStarter(const char* targets, const char* ports)
+	MainStarter()
 	{
 		horLineFlag = false;
 		PieAnomC1 = 0, PieWF = 0, PieBA = 0, PieSusp = 0, PieLowl = 0, PieSSH = 0;
@@ -44,9 +44,6 @@ public:
 
 		ZeroMemory(ipsstart, sizeof(ipsstart));
 		ZeroMemory(ipsend, sizeof(ipsend));
-
-		if (loadTargets(targets) == -1 || 
-			loadPorts(ports, ',') == -1) return;
 
 		curl_global_init(CURL_GLOBAL_ALL);
 
@@ -115,8 +112,8 @@ public:
 	void runAuxiliaryThreads();
 	void saver();
 	void saveBackupToFile();
-	void fileLoader(const char *fileName);
-	void start();
+	int fileLoader(const char *fileName);
+	void start(const char* targets, const char* ports);
 };
 
 #endif // MAINSTARTER_H

@@ -2157,7 +2157,7 @@ void nesca_3::ImportScanSeq()
 		stt->setTarget(fileName);
 		stt->setPorts(ui->importPorts->text().replace(" ", ""));
 		stt->start();
-
+		
 		startFlag = true;
 		pbTh->start();
 		ui->importButton->setText("Stop");

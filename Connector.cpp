@@ -1,5 +1,6 @@
 #include "Connector.h"
 #include "SSHAuth.h"
+#include "Filter.h"
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 int _pingMyTarget(const char *ip)
@@ -170,13 +171,19 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
         }
 
         if (lpString != NULL) {
-            curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY);
+			curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY);
             curl_easy_setopt(curl, CURLOPT_UNRESTRICTED_AUTH, 1L);
             curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, 1L);
 			curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
 		}; 
 		
 		int res = curl_easy_perform(curl);
+		if (port != 21 && lpString != NULL) {
+			int pos = Utils::ustrstr(*buffer, "\r\n\r\n");
+			if (pos != -1) {
+				*buffer = buffer->substr(pos + 4);
+			}
+		}
 		curl_easy_cleanup(curl);
 		
 		if (res == CURLE_OK || 
@@ -233,7 +240,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 	return buffer->size();
 }
 
-int Connector::_ConnectToPort(char* ip, int port)
+int Connector::connectToPort(char* ip, int port)
 {
     if(gPingNScan)
     {
@@ -251,13 +258,7 @@ int Connector::_ConnectToPort(char* ip, int port)
         ++Alive;//ME2
 		++found;//PieStat
         Lexems lx;
-        lx._filler(port, buffer, ip, size, &lx);
-
-		//if (Filter::negativeFilter(&buffer)) {
-		//	if (Filter::resultFilter(&buffer)) {
-		//		saveNode();
-		//	}
-		//}
+		lx.filler(ip, port, &buffer, size, &lx);
 	}
 	else if (size == -2) return -2;
     return 0;

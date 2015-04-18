@@ -958,7 +958,7 @@ void _connect() {
 			for (int i = 0; i < MainStarter::portVector.size(); ++i)
 			{
 				if (!globalScanFlag) break;
-				if (Connector::_ConnectToPort((char*)ip.c_str(), MainStarter::portVector[i]) == -2) break;
+				if (Connector::connectToPort((char*)ip.c_str(), MainStarter::portVector[i]) == -2) break;
 			};
 			--cons;
 			stt->doEmitionUpdateArc(gTargets);

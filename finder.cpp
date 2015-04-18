@@ -103,10 +103,7 @@ char *GetCodePage(const char *str)
 		if (temp3 != NULL)
 		{
 			int ln = (int)(temp3 - ptr1 - 8);
-			if (ln > 16)
-			{
-				return "WTF?";
-			};
+			if (ln > 16) return "WTF?";
 			strncpy(cdpg, (char *)(ptr1 + 8), (ln > 32) ? 32 : ln);
 			if (strstri(cdpg, "%s") != NULL) return "UTF-8";
 			return cdpg;
@@ -128,10 +125,7 @@ char *GetCodePage(const char *str)
 			if(temp4 != NULL)
 			{
                 int ln = (int)(temp4 - ptr2 - 8);
-				if(ln > 16) 
-				{
-					return "WTF?";
-				};
+				if(ln > 16) return "WTF?";
                 strncpy(cdpg, (char *)(ptr2 + 8), (ln > 32) ? 32 : ln );
 				if(strstri(cdpg, "%s") != NULL) return "UTF-8";
 				return cdpg;
@@ -150,10 +144,7 @@ char *GetCodePage(const char *str)
 			if(temp4 != NULL)
 			{
                 int ln = (int)(temp4 - ptr2 - 10);
-				if(ln > 16) 
-				{
-					return "WTF?";
-				};
+				if(ln > 16) return "WTF?";
                 strncpy(cdpg, (char *)(ptr2 + 10), (ln > 32) ? 32 : ln );
 				if(strstri(cdpg, "%s") != NULL) return "UTF-8";
 				return cdpg;
@@ -172,10 +163,7 @@ char *GetCodePage(const char *str)
 			if(temp4 != NULL)
 			{
                 int ln = (int)(temp4 - ptr2 - 9);
-				if(ln > 16) 
-				{
-					return "WTF?";
-				};
+				if(ln > 16) return "WTF?";
                 strncpy(cdpg, (char *)(ptr2 + 9), (ln > 32) ? 32 : ln );
 				if(strstri(cdpg, "%s") != NULL) return "UTF-8";
 				return cdpg;
@@ -195,10 +183,7 @@ char *GetCodePage(const char *str)
 				if(temp3 != NULL)
 				{
                     int ln = (int)(temp3 - temp2 - 8);
-					if(ln > 16) 
-					{
-						return "WTF?";
-					};
+					if(ln > 16) return "WTF?";
                     strncpy(cdpg, (char *)(temp2 + 8), (ln > 32) ? 32 : ln );
 					if(strstri(cdpg, "%s") != NULL) return "UTF-8";
 					return cdpg;
@@ -209,19 +194,13 @@ char *GetCodePage(const char *str)
                     return "NULL";
 				}
 			}
-			else
-			{
-				return "NULL";
-			};
+			else return "NULL";
 		};	
 	}
-	else
-	{
-		return "NULL";
-	};
+	else return "NULL";
 }
 
-int globalSearchNeg(const std::string buff, const char *ip, int port, const char *cp)
+int globalSearchNeg(const std::string *buff, const char *ip, int port, const char *cp)
 {
 	QTextCodec *codec;
 	QString codedStr;
@@ -229,24 +208,24 @@ int globalSearchNeg(const std::string buff, const char *ip, int port, const char
 	if (strstri(cp, "shift_jis") != NULL)
 	{
 		codec = QTextCodec::codecForName("Shift-JIS");
-		codedStr = codec->toUnicode(buff.c_str());
+		codedStr = codec->toUnicode(buff->c_str());
 	}
 	else if (strstri(cp, "utf") != NULL)
 	{
 		codec = QTextCodec::codecForName("UTF-8");
-		codedStr = codec->toUnicode(buff.c_str());
+		codedStr = codec->toUnicode(buff->c_str());
 	}
 	else if (strstri(cp, "cp") != NULL || strstri(cp, "windows") != NULL)
 	{
 		codec = QTextCodec::codecForName("Windows-1251");
-		codedStr = codec->toUnicode(buff.c_str());
+		codedStr = codec->toUnicode(buff->c_str());
 	}
 	else if (strstri(cp, "gb") != NULL)
 	{
 		codec = QTextCodec::codecForName("GB2312");
-		codedStr = codec->toUnicode(buff.c_str());
+		codedStr = codec->toUnicode(buff->c_str());
 	}
-	else codedStr = QString(buff.c_str());
+	else codedStr = QString(buff->c_str());
 
 	for (auto negEntry : FileUpdater::negativeVector) {
 		FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready; });
@@ -268,19 +247,19 @@ int globalSearchNeg(const std::string buff, const char *ip, int port, const char
 	}
 }
 
-int globalSearchPrnt(const std::string buffcpy)
+int globalSearchPrnt(const std::string *buff)
 {
-	if(Utils::ustrstr(buffcpy, "en/_top.htm") != -1 || Utils::ustrstr(buffcpy, "cannon http server") != -1
-		|| Utils::ustrstr(buffcpy, "konica minolta") != -1 || Utils::ustrstr(buffcpy, "/eng/home_frm.htm") != -1
-		|| Utils::ustrstr(buffcpy, "networkScanner webserver") != -1 || Utils::ustrstr(buffcpy, "/eng/htm/top.htm") != -1
-		|| Utils::ustrstr(buffcpy, "pages/t_ixdmy.htm") != -1
-		|| Utils::ustrstr(buffcpy, "/web/guest/") != -1 || Utils::ustrstr(buffcpy, "printerInfo") != -1
-		|| Utils::ustrstr(buffcpy, "hp photosmart") != -1
-		|| Utils::ustrstr(buffcpy, "menu and") != -1
-		|| Utils::ustrstr(buffcpy, "hewlett packard") != -1
-		|| Utils::ustrstr(buffcpy, "laserjet") != -1 || Utils::ustrstr(buffcpy, "supplies summary") != -1
-		|| Utils::ustrstr(buffcpy, "seiko epson") != -1 || Utils::ustrstr(buffcpy, "ink_y.png") != -1
-		|| Utils::ustrstr(buffcpy, "epsonnet") != -1 || Utils::ustrstr(buffcpy, "printer name") != -1
+	if(Utils::ustrstr(buff, "en/_top.htm") != -1 || Utils::ustrstr(buff, "cannon http server") != -1
+		|| Utils::ustrstr(buff, "konica minolta") != -1 || Utils::ustrstr(buff, "/eng/home_frm.htm") != -1
+		|| Utils::ustrstr(buff, "networkScanner webserver") != -1 || Utils::ustrstr(buff, "/eng/htm/top.htm") != -1
+		|| Utils::ustrstr(buff, "pages/t_ixdmy.htm") != -1
+		|| Utils::ustrstr(buff, "/web/guest/") != -1 || Utils::ustrstr(buff, "printerInfo") != -1
+		|| Utils::ustrstr(buff, "hp photosmart") != -1
+		|| Utils::ustrstr(buff, "menu and") != -1
+		|| Utils::ustrstr(buff, "hewlett packard") != -1
+		|| Utils::ustrstr(buff, "laserjet") != -1 || Utils::ustrstr(buff, "supplies summary") != -1
+		|| Utils::ustrstr(buff, "seiko epson") != -1 || Utils::ustrstr(buff, "ink_y.png") != -1
+		|| Utils::ustrstr(buff, "epsonnet") != -1 || Utils::ustrstr(buff, "printer name") != -1
 		) 
 		{
 			if(gNegDebugMode) stt->doEmitionDebugFoundData("Printer detected.");	
@@ -291,104 +270,146 @@ int globalSearchPrnt(const std::string buffcpy)
     return 0;
 }
 
-int sharedDetector(const char * ip, int port, const std::string buffcpy, const char *cp) {
+int sharedDetector(const char * ip, int port, const std::string *buffcpy, const char *cp) {
 
-    if(Utils::ustrstr(buffcpy, "401 authorization") != -1 || Utils::ustrstr(buffcpy, "401 unauthorized") != -1
-        || (Utils::ustrstr(buffcpy, "www-authenticate") != -1 && Utils::ustrstr(buffcpy, "401 ") != -1 )
+    if(Utils::ustrstr(buffcpy, "401 authorization") != -1 
+		|| Utils::ustrstr(buffcpy, "401 unauthorized") != -1
+        || (Utils::ustrstr(buffcpy, "www-authenticate") != -1 
+		&& Utils::ustrstr(buffcpy, "401 ") != -1 
+		)
         || Utils::ustrstr(buffcpy, "401 unauthorized access denied") != -1
-        || Utils::ustrstr(buffcpy, "401 unauthorised") != -1 || (Utils::ustrstr(buffcpy, "www-authenticate") != -1
-        && Utils::ustrstr(buffcpy, " 401\r\n") != -1)
+        || Utils::ustrstr(buffcpy, "401 unauthorised") != -1 
+		|| (Utils::ustrstr(buffcpy, "www-authenticate") != -1
+        && Utils::ustrstr(buffcpy, " 401\r\n") != -1
+		)
         ) {
-            if(Utils::ustrstr(buffcpy, "digest realm") != -1 && Utils::ustrstr(buffcpy, "basic realm") == -1) {
-                                                                                                                                                    return 101;
-            } else                                                                                                                                  return 1;
+            if(Utils::ustrstr(buffcpy, "digest realm") != -1 
+				&& Utils::ustrstr(buffcpy, "basic realm") == -1) {
+                                                                                        return 101;
+            } else                                                                      return 1;
     };
-	if (Utils::ustrstr(buffcpy, "netwave ip camera") != -1)																										return 11;
-	if (Utils::ustrstr(buffcpy, "live view / - axis") != -1)																										return 12;
-	if (Utils::ustrstr(buffcpy, "vilar ipcamera") != -1)																											return 13;
-	if (Utils::ustrstr(buffcpy, "window.location = \"rdr.cgi\"") != -1)																							return 14;
-	if (Utils::ustrstr(buffcpy, "httpfileserver") != -1)																											return 15;
+	if (Utils::ustrstr(buffcpy, "netwave ip camera") != -1)								return 11;
+	if (Utils::ustrstr(buffcpy, "live view / - axis") != -1)							return 12;
+	if (Utils::ustrstr(buffcpy, "vilar ipcamera") != -1)								return 13;
+	if (Utils::ustrstr(buffcpy, "window.location = \"rdr.cgi\"") != -1)					return 14;
+	if (Utils::ustrstr(buffcpy, "httpfileserver") != -1)								return 15;
     if(Utils::ustrstr(buffcpy, "real-time ip camera monitoring system") != -1
             || Utils::ustrstr(buffcpy, "server push mode") != -1
-        )																																			return 17; //Real-time IP Camera Monitoring System
-    if(Utils::ustrstr(buffcpy, "linksys.com") != -1 && Utils::ustrstr(buffcpy, "tm05") != -1)																	return 18; //linksys.com cameras
-    if(Utils::ustrstr(buffcpy, "reecam ip camera") != -1)																									return 19; //reecam cameras
-    if(Utils::ustrstr(buffcpy, "/view/viewer_index.shtml") != -1)																							return 20; //axis cameras
-    if(Utils::ustrstr(buffcpy, "bridge eyeon") != -1)																										return 21; //Bridge Eyeon
-    if(Utils::ustrstr(buffcpy, "ip camera control webpage") != -1 && Utils::ustrstr(buffcpy, "/main/cs_motion.asp") != -1)										return 22; //ip camera control
-    if(Utils::ustrstr(buffcpy, "network camera") != -1 && Utils::ustrstr(buffcpy, "/live/index2.html") != -1)													return 23; //network camera BB-SC384
-    if(Utils::ustrstr(buffcpy, "network camera") != -1 && Utils::ustrstr(buffcpy, "/viewer/live/en/live.html") != -1)											return 24; //Network Camera VB-M40
-    if(Utils::ustrstr(buffcpy, "panasonic ") != -1 && Utils::ustrstr(buffcpy, ":60002/snapshotjpeg") != -1)														return 25; //Panasonic wtfidonteven-camera
-    if(Utils::ustrstr(buffcpy, "sony network camera") != -1 && Utils::ustrstr(buffcpy, "/command/inquiry.cgi?") != -1)											return 26; //Sony Network Camera
-    if(Utils::ustrstr(buffcpy, "network camera") != -1 && Utils::ustrstr(buffcpy, "src=\"webs.cgi?") != -1)														return 27; //UA Network Camera
-    if(Utils::ustrstr(buffcpy, "network camera") != -1 && Utils::ustrstr(buffcpy, "/viewer/live/index.html") != -1)												return 28; //Network Camera VB-M40
-    if(Utils::ustrstr(buffcpy, "lg smart ip device") != -1)																								return 29; //LG Smart IP Device Camera
-    if(Utils::ustrstr(buffcpy, "/view/viewer_index.shtml") != -1)																							return 20; //axis cameras
-    if(Utils::ustrstr(buffcpy, "nas") != -1 && Utils::ustrstr(buffcpy, "/cgi-bin/data/viostor-220/viostor/viostor.cgi") != -1)									return 30; //NAX
-    if(Utils::ustrstr(buffcpy, "ip camera") != -1 && Utils::ustrstr(buffcpy, "check_user.cgi") != -1)															return 31; //axis cameras
-    if(Utils::ustrstr(buffcpy, "ws(\"user\");") != -1 && Utils::ustrstr(buffcpy, "src=\"/tool.js") != -1
-            && Utils::ustrstr(buffcpy, "<b class=\"xb1\"></b>") != -1)                                                                                    return 32; //web ip cam
+        )																				return 17; //Real-time IP Camera Monitoring System
+    if(Utils::ustrstr(buffcpy, "linksys.com") != -1 
+		&& Utils::ustrstr(buffcpy, "tm05") != -1)										return 18; //linksys.com cameras
+    if(Utils::ustrstr(buffcpy, "reecam ip camera") != -1)								return 19; //reecam cameras
+    if(Utils::ustrstr(buffcpy, "/view/viewer_index.shtml") != -1)						return 20; //axis cameras
+    if(Utils::ustrstr(buffcpy, "bridge eyeon") != -1)									return 21; //Bridge Eyeon
+    if(Utils::ustrstr(buffcpy, "ip camera control webpage") != -1 
+		&& Utils::ustrstr(buffcpy, "/main/cs_motion.asp") != -1)						return 22; //ip camera control
+    if(Utils::ustrstr(buffcpy, "network camera") != -1 
+		&& Utils::ustrstr(buffcpy, "/live/index2.html") != -1)							return 23; //network camera BB-SC384
+    if(Utils::ustrstr(buffcpy, "network camera") != -1 
+		&& Utils::ustrstr(buffcpy, "/viewer/live/en/live.html") != -1)					return 24; //Network Camera VB-M40
+    if(Utils::ustrstr(buffcpy, "panasonic ") != -1 
+		&& Utils::ustrstr(buffcpy, ":60002/snapshotjpeg") != -1)						return 25; //Panasonic wtfidonteven-camera
+    if(Utils::ustrstr(buffcpy, "sony network camera") != -1 
+		&& Utils::ustrstr(buffcpy, "/command/inquiry.cgi?") != -1)						return 26; //Sony Network Camera
+    if(Utils::ustrstr(buffcpy, "network camera") != -1 
+		&& Utils::ustrstr(buffcpy, "src=\"webs.cgi?") != -1)							return 27; //UA Network Camera
+    if(Utils::ustrstr(buffcpy, "network camera") != -1 
+		&& Utils::ustrstr(buffcpy, "/viewer/live/index.html") != -1)					return 28; //Network Camera VB-M40
+    if(Utils::ustrstr(buffcpy, "lg smart ip device") != -1)								return 29; //LG Smart IP Device Camera
+    if(Utils::ustrstr(buffcpy, "/view/viewer_index.shtml") != -1)						return 20; //axis cameras
+    if(Utils::ustrstr(buffcpy, "nas") != -1 
+		&& Utils::ustrstr(buffcpy, "/cgi-bin/data/viostor-220/viostor/viostor.cgi") != -1)	return 30; //NAX
+    if(Utils::ustrstr(buffcpy, "ip camera") != -1 
+		&& Utils::ustrstr(buffcpy, "check_user.cgi") != -1)								return 31; //axis cameras
+    if(Utils::ustrstr(buffcpy, "ws(\"user\");") != -1 
+		&& Utils::ustrstr(buffcpy, "src=\"/tool.js") != -1
+            && Utils::ustrstr(buffcpy, "<b class=\"xb1\"></b>") != -1)                  return 32; //web ip cam
     if(Utils::ustrstr(buffcpy, "geovision") != -1
             && (Utils::ustrstr(buffcpy, "ip camera") != -1
-                || Utils::ustrstr(buffcpy, "ssi.cgi/login.htm") != -1))                                                                                   return 33; //GEO web ip cam
+                || Utils::ustrstr(buffcpy, "ssi.cgi/login.htm") != -1)
+				)																		return 33; //GEO web ip cam
 
     if(Utils::ustrstr(buffcpy, "hikvision-webs") != -1
-        || (Utils::ustrstr(buffcpy, "hikvision digital") != -1 && Utils::ustrstr(buffcpy, "dvrdvs-webs") != -1)
-        || (Utils::ustrstr(buffcpy, "lapassword") != -1 && Utils::ustrstr(buffcpy, "lausername") != -1 && Utils::ustrstr(buffcpy, "dologin()") != -1))				return 34; //hikvision cam
-    if((Utils::ustrstr(buffcpy, "easy cam") != -1 && Utils::ustrstr(buffcpy, "easy life") != -1)
-        || (Utils::ustrstr(buffcpy, "ipcamera") != -1 && Utils::ustrstr(buffcpy, "/tool.js") != -1))															return 35; //EasyCam
-    if(Utils::ustrstr(buffcpy, "/config/cam_portal.cgi") != -1 || Utils::ustrstr(buffcpy, "/config/easy_index.cgi") != -1)										return 36; //Panasonic Cam
-    if(Utils::ustrstr(buffcpy, "panasonic") != -1 && Utils::ustrstr(buffcpy, "/view/getuid.cgi") != -1)															return 37; //Panasonic Cam WJ-HD180
-    if(Utils::ustrstr(buffcpy, "ipcam client") != -1 && Utils::ustrstr(buffcpy, "plugins.xpi") != -1 && Utils::ustrstr(buffcpy, "js/upfile.js") != -1)				return 38; //Foscam
-    if(Utils::ustrstr(buffcpy, "ip surveillance") != -1 && Utils::ustrstr(buffcpy, "customer login") != -1)														return 39; //EagleEye
-    if(Utils::ustrstr(buffcpy, "network camera") != -1 && Utils::ustrstr(buffcpy, "/admin/index.shtml?") != -1)													return 40; //Network Camera VB-C300
-    if(Utils::ustrstr(buffcpy, "sq-webcam") != -1 && Utils::ustrstr(buffcpy, "liveview.html") != -1)															return 41; //AVIOSYS-camera
-    if(Utils::ustrstr(buffcpy, "nw_camera") != -1 && Utils::ustrstr(buffcpy, "/cgi-bin/getuid") != -1)															return 42; //NW_camera
-    if(Utils::ustrstr(buffcpy, "micros") != -1 && Utils::ustrstr(buffcpy, "/gui/gui_outer_frame.shtml") != -1)													return 43; //NW_camera
+        || (Utils::ustrstr(buffcpy, "hikvision digital") != -1 
+		&& Utils::ustrstr(buffcpy, "dvrdvs-webs") != -1)
+        || (Utils::ustrstr(buffcpy, "lapassword") != -1 
+		&& Utils::ustrstr(buffcpy, "lausername") != -1 
+		&& Utils::ustrstr(buffcpy, "dologin()") != -1)
+		)																				return 34; //hikvision cam
+    if((Utils::ustrstr(buffcpy, "easy cam") != -1 
+		&& Utils::ustrstr(buffcpy, "easy life") != -1)
+        || (Utils::ustrstr(buffcpy, "ipcamera") != -1 
+		&& Utils::ustrstr(buffcpy, "/tool.js") != -1)
+		)																				return 35; //EasyCam
+    if(Utils::ustrstr(buffcpy, "/config/cam_portal.cgi") != -1 
+		|| Utils::ustrstr(buffcpy, "/config/easy_index.cgi") != -1)						return 36; //Panasonic Cam
+    if(Utils::ustrstr(buffcpy, "panasonic") != -1 
+		&& Utils::ustrstr(buffcpy, "/view/getuid.cgi") != -1)							return 37; //Panasonic Cam WJ-HD180
+    if(Utils::ustrstr(buffcpy, "ipcam client") != -1 
+		&& Utils::ustrstr(buffcpy, "plugins.xpi") != -1 
+		&& Utils::ustrstr(buffcpy, "js/upfile.js") != -1)								return 38; //Foscam
+    if(Utils::ustrstr(buffcpy, "ip surveillance") != -1 
+		&& Utils::ustrstr(buffcpy, "customer login") != -1)								return 39; //EagleEye
+    if(Utils::ustrstr(buffcpy, "network camera") != -1 
+		&& Utils::ustrstr(buffcpy, "/admin/index.shtml?") != -1)						return 40; //Network Camera VB-C300
+    if(Utils::ustrstr(buffcpy, "sq-webcam") != -1 
+		&& Utils::ustrstr(buffcpy, "liveview.html") != -1)								return 41; //AVIOSYS-camera
+    if(Utils::ustrstr(buffcpy, "nw_camera") != -1 
+		&& Utils::ustrstr(buffcpy, "/cgi-bin/getuid") != -1)							return 42; //NW_camera
+    if(Utils::ustrstr(buffcpy, "micros") != -1 
+		&& Utils::ustrstr(buffcpy, "/gui/gui_outer_frame.shtml") != -1)					return 43; //NW_camera
     if(Utils::ustrstr(buffcpy, "lapassword") != -1
         && Utils::ustrstr(buffcpy, "lausername") != -1
         && Utils::ustrstr(buffcpy, "g_ologin.dologin()") != -1
-        )																																			return 44; //hikvision cam 2
-    if(Utils::ustrstr(buffcpy, "panasonic") != -1 && Utils::ustrstr(buffcpy, "/config/index.cgi") != -1)														return 45; //Panasonic Cam BB-HG???
-    if(Utils::ustrstr(buffcpy, "/ui/") != -1 && Utils::ustrstr(buffcpy, "sencha-touch") != -1)																	return 46; //BUFFALO disk
-    if(Utils::ustrstr(buffcpy, "digital video server") != -1 && Utils::ustrstr(buffcpy, "gui.css") != -1)														return 47; //Digital Video Server
-        if(Utils::ustrstr(buffcpy, "/ipcamerasetup.zip") != -1 && Utils::ustrstr(buffcpy, "download player") != -1
-        && Utils::ustrstr(buffcpy, "ipcam") != -1)																										return 48; //ipCam
-    if(Utils::ustrstr(buffcpy, "dvr") != -1 && Utils::ustrstr(buffcpy, "ieorforefox") != -1
-        && Utils::ustrstr(buffcpy, "sofari") != -1)                                                                                                       return 49; //IEORFOREFOX
-    if (Utils::ustrstr(buffcpy, "seyeon") != -1 && (Utils::ustrstr(buffcpy, "/app/multi/single.asp") != -1
-        || Utils::ustrstr(buffcpy, "/app/live/sim/single.asp") != -1))																					return 50; //Network Video System
+        )																				return 44; //hikvision cam 2
+    if(Utils::ustrstr(buffcpy, "panasonic") != -1 
+		&& Utils::ustrstr(buffcpy, "/config/index.cgi") != -1)							return 45; //Panasonic Cam BB-HG???
+    if(Utils::ustrstr(buffcpy, "/ui/") != -1 
+		&& Utils::ustrstr(buffcpy, "sencha-touch") != -1)								return 46; //BUFFALO disk
+    if(Utils::ustrstr(buffcpy, "digital video server") != -1 
+		&& Utils::ustrstr(buffcpy, "gui.css") != -1)									return 47; //Digital Video Server
+        if(Utils::ustrstr(buffcpy, "/ipcamerasetup.zip") != -1 
+			&& Utils::ustrstr(buffcpy, "download player") != -1
+        && Utils::ustrstr(buffcpy, "ipcam") != -1
+		)																				return 48; //ipCam
+    if(Utils::ustrstr(buffcpy, "dvr") != -1 
+		&& Utils::ustrstr(buffcpy, "ieorforefox") != -1
+        && Utils::ustrstr(buffcpy, "sofari") != -1
+		)																				return 49; //IEORFOREFOX
+    if (Utils::ustrstr(buffcpy, "seyeon") != -1 
+		&& (Utils::ustrstr(buffcpy, "/app/multi/single.asp") != -1
+        || Utils::ustrstr(buffcpy, "/app/live/sim/single.asp") != -1)
+		)																				return 50; //Network Video System
 
     if(((Utils::ustrstr(buffcpy, "220") != -1) && (port == 21)) ||
         (Utils::ustrstr(buffcpy, "220 diskStation ftp server ready") != -1) ||
         (Utils::ustrstr(buffcpy, "220 ftp server ready") != -1)
         || Utils::ustrstr(buffcpy, "500 'get': command not understood") != -1
-        )                                                                                                                                           return 16; // 16 - FTP
+        )                                                                               return 16; // 16 - FTP
 
     if((Utils::ustrstr(buffcpy, "camera web server") != -1	|| Utils::ustrstr(buffcpy, "webcamxp 5") != -1
-        || Utils::ustrstr(buffcpy, "ip box camera") != -1		|| Utils::ustrstr(buffcpy, "snaff") != -1
-        || Utils::ustrstr(buffcpy, "hfs /") != -1				|| Utils::ustrstr(buffcpy, "httpfileserver") != -1
+        || Utils::ustrstr(buffcpy, "ip box camera") != -1	|| Utils::ustrstr(buffcpy, "snaff") != -1
+        || Utils::ustrstr(buffcpy, "hfs /") != -1			|| Utils::ustrstr(buffcpy, "httpfileserver") != -1
 		|| Utils::ustrstr(buffcpy, "network camera") != -1	|| Utils::ustrstr(buffcpy, "index of") != -1
         || Utils::ustrstr(buffcpy, "$lock extended") != -1	|| Utils::ustrstr(buffcpy, "ip camera") != -1
         || Utils::ustrstr(buffcpy, "/viewer/video.jpg") != -1 || Utils::ustrstr(buffcpy, "smart ip device") != -1
-        || Utils::ustrstr(buffcpy, "sanpshot_icon") != -1		|| Utils::ustrstr(buffcpy, "snapshot_icon") != -1
-        || Utils::ustrstr(buffcpy, "ipcam") != -1)
+        || Utils::ustrstr(buffcpy, "sanpshot_icon") != -1	|| Utils::ustrstr(buffcpy, "snapshot_icon") != -1
+        || Utils::ustrstr(buffcpy, "ipcam") != -1
+		)
         && Utils::ustrstr(buffcpy, "customer") == -1
         && Utils::ustrstr(buffcpy, "purchase") == -1
         && Utils::ustrstr(buffcpy, "contac") == -1
         && Utils::ustrstr(buffcpy, "company") == -1
-        )																																			return 0;
+        )																				return 0;
 
-    if(globalSearchNeg(buffcpy, ip, port, cp) == -1)                                                                                                    return -1;
-    if(globalSearchPrnt(buffcpy) == -1)																					                            return -1;
-    //if(strstr(buffcpy, "<form ") != NULL && strstr(buffcpy, "302 found") == NULL)                                                                   return 10;
-	//nic.sucks, etc
+    if(globalSearchNeg(buffcpy, ip, port, cp) == -1)                                    return -1;
+    if(globalSearchPrnt(buffcpy) == -1)
 
     return -2;
 }
 
 // 500 < 1600
-int _mainFinderFirst(const std::string buffcpy, int f, int port, const char *ip, const char *cp)
+int _mainFinderFirst(const std::string *buffcpy, int f, int port, const char *ip, const char *cp)
 {
     int flag = sharedDetector(ip, port, buffcpy, cp);
     if(flag != -2) return flag;
@@ -398,7 +419,7 @@ int _mainFinderFirst(const std::string buffcpy, int f, int port, const char *ip,
 }
 
 //> 1600
-int _mainFinderSecond(const std::string buffcpy, int port, const char *ip, const char *cp)
+int _mainFinderSecond(const std::string *buffcpy, int port, const char *ip, const char *cp)
 {
     int flag = sharedDetector(ip, port, buffcpy, cp);
     if(flag != -2) return flag;
@@ -406,7 +427,7 @@ int _mainFinderSecond(const std::string buffcpy, int port, const char *ip, const
 	return 3; //Suspicious
 }
 
-int ContentFilter(const std::string buff, int port, const char *ip, const char *cp, int sz)
+int ContentFilter(const std::string *buff, int port, const char *ip, const char *cp, int sz)
 {
 	int res = 0;
 	if (sz <= 500)										res = _mainFinderFirst(buff, 1, port, ip, cp);
@@ -1360,305 +1381,6 @@ void _saveSSH(const char *ip, int port, int size, const char *buffcpy)
 	};
 }
 
-int Lexems::_filler(int p, const std::string buffcpy, char* ip, int size, Lexems *lx)
-{
-	if (Utils::ustrstr(buffcpy, "SSH-2.0-OpenSSH") != -1 ||
-		Utils::ustrstr(buffcpy, "SSH-2.0-mod_sftp") != -1)
-    {
-        std::string sshBuff;
-        int res = SSHAuth::SSHLobby(ip, p, &sshBuff);
-        if(res != -1 && res != -2) _saveSSH(ip, p, size, (char*)sshBuff.c_str());
-		return -1;
-	};
-	
-	if(p == 22)
-	{
-        _saveSSH(ip, p, size, buffcpy.c_str());
-		return -1;
-	};
-
-	PathStr ps;
-	ps.port = p;
-	strcpy(ps.ip, ip);
-	ZeroMemory(ps.headr, sizeof(ps.headr));
-	ZeroMemory(ps.path, sizeof(ps.path));
-
-	char finalstr[TITLE_MAX_SIZE] = {0};
-	int flag = 0;
-	char cp[32] = {0};
-
-	strcpy(cp, GetCodePage(buffcpy.c_str()));
-    flag = ContentFilter(buffcpy, p, ip, cp, size);
-	if(flag == -1 ) return -1;
-	
-	strcpy(ps.headr, GetTitle(buffcpy.c_str()));
-	ps.flag = flag;
-
-    char baPath[256] = {0};
-    strcpy(baPath, "/");
-	
-    std::vector<std::string> redirStrLst;
-	if(flag == 0 || flag == 3 || flag == 7 )
-	{
-        int rh = _header(ip, p, buffcpy.c_str(), lx, &ps, &redirStrLst, size);
-		strcpy(cp, ps.codepage);
-		if (rh == -1) {
-			return -1;
-		}
-		if(rh <= -2) 
-		{
-			flag = ps.flag;
-			strcat(finalstr, ps.headr);
-			p = ps.port;
-			strcpy(ip, ps.ip);
-		};
-		
-		int sz = strlen(ps.path);
-        strncpy(baPath, ps.path, (sz < 256 ? sz : 256));
-    };
-	
-	if(strstr(finalstr, ps.headr) == NULL) strcat(finalstr, ps.headr);
-	if (flag == -1 || flag == 6) {
-		return -1;
-	}
-
-	if(flag == 16) 
-    {
-		char log[2048] = {0};
-		char logEmit[2048] = {0};
-
-        const lopaStr &lps = FTPA::FTPLobby(ip, p, &ps);
-
-		if(strstr(lps.other, "ROUTER") != NULL)
-		{
-			++PieBA;
-
-            sprintf(log, "[FTP]:<font color=\"#0f62e2\">%s:%d</font>; Received: %d<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> <font color=\"#43EC00\"><a href=\"http://%s\" style=\"color:#43EC00;\">[ROUTER]</a></font>%s",
-                    ip, p, size, lps.login, lps.pass, ip, lps.login, lps.pass, ip, ip, ps.headr);
-            sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> <font color=\"#43EC00\"><a href=\"http://%s/\" style=\"color:#43EC00;\">[ROUTER]</a></font>",
-                    lps.login, lps.pass, ip, lps.login, lps.pass, ip, ip);
-
-            fputsf (log, flag, "FTP");
-	
-            fillGlobalLogData(ip, p, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "Router FTP detected.", cp, "FTP");
-						
-			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
-		}
-		else if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
-		{
-			++PieBA;
-
-            sprintf(log, "[FTP]:<font color=\"#0f62e2\">%s:%d</font>; Received: %d<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a>%s",
-                    ip, p, size, lps.login, lps.pass, ip, lps.login, lps.pass, ip, ps.headr);
-            sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> (F:%d)",
-                    lps.login, lps.pass, ip, lps.login, lps.pass, ip, ps.directoryCount);
-
-            fputsf(log, flag, "FTP");
-	
-            fillGlobalLogData(ip, p, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "NULL", cp, "FTP");
-
-			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
-
-		}
-		else if(strstr(lps.login, "Unknown protocol") != NULL) 
-		{
-			strcat(log, "; [!] USER/PASS commands failed. Dunno what to do.");
-            fputsf(log, flag, "");
-
-
-			stt->doEmitionFoundData(QString::fromLocal8Bit(log));
-
-		};
-	}
-	else if(flag == 21) //Eyeon
-	{
-        _specBrute(ip, p, "Eyeon Camera", flag, "/user/index.htm", "Basic Authorization", cp, size);
-	}
-	else if(flag == 22) //IP Camera control
-	{
-        _specBrute(ip, p, "IP camera Control webpage", flag, "/main/cs_motion.asp", "Basic Authorization", cp, size);
-	}
-	else if(flag == 23) //Network Camera BB-SC384
-	{
-        _specBrute(ip, p, "Network Camera BB-SC384", flag, "/live/index2.html", "Basic Authorization", cp, size);
-	}
-	else if(flag == 24) //Network Camera VB-M40
-	{
-        _specBrute(ip, p, "Network Camera VB-M40", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, size);
-	}
-	else if(flag == 25) //Panasonic WTFISTHISAreaOMGIDONTEVEN-camera
-	{
-        _specBrute(ip, 60002, "Panasonic WTFISTHISAreaOMGIDONTEVEN-camera", flag, "/SnapshotJPEG", "Basic Authorization", cp, size);
-	}
-	else if(flag == 26) //Sony Network Camera
-	{
-        _specBrute(ip, p, "Sony Network Camera", flag, "/oneshotimage?", "Basic Authorization", cp, size);
-	}
-	else if(flag == 27) //UA Network Camera
-	{
-        _specBrute(ip, p, "UA Network Camera", flag, "/webs.cgi?", "Basic Authorization", cp, size);
-	}
-	else if(flag == 28) //Network Camera VB-M40
-	{
-        _specBrute(ip, p, "Network Camera VB-??", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, size);
-	}
-	else if(flag == 29) //LG Smart IP Device
-	{
-        _specBrute(ip, p, "LG Smart IP Device Camera", flag, "/digest.php", "Basic Authorization", cp, size);
-	}
-	else if(flag == 30) //NAS
-	{
-        _specBrute(ip, p, "NAS", flag, "/cgi-bin/data/viostor-220/viostor/viostor.cgi", "Basic Authorization", cp, size);
-	}
-	else if(flag == 31) //ip cam
-	{
-        _specBrute(ip, p, "IP Camera", flag, "/check_user.cgi", "Basic Authorization", cp, size);
-	}
-	else if(flag == 32) //IPC WEB ip cam
-	{
-        _specWEBIPCAMBrute(ip, p, "[IPC] WEB IP Camera", flag, "WEB Authorization", cp, size, "IPC");
-	}
-	else if(flag == 33) //GEOvision ip cam
-	{
-        _specWEBIPCAMBrute(ip, p, "[GEO] WEB IP Camera", flag, "WEB Authorization", cp, size, "GEO");
-	}
-	else if(flag == 34) //Hikvision ip cam
-	{
-        _specBrute(ip, p, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "Basic Authorization", cp, size);
-	}
-	else if(flag == 35) //EasyCam
-	{
-        _specWEBIPCAMBrute(ip, p, "[EasyCam] WEB IP Camera", flag, "WEB Authorization", cp, size, "EasyCam");
-	}
-	else if(flag == 36) //Panasonic Cam
-	{
-        _specBrute(ip, p, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, size);
-	}
-	else if(flag == 37) //Panasonic Cam
-	{
-        _specBrute(ip, p, "[Panasonic] IP Camera", flag, "/view/getuid.cgi", "Basic Authorization", cp, size);
-	}
-	else if(flag == 38) //Foscam
-	{
-        _specWEBIPCAMBrute(ip, p, "[Foscam] IP Camera", flag, "Web Authorization", cp, size, "Foscam");
-	}
-	else if(flag == 39) //EagleEye
-	{
-        _specBrute(ip, p, "[EagleEye] IP Camera", flag, "/cgi-bin/guest/Video.cgi?", "Basic Authorization", cp, size);
-	}
-	else if(flag == 40) //Network Camera VB-C??
-	{
-        _specBrute(ip, p, "[Network Camera VB-C??] IP Camera", flag, "/admin/index.shtml?", "Basic Authorization", cp, size);
-	}
-	else if(flag == 41) //AVIOSYS-camera
-	{
-        _specWEBIPCAMBrute(ip, p, "[AVIOSYS] IP Camera", flag, "Web Authorization", cp, size, "AVIOSYS");
-	}
-	else if(flag == 42) //NW_camera
-	{
-        _specBrute(ip, p, "[NW_camera] IP Camera", flag, "/cgi-bin/getuid?FILE=indexnw.html", "Basic Authorization", cp, size);
-	}
-	else if(flag == 43) //NW_camera
-	{
-        _specBrute(ip, p, "[Micros] IP Camera", flag, "/gui/rem_display.shtml", "Basic Authorization", cp, size);
-	}
-	else if(flag == 44) //Hikvision ip cam 2
-	{
-        _specBrute(ip, p, "[Hikvision] IP Camera 2", flag, "/ISAPI/Security/userCheck", "Basic Authorization", cp, size);
-	}
-	else if(flag == 45) //Panasonic ip cam
-	{
-        _specBrute(ip, p, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, size);
-	}
-	else if(flag == 46) //Buffalo disk
-	{
-        _specWEBIPCAMBrute(ip, p, "[Buffalo] Lan Disk", flag, "Web Authorization", cp, size, "BUFFALO");
-	}	
-	else if(flag == 47) //Digital Video Server
-	{
-        _specWEBIPCAMBrute(ip, p, "[DVS] Camera", flag, "Web Authorization", cp, size, "DVS");
-	}	
-	else if(flag == 48) //ipCAM
-	{
-        _specWEBIPCAMBrute(ip, p, "[ipCAM] Camera", flag, "Web Authorization", cp, size, "IPCAM");
-	}
-	else if (flag == 49) //IEORFOREFOX
-	{
-        _specWEBIPCAMBrute(ip, p, "[IEORFOREFOX] Camera", flag, "Web Authorization", cp, size, "IEORFOREFOX");
-	}
-	else if (flag == 50) //IP Camera
-	{
-        _specBrute(ip, p, "IP Camera", flag, "/app/multi/single.asp", "Basic Authorization", cp, size);
-	}
-	else if(flag == 20) //AXIS Camera
-	{
-        _specBrute(ip, p, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "Basic Authorization", cp, size);
-	}
-	else if(flag == 19) //reecam cameras
-	{
-        _specBrute(ip, p, "Reecam (network camera)", flag, "/videostream.cgi", "Basic Authorization", cp, size);
-	}
-	else if(flag == 18) //linksys camera
-	{
-        _specBrute(ip, p, "Linksys camera", flag, "/img/main.cgi", "Basic Authorization", cp, size);
-	}
-	else if(flag == 17) //Real-time IP Camera Monitoring System
-	{
-        _specBrute(ip, p, "Real-time IP Camera Monitoring System", flag, "/live.htm", "Basic Authorization", cp, size);
-	}
-	else if(flag == 11) 
-	{
-        _specBrute(ip, p, "Netwave IP Camera", flag, "/videostream.cgi", "Basic Authorization", cp, size);
-	}
-	else if(flag == 12) 
-	{
-        _specBrute(ip, p, "IP Camera", flag, "/view/view.shtml?videos=", "Basic Authorization", cp, size);
-	}
-	else if(flag == 13) 
-	{
-        _specBrute(ip, p, "IP Camera", flag, "/eng/view/indexjava.html", "Basic Authorization", cp, size);
-	}
-	else if(flag == 14) 
-	{
-        _specBrute(ip, p, "IP Camera", flag, "/rdr.cgi", "Basic Authorization", cp, size);
-	}
-	else if(flag == 15) //For HFS
-    {
-        char log[512] = {0};
-		++AnomC1;
-
-        const lopaStr &lps = BA::BALobby((string(ip) + "/~login").c_str(), p);
-        sprintf(log, "[HFS]:<a href=\"http://%s:%d/\"><span style=\"color: #a1a1a1;\">%s:%d</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">%s Pass: %s:%s</font>",
-                ip, p, ip, p, finalstr, lps.login, lps.pass);
-
-        fillGlobalLogData(ip, p, std::to_string(size).c_str(), finalstr, lps.login, lps.pass, "HFS-FTP", cp, "Basic Authorization");
-        fputsf (log , flag, "HFS");
-        stt->doEmitionFoundData(QString::fromLocal8Bit(log));
-	}
-	else if(flag == 1) 
-	{
-        _specBrute(ip, p, finalstr, flag, baPath, "[NORMAL]", cp, size);
-	}
-	else if(flag == 101) 
-	{
-        _specBrute(ip, p, finalstr, flag, baPath, "[DIGEST]", cp, size);
-	}
-	else if(flag == 10) 
-	{
-        _specWFBrute(ip, p, buffcpy.c_str(), flag, baPath, "Web Form", "Web Form", cp, size, finalstr);
-	}
-    else if(flag == 2)
-    {
-        putInFile(0, ip, p, size, "[OVERFLOW]", cp);
-    }
-	else 
-	{
-        putInFile(flag, ip, p, size, finalstr, cp);
-	};
-
-	return flag;
-}
-
 int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, std::vector<std::string> *redirStrLst)
 {
 	if(ls->iterationCount++ == 5)
@@ -1736,7 +1458,7 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
         {
             strcpy(ps->codepage, GetCodePage(buffer.c_str()));
 
-            ls->flag = ContentFilter(buffer.c_str(), tempPort, tempIP, ps->codepage, cSz);
+            ls->flag = ContentFilter(&buffer, tempPort, tempIP, ps->codepage, cSz);
 			ps->flag = ls->flag;
 
 			if(ls->flag == -1) 
@@ -1769,7 +1491,7 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
 			strcat(ps->headr, " -> ");
             strcat(ps->headr, GetTitle(buffer.c_str()));
 
-            if (ls->_header(tempIP, tempPort, buffer.c_str(), ls, ps, redirStrLst, cSz) == -1)
+            if (ls->header(tempIP, tempPort, buffer.c_str(), ls, ps, redirStrLst, cSz) == -1)
 			{
 				ps->flag = -1;
                 strcpy(ps->path, tempPath);
@@ -1853,7 +1575,7 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
         {
             strcpy(ps->codepage, GetCodePage(buffer.c_str()));
 
-            ls->flag = ContentFilter(buffer.c_str(), tempPort, tempIP, ps->codepage, cSz);
+            ls->flag = ContentFilter(&buffer, tempPort, tempIP, ps->codepage, cSz);
 			ps->flag = ls->flag;
 
 			if(ls->flag == -1) 
@@ -1886,7 +1608,7 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
 			strcat(ps->headr, " -> ");
             strcat(ps->headr, GetTitle(buffer.c_str()));
 
-            if (ls->_header(tempIP, tempPort, buffer.c_str(), ls, ps, redirStrLst, cSz) == -1)
+            if (ls->header(tempIP, tempPort, buffer.c_str(), ls, ps, redirStrLst, cSz) == -1)
 			{
 				ps->flag = -1;
                 strcpy(ps->path, tempPath);
@@ -1921,7 +1643,7 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
         {
             strcpy(ps->codepage, GetCodePage(buffer.c_str()));
 
-            ls->flag = ContentFilter(buffer.c_str(), port, ip, ps->codepage, cSz);
+            ls->flag = ContentFilter(&buffer, port, ip, ps->codepage, cSz);
 			ps->flag = ls->flag;
 
 			if(ls->flag == -1) 
@@ -1953,7 +1675,7 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
 			strcat(ps->headr, "->");
             strcat(ps->headr, GetTitle(buffer.c_str()));
 
-            if (ls->_header(tempIP, tempPort, buffer.c_str(), ls, ps, redirStrLst, cSz) == -1)
+            if (ls->header(tempIP, tempPort, buffer.c_str(), ls, ps, redirStrLst, cSz) == -1)
 			{
 				ps->flag = -1;
                 strcpy(ps->path, tempPath);
@@ -1983,7 +1705,7 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
         {
             strcpy(ps->codepage, GetCodePage(buffer.c_str()));
 
-            ls->flag = ContentFilter(buffer.c_str(), port, ip, ps->codepage, cSz);
+            ls->flag = ContentFilter(&buffer, port, ip, ps->codepage, cSz);
 			ps->flag = ls->flag;
 
 			if(ls->flag == -1) 
@@ -2015,7 +1737,7 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
 
 			strcat(ps->headr, " -> ");
             strcat(ps->headr, GetTitle(buffer.c_str()));
-            ls->_header(ip, port, buffer.c_str(), ls, ps, redirStrLst, cSz);
+            ls->header(ip, port, buffer.c_str(), ls, ps, redirStrLst, cSz);
 			ps->port = tempPort;
 		}
 		else
@@ -2157,7 +1879,7 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 	};
 }
 
-int Lexems::_header(char *ip, int port, const char *str, Lexems *l, PathStr *ps, std::vector<std::string> *redirStrLst, int size)
+int Lexems::header(char *ip, int port, const char *str, Lexems *l, PathStr *ps, std::vector<std::string> *redirStrLst, int size)
 {
 	std::string redirectStr = "";
 
@@ -2586,10 +2308,303 @@ int Lexems::_header(char *ip, int port, const char *str, Lexems *l, PathStr *ps,
 		};
 	};
 
-    ps->flag = ContentFilter(str, port, ip, ps->codepage, size);
+	std::string nBuff(str);
+	ps->flag = ContentFilter(&nBuff, port, ip, ps->codepage, size);
 
 	if(strstri(str, "window.open(") != NULL) _getPopupTitle(ps, strstri(str, "window.open("));
 
 	strcpy(ps->path, "/");
 	return 0;
+}
+
+int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lexems *lx)
+{
+	if (port == 22)
+	{
+		_saveSSH(ip, 22, size, buffcpy->c_str());
+		return -1;
+	} else if (Utils::ustrstr(buffcpy, "SSH-2.0-OpenSSH") != -1 ||
+		Utils::ustrstr(buffcpy, "SSH-2.0-mod_sftp") != -1)
+	{
+		std::string sshBuff;
+		int res = SSHAuth::SSHLobby(ip, port, &sshBuff);
+		if (res != -1 && res != -2) _saveSSH(ip, port, size, (char*)sshBuff.c_str());
+		return -1;
+	};
+
+	PathStr ps;
+	ps.port = port;
+	strcpy(ps.ip, ip);
+	ZeroMemory(ps.headr, sizeof(ps.headr));
+	ZeroMemory(ps.path, sizeof(ps.path));
+	char finalstr[TITLE_MAX_SIZE] = { 0 };
+	int flag = 0;
+	char cp[32] = { 0 };
+	strcpy(cp, GetCodePage(buffcpy->c_str()));
+	if ((flag = ContentFilter(buffcpy, port, ip, cp, size)) == -1) return -1;
+
+	strcpy(ps.headr, GetTitle(buffcpy->c_str()));
+	ps.flag = flag;
+
+	char baPath[256] = { 0 };
+	strcpy(baPath, "/");
+
+	std::vector<std::string> redirStrLst;
+	if (flag == 0 || flag == 3 || flag == 7)
+	{
+		int rh = header(ip, port, buffcpy->c_str(), lx, &ps, &redirStrLst, size);
+		strcpy(cp, ps.codepage);
+		if (rh == -1) {
+			return -1;
+		}
+		if (rh <= -2)
+		{
+			flag = ps.flag;
+			strcat(finalstr, ps.headr);
+			port = ps.port;
+			strcpy(ip, ps.ip);
+		};
+
+		int sz = strlen(ps.path);
+		strncpy(baPath, ps.path, (sz < 256 ? sz : 256));
+	};
+
+	if (strstr(finalstr, ps.headr) == NULL) strcat(finalstr, ps.headr);
+	if (flag == -1 || flag == 6) {
+		return -1;
+	}
+
+	if (flag == 16)
+	{
+		char log[2048] = { 0 };
+		char logEmit[2048] = { 0 };
+
+		const lopaStr &lps = FTPA::FTPLobby(ip, port, &ps);
+
+		if (strstr(lps.other, "ROUTER") != NULL)
+		{
+			++PieBA;
+
+			sprintf(log, "[FTP]:<font color=\"#0f62e2\">%s:%d</font>; Received: %d<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> <font color=\"#43EC00\"><a href=\"http://%s\" style=\"color:#43EC00;\">[ROUTER]</a></font>%s",
+				ip, port, size, lps.login, lps.pass, ip, lps.login, lps.pass, ip, ip, ps.headr);
+			sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> <font color=\"#43EC00\"><a href=\"http://%s/\" style=\"color:#43EC00;\">[ROUTER]</a></font>",
+				lps.login, lps.pass, ip, lps.login, lps.pass, ip, ip);
+
+			fputsf(log, flag, "FTP");
+
+			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "Router FTP detected.", cp, "FTP");
+
+			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
+		}
+		else if (strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0)
+		{
+			++PieBA;
+
+			sprintf(log, "[FTP]:<font color=\"#0f62e2\">%s:%d</font>; Received: %d<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a>%s",
+				ip, port, size, lps.login, lps.pass, ip, lps.login, lps.pass, ip, ps.headr);
+			sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> (F:%d)",
+				lps.login, lps.pass, ip, lps.login, lps.pass, ip, ps.directoryCount);
+
+			fputsf(log, flag, "FTP");
+
+			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "NULL", cp, "FTP");
+
+			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
+
+		}
+		else if (strstr(lps.login, "Unknown protocol") != NULL)
+		{
+			strcat(log, "; [!] USER/PASS commands failed. Dunno what to do.");
+			fputsf(log, flag, "");
+
+			stt->doEmitionFoundData(QString::fromLocal8Bit(log));
+		};
+	}
+	else if (flag == 21) //Eyeon
+	{
+		_specBrute(ip, port, "Eyeon Camera", flag, "/user/index.htm", "Basic Authorization", cp, size);
+	}
+	else if (flag == 22) //IP Camera control
+	{
+		_specBrute(ip, port, "IP camera Control webpage", flag, "/main/cs_motion.asp", "Basic Authorization", cp, size);
+	}
+	else if (flag == 23) //Network Camera BB-SC384
+	{
+		_specBrute(ip, port, "Network Camera BB-SC384", flag, "/live/index2.html", "Basic Authorization", cp, size);
+	}
+	else if (flag == 24) //Network Camera VB-M40
+	{
+		_specBrute(ip, port, "Network Camera VB-M40", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, size);
+	}
+	else if (flag == 25) //Panasonic Unibrowser-camera
+	{
+		_specBrute(ip, 60002, "Panasonic Unibrowser-camera", flag, "/SnapshotJPEG", "Basic Authorization", cp, size);
+	}
+	else if (flag == 26) //Sony Network Camera
+	{
+		_specBrute(ip, port, "Sony Network Camera", flag, "/oneshotimage?", "Basic Authorization", cp, size);
+	}
+	else if (flag == 27) //UA Network Camera
+	{
+		_specBrute(ip, port, "UA Network Camera", flag, "/webs.cgi?", "Basic Authorization", cp, size);
+	}
+	else if (flag == 28) //Network Camera VB-M40
+	{
+		_specBrute(ip, port, "Network Camera VB-??", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, size);
+	}
+	else if (flag == 29) //LG Smart IP Device
+	{
+		_specBrute(ip, port, "LG Smart IP Device Camera", flag, "/digest.php", "Basic Authorization", cp, size);
+	}
+	else if (flag == 30) //NAS
+	{
+		_specBrute(ip, port, "NAS", flag, "/cgi-bin/data/viostor-220/viostor/viostor.cgi", "Basic Authorization", cp, size);
+	}
+	else if (flag == 31) //ip cam
+	{
+		_specBrute(ip, port, "IP Camera", flag, "/check_user.cgi", "Basic Authorization", cp, size);
+	}
+	else if (flag == 32) //IPC WEB ip cam
+	{
+		_specWEBIPCAMBrute(ip, port, "[IPC] WEB IP Camera", flag, "WEB Authorization", cp, size, "IPC");
+	}
+	else if (flag == 33) //GEOvision ip cam
+	{
+		_specWEBIPCAMBrute(ip, port, "[GEO] WEB IP Camera", flag, "WEB Authorization", cp, size, "GEO");
+	}
+	else if (flag == 34) //Hikvision ip cam
+	{
+		_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "Basic Authorization", cp, size);
+	}
+	else if (flag == 35) //EasyCam
+	{
+		_specWEBIPCAMBrute(ip, port, "[EasyCam] WEB IP Camera", flag, "WEB Authorization", cp, size, "EasyCam");
+	}
+	else if (flag == 36) //Panasonic Cam
+	{
+		_specBrute(ip, port, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, size);
+	}
+	else if (flag == 37) //Panasonic Cam
+	{
+		_specBrute(ip, port, "[Panasonic] IP Camera", flag, "/view/getuid.cgi", "Basic Authorization", cp, size);
+	}
+	else if (flag == 38) //Foscam
+	{
+		_specWEBIPCAMBrute(ip, port, "[Foscam] IP Camera", flag, "Web Authorization", cp, size, "Foscam");
+	}
+	else if (flag == 39) //EagleEye
+	{
+		_specBrute(ip, port, "[EagleEye] IP Camera", flag, "/cgi-bin/guest/Video.cgi?", "Basic Authorization", cp, size);
+	}
+	else if (flag == 40) //Network Camera VB-C??
+	{
+		_specBrute(ip, port, "[Network Camera VB-C??] IP Camera", flag, "/admin/index.shtml?", "Basic Authorization", cp, size);
+	}
+	else if (flag == 41) //AVIOSYS-camera
+	{
+		_specWEBIPCAMBrute(ip, port, "[AVIOSYS] IP Camera", flag, "Web Authorization", cp, size, "AVIOSYS");
+	}
+	else if (flag == 42) //NW_camera
+	{
+		_specBrute(ip, port, "[NW_camera] IP Camera", flag, "/cgi-bin/getuid?FILE=indexnw.html", "Basic Authorization", cp, size);
+	}
+	else if (flag == 43) //NW_camera
+	{
+		_specBrute(ip, port, "[Micros] IP Camera", flag, "/gui/rem_display.shtml", "Basic Authorization", cp, size);
+	}
+	else if (flag == 44) //Hikvision ip cam 2
+	{
+		_specBrute(ip, port, "[Hikvision] IP Camera 2", flag, "/ISAPI/Security/userCheck", "Basic Authorization", cp, size);
+	}
+	else if (flag == 45) //Panasonic ip cam
+	{
+		_specBrute(ip, port, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, size);
+	}
+	else if (flag == 46) //Buffalo disk
+	{
+		_specWEBIPCAMBrute(ip, port, "[Buffalo] Lan Disk", flag, "Web Authorization", cp, size, "BUFFALO");
+	}
+	else if (flag == 47) //Digital Video Server
+	{
+		_specWEBIPCAMBrute(ip, port, "[DVS] Camera", flag, "Web Authorization", cp, size, "DVS");
+	}
+	else if (flag == 48) //ipCAM
+	{
+		_specWEBIPCAMBrute(ip, port, "[ipCAM] Camera", flag, "Web Authorization", cp, size, "IPCAM");
+	}
+	else if (flag == 49) //IEORFOREFOX
+	{
+		_specWEBIPCAMBrute(ip, port, "[IEORFOREFOX] Camera", flag, "Web Authorization", cp, size, "IEORFOREFOX");
+	}
+	else if (flag == 50) //IP Camera
+	{
+		_specBrute(ip, port, "IP Camera", flag, "/app/multi/single.asp", "Basic Authorization", cp, size);
+	}
+	else if (flag == 20) //AXIS Camera
+	{
+		_specBrute(ip, port, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "Basic Authorization", cp, size);
+	}
+	else if (flag == 19) //reecam cameras
+	{
+		_specBrute(ip, port, "Reecam (network camera)", flag, "/videostream.cgi", "Basic Authorization", cp, size);
+	}
+	else if (flag == 18) //linksys camera
+	{
+		_specBrute(ip, port, "Linksys camera", flag, "/img/main.cgi", "Basic Authorization", cp, size);
+	}
+	else if (flag == 17) //Real-time IP Camera Monitoring System
+	{
+		_specBrute(ip, port, "Real-time IP Camera Monitoring System", flag, "/live.htm", "Basic Authorization", cp, size);
+	}
+	else if (flag == 11)
+	{
+		_specBrute(ip, port, "Netwave IP Camera", flag, "/videostream.cgi", "Basic Authorization", cp, size);
+	}
+	else if (flag == 12)
+	{
+		_specBrute(ip, port, "IP Camera", flag, "/view/view.shtml?videos=", "Basic Authorization", cp, size);
+	}
+	else if (flag == 13)
+	{
+		_specBrute(ip, port, "IP Camera", flag, "/eng/view/indexjava.html", "Basic Authorization", cp, size);
+	}
+	else if (flag == 14)
+	{
+		_specBrute(ip, port, "IP Camera", flag, "/rdr.cgi", "Basic Authorization", cp, size);
+	}
+	else if (flag == 15) //For HFS
+	{
+		char log[512] = { 0 };
+		++AnomC1;
+
+		const lopaStr &lps = BA::BALobby((string(ip) + "/~login").c_str(), port);
+		sprintf(log, "[HFS]:<a href=\"http://%s:%d/\"><span style=\"color: #a1a1a1;\">%s:%d</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">%s Pass: %s:%s</font>",
+			ip, port, ip, port, finalstr, lps.login, lps.pass);
+
+		fillGlobalLogData(ip, port, std::to_string(size).c_str(), finalstr, lps.login, lps.pass, "HFS-FTP", cp, "Basic Authorization");
+		fputsf(log, flag, "HFS");
+		stt->doEmitionFoundData(QString::fromLocal8Bit(log));
+	}
+	else if (flag == 1)
+	{
+		_specBrute(ip, port, finalstr, flag, baPath, "[NORMAL]", cp, size);
+	}
+	else if (flag == 101)
+	{
+		_specBrute(ip, port, finalstr, flag, baPath, "[DIGEST]", cp, size);
+	}
+	else if (flag == 10)
+	{
+		_specWFBrute(ip, port, buffcpy->c_str(), flag, baPath, "Web Form", "Web Form", cp, size, finalstr);
+	}
+	else if (flag == 2)
+	{
+		putInFile(0, ip, port, size, "[OVERFLOW]", cp);
+	}
+	else
+	{
+		putInFile(flag, ip, port, size, finalstr, cp);
+	};
+
+	return flag;
 }

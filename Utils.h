@@ -32,18 +32,29 @@ public:
                               my_equal<typename T::value_type>(loc));
         if(it != str1.end()) return it - str1.begin();
         else return -1;
-    }
+	}
 
 	template<typename T> static int ustrstr(const T& str1,
-                                            const char* str2c,
-                                            const locale& loc = locale()) {
+		const char* str2c,
+		const locale& loc = locale()) {
 
-        std::string str2 = std::string(str2c);
-        auto it = std::search(str1.begin(), str1.end(), str2.begin(), str2.end(),
-                              my_equal<typename T::value_type>(loc));
-        if(it != str1.end()) return it - str1.begin();
-        else return -1;
-    }
+		std::string str2 = std::string(str2c);
+		auto it = std::search(str1.begin(), str1.end(), str2.begin(), str2.end(),
+			my_equal<typename T::value_type>(loc));
+		if (it != str1.end()) return it - str1.begin();
+		else return -1;
+	}
+
+	template<typename T> static int ustrstr(const T *str1,
+		const char* str2c,
+		const locale& loc = locale()) {
+
+		std::string str2 = std::string(str2c);
+		auto it = std::search(str1->begin(), str1->end(), str2.begin(), str2.end(),
+			my_equal<typename T::value_type>(loc));
+		if (it != str1->end()) return it - str1->begin();
+		else return -1;
+	}
 
 	static QString GetNSErrorDefinition(const char *str, const char *elem){
 		const char *temp = strstr(str, elem);

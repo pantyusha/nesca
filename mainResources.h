@@ -123,16 +123,16 @@ public:
 		iterationCount = 0;
 	}
 
-    int _header(char *ip,
+    int header(char *ip,
         int port,
         const char str[],
         Lexems *l,
         PathStr *ps,
         std::vector<std::string> *lst, int size);
 
-    int _filler(int port,
-		const std::string buffcpy,
-        char* ip,
+	int filler(char* ip, 
+		int port,
+		const std::string *buffcpy,
         int size,
         Lexems *lx);
 };

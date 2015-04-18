@@ -171,14 +171,27 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
         }
 
-        if (lpString != NULL) {
-			if(digestMode) curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_DIGEST);
-            curl_easy_setopt(curl, CURLOPT_UNRESTRICTED_AUTH, 1L);
-            curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, 1L);
+		int res = 0;
+
+		if (lpString != NULL) {
+			curl_easy_setopt(curl, CURLOPT_UNRESTRICTED_AUTH, 1L);
+			curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, 1L);
 			curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
-		}; 
-		
-		int res = curl_easy_perform(curl);
+			if (digestMode)
+			{
+				curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_DIGEST);
+				res = curl_easy_perform(curl);
+
+				if (port != 21 && lpString != NULL) {
+					int pos = Utils::ustrstr(*buffer, "\r\n\r\n");
+					if (pos != -1) {
+						*buffer = buffer->substr(pos + 4);
+					}
+				}
+			}
+			else res = curl_easy_perform(curl);
+		}
+		else res = curl_easy_perform(curl);
 		curl_easy_cleanup(curl);
 		
 		if (res == CURLE_OK || 

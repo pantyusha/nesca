@@ -94,8 +94,8 @@ int MainStarter::fileLoader(const char *fileName) {
 			return -1;
 		}
 
-		ipsstartfl = new unsigned int*[importFileSize + 1000];
-		ipsendfl = new unsigned int*[importFileSize + 1000];
+		ipsstartfl = new unsigned int*[importFileSize + 1];
+		ipsendfl = new unsigned int*[importFileSize + 1];
 		ZeroMemory(ipsstartfl, sizeof(ipsstartfl));
 		ZeroMemory(ipsendfl, sizeof(ipsendfl));
 

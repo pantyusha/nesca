@@ -171,7 +171,7 @@
         <string>000.000.000.000-255.255.255.255</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="portLine">
+      <widget class="QLineEdit" name="ipmPortLine">
        <property name="geometry">
         <rect>
          <x>110</x>
@@ -482,7 +482,7 @@
         <string>.mobi</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEditPort">
+      <widget class="QLineEdit" name="dnsPortLine">
        <property name="geometry">
         <rect>
          <x>110</x>
@@ -789,7 +789,7 @@ color: rgb(214, 214, 0);</string>
         <string>100</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="importPorts">
+      <widget class="QLineEdit" name="importPortLine">
        <property name="geometry">
         <rect>
          <x>110</x>
@@ -3318,11 +3318,11 @@ background-color: #000000;</string>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>ipLine</tabstop>
-  <tabstop>portLine</tabstop>
+  <tabstop>ipmPortLine</tabstop>
   <tabstop>threadLine</tabstop>
   <tabstop>lineEditStartIPDNS</tabstop>
   <tabstop>lineILVL</tabstop>
-  <tabstop>lineEditPort</tabstop>
+  <tabstop>dnsPortLine</tabstop>
   <tabstop>lineEditThread</tabstop>
   <tabstop>lineTrackerSrv</tabstop>
   <tabstop>lineTrackerScr</tabstop>

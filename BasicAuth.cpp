@@ -30,7 +30,7 @@ bool BA::checkOutput(const string *buffer, const char *ip, const int port) {
     return false;
 }
 
-lopaStr BA::BABrute(const char *ip, const int port) {
+lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
     string buffer;
     string lpString;
     lopaStr lps = {"UNKNOWN", "", ""};
@@ -44,7 +44,7 @@ lopaStr BA::BABrute(const char *ip, const int port) {
 
             lpString = string(loginLst[i]) + ":" + string(passLst[j]);
 
-			res = Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString);
+			res = Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString, digestMode);
 			if (res == -2) return lps;
 			else if (res != -1) {
 				if (checkOutput(&buffer, ip, port)) {
@@ -65,16 +65,14 @@ lopaStr BA::BABrute(const char *ip, const int port) {
     return lps;
 }
 
-lopaStr BA::BALobby(const char *ip, const int port) {
+lopaStr BA::BALobby(const char *ip, const int port, bool digestMode) {
     if(gMaxBrutingThreads > 0) {
 
         while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
 		++baCount;
 		++BrutingThrds;
-        //BruteUtils::BConInc();
-        const lopaStr &lps = BABrute(ip, port);
-        //BruteUtils::BConDec();
+        const lopaStr &lps = BABrute(ip, port, digestMode);
 		--BrutingThrds;
 
         return lps;

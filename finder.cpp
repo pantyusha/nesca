@@ -1212,7 +1212,7 @@ void _specBrute(const char *ip, int port,
                 char *finalstr, int flag,
                 char *path, char *comment, char *cp, int size)
 {
-    const lopaStr &lps = BA::BALobby((string(ip) + string(path)).c_str(), port);
+	const lopaStr &lps = BA::BALobby((string(ip) + string(path)).c_str(), port, (strcmp(comment, "[DIGEST]") == 0 ? true : false));
 	
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
@@ -2577,7 +2577,7 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 		char log[512] = { 0 };
 		++AnomC1;
 
-		const lopaStr &lps = BA::BALobby((string(ip) + "/~login").c_str(), port);
+		const lopaStr &lps = BA::BALobby((string(ip) + "/~login").c_str(), port, false);
 		sprintf(log, "[HFS]:<a href=\"http://%s:%d/\"><span style=\"color: #a1a1a1;\">%s:%d</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">%s Pass: %s:%s</font>",
 			ip, port, ip, port, finalstr, lps.login, lps.pass);
 

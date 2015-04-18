@@ -160,8 +160,8 @@ void _LoadPersInfoToLocalVars(int savedTabIndex) {
 			}
 		};
 
-		strncpy(gPorts, ("-p" + ui->portLine->text()).toLocal8Bit().data(), 65536);
-		gPorts[ui->lineEditPort->text().length() + 2] = '\0';
+		strncpy(gPorts, ("-p" + ui->ipmPortLine->text()).toLocal8Bit().data(), 65536);
+		gPorts[ui->ipmPortLine->text().length() + 2] = '\0';
 	}
 	else if (savedTabIndex == 1)
 	{
@@ -170,14 +170,15 @@ void _LoadPersInfoToLocalVars(int savedTabIndex) {
 
 		strcpy(currentIP, ui->lineEditStartIPDNS->text().toLocal8Bit().data());
 		strcpy(gTLD, ui->lineILVL->text().toLocal8Bit().data());
-		strncpy(gPorts, ("-p" + ui->lineEditPort->text()).toLocal8Bit().data(), 65536);
-		gPorts[ui->lineEditPort->text().length() + 2] = '\0';
+		strncpy(gPorts, ("-p" + ui->dnsPortLine->text()).toLocal8Bit().data(), 65536);
+		gPorts[ui->dnsPortLine->text().length() + 2] = '\0';
 	}
 	else if (savedTabIndex == 2)
 	{
 		gMode = -1;
 		gThreads = ui->importThreads->text().toInt();
-		strncpy(gPorts, ("-p" + ui->importPorts->text()).toLocal8Bit().data(), 65536);
+		strncpy(gPorts, ("-p" + ui->importPortLine->text()).toLocal8Bit().data(), 65536);
+		gPorts[ui->dnsPortLine->text().length() + 2] = '\0';
 	};
 
 	strcpy(trcSrv, ui->lineTrackerSrv->text().toLocal8Bit().data());
@@ -534,8 +535,9 @@ void SetValidators()
 	ui->ipLine->setValidator(validator);
 
 	validator = new QRegExpValidator(QRegExp("(\\d{1,5}[,|-]\\s{0,1})+"), NULL);
-	ui->portLine->setValidator(validator);
-	ui->lineEditPort->setValidator(validator);
+	ui->ipmPortLine->setValidator(validator);
+	ui->dnsPortLine->setValidator(validator);
+	ui->importPortLine->setValidator(validator);
 
 	validator = new QRegExpValidator(QRegExp("\\d{1,3}"), NULL);
 	ui->importThreads->setValidator(validator);
@@ -2017,7 +2019,7 @@ void nesca_3::IPScanSeq()
 {
 	if(ui->ipLine->text() != "")
 	{
-		if(ui->portLine->text() != "")
+		if(ui->ipmPortLine->text() != "")
 		{
             stopFirst = false;
 			ui->tabMainWidget->setTabEnabled(1, false);
@@ -2029,7 +2031,7 @@ void nesca_3::IPScanSeq()
 			stt->setTarget((ui->ipLine->text().indexOf("-") > 0 ? ui->ipLine->text() :
 				(ui->ipLine->text().indexOf("/") < 0 ? ui->ipLine->text() + "-" + ui->ipLine->text() : ui->ipLine->text())
 				));
-			stt->setPorts(ui->portLine->text().replace(" ", ""));
+			stt->setPorts(ui->ipmPortLine->text().replace(" ", ""));
 			stt->start();
 
 			startFlag = true;
@@ -2087,7 +2089,7 @@ void nesca_3::DNSScanSeq()
 {
 	if(ui->lineEditStartIPDNS->text() != "")
 	{
-		if(ui->lineEditPort->text() != "")
+		if(ui->dnsPortLine->text() != "")
         {
 			if(ui->lineEditStartIPDNS->text().indexOf(".") > 0)
 			{
@@ -2110,7 +2112,7 @@ void nesca_3::DNSScanSeq()
 
 			stt->setMode(1);
 			stt->setTarget(ui->lineEditStartIPDNS->text());
-			stt->setPorts(ui->lineEditPort->text().replace(" ", ""));
+			stt->setPorts(ui->dnsPortLine->text().replace(" ", ""));
 			stt->start();
 			
 			startFlag = true;
@@ -2155,7 +2157,7 @@ void nesca_3::ImportScanSeq()
 		
 		stt->setMode(-1);
 		stt->setTarget(fileName);
-		stt->setPorts(ui->importPorts->text().replace(" ", ""));
+		stt->setPorts(ui->importPortLine->text().replace(" ", ""));
 		stt->start();
 		
 		startFlag = true;
@@ -2170,10 +2172,7 @@ void nesca_3::ImportScanSeq()
 			);
 		ui->dataText->clear();
 	}
-	else
-	{
-		stt->doEmitionYellowFoundData("Empty filename.");
-	};
+	else stt->doEmitionYellowFoundData("Empty filename.");
 }
 
 QLabel *smsgLbl;
@@ -2207,18 +2206,9 @@ void nesca_3::slotRestoreDefPorts()
 {
 	int ci = ui->tabMainWidget->currentIndex();
 
-	if(ci == 0)
-	{
-		ui->portLine->setText(PORTSET);
-	}
-	else if(ci == 1)
-	{
-		ui->lineEditPort->setText(PORTSET);
-	}
-	else if(ci == 2)
-	{
-		ui->importPorts->setText(PORTSET);
-	};
+	if (ci == 0) ui->ipmPortLine->setText(PORTSET);
+	else if (ci == 1) ui->dnsPortLine->setText(PORTSET);
+	else if (ci == 2) ui->importPortLine->setText(PORTSET);
 }
 
 QGraphicsTextItem *textItem = NULL;
@@ -2330,10 +2320,10 @@ void nesca_3::ConnectEvrthng()
 	connect ( ui->lineEditStartIPDNS, SIGNAL( textChanged(QString) ), this, SLOT( DNSLine_ValueChanged(QString) ) );
 	connect ( ui->ipLine, SIGNAL(				returnPressed() ), this, SLOT(		startScanButtonClicked() ) );
 	connect ( ui->threadLine, SIGNAL(			returnPressed() ), this, SLOT(		startScanButtonClicked() ) );
-	connect ( ui->portLine, SIGNAL(				returnPressed() ), this, SLOT(		startScanButtonClicked() ) );
+	connect ( ui->ipmPortLine, SIGNAL(				returnPressed() ), this, SLOT(		startScanButtonClicked() ) );
 	connect ( ui->lineEditStartIPDNS, SIGNAL(	returnPressed() ), this, SLOT(		startScanButtonClickedDNS() ) );
 	connect ( ui->lineILVL, SIGNAL(				returnPressed() ), this, SLOT(		startScanButtonClickedDNS() ) );
-	connect ( ui->lineEditPort, SIGNAL(			returnPressed() ), this, SLOT(		startScanButtonClickedDNS() ) );
+	connect ( ui->dnsPortLine, SIGNAL(			returnPressed() ), this, SLOT(		startScanButtonClickedDNS() ) );
 	connect ( ui->lineEditThread, SIGNAL(		returnPressed() ), this, SLOT(		startScanButtonClickedDNS() ) );
 	connect ( ui->logoLabel, SIGNAL( clicked() ), this, SLOT( logoLabelClicked() ) );
 	connect ( ui->me2ScanBut, SIGNAL( clicked() ), this, SLOT( activateME2ScanScene() ) );
@@ -2505,22 +2495,22 @@ void RestoreSession()
 					PortString.replace("\n", "");
 
                     if(PortString.length() > 0) {
-                        ui->lineEditPort->setText(PortString);
-                        ui->portLine->setText(PortString);
-                        ui->importPorts->setText(PortString);
+						ui->ipmPortLine->setText(PortString);
+						ui->dnsPortLine->setText(PortString);
+                        ui->importPortLine->setText(PortString);
                     } else {
-                        ui->lineEditPort->setText(PORTSET);
-                        ui->portLine->setText(PORTSET);
-                        ui->importPorts->setText(PORTSET);
+						ui->ipmPortLine->setText(PORTSET);
+						ui->dnsPortLine->setText(PORTSET);
+						ui->importPortLine->setText(PORTSET);
                     }
 					
 					delete []fPorts;
 				}
 				else
                 {
-                    ui->lineEditPort->setText(PORTSET);
-                    ui->portLine->setText(PORTSET);
-                    ui->importPorts->setText(PORTSET);
+					ui->ipmPortLine->setText(PORTSET);
+					ui->dnsPortLine->setText(PORTSET);
+					ui->importPortLine->setText(PORTSET);
 				};
 			};
 

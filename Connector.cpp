@@ -119,7 +119,8 @@ size_t nWriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 int Connector::nConnect(const char* ip, const int port, std::string *buffer,
                         const char *postData,
                         const std::vector<std::string> *customHeaders,
-                        const std::string *lpString){
+                        const std::string *lpString,
+						bool digestMode){
     buffer->clear();
     CURL *curl = curl_easy_init();
 
@@ -171,19 +172,13 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
         }
 
         if (lpString != NULL) {
-			curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY);
+			if(digestMode) curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_DIGEST);
             curl_easy_setopt(curl, CURLOPT_UNRESTRICTED_AUTH, 1L);
             curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, 1L);
 			curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
 		}; 
 		
 		int res = curl_easy_perform(curl);
-		if (port != 21 && lpString != NULL) {
-			int pos = Utils::ustrstr(*buffer, "\r\n\r\n");
-			if (pos != -1) {
-				*buffer = buffer->substr(pos + 4);
-			}
-		}
 		curl_easy_cleanup(curl);
 		
 		if (res == CURLE_OK || 

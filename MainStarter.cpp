@@ -50,7 +50,7 @@ char metaTargets[256]	= { 0 };
 char metaETA[256]		= { 0 };
 char metaOffline[256]	= { 0 };
 
-std::vector<std::string> splitToStringVector(const std::string &s, char delim) {
+std::vector<std::string> splitToStrVector(const std::string &s, char delim) {
 	std::vector<std::string> elems;
 	std::stringstream ss(s);
 	std::string item;
@@ -91,19 +91,13 @@ void MainStarter::fileLoader(const char *fileName) {
 			ZeroMemory(curIP, sizeof(curIP));
 		};
 
-		ipsstartfl = new unsigned int*[importFileSize + 2];
-		ipsendfl = new unsigned int*[importFileSize + 2];
-
-		ZeroMemory(ipsstartfl, importFileSize);
-		ZeroMemory(ipsendfl, importFileSize);
+		ipsstartfl = new unsigned int*[importFileSize + 1];
+		ipsendfl = new unsigned int*[importFileSize + 1];
 
 		for (int i = 0; i < importFileSize; ++i)
 		{
 			ipsstartfl[i] = new unsigned int[4];
 			ipsendfl[i] = new unsigned int[4];
-
-			ZeroMemory(ipsstartfl[i], 4);
-			ZeroMemory(ipsendfl[i], 4);
 		};
 
 		rewind(fl);
@@ -130,39 +124,19 @@ void MainStarter::fileLoader(const char *fileName) {
 
 				if (strstr(curIP, "-") != NULL)
 				{
-					bool firstPart = true;
-					int offset = 0;
-					int curNIndex = 0;
-					char curS;
-					char curN[32] = { 0 };
-					for (int i = 0; i < strlen(curIP); ++i)
-					{
-						curS = curIP[i];
-						if (curS == '.')
-						{
-							if (firstPart) ipsstartfl[MainStarter::flCounter][offset] = atoi(curN);
-							else ipsendfl[MainStarter::flCounter][offset] = atoi(curN);
-							++offset;
-							curNIndex = 0;
-							ZeroMemory(curN, 32);
-							continue;
-						}
-						else if (curS == '-')
-						{
-							if (firstPart) ipsstartfl[MainStarter::flCounter][offset] = atoi(curN);
-							else ipsendfl[MainStarter::flCounter][offset] = atoi(curN);
-							offset = 0;
-							firstPart = false;
-							curNIndex = 0;
-							ZeroMemory(curN, 32);
-							continue;
-						};
-						curN[curNIndex++] = curS;
-						if (i == strlen(curIP) - 1)
-						{
-							ipsendfl[MainStarter::flCounter][offset] = atoi(curN);
-						};
-					};
+					std::vector<std::string> tmpIPVec = splitToStrVector(curIP, '-');
+					std::vector<int> tmpIPIntVec1 = splitToIntVector(tmpIPVec[0], '.');
+					std::vector<int> tmpIPIntVec2 = splitToIntVector(tmpIPVec[1], '.');
+
+					ipsstartfl[MainStarter::flCounter][0] = tmpIPIntVec1[0];
+					ipsstartfl[MainStarter::flCounter][1] = tmpIPIntVec1[1];
+					ipsstartfl[MainStarter::flCounter][2] = tmpIPIntVec1[2];
+					ipsstartfl[MainStarter::flCounter][3] = tmpIPIntVec1[3];
+
+					ipsendfl[MainStarter::flCounter][0] = tmpIPIntVec2[0];
+					ipsendfl[MainStarter::flCounter][1] = tmpIPIntVec2[1];
+					ipsendfl[MainStarter::flCounter][2] = tmpIPIntVec2[2];
+					ipsendfl[MainStarter::flCounter][3] = tmpIPIntVec2[3];
 
 					if (ipsstartfl[MainStarter::flCounter][0] > ipsendfl[MainStarter::flCounter][0]
 						|| (ipsstartfl[MainStarter::flCounter][0] >= ipsendfl[MainStarter::flCounter][0]
@@ -179,20 +153,28 @@ void MainStarter::fileLoader(const char *fileName) {
 						)
 						)
 					{
-						char tempMsg[256] = { 0 };
-						strcpy(tempMsg, "[IP Loader]Wrong list format. Line-> [");
-						strcat(tempMsg, std::to_string(MainStarter::flCounter).c_str());
-						strcat(tempMsg, "] String-> [");
-						strcat(tempMsg, curIPCopy);
-						strcat(tempMsg, "]");
-						stt->doEmitionRedFoundData(QString(tempMsg));
+						stt->doEmitionRedFoundData("[IP Loader]Wrong list format. Line-> [" + 
+							QString::number(MainStarter::flCounter) + 
+							"] String-> [" +
+							QString(curIPCopy) + "]");
 						return;
 					};
 
-					gTargets += 256 * 256 * 256 * (ipsendfl[MainStarter::flCounter][0] - ipsstartfl[MainStarter::flCounter][0]);
-					gTargets += 256 * 256 * (ipsendfl[MainStarter::flCounter][1] - ipsstartfl[MainStarter::flCounter][1]);
-					gTargets += 256 * (ipsendfl[MainStarter::flCounter][2] - ipsstartfl[MainStarter::flCounter][2]);
-					gTargets += (ipsendfl[MainStarter::flCounter][3] - ipsstartfl[MainStarter::flCounter][3]);
+					unsigned long ip1 = (ipsstartfl[MainStarter::flCounter][0] * 16777216) +
+						(ipsstartfl[MainStarter::flCounter][1] * 65536) +
+						(ipsstartfl[MainStarter::flCounter][2] * 256) +
+						ipsstartfl[MainStarter::flCounter][3];
+					unsigned long ip2 = (ipsendfl[MainStarter::flCounter][0] * 16777216) +
+						(ipsendfl[MainStarter::flCounter][1] * 65536) +
+						(ipsendfl[MainStarter::flCounter][2] * 256) +
+						ipsendfl[MainStarter::flCounter][3];
+
+					if (ip1 > ip2) {
+						stt->doEmitionRedFoundData("Malformed input: check your range (" + 
+							QString(curIP) + ")");
+					}
+
+					gTargets += ip2 - ip1 + 1;
 					++MainStarter::flCounter;
 				}
 				else if (strstr(curIP, "/") != NULL)
@@ -241,6 +223,12 @@ void MainStarter::fileLoader(const char *fileName) {
 						(ip_max[1] * 65536) +
 						(ip_max[2] * 256) +
 						ip_max[3];
+
+					if (ip1 > ip2) {
+						stt->doEmitionRedFoundData("Malformed input: check your range (" +
+							QString(curIP) + ")");
+					}
+
 					gTargets += ip2 - ip1 + 1;
 					++MainStarter::flCounter;
 				}
@@ -271,10 +259,7 @@ void MainStarter::fileLoader(const char *fileName) {
 		stt->doEmitionYellowFoundData("List loader - [OK] (" + QString::number(gTargetsNumber + 1) + " hosts)");
 		fclose(fl);
 	}
-	else
-	{
-		stt->doEmitionRedFoundData("[IP Loader] Cannot open IP list.");
-	};
+	else stt->doEmitionRedFoundData("[IP Loader] Cannot open IP list.");
 }
 int MainStarter::loadTargets(const char *data) {
 
@@ -312,9 +297,9 @@ int MainStarter::loadTargets(const char *data) {
 			char newRangeString[128] = { 0 };
 			sprintf(newRangeString, "%u.%u.%u.%u-%u.%u.%u.%u", 
 				ip_min[0], ip_min[1], ip_min[2], ip_min[3], ip_max[0], ip_max[1], ip_max[2], ip_max[3]);
-			rangeVec = splitToStringVector(std::string(newRangeString), '-');
+			rangeVec = splitToStrVector(std::string(newRangeString), '-');
 		}
-		else rangeVec = splitToStringVector(data, '-');
+		else rangeVec = splitToStrVector(data, '-');
 
 		std::vector<int> ip1TmpVec = splitToIntVector(rangeVec[0], '.');
 		std::vector<int> ip2TmpVec = splitToIntVector(rangeVec[1], '.');
@@ -337,34 +322,29 @@ int MainStarter::loadTargets(const char *data) {
 			(ipsend[1] * 65536) + 
 			(ipsend[2] * 256) + 
 			ipsend[3];
+
+		if (ip1 > ip2) {
+			stt->doEmitionRedFoundData("Malformed input: check your range");
+			return -1;
+		}
+
 		sprintf(finalIP, "%d.%d.%d.%d", 
 			ipsend[0], ipsend[1], ipsend[2], ipsend[3]);
+
+		gTargets = ip2 - ip1 + 1;
+		gTargetsNumber = gTargets;
 	}
 	else if (gMode == 1) {
 		strncpy(dnsTarget, data, 256);
+
+		gTargets = ip2 - ip1 + 1;
+		gTargetsNumber = gTargets;
 	} 
 	else {
 		fileLoader(data);
-
-		ip1 = (ipsstartfl[gflIndex][0] * 16777216) + 
-			(ipsstartfl[gflIndex][1] * 65536) + 
-			(ipsstartfl[gflIndex][2] * 256) + 
-			ipsstartfl[gflIndex][3];
-		ip2 = (ipsendfl[gflIndex][0] * 16777216) + 
-			(ipsendfl[gflIndex][1] * 65536) + 
-			(ipsendfl[gflIndex][2] * 256) + 
-			ipsendfl[gflIndex][3];
-		sprintf(finalIP, "%d.%d.%d.%d",
-			ipsendfl[0], ipsendfl[1], ipsendfl[2], ipsendfl[3]);
+		sprintf(finalIP, "%d.%d.%d.%d", 
+			ipsendfl[gflIndex][0], ipsendfl[gflIndex][1], ipsendfl[gflIndex][2], ipsendfl[gflIndex][3]);
 	}
-
-	if (gMode != 1 && ip1 > ip2) {
-		stt->doEmitionRedFoundData("Malformed input: check your range");
-		return -1;
-	}
-
-	gTargets = ip2 - ip1 + 1;
-	gTargetsNumber = gTargets;
 
 	return 0;
 }
@@ -1238,22 +1218,19 @@ void MainStarter::startImportScan(){
 
 	stt->doEmitionChangeStatus("Scanning...");
 	for (gflIndex = 0; gflIndex < MainStarter::flCounter; ++gflIndex)
-	{
-		strcpy(metaRange, std::to_string(ipsstartfl[gflIndex][0]).c_str());
-		strcat(metaRange, ".");
-		strcat(metaRange, std::to_string(ipsstartfl[gflIndex][1]).c_str());
-		strcat(metaRange, ".");
-		strcat(metaRange, std::to_string(ipsstartfl[gflIndex][2]).c_str());
-		strcat(metaRange, ".");
-		strcat(metaRange, std::to_string(ipsstartfl[gflIndex][3]).c_str());
-		strcat(metaRange, "-");
-		strcat(metaRange, std::to_string(ipsendfl[gflIndex][0]).c_str());
-		strcat(metaRange, ".");
-		strcat(metaRange, std::to_string(ipsendfl[gflIndex][1]).c_str());
-		strcat(metaRange, ".");
-		strcat(metaRange, std::to_string(ipsendfl[gflIndex][2]).c_str());
-		strcat(metaRange, ".");
-		strcat(metaRange, std::to_string(ipsendfl[gflIndex][3]).c_str());
+	{		
+		sprintf(metaRange, "%d.%d.%d.%d-%d.%d.%d.%d",
+			ipsstartfl[gflIndex][0], ipsstartfl[gflIndex][1], ipsstartfl[gflIndex][2], ipsstartfl[gflIndex][3], 
+			ipsendfl[gflIndex][0], ipsendfl[gflIndex][1], ipsendfl[gflIndex][2], ipsendfl[gflIndex][3]);
+
+		ip1 = (ipsstartfl[gflIndex][0] * 16777216) +
+			(ipsstartfl[gflIndex][1] * 65536) +
+			(ipsstartfl[gflIndex][2] * 256) +
+			ipsstartfl[gflIndex][3];
+		ip2 = (ipsendfl[gflIndex][0] * 16777216) +
+			(ipsendfl[gflIndex][1] * 65536) +
+			(ipsendfl[gflIndex][2] * 256) +
+			ipsendfl[gflIndex][3];
 
 		switch (gShuffle) {
 		case true: {

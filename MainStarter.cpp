@@ -1,7 +1,6 @@
 #include "STh.h"
 #include "MainStarter.h"
 #include "Connector.h"
-#include <sstream>
 #include "Utils.h"
 #include <qjsonobject.h>
 #include <qjsonvalue.h>
@@ -50,28 +49,6 @@ char metaTargets[256]	= { 0 };
 char metaETA[256]		= { 0 };
 char metaOffline[256]	= { 0 };
 
-std::vector<std::string> splitToStrVector(const std::string &s, char delim) {
-	std::vector<std::string> elems;
-	std::stringstream ss(s);
-	std::string item;
-
-	while (std::getline(ss, item, delim)) {
-		elems.push_back(item);
-	}
-
-	return elems;
-}
-std::vector<int> splitToIntVector(const std::string &s, char delim) {
-	std::vector<int> elems;
-	std::stringstream ss(s);
-	std::string item;
-
-	while (std::getline(ss, item, delim)) {
-		elems.push_back(std::stoi(item));
-	}
-
-	return elems;
-}
 int MainStarter::fileLoader(const char *fileName) {
 
 	char curIP[256] = { 0 }, curIPCopy[256] = { 0 };
@@ -132,9 +109,9 @@ int MainStarter::fileLoader(const char *fileName) {
 
 				if (strstr(curIP, "-") != NULL)
 				{
-					std::vector<std::string> tmpIPVec = splitToStrVector(curIP, '-');
-					std::vector<int> tmpIPIntVec1 = splitToIntVector(tmpIPVec[0], '.');
-					std::vector<int> tmpIPIntVec2 = splitToIntVector(tmpIPVec[1], '.');
+					std::vector<std::string> tmpIPVec = Utils::splitToStrVector(curIP, '-');
+					std::vector<int> tmpIPIntVec1 = Utils::splitToIntVector(tmpIPVec[0], '.');
+					std::vector<int> tmpIPIntVec2 = Utils::splitToIntVector(tmpIPVec[1], '.');
 
 					ipsstartfl[MainStarter::flCounter][0] = tmpIPIntVec1[0];
 					ipsstartfl[MainStarter::flCounter][1] = tmpIPIntVec1[1];
@@ -198,7 +175,7 @@ int MainStarter::fileLoader(const char *fileName) {
 					unsigned int ip[4] = { 0 }, ip_min[4] = { 0 }, ip_max[4] = { 0 }, tmp1, tmp2;
 					unsigned int netmask = atoi(strstr(curIP, "/") + 1);
 
-					std::vector<int> tmpIPVec = splitToIntVector(curIP, '.');
+					std::vector<int> tmpIPVec = Utils::splitToIntVector(curIP, '.');
 
 					for (int i = 0; i < tmpIPVec.size(); ++i) ip[i] = tmpIPVec[i];
 
@@ -280,7 +257,7 @@ int MainStarter::loadTargets(const char *data) {
 			unsigned int ip[4] = { 0 }, ip_min[4] = { 0 }, ip_max[4] = { 0 }, tmp1, tmp2;
 			unsigned int netmask = atoi(strstr(data, "/") + 1);
 
-			std::vector<int> tmpIPVec = splitToIntVector(data, '.');
+			std::vector<int> tmpIPVec = Utils::splitToIntVector(data, '.');
 
 			for (int i = 0; i < tmpIPVec.size(); ++i) ip[i] = tmpIPVec[i];
 
@@ -305,12 +282,12 @@ int MainStarter::loadTargets(const char *data) {
 			char newRangeString[128] = { 0 };
 			sprintf(newRangeString, "%u.%u.%u.%u-%u.%u.%u.%u", 
 				ip_min[0], ip_min[1], ip_min[2], ip_min[3], ip_max[0], ip_max[1], ip_max[2], ip_max[3]);
-			rangeVec = splitToStrVector(std::string(newRangeString), '-');
+			rangeVec = Utils::splitToStrVector(std::string(newRangeString), '-');
 		}
-		else rangeVec = splitToStrVector(data, '-');
+		else rangeVec = Utils::splitToStrVector(data, '-');
 
-		std::vector<int> ip1TmpVec = splitToIntVector(rangeVec[0], '.');
-		std::vector<int> ip2TmpVec = splitToIntVector(rangeVec[1], '.');
+		std::vector<int> ip1TmpVec = Utils::splitToIntVector(rangeVec[0], '.');
+		std::vector<int> ip2TmpVec = Utils::splitToIntVector(rangeVec[1], '.');
 
 		ipsstart[0] = ip1TmpVec[0];
 		ipsstart[1] = ip1TmpVec[1];
@@ -360,7 +337,7 @@ int MainStarter::loadTargets(const char *data) {
 	return 0;
 }
 int MainStarter::loadPorts(const char *data, char delim) {
-	portVector = splitToIntVector(data, delim);
+	portVector = Utils::splitToIntVector(data, delim);
 	for (auto elem : portVector) {
 		if (elem > 65535 | elem < 0) {
 			stt->doEmitionRedFoundData("Malformed input: check your ports");

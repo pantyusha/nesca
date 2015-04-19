@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <qstring.h>
+#include <vector>
 
 using namespace std;
 
@@ -76,6 +77,9 @@ public:
 
     char * getProxy();
     int getProxyPort();
+	static std::string getStrValue(const std::string &data, const std::string &delim1, const std::string &delim2);
+	static std::vector<std::string> splitToStrVector(const std::string &s, char delim);
+	static std::vector<int> splitToIntVector(const std::string &s, char delim);
 };
 
 #endif // UTILS_H

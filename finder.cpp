@@ -2480,7 +2480,38 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	}
 	else if (flag == 36) //Panasonic Cam
 	{
-		_specBrute(ip, port, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, size);
+		_specBrute(ip, port, QString("[Panasonic] IP Camera (" + QString(ip) + ":" + QString::number(port) + ")").toLocal8Bit().data(), flag,
+			"/config/index.cgi", "Basic Authorization", cp, size);
+
+		stt->doEmitionYellowFoundData("[PaCr]Panasonic cam detected, crawling started.");
+
+		std::string buff;
+		Connector::nConnect(std::string(std::string(ip) + "/config/cam_portal.cgi").c_str(), port, &buff);
+		int nPort = port;
+		for (int i = 0; i < 16; ++i) {
+			std::string &cam_link_data = Utils::getStrValue(buff, "cam_link[" + std::to_string(i) + "]", ";");
+			if (cam_link_data.size() != 0) {
+				std::string &newURL = Utils::getStrValue(cam_link_data, "src=\"", "\"");
+				if (newURL.size() != 0) {
+					std::string &newIP = Utils::getStrValue(newURL, "http://", "/");
+					if (newIP.size() != 0) {
+						std::string &newPath = newURL.substr(newURL.find(newIP) + newIP.length());
+						std::vector<std::string> portVec = Utils::splitToStrVector(newIP, ':');
+						stt->doEmitionYellowFoundData("[PaCr] Url found:" + QString(newURL.c_str()));
+
+						portVec.size() == 2 ? nPort = std::stoi(portVec[1]) : NULL;
+
+						_specBrute(newIP.c_str(), nPort, QString("[Panasonic] IP Camera (" +
+							QString(newIP.c_str()) + ":" + QString::number(nPort) + ")").toLocal8Bit().data(), flag,
+							(char*)newPath.c_str(), "Basic Authorization", cp, size);
+					}
+				}
+				else stt->doEmitionRedFoundData("[Panasonic Cam URL] Cannot extract data " +
+					QString(ip) + ":" + QString::number(port));
+			}
+			else stt->doEmitionRedFoundData("[Panasonic Cam cam_link] Cannot extract data " +
+				QString(ip) + ":" + QString::number(port));
+		}
 	}
 	else if (flag == 37) //Panasonic Cam
 	{

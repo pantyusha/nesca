@@ -1,7 +1,7 @@
 #include "BasicAuth.h"
 #include "FileUpdater.h"
 
-bool BA::checkOutput(const string *buffer, const char *ip, const int port) {
+int BA::checkOutput(const string *buffer, const char *ip, const int port) {
     if((Utils::ustrstr(*buffer, "200 ok") != -1 ||
             Utils::ustrstr(*buffer, "http/1.0 200") != -1 ||
 			Utils::ustrstr(*buffer, "http/1.1 200") != -1)
@@ -12,7 +12,7 @@ bool BA::checkOutput(const string *buffer, const char *ip, const int port) {
 			&& Utils::ustrstr(*buffer, "íåïðàâèëüíû") == -1
 			&& Utils::ustrstr(*buffer, "ÐÐµÐ¿Ñ€Ð°Ð²Ð¸Ð»ÑŒÐ½Ñ‹") == -1
             ) {
-        return true;
+        return 1;
 	}
 	else if (Utils::ustrstr(*buffer, "503 service unavailable") != -1
 		|| Utils::ustrstr(*buffer, "http/1.1 503") != -1
@@ -25,9 +25,10 @@ bool BA::checkOutput(const string *buffer, const char *ip, const int port) {
 		stt->doEmition_BARedData("[.] 503/400/403 - Waiting 30sec (" + QString(ip) + ":" + QString::number(port) + ")");
 
 		Sleep(30000);
+		return -1;
 	}
 
-    return false;
+    return 0;
 }
 
 //http://www.coresecurity.com/advisories/hikvision-ip-cameras-multiple-vulnerabilities 2
@@ -36,9 +37,8 @@ inline bool commenceHikvisionEx1(const char *ip, const int port, bool digestMode
 
 	string buffer;
 	int res = Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString, digestMode);
-	if (res == -2) return -1;
-	else if (res != -1) {
-		if (BA::checkOutput(&buffer, ip, port)) return 1;
+	if (res > 0) {
+		if (BA::checkOutput(&buffer, ip, port) == 1) return 1;
 	}
 	return 0;
 }
@@ -69,7 +69,12 @@ lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
 			res = Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString, digestMode);
 			if (res == -2) return lps;
 			else if (res != -1) {
-				if (checkOutput(&buffer, ip, port)) {
+				res = checkOutput(&buffer, ip, port);
+				if (res == -1) {
+					++i;
+					break;
+				}
+				if (res == 1) {
 					strcpy(lps.login, loginLst[i]);
 					strcpy(lps.pass, passLst[j]);
 					return lps;

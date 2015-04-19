@@ -8,10 +8,10 @@
 
 class BA {
 private:
-	static bool checkOutput(const string *buffer, const char *ip, const int port);
 	static lopaStr BABrute(const char *ip, const int port, bool digestMode);
 
 public:
+	static bool checkOutput(const string *buffer, const char *ip, const int port);
 	static lopaStr BALobby(const char *ip, const int port, bool digestMode);
 };
 

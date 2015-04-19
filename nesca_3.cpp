@@ -178,7 +178,7 @@ void _LoadPersInfoToLocalVars(int savedTabIndex) {
 		gMode = -1;
 		gThreads = ui->importThreads->text().toInt();
 		strncpy(gPorts, ("-p" + ui->importPortLine->text()).toLocal8Bit().data(), 65536);
-		gPorts[ui->dnsPortLine->text().length() + 2] = '\0';
+		gPorts[ui->importPortLine->text().length() + 2] = '\0';
 	};
 
 	strcpy(trcSrv, ui->lineTrackerSrv->text().toLocal8Bit().data());

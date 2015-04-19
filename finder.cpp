@@ -376,10 +376,11 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 		&& Utils::ustrstr(buffcpy, "ieorforefox") != -1
         && Utils::ustrstr(buffcpy, "sofari") != -1
 		)																				return 49; //IEORFOREFOX
-    if (Utils::ustrstr(buffcpy, "seyeon") != -1 
+	if (Utils::ustrstr(buffcpy, "seyeon") != -1
 		&& (Utils::ustrstr(buffcpy, "/app/multi/single.asp") != -1
-        || Utils::ustrstr(buffcpy, "/app/live/sim/single.asp") != -1)
+		|| Utils::ustrstr(buffcpy, "/app/live/sim/single.asp") != -1)
 		)																				return 50; //Network Video System
+	if (Utils::ustrstr(buffcpy, "MASPRO DENKOH") != -1)									return 51; //MASPRO
 
     if(((Utils::ustrstr(buffcpy, "220") != -1) && (port == 21)) ||
         (Utils::ustrstr(buffcpy, "220 diskStation ftp server ready") != -1) ||
@@ -1193,9 +1194,6 @@ void _specWFBrute(const char *ip, int port, const char *buff, int flag, char *pa
 void _specWEBIPCAMBrute(const char *ip, int port, char *finalstr, int flag, char *comment, char *cp, int size, char *SPEC)
 {
     lopaStr lps = {"UNKNOWN", "", ""};
-	ZeroMemory(lps.login, sizeof(lps.login));
-	ZeroMemory(lps.pass, sizeof(lps.pass));
-	ZeroMemory(lps.other, sizeof(lps.other));
 
     IPC ipc;
     lps = ipc.IPCLobby(ip, port, SPEC);
@@ -2539,6 +2537,10 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	else if (flag == 50) //IP Camera
 	{
 		_specBrute(ip, port, "IP Camera", flag, "/app/multi/single.asp", "Basic Authorization", cp, size);
+	}
+	else if (flag == 51) //MASPRO
+	{
+		_specWEBIPCAMBrute(ip, port, "[MASPRO] WEB IP Camera", flag, "WEB Authorization", cp, size, "MASPRO");
 	}
 	else if (flag == 20) //AXIS Camera
 	{

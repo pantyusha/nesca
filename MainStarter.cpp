@@ -385,15 +385,16 @@ void MainStarter::saveBackupToFile()
 			FILE *savingFile = fopen("tempIPLst.bk", "w");
 			if (savingFile != NULL)
 			{
-				sprintf(ipRange, "%s-%d.%d.%d.%d\n",
-					currentIP,
-					ipsendfl[gflIndex][0], 
-					ipsendfl[gflIndex][1], 
-					ipsendfl[gflIndex][2],
-					ipsendfl[gflIndex][3]);
-				fputs(ipRange, savingFile);
-
-				ZeroMemory(ipRange, sizeof(ipRange));
+				if (gflIndex < MainStarter::flCounter) {
+					sprintf(ipRange, "%s-%d.%d.%d.%d\n",
+						currentIP,
+						ipsendfl[gflIndex][0],
+						ipsendfl[gflIndex][1],
+						ipsendfl[gflIndex][2],
+						ipsendfl[gflIndex][3]);
+					fputs(ipRange, savingFile);
+					ZeroMemory(ipRange, sizeof(ipRange));
+				}
 				for (int tCounter = gflIndex + 1; tCounter < MainStarter::flCounter; ++tCounter)
 				{
 					sprintf(ipRange, "%d.%d.%d.%d-%d.%d.%d.%d\n",
@@ -484,18 +485,8 @@ void MainStarter::saveBackupToFile()
 
 	std::string finalSaveStr(saveBuffer);
 	std::ofstream file("restore");
-	file << finalSaveStr;
+	if (finalSaveStr.size() > 0) file << finalSaveStr;
 	ZeroMemory(saveBuffer, strlen(saveBuffer));
-
-	/*FILE *savingFile = fopen("restore", "w");
-
-	if (savingFile != NULL)
-	{
-		fputs(saveBuffer, savingFile);
-		fclose(savingFile);
-	}
-	else stt->doEmitionRedFoundData("[_saver] Cannot open file.");*/
-
 }
 
 bool saverRunning = false;

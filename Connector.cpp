@@ -122,11 +122,11 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
                         const std::string *lpString,
 						bool digestMode){
     buffer->clear();
-    CURL *curl = curl_easy_init();
+	CURL *curl = curl_easy_init();
 
-    if (curl)
+    if (curl != NULL)
     {
-        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 0L);
+        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
         if (MapWidgetOpened) {
             struct data config;
             config.trace_ascii = 1; /* enable ascii tracing */
@@ -161,10 +161,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 
             struct curl_slist *chunk = NULL;
 
-            for(auto &ch : *customHeaders) {
-
-                chunk = curl_slist_append(chunk, ch.c_str());
-            }
+            for(auto &ch : *customHeaders) chunk = curl_slist_append(chunk, ch.c_str());
 
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
         }

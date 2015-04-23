@@ -71,7 +71,11 @@ void STh::doEmitionDataSaved(bool status)
 }
 void STh::doEmitionUpdateArc(unsigned long gTargets)
 {
-    emit stt->signalUpdateArc(gTargets);
+	emit stt->signalUpdateArc(gTargets);
+}
+void STh::doEmitionBlockButton(bool value)
+{
+	emit stt->signalBlockButton(value);
 }
 
 void STh::setMode(short mode) {

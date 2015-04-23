@@ -124,47 +124,48 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
     buffer->clear();
 	CURL *curl = curl_easy_init();
 
-    if (curl != NULL)
-    {
-        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
-        if (MapWidgetOpened) {
-            struct data config;
-            config.trace_ascii = 1; /* enable ascii tracing */
-            curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
-            curl_easy_setopt(curl, CURLOPT_DEBUGDATA, &config);
-            curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-        }
-        curl_easy_setopt(curl, CURLOPT_URL, ip);
-        curl_easy_setopt(curl, CURLOPT_PORT, port);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT,
-                         "Mozilla/5.0 (X11; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0");
-        curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
-        curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nWriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, buffer);
-        int proxyPort = std::atoi(gProxyPort);
-        if(strlen(gProxyIP) != 0 && (proxyPort > 0 && proxyPort < 65535)) {
-            curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
-            curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
-        } else {
-            curl_easy_setopt(curl, CURLOPT_PROXY, "");
-        }
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut + 3);
+	if (curl != NULL)
+	{
+		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+		if (MapWidgetOpened) {
+			struct data config;
+			config.trace_ascii = 1; /* enable ascii tracing */
+			curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
+			curl_easy_setopt(curl, CURLOPT_DEBUGDATA, &config);
+			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+		}
+		curl_easy_setopt(curl, CURLOPT_URL, ip);
+		curl_easy_setopt(curl, CURLOPT_PORT, port);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT,
+			"Mozilla/5.0 (X11; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0");
+		curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
+		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nWriteCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, buffer);
+		int proxyPort = std::atoi(gProxyPort);
+		if (strlen(gProxyIP) != 0 && (proxyPort > 0 && proxyPort < 65535)) {
+			curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
+			curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
+		}
+		else {
+			curl_easy_setopt(curl, CURLOPT_PROXY, "");
+		}
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut + 3);
 
-        if(postData != NULL) curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+		if (postData != NULL) curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
 
-        if(customHeaders != NULL) {
+		if (customHeaders != NULL) {
 
-            struct curl_slist *chunk = NULL;
+			struct curl_slist *chunk = NULL;
 
-            for(auto &ch : *customHeaders) chunk = curl_slist_append(chunk, ch.c_str());
+			for (auto &ch : *customHeaders) chunk = curl_slist_append(chunk, ch.c_str());
 
-            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-        }
+			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+		}
 
 		int res = 0;
 

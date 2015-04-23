@@ -44,18 +44,6 @@ public:
 
 		ZeroMemory(ipsstart, sizeof(ipsstart));
 		ZeroMemory(ipsend, sizeof(ipsend));
-
-		curl_global_init(CURL_GLOBAL_ALL);
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-		bool res = CreateDirectoryA(RESULT_DIR_NAME, NULL);
-#else
-		struct stat str = { 0 };
-		if (stat(RESULT_DIR_NAME, &str) == -1) {
-			mkdir(RESULT_DIR_NAME, 0700);
-		}
-#endif
-
 	}
 	~MainStarter(){
 		FileUpdater::FUClear();
@@ -107,8 +95,11 @@ public:
 			delete[]ipsendfl;
 			ipsendfl = NULL;
 		};
+
+		unBlockButtons();
 	}
 
+	void unBlockButtons();
 	void runAuxiliaryThreads();
 	void saver();
 	void saveBackupToFile();

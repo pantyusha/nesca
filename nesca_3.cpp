@@ -59,7 +59,6 @@ DrawerTh_GridQoSScanner *dtGridQoS = new DrawerTh_GridQoSScanner();
 CheckKey_Th *chKTh = new CheckKey_Th();
 ActivityDrawerTh_HorNet *adtHN = new ActivityDrawerTh_HorNet();
 DrawerTh_VoiceScanner *vsTh = new DrawerTh_VoiceScanner();
-//IRC_NMBlinker *irc_nmb = new IRC_NMBlinker();
 PieStat *psTh = new PieStat();
 ProgressbarDrawer *pbTh = new ProgressbarDrawer();
 
@@ -1315,6 +1314,7 @@ void nesca_3::importAndScan()
 				);
 
 			ui->importButton->setText("STOP!");
+			stt->doEmitionBlockButton(true);
 			stt->doEmitionYellowFoundData("Trying to stop. Please, wait...");
 			importFileName = "";
 		}
@@ -2045,43 +2045,7 @@ void nesca_3::IPScanSeq()
 				);
 			ui->dataText->clear();
 		}
-		else
-		{
-			stt->doEmitionRedFoundData("No ports specified!");				
-		};
-	}
-	else
-	{
-		if(stopFirst == false)
-		{
-			stopFirst = true;
-			globalScanFlag = false;
-			ui->startScanButton_3->setStyleSheet(
-				" QPushButton {"
-				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-				"color: red;"
-				"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-				"}"
-				);
-
-			ui->startScanButton_3->setText("STOP!");
-			stt->doEmitionYellowFoundData("Trying to stop. Please, wait...");
-		}
-		else
-		{
-			globalScanFlag = false;
-			ui->startScanButton_3->setStyleSheet(
-				" QPushButton {"
-				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-				"color: yellow;"
-				"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-				"}"
-				);
-
-			ui->startScanButton_3->setText("Wait...");
-			stt->doEmitionYellowFoundData("Wait, killing threads...");
-			STTTerminate();
-		};
+		else stt->doEmitionRedFoundData("No ports specified!");
 	};
 }
 
@@ -2277,9 +2241,16 @@ void nesca_3::onLinkClicked(QUrl link)
 	QDesktopServices::openUrl(link);
 }
 
+void nesca_3::slotBlockButtons(bool value) {
+	ui->startScanButton_3->setEnabled(!value);
+	ui->startScanButton_4->setEnabled(!value);
+	ui->importButton->setEnabled(!value);
+}
+
 void nesca_3::ConnectEvrthng()
 {
-	connect ( pbTh, SIGNAL(upd()), this, SLOT(slotPBUpdate()));
+	connect(stt, SIGNAL(signalBlockButton(bool)), this, SLOT(slotBlockButtons(bool)));
+	connect(pbTh, SIGNAL(upd()), this, SLOT(slotPBUpdate()));
 	connect ( ui->secretMessageBut_1, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
 	connect ( ui->secretMessageBut_2, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
 	connect ( ui->secretMessageBut_3, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
@@ -2777,6 +2748,7 @@ void nesca_3::startScanButtonClicked()
 				);
 
 			ui->startScanButton_3->setText("STOP!");
+			stt->doEmitionBlockButton(true);
 			stt->doEmitionYellowFoundData("Trying to stop. Please, wait...");
 		}
 		else
@@ -2832,6 +2804,7 @@ void nesca_3::startScanButtonClickedDNS()
 				);
 
 			ui->startScanButton_4->setText("STOP!");
+			stt->doEmitionBlockButton(true);
 			stt->doEmitionYellowFoundData("Trying to stop. Please, wait...");
 		}
 		else
@@ -2889,7 +2862,7 @@ void nesca_3::MaxBrutingThr_ChangeValue(QString str)
 
 void nesca_3::appendRedBAData(QString str)
 {
-	ui->BAText->append("<span style=\"color:red;background-color:#313131;\">" + QString::fromUtf8(str.toLocal8Bit().data()) + "</span>");
+	ui->BAText->append("<span style=\"color:red;\">" + QString::fromUtf8(str.toLocal8Bit().data()) + "</span>");
 }
 
 void nesca_3::appendGreenBAData(QString str)

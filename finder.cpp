@@ -381,6 +381,9 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 		|| Utils::ustrstr(buffcpy, "/app/live/sim/single.asp") != -1)
 		)																				return 50; //Network Video System
 	if (Utils::ustrstr(buffcpy, "MASPRO DENKOH") != -1)									return 51; //MASPRO
+	if (Utils::ustrstr(buffcpy, "webcamXP") != -1 
+		&& Utils::ustrstr(buffcpy, "a valid username/password") != -1
+		)																				return 52; //Webcamxp5
 
     if(((Utils::ustrstr(buffcpy, "220") != -1) && (port == 21)) ||
         (Utils::ustrstr(buffcpy, "220 diskStation ftp server ready") != -1) ||
@@ -1193,10 +1196,8 @@ void _specWFBrute(const char *ip, int port, const char *buff, int flag, char *pa
 
 void _specWEBIPCAMBrute(const char *ip, int port, char *finalstr, int flag, char *comment, char *cp, int size, char *SPEC)
 {
-    lopaStr lps = {"UNKNOWN", "", ""};
-
-    IPC ipc;
-    lps = ipc.IPCLobby(ip, port, SPEC);
+	IPC ipc;
+    lopaStr lps = ipc.IPCLobby(ip, port, SPEC);
 
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
@@ -1206,12 +1207,19 @@ void _specWEBIPCAMBrute(const char *ip, int port, char *finalstr, int flag, char
 	};
 }
 
-void _specBrute(const char *ip, int port,
+int _specBrute(const char *ip, int port,
                 char *finalstr, int flag,
                 char *path, char *comment, char *cp, int size)
 {
 	const lopaStr &lps = BA::BALobby((string(ip) + string(path)).c_str(), port, (strcmp(comment, "[DIGEST]") == 0 ? true : false));
 	
+	if (strcmp(lps.other, "404") == 0) {
+
+		stt->doEmitionRedFoundData("BA - 404 <a style=\"color:#717171;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + QString(path) + "/\">" +
+			QString(ip) + ":" + QString::number(port) + QString(path) + "</a>");
+		return -1;
+	}
+
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
         _specFillerBA(ip, port, finalstr, lps.login, lps.pass, flag);
@@ -2572,9 +2580,15 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	{
 		_specWEBIPCAMBrute(ip, port, "[MASPRO] WEB IP Camera", flag, "WEB Authorization", cp, size, "MASPRO");
 	}
+	else if (flag == 52) //webcamxp5
+	{
+		_specWEBIPCAMBrute(ip, port, "[WEBCAMXP] WEB IP Camera", flag, "WEB Authorization", cp, size, "WEBCAMXP");
+	}
 	else if (flag == 20) //AXIS Camera
 	{
-		_specBrute(ip, port, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "Basic Authorization", cp, size);
+		if (_specBrute(ip, port, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "Basic Authorization", cp, size) == -1){
+			_specBrute(ip, port, "AXIS Camera", flag, "/view/viewer_index.shtml?", "Basic Authorization", cp, size);
+		}
 	}
 	else if (flag == 19) //reecam cameras
 	{

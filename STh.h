@@ -37,7 +37,8 @@ public:
 	static void doEmitionBAData(QString str);
 	static void doEmitionDebugFoundData(QString);
 	static void doEmitionShowRedVersion();
-    static void doEmitionUpdateArc(unsigned long gTargets);
+	static void doEmitionUpdateArc(unsigned long gTargets);
+	static void doEmitionBlockButton(bool value);
 
 signals:
 public: signals: void showRedVersion();
@@ -56,8 +57,9 @@ public: signals: void changeDebugFoundData(QString);
 public: signals: void changeStatus(QString);
 public: signals: void killSttThread();
 public: signals: void sIncData(QString, QString);
-public: signals: void sOutData(QString);
-public: signals: void signalUpdateArc(unsigned long);
+public: signals : void sOutData(QString);
+public: signals : void signalUpdateArc(unsigned long);
+public: signals : void signalBlockButton(bool);
 
 protected:
 	void run();

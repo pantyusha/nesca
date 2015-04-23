@@ -116,6 +116,7 @@ protected:
 		void appendRedBAData(QString str);
         void STTTerminate();
         void drawVerboseArcs(unsigned long gTargets);
+		void slotBlockButtons(bool value);
 private:
 	QPoint dragPosition;
 };

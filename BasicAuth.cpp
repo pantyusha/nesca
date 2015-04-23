@@ -16,10 +16,7 @@ int BA::checkOutput(const string *buffer, const char *ip, const int port) {
         return 1;
 	}
 	else if (Utils::ustrstr(*buffer, "http/1.1 404") != -1
-		|| Utils::ustrstr(*buffer, "http/1.0 404") != -1) {
-		stt->doEmitionRedFoundData("BA - 404 " + QString(ip) + ":" + QString::number(port));
-		return -2;
-	}
+		|| Utils::ustrstr(*buffer, "http/1.0 404") != -1) return -2; 
 	else if (Utils::ustrstr(*buffer, "503 service unavailable") != -1
 		|| Utils::ustrstr(*buffer, "http/1.1 503") != -1
 		|| Utils::ustrstr(*buffer, "http/1.0 503") != -1
@@ -76,7 +73,10 @@ lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
 			if (res == -2) return lps;
 			else if (res != -1) {
 				res = checkOutput(&buffer, ip, port);
-				if (res == -2) return lps;
+				if (res == -2) {
+					strcpy(lps.other, "404");
+					return lps;
+				}
 				if (res == -1) {
 					++i;
 					break;

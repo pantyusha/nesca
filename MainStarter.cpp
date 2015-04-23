@@ -24,23 +24,16 @@ char gTLD[128] = { 0 };
 char gPorts[65536] = { 0 };
 char currentIP[MAX_ADDR_LEN] = { 0 };
 char finalIP[32] = { 0 };
-
 bool gPingNScan = false;
 std::atomic<int> cons = 0, BrutingThrds = 0, gThreads;
-
 std::vector<int> MainStarter::portVector;
 int MainStarter::flCounter = 0;
 bool MainStarter::savingBackUpFile = false;
-
 QJsonArray *jsonArr = new QJsonArray();
-
 bool horLineFlag = false;
 bool gShuffle = true;
-
 int ipCounter = 0;
-
 long long unsigned gTargets = 0, gTargetsNumber = 1;
-
 char currentMask[128]	= { 0 };
 char metaRange[256]		= { 0 };
 char metaPercent[256]	= { 0 };
@@ -49,6 +42,10 @@ char metaTargets[256]	= { 0 };
 char metaETA[256]		= { 0 };
 char metaOffline[256]	= { 0 };
 
+
+void MainStarter::unBlockButtons(){
+	stt->doEmitionBlockButton(false);
+}
 int MainStarter::fileLoader(const char *fileName) {
 
 	char curIP[256] = { 0 }, curIPCopy[256] = { 0 };
@@ -1286,6 +1283,17 @@ void MainStarter::runAuxiliaryThreads() {
 }
 
 void MainStarter::start(const char* targets, const char* ports) {
+	
+	curl_global_init(CURL_GLOBAL_ALL);
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	bool res = CreateDirectoryA(RESULT_DIR_NAME, NULL);
+#else
+	struct stat str = { 0 };
+	if (stat(RESULT_DIR_NAME, &str) == -1) {
+		mkdir(RESULT_DIR_NAME, 0700);
+	}
+#endif
 
 	if (loadTargets(targets) == -1 ||
 		loadPorts(ports, ',') == -1) {

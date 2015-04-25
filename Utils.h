@@ -24,6 +24,8 @@ private:
 
 class Utils {
 public:
+	static int isDigest(const std::string *buffer);
+
     // find substring (case insensitive)
     template<typename T> static int ustrstr(const T& str1,
                                             const T& str2,

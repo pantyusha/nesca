@@ -531,13 +531,7 @@ void SetValidators()
 		QRegExp("([\\d*|.|//|-])+"), 
 		NULL
 		);
-	ui->ipLine->setValidator(validator);
-
-	validator = new QRegExpValidator(QRegExp("(\\d{1,5}[,|-]\\s{0,1})+"), NULL);
-	ui->ipmPortLine->setValidator(validator);
-	ui->dnsPortLine->setValidator(validator);
-	ui->importPortLine->setValidator(validator);
-
+	
 	validator = new QRegExpValidator(QRegExp("\\d{1,3}"), NULL);
 	ui->importThreads->setValidator(validator);
 	ui->threadLine->setValidator(validator);
@@ -1267,74 +1261,6 @@ void nesca_3::activatePieStatBut()
 	};
 }
 
-bool stopFirst;
-void nesca_3::importAndScan()
-{
-	if(startFlag == false)
-	{
-		if(trackerOK)
-		{
-			if(ui->linePersKey->text().size() != 0)
-			{
-				CheckPersKey(2);
-			}
-			else
-			{
-				stt->doEmitionRedFoundData("Empty \"Personal key\" field. ");
-			};
-		}
-		else
-		{
-			stt->doEmitionStartScanImport();
-		};
-	}
-	else
-	{
-		ui->importButton->setStyleSheet(
-			" QPushButton {"
-			"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-			"color: yellow;"
-			"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-			"}"
-			);
-
-		ui->importButton->setText("Wait...");
-		stt->doEmitionYellowFoundData("Trying to stop. Please, wait...");
-		globalScanFlag = false;
-
-		if(stopFirst == false)
-		{
-			stopFirst = true;
-			ui->importButton->setStyleSheet(
-				" QPushButton {"
-				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-				"color: red;"
-				"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-				"}"
-				);
-
-			ui->importButton->setText("STOP!");
-			stt->doEmitionBlockButton(true);
-			stt->doEmitionYellowFoundData("Trying to stop. Please, wait...");
-			importFileName = "";
-		}
-		else
-		{
-			ui->importButton->setStyleSheet(
-				" QPushButton {"
-				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-				"color: yellow;"
-				"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-				"}"
-				);
-
-			ui->importButton->setText("Wait...");
-			stt->doEmitionYellowFoundData("Wait, killing threads...");
-			STTTerminate();
-		};
-	};
-}
-
 void nesca_3::switchDataFields()
 {
 	if(ui->switcherBut->text() == "<")
@@ -1455,7 +1381,6 @@ void nesca_3::slotClearLogs()
 	ui->dataText->clear();
 	ui->BAText->clear();
 }
-
 
 int c = 1;
 void nesca_3::slotSaveImage(QAction *qwe)
@@ -2015,130 +1940,6 @@ void nesca_3::smReaction()
 	};
 }
 
-void nesca_3::IPScanSeq()
-{
-	if(ui->ipLine->text() != "")
-	{
-		if(ui->ipmPortLine->text() != "")
-		{
-            stopFirst = false;
-			ui->tabMainWidget->setTabEnabled(1, false);
-			ui->tabMainWidget->setTabEnabled(2, false);
-
-			saveOptions();
-
-			stt->setMode(0);
-			stt->setTarget((ui->ipLine->text().indexOf("-") > 0 ? ui->ipLine->text() :
-				(ui->ipLine->text().indexOf("/") < 0 ? ui->ipLine->text() + "-" + ui->ipLine->text() : ui->ipLine->text())
-				));
-			stt->setPorts(ui->ipmPortLine->text().replace(" ", ""));
-			stt->start();
-
-			startFlag = true;
-			ui->startScanButton_3->setText("Stop");
-			ui->startScanButton_3->setStyleSheet(
-				" QPushButton {"
-				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-				"color: red;"
-				"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-				"}"
-				);
-			ui->dataText->clear();
-		}
-		else stt->doEmitionRedFoundData("No ports specified!");
-	};
-}
-
-void nesca_3::DNSScanSeq()
-{
-	if(ui->lineEditStartIPDNS->text() != "")
-	{
-		if(ui->dnsPortLine->text() != "")
-        {
-			if(ui->lineEditStartIPDNS->text().indexOf(".") > 0)
-			{
-				stopFirst = false;
-				ui->tabMainWidget->setTabEnabled(0, false);
-				ui->tabMainWidget->setTabEnabled(2, false);
-
-				QStringList lst = ui->lineEditStartIPDNS->text().split(".");
-				ui->lineEditStartIPDNS->setText(lst[0]);
-				QString topLevelDomainStr;
-				for(int i = 1; i < lst.size(); ++i)
-				{
-					topLevelDomainStr += ".";
-					topLevelDomainStr += lst[i];
-				};
-                ui->lineILVL->setText(topLevelDomainStr);
-			};
-
-			saveOptions();
-
-			stt->setMode(1);
-			stt->setTarget(ui->lineEditStartIPDNS->text());
-			stt->setPorts(ui->dnsPortLine->text().replace(" ", ""));
-			stt->start();
-			
-			startFlag = true;
-			ui->startScanButton_4->setText("Stop");
-			ui->startScanButton_4->setStyleSheet(
-				" QPushButton {"
-				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-				"color: red;"
-				"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-				"}"
-				);
-			ui->dataText->clear();
-		}
-		else
-		{
-			stt->doEmitionRedFoundData("No ports specified!");	
-		};
-	}
-	else
-	{
-		stt->doEmitionRedFoundData("Wrong mask input.");
-	};
-}
-
-void nesca_3::ImportScanSeq()
-{
-	QString fileName;
-
-	if(importFileName.size() == 0) fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
-		"",
-		tr("Files (*.txt)")
-		);
-	else fileName = importFileName;
-	
-	if(fileName != "")
-	{
-		stopFirst = false;
-		ui->tabMainWidget->setTabEnabled(0, false);
-		ui->tabMainWidget->setTabEnabled(1, false);
-
-		_LoadPersInfoToLocalVars(savedTabIndex);
-		
-		stt->setMode(-1);
-		stt->setTarget(fileName);
-		stt->setPorts(ui->importPortLine->text().replace(" ", ""));
-		stt->start();
-		
-		startFlag = true;
-		pbTh->start();
-		ui->importButton->setText("Stop");
-		ui->importButton->setStyleSheet(
-			" #importButton {"
-			"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-			"color: red;"
-			"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
-			"}"
-			);
-		ui->dataText->clear();
-	}
-	else stt->doEmitionYellowFoundData("Empty filename.");
-}
-
 QLabel *smsgLbl;
 QLabel *smsgNLbl;
 void nesca_3::slotShowServerMsg(QString str)
@@ -2695,24 +2496,7 @@ void nesca_3::ChangePingerOK(bool val)
     else ui->PingTO->setStyleSheet("color: rgb(216, 216, 216);background-color: rgb(56, 56, 56);border:none;");
 }
 
-void nesca_3::STTTerminate()
-{
-	globalScanFlag = false;
-	startFlag = false;
-	importFileName = "";	
-	ui->tabMainWidget->setTabEnabled(0, true);
-	ui->tabMainWidget->setTabEnabled(1, true);
-	ui->tabMainWidget->setTabEnabled(2, true);
-	ui->tabMainWidget->setTabEnabled(3, true);
-	BrutingThrds = 0;
-	setButtonStyleArea();
-	stt->doEmitionUpdateArc(0);
-	ui->startScanButton_3->setText("Start");
-	ui->startScanButton_4->setText("Start");
-	ui->importButton->setText("Import");
-	ui->labelStatus_Value->setText("Idle");
-}
-
+bool stopFirst;
 void nesca_3::startScanButtonClicked()
 {
 	if(startFlag == false)
@@ -2742,12 +2526,12 @@ void nesca_3::startScanButtonClicked()
 			ui->startScanButton_3->setStyleSheet(
 				" QPushButton {"
 				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-				"color: red;"
+				"color: yellow;"
 				"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
 				"}"
 				);
 
-			ui->startScanButton_3->setText("STOP!");
+			ui->startScanButton_3->setText("Wait...");
 			stt->doEmitionBlockButton(true);
 			stt->doEmitionYellowFoundData("Trying to stop. Please, wait...");
 		}
@@ -2798,14 +2582,15 @@ void nesca_3::startScanButtonClickedDNS()
 			ui->startScanButton_4->setStyleSheet(
 				" #startScanButton_4 {"
 				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
-				"color: red;"
+				"color: yellow;"
 				"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
 				"}"
 				);
 
-			ui->startScanButton_4->setText("STOP!");
+			ui->startScanButton_4->setText("Wait...");
 			stt->doEmitionBlockButton(true);
 			stt->doEmitionYellowFoundData("Trying to stop. Please, wait...");
+			STTTerminate();
 		}
 		else
 		{
@@ -2823,6 +2608,201 @@ void nesca_3::startScanButtonClickedDNS()
 			STTTerminate();
 		};
 	};
+}
+
+void nesca_3::importAndScan()
+{
+	if (startFlag == false)
+	{
+		if (trackerOK)
+		{
+			if (ui->linePersKey->text().size() != 0)
+			{
+				CheckPersKey(2);
+			}
+			else
+			{
+				stt->doEmitionRedFoundData("Empty \"Personal key\" field. ");
+			};
+		}
+		else
+		{
+			stt->doEmitionStartScanImport();
+		};
+	}
+	else
+	{
+		ui->importButton->setStyleSheet(
+			" QPushButton {"
+			"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
+			"color: yellow;"
+			"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
+			"}"
+			);
+
+		ui->importButton->setText("Wait...");
+		stt->doEmitionYellowFoundData("Trying to stop. Please, wait...");
+		globalScanFlag = false;
+
+		if (stopFirst == false)
+		{
+			stopFirst = true;
+			ui->importButton->setStyleSheet(
+				" QPushButton {"
+				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
+				"color: yellow;"
+				"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
+				"}"
+				);
+
+			ui->importButton->setText("Wait...");
+			stt->doEmitionBlockButton(true);
+			stt->doEmitionYellowFoundData("Trying to stop. Please, wait...");
+			importFileName = "";
+		}
+		else
+		{
+			ui->importButton->setStyleSheet(
+				" QPushButton {"
+				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
+				"color: yellow;"
+				"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
+				"}"
+				);
+
+			ui->importButton->setText("Wait...");
+			stt->doEmitionYellowFoundData("Wait, killing threads...");
+			STTTerminate();
+		};
+	};
+}
+
+void nesca_3::IPScanSeq()
+{
+	if (ui->ipLine->text() != "")
+	{
+		if (ui->ipmPortLine->text() != "")
+		{
+			ui->ipLine->text().replace("http://", "");
+			ui->ipLine->text().replace("https://", "");
+			ui->ipLine->text().replace("ftp://", "");
+			if (ui->ipLine->text()[ui->ipLine->text().length() - 1] == '/') ui->ipLine->text()[ui->ipLine->text().length() - 1] = '\0';
+			stopFirst = false;
+			ui->tabMainWidget->setTabEnabled(1, false);
+			ui->tabMainWidget->setTabEnabled(2, false);
+
+			saveOptions();
+
+			stt->setMode(0);
+			stt->setTarget((ui->ipLine->text().indexOf("-") > 0 ? ui->ipLine->text() :
+				(ui->ipLine->text().indexOf("/") < 0 ? ui->ipLine->text() + "-" + ui->ipLine->text() : ui->ipLine->text())
+				));
+			stt->setPorts(ui->ipmPortLine->text().replace(" ", ""));
+			stt->start();
+
+			startFlag = true;
+			ui->startScanButton_3->setText("Stop");
+			ui->startScanButton_3->setStyleSheet(
+				" QPushButton {"
+				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
+				"color: red;"
+				"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
+				"}"
+				);
+			ui->dataText->clear();
+		}
+		else stt->doEmitionRedFoundData("No ports specified!");
+	};
+}
+
+void nesca_3::DNSScanSeq()
+{
+	if (ui->lineEditStartIPDNS->text() != "")
+	{
+		if (ui->dnsPortLine->text() != "")
+		{
+			if (ui->lineEditStartIPDNS->text().indexOf(".") > 0)
+			{
+				stopFirst = false;
+				ui->tabMainWidget->setTabEnabled(0, false);
+				ui->tabMainWidget->setTabEnabled(2, false);
+
+				QStringList lst = ui->lineEditStartIPDNS->text().split(".");
+				ui->lineEditStartIPDNS->setText(lst[0]);
+				QString topLevelDomainStr;
+				for (int i = 1; i < lst.size(); ++i)
+				{
+					topLevelDomainStr += ".";
+					topLevelDomainStr += lst[i];
+				};
+				ui->lineILVL->setText(topLevelDomainStr);
+			};
+
+			saveOptions();
+
+			stt->setMode(1);
+			stt->setTarget(ui->lineEditStartIPDNS->text());
+			stt->setPorts(ui->dnsPortLine->text().replace(" ", ""));
+			stt->start();
+
+			startFlag = true;
+			ui->startScanButton_4->setText("Stop");
+			ui->startScanButton_4->setStyleSheet(
+				" QPushButton {"
+				"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
+				"color: red;"
+				"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
+				"}"
+				);
+			ui->dataText->clear();
+		}
+		else
+		{
+			stt->doEmitionRedFoundData("No ports specified!");
+		};
+	}
+	else
+	{
+		stt->doEmitionRedFoundData("Wrong mask input.");
+	};
+}
+
+void nesca_3::ImportScanSeq()
+{
+	QString fileName;
+
+	if (importFileName.size() == 0) fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+		"",
+		tr("Files (*.txt)")
+		);
+	else fileName = importFileName;
+
+	if (fileName != "")
+	{
+		stopFirst = false;
+		ui->tabMainWidget->setTabEnabled(0, false);
+		ui->tabMainWidget->setTabEnabled(1, false);
+
+		_LoadPersInfoToLocalVars(savedTabIndex);
+
+		stt->setMode(-1);
+		stt->setTarget(fileName);
+		stt->setPorts(ui->importPortLine->text().replace(" ", ""));
+		stt->start();
+
+		startFlag = true;
+		pbTh->start();
+		ui->importButton->setText("Stop");
+		ui->importButton->setStyleSheet(
+			" #importButton {"
+			"background-color: qlineargradient(spread:none, x1:1, y1:0, x2:1, y2:1, stop:0.681818 rgba(0, 0, 0, 250), stop:1 rgba(255, 255, 255, 130));"
+			"color: red;"
+			"border: 0.5px solid qlineargradient(spread:reflect, x1:0.54, y1:0.488591, x2:0.54, y2:0, stop:0 rgba(255, 255, 255, 130), stop:1 rgba(0, 0, 0, 255));"
+			"}"
+			);
+		ui->dataText->clear();
+	}
+	else stt->doEmitionYellowFoundData("Empty filename.");
 }
 
 void nesca_3::logoLabelClicked()
@@ -2994,7 +2974,7 @@ nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
 	ui->logoLabel->setToolTip("v3-" + QString(gVER));
 	ui->logoLabel->setStyleSheet("color:white; border: none;background-color:black;");
 	ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
-
+	
 	CreateVerFile();
 	RestoreSession();
 
@@ -3010,8 +2990,7 @@ nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
 		qApp->quit();
 	};
 #endif
-
-
+	
 	std::thread fuThread(FileDownloader::checkWebFiles);
 	fuThread.detach();
 
@@ -3024,4 +3003,23 @@ nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
 nesca_3::~nesca_3()
 {
 	delete[] ui;
+}
+
+void nesca_3::STTTerminate()
+{
+	globalScanFlag = false;
+	startFlag = false;
+	importFileName = "";
+	ui->tabMainWidget->setTabEnabled(0, true);
+	ui->tabMainWidget->setTabEnabled(1, true);
+	ui->tabMainWidget->setTabEnabled(2, true);
+	ui->tabMainWidget->setTabEnabled(3, true);
+	BrutingThrds = 0;
+	setButtonStyleArea();
+	stt->doEmitionUpdateArc(0);
+	ui->startScanButton_3->setText("Start");
+	ui->startScanButton_4->setText("Start");
+	ui->importButton->setText("Import");
+	ui->labelStatus_Value->setText("Idle");
+	Threader::cleanUp();
 }

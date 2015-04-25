@@ -27,7 +27,6 @@ SOURCES +=\
     DrawerTh_VoiceScanner.cpp \
     msgcheckerthread.cpp \
     nesca_3.cpp \
-    nesca_startModule.cpp \
     piestat.cpp \
     progressbardrawer.cpp \
     STh.cpp \

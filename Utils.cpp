@@ -1,6 +1,27 @@
 #include "Utils.h"
 #include <sstream>
 
+int Utils::isDigest(const std::string *buffer) {
+	if (Utils::ustrstr(buffer, "401 authorization") != -1
+		|| Utils::ustrstr(buffer, "401 unauthorized") != -1
+		|| (Utils::ustrstr(buffer, "www-authenticate") != -1
+		&& Utils::ustrstr(buffer, "401 ") != -1
+		)
+		|| Utils::ustrstr(buffer, "401 unauthorized access denied") != -1
+		|| Utils::ustrstr(buffer, "401 unauthorised") != -1
+		|| (Utils::ustrstr(buffer, "www-authenticate") != -1
+		&& Utils::ustrstr(buffer, " 401\r\n") != -1
+		)
+		) {
+		if (Utils::ustrstr(buffer, "digest realm") != -1
+			&& Utils::ustrstr(buffer, "basic realm") == -1) {
+			return 1;
+		}
+		else return 0;
+	};
+	return -1;
+}
+
 std::vector<std::string> Utils::splitToStrVector(const std::string &s, char delim) {
 	std::vector<std::string> elems;
 	std::stringstream ss(s);

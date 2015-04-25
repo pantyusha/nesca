@@ -21,7 +21,7 @@ void _checkVer()
                 if(strcmp(gVER, ptr1 + 4) != 0)
                 {
                     stt->doEmitionFoundData("<br><font color=\"Pink\">======Update required======<br>Latest version: " + QString(ptr1 + 4) +
-                                            "<br>Your version: " + QString(gVER) + "<br>=======================</font>");
+                                            "<br>Your version: " + QString(gVER) + "<br>=========================</font>");
                     stt->doEmitionShowRedVersion();
                 };
             };

@@ -1,6 +1,8 @@
 Unable to open
 WebDAV
 Ruckus Wireless
+Access is denied
+access denied
 Company Limited
 аренда серв
 й¦–йЎµ
@@ -43,7 +45,6 @@ Authorization Required
 покуп
 yadro.ru
 liveinternet
-#[Dlink]
 DIR-100
 DIR-615
 DIR-140
@@ -75,14 +76,11 @@ no connections allowed
 pocket-solution
 trustclick
 торг
-#[/Dlink]
-530 User access denied
 prelogin
 service temporarily unavailable
 service is temporary unavailable
 service unavailable
 403 - forbidden
-403 access denied
 is still available
 php framework
 BlueBean
@@ -464,7 +462,6 @@ olaHola
 Wireless N ADSL
 Account Suspended
 Session limit reached
-Access Error: Access Denied
 Aethra
 meble
 microsoft exchange
@@ -693,7 +690,6 @@ TP-LINK Wireless
 RT-N
 RT-G
 dir320
-Access denied for user
 underconstr
 test page
 has been banned

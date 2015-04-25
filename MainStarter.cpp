@@ -1285,7 +1285,7 @@ void MainStarter::runAuxiliaryThreads() {
 void MainStarter::start(const char* targets, const char* ports) {
 	
 	curl_global_init(CURL_GLOBAL_ALL);
-
+	
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	bool res = CreateDirectoryA(RESULT_DIR_NAME, NULL);
 #else

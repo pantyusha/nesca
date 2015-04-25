@@ -28,7 +28,7 @@ void Threader::cleanUp() {
 	std::unique_lock<std::mutex> lk(m);
 	lk.unlock();
 	lk.release();
-	Sleep(1500);
+	Sleep(200);
     threadId = 0;
     std::queue<std::string> empty = {};
 	std::swap(ipQueue, empty);

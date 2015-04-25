@@ -52,6 +52,32 @@ lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
     lopaStr lps = {"UNKNOWN", "", ""};
     int passCounter = 0;
 	int res = 0;
+	
+	res = Connector::nConnect(ip, port, &buffer);
+	if (res == -2) return lps;
+
+	int isDig = 0;
+	isDig = Utils::isDigest(&buffer);
+	if (isDig == -1) {
+		stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 detected - <a style=\"color:orange;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" +
+		QString(ip) + ":" + QString::number(port) + "</a></span>");
+		strcpy(lps.login, "");
+		return lps;
+	}
+	else if (isDig == 1) {
+		if (digestMode != true) {
+			digestMode = true;
+			stt->doEmitionRedFoundData("Digest selector mismatch - <a style=\"color:orange;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" +
+				QString(ip) + ":" + QString::number(port) + "</a>");
+		}
+	}
+	else {
+		if (digestMode != false) {
+			digestMode = false;
+			stt->doEmitionRedFoundData("Digest selector mismatch - <a style=\"color:orange;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" +
+				QString(ip) + ":" + QString::number(port) + "</a>");
+		};
+	}
 
 	if (commenceHikvisionEx1(ip, port, digestMode)) {
 		stt->doEmitionGreenFoundData("Hikvision exploit triggered! (" + 

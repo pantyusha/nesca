@@ -84,7 +84,6 @@ int _sshConnect(const char *user, const char *pass, const char *host, int port) 
         }
     }
 
-    curl_easy_cleanup(curl);
     ++ssh;
     return 0;
 }

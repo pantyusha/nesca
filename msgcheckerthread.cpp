@@ -16,7 +16,9 @@ void _getNewMsg()
 
     std::string buffer;
     std::vector<std::string> headerVector {"X-Nescav3: True"};
-    Connector::nConnect(request, 80, &buffer, NULL, &headerVector);
+
+	Connector con; 
+	con.nConnect(request, 80, &buffer, NULL, &headerVector);
 
     char *ptr1 = NULL;
     if(buffer.size() > 0)

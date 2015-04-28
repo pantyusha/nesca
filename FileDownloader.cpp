@@ -27,8 +27,9 @@ std::string getLM(std::string *buffer) {
 }
 
 void checkWeb(const char *fileName, std::string *oldLM) {
-    std::string buffer;
-    Connector::nConnect(std::string("http://nesca.d3w.org/files/" + std::string(fileName)).c_str(), 80, &buffer);
+	std::string buffer;
+	Connector con;
+    con.nConnect(std::string("http://nesca.d3w.org/files/" + std::string(fileName)).c_str(), 80, &buffer);
 
     const std::string &lm = getLM(&buffer);
     if(lm.size() == 0) return;

@@ -1223,9 +1223,12 @@ void _specWEBIPCAMBrute(const char *ip, int port, char *finalstr, int flag, char
 
 int _specBrute(const char *ip, int port,
                 char *finalstr, int flag,
-                char *path, char *comment, char *cp, int size, const std::string *buffer = NULL)
+                char *path, char *comment, char *cp, int size, const std::string *buffer)
 {
-	const lopaStr &lps = BA::BALobby((string(ip) + string(path)).c_str(), port, (strcmp(comment, "[DIGEST]") == 0 ? true : false));
+	const lopaStr &lps = BA::BALobby((string(ip) + string(path)).c_str(), 
+		port, 
+		(strcmp(comment, "[DIGEST]") == 0 ? true : false), 
+		buffer);
 	
 	if (strcmp(lps.other, "404") == 0) {
 
@@ -1471,7 +1474,8 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
         std::unique_ptr<char[]> nip(new char[strlen(tempIP) + strlen(tempPath) + 1]);
         sprintf(nip.get(), "%s%s", tempIP, tempPath);
         std::string buffer;
-        int cSz = Connector::nConnect(nip.get(), tempPort, &buffer);
+		Connector con;
+		int cSz = con.nConnect(nip.get(), tempPort, &buffer);
 
         if(cSz > -1)
         {
@@ -1587,8 +1591,9 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
 
         std::unique_ptr<char[]> nip(new char[strlen(tempIP) + strlen(tempPath) + 1]);
         sprintf(nip.get(), "%s%s", tempIP, tempPath);
-        std::string buffer;
-        int cSz = Connector::nConnect(nip.get(), tempPort, &buffer);
+		std::string buffer;
+		Connector con;
+        int cSz = con.nConnect(nip.get(), tempPort, &buffer);
 
         if(cSz > -1)
         {
@@ -1655,8 +1660,9 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
 
         std::unique_ptr<char[]> nip(new char[strlen(tempIP) + strlen(tempPath) + 1]);
         sprintf(nip.get(), "%s%s", tempIP, tempPath);
-        std::string buffer;
-        int cSz = Connector::nConnect(nip.get(), tempPort, &buffer);
+		std::string buffer;
+		Connector con;
+        int cSz = con.nConnect(nip.get(), tempPort, &buffer);
 
         if(cSz > -1)
         {
@@ -1717,8 +1723,9 @@ int redirectReconnect(char *ip, int port, char *str, Lexems *ls, PathStr *ps, st
     {
         std::unique_ptr<char[]> nip(new char[strlen(ip) + strlen(str) + 1]);
         sprintf(nip.get(), "%s%s", ip, str);
-        std::string buffer;
-        int cSz = Connector::nConnect(nip.get(), port, &buffer);
+		std::string buffer;
+		Connector con;
+        int cSz = con.nConnect(nip.get(), port, &buffer);
 
         if(cSz > -1)
         {
@@ -2383,9 +2390,11 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	{
 		int rh = header(ip, port, buffcpy->c_str(), lx, &ps, &redirStrLst, size);
 		strcpy(cp, ps.codepage);
+
 		if (rh == -1) {
 			return -1;
 		}
+
 		if (rh <= -2)
 		{
 			flag = ps.flag;
@@ -2451,47 +2460,47 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	}
 	else if (flag == 21) //Eyeon
 	{
-		_specBrute(ip, port, "Eyeon Camera", flag, "/user/index.htm", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "Eyeon Camera", flag, "/user/index.htm", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 22) //IP Camera control
 	{
-		_specBrute(ip, port, "IP camera Control webpage", flag, "/main/cs_motion.asp", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "IP camera Control webpage", flag, "/main/cs_motion.asp", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 23) //Network Camera BB-SC384
 	{
-		_specBrute(ip, port, "Network Camera BB-SC384", flag, "/live/index2.html", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "Network Camera BB-SC384", flag, "/live/index2.html", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 24) //Network Camera VB-M40
 	{
-		_specBrute(ip, port, "Network Camera VB-M40", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "Network Camera VB-M40", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 25) //Panasonic Unibrowser-camera
 	{
-		_specBrute(ip, 60002, "Panasonic Unibrowser-camera", flag, "/SnapshotJPEG", "Basic Authorization", cp, size);
+		_specBrute(ip, 60002, "Panasonic Unibrowser-camera", flag, "/SnapshotJPEG", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 26) //Sony Network Camera
 	{
-		_specBrute(ip, port, "Sony Network Camera", flag, "/oneshotimage?", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "Sony Network Camera", flag, "/oneshotimage?", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 27) //UA Network Camera
 	{
-		_specBrute(ip, port, "UA Network Camera", flag, "/webs.cgi?", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "UA Network Camera", flag, "/webs.cgi?", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 28) //Network Camera VB-M40
 	{
-		_specBrute(ip, port, "Network Camera VB-??", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "Network Camera VB-??", flag, "/-wvhttp-01-/open.cgi?", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 29) //LG Smart IP Device
 	{
-		_specBrute(ip, port, "LG Smart IP Device Camera", flag, "/digest.php", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "LG Smart IP Device Camera", flag, "/digest.php", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 30) //NAS
 	{
-		_specBrute(ip, port, "NAS", flag, "/cgi-bin/data/viostor-220/viostor/viostor.cgi", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "NAS", flag, "/cgi-bin/data/viostor-220/viostor/viostor.cgi", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 31) //ip cam
 	{
-		_specBrute(ip, port, "IP Camera", flag, "/check_user.cgi", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "IP Camera", flag, "/check_user.cgi", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 32) //IPC WEB ip cam
 	{
@@ -2503,8 +2512,8 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	}
 	else if (flag == 34) //Hikvision ip cam
 	{
-		if (_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "Basic Authorization", cp, size) == -1){
-			_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/HIK/userCheck", "Basic Authorization", cp, size);
+		if (_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "Basic Authorization", cp, size, buffcpy) == -1){
+			_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/HIK/userCheck", "Basic Authorization", cp, size, buffcpy);
 		}
 	}
 	else if (flag == 35) //EasyCam
@@ -2514,12 +2523,13 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	else if (flag == 36) //Panasonic Cam
 	{
 		_specBrute(ip, port, QString("[Panasonic] IP Camera (" + QString(ip) + ":" + QString::number(port) + ")").toLocal8Bit().data(), flag,
-			"/config/index.cgi", "Basic Authorization", cp, size);
+			"/config/index.cgi", "Basic Authorization", cp, size, buffcpy);
 
 		stt->doEmitionYellowFoundData("[PaCr]Panasonic cam detected, crawling started.");
 
 		std::string buff;
-		Connector::nConnect(std::string(std::string(ip) + "/config/cam_portal.cgi").c_str(), port, &buff);
+		Connector con;
+		con.nConnect(std::string(std::string(ip) + "/config/cam_portal.cgi").c_str(), port, &buff);
 		int nPort = port;
 		for (int i = 0; i < 16; ++i) {
 			std::string &cam_link_data = Utils::getStrValue(buff, "cam_link[" + std::to_string(i) + "]", ";");
@@ -2536,7 +2546,7 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 
 						_specBrute(newIP.c_str(), nPort, QString("[Panasonic] IP Camera (" +
 							QString(newIP.c_str()) + ":" + QString::number(nPort) + ")").toLocal8Bit().data(), flag,
-							(char*)newPath.c_str(), "Basic Authorization", cp, size);
+							(char*)newPath.c_str(), "Basic Authorization", cp, size, buffcpy);
 					}
 				}
 				else stt->doEmitionRedFoundData("[Panasonic Cam URL] Cannot extract data " +
@@ -2548,7 +2558,7 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	}
 	else if (flag == 37) //Panasonic Cam
 	{
-		_specBrute(ip, port, "[Panasonic] IP Camera", flag, "/view/getuid.cgi", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "[Panasonic] IP Camera", flag, "/view/getuid.cgi", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 38) //Foscam
 	{
@@ -2556,11 +2566,11 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	}
 	else if (flag == 39) //EagleEye
 	{
-		_specBrute(ip, port, "[EagleEye] IP Camera", flag, "/cgi-bin/guest/Video.cgi?", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "[EagleEye] IP Camera", flag, "/cgi-bin/guest/Video.cgi?", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 40) //Network Camera VB-C??
 	{
-		_specBrute(ip, port, "[Network Camera VB-C??] IP Camera", flag, "/admin/index.shtml?", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "[Network Camera VB-C??] IP Camera", flag, "/admin/index.shtml?", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 41) //AVIOSYS-camera
 	{
@@ -2568,19 +2578,19 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	}
 	else if (flag == 42) //NW_camera
 	{
-		_specBrute(ip, port, "[NW_camera] IP Camera", flag, "/cgi-bin/getuid?FILE=indexnw.html", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "[NW_camera] IP Camera", flag, "/cgi-bin/getuid?FILE=indexnw.html", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 43) //NW_camera
 	{
-		_specBrute(ip, port, "[Micros] IP Camera", flag, "/gui/rem_display.shtml", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "[Micros] IP Camera", flag, "/gui/rem_display.shtml", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 44) //Hikvision ip cam 2
 	{
-		_specBrute(ip, port, "[Hikvision] IP Camera 2", flag, "/ISAPI/Security/userCheck", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "[Hikvision] IP Camera 2", flag, "/ISAPI/Security/userCheck", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 45) //Panasonic ip cam
 	{
-		_specBrute(ip, port, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "[Panasonic] IP Camera", flag, "/config/index.cgi", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 46) //Buffalo disk
 	{
@@ -2600,7 +2610,7 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	}
 	else if (flag == 50) //IP Camera
 	{
-		_specBrute(ip, port, "IP Camera", flag, "/app/multi/single.asp", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "IP Camera", flag, "/app/multi/single.asp", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 51) //MASPRO
 	{
@@ -2620,50 +2630,50 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	}
 	else if (flag == 55) //QCam
 	{
-		_specBrute(ip, port, "IP Camera", flag, "/videostream.cgi", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "IP Camera", flag, "/videostream.cgi", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 20) //AXIS Camera
 	{
-		if (_specBrute(ip, port, "AXIS Camera", flag, "/mjpg/video.mjpg", "Basic Authorization", cp, size) == -1) {
-			if (_specBrute(ip, port, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "Basic Authorization", cp, size) == -1) {
-				_specBrute(ip, port, "AXIS Camera", flag, "/view/viewer_index.shtml?", "Basic Authorization", cp, size);
+		if (_specBrute(ip, port, "AXIS Camera", flag, "/mjpg/video.mjpg", "Basic Authorization", cp, size, buffcpy) == -1) {
+			if (_specBrute(ip, port, "AXIS Camera", flag, "/axis-cgi/com/ptz.cgi?", "Basic Authorization", cp, size, buffcpy) == -1) {
+				_specBrute(ip, port, "AXIS Camera", flag, "/view/viewer_index.shtml?", "Basic Authorization", cp, size, buffcpy);
 			}
 		}
 	}
 	else if (flag == 19) //reecam cameras
 	{
-		_specBrute(ip, port, "Reecam (network camera)", flag, "/videostream.cgi", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "Reecam (network camera)", flag, "/videostream.cgi", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 18) //linksys camera
 	{
-		_specBrute(ip, port, "Linksys camera", flag, "/img/main.cgi", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "Linksys camera", flag, "/img/main.cgi", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 17) //Real-time IP Camera Monitoring System
 	{
-		_specBrute(ip, port, "Real-time IP Camera Monitoring System", flag, "/live.htm", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "Real-time IP Camera Monitoring System", flag, "/live.htm", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 11)
 	{
-		_specBrute(ip, port, "Netwave IP Camera", flag, "/videostream.cgi", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "Netwave IP Camera", flag, "/videostream.cgi", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 12)
 	{
-		_specBrute(ip, port, "IP Camera", flag, "/view/view.shtml?videos=", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "IP Camera", flag, "/view/view.shtml?videos=", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 13)
 	{
-		_specBrute(ip, port, "IP Camera", flag, "/eng/view/indexjava.html", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "IP Camera", flag, "/eng/view/indexjava.html", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 14)
 	{
-		_specBrute(ip, port, "IP Camera", flag, "/rdr.cgi", "Basic Authorization", cp, size);
+		_specBrute(ip, port, "IP Camera", flag, "/rdr.cgi", "Basic Authorization", cp, size, buffcpy);
 	}
 	else if (flag == 15) //For HFS
 	{
 		char log[512] = { 0 };
 		++AnomC1;
 
-		const lopaStr &lps = BA::BALobby((string(ip) + "/~login").c_str(), port, false);
+		const lopaStr &lps = BA::BALobby((string(ip) + "/~login").c_str(), port, false, buffcpy);
 		sprintf(log, "[HFS]:<a href=\"http://%s:%d/\"><span style=\"color: #a1a1a1;\">%s:%d</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">%s Pass: %s:%s</font>",
 			ip, port, ip, port, finalstr, lps.login, lps.pass);
 
@@ -2673,11 +2683,11 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	}
 	else if (flag == 1)
 	{
-		_specBrute(ip, port, finalstr, flag, baPath, "[NORMAL]", cp, size);
+		_specBrute(ip, port, finalstr, flag, baPath, "[NORMAL]", cp, size, buffcpy);
 	}
 	else if (flag == 101)
 	{
-		_specBrute(ip, port, finalstr, flag, baPath, "[DIGEST]", cp, size);
+		_specBrute(ip, port, finalstr, flag, baPath, "[DIGEST]", cp, size, buffcpy);
 	}
 	else if (flag == 10)
 	{

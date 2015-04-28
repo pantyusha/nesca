@@ -53,16 +53,18 @@ int KeyCheckerMain()
     std::vector<std::string> headerVector;
     headerVector.push_back("X-Nescav3: True");
 
-    std::string buffer;
-    Connector::nConnect((std::string(trcSrv) + std::string(trcScr)).c_str(), std::stoi(trcSrvPortLine), &buffer, NULL, &headerVector);
+	std::string buffer;
+	Connector con;
+    con.nConnect((std::string(trcSrv) + std::string(trcScr)).c_str(), std::stoi(trcSrvPortLine), &buffer, NULL, &headerVector);
 
     int hostStringIndex = buffer.find("\r\n\r\n");
     if(hostStringIndex != -1) {
 
         int s = buffer.find("http://", hostStringIndex);
         int e = buffer.find('/', s + 8);
-        std::string url = buffer.substr(s, e - s);
-        Connector::nConnect((url + std::string("/api/checkaccount?key=") + std::string(trcPersKey)).c_str(),
+		std::string url = buffer.substr(s, e - s);
+		Connector con;
+        con.nConnect((url + std::string("/api/checkaccount?key=") + std::string(trcPersKey)).c_str(),
                             std::stoi(trcSrvPortLine), &buffer, NULL, &headerVector);
 
         if(Utils::ustrstr(buffer, std::string("202 Accepted")) != -1) {

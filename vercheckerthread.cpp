@@ -9,8 +9,9 @@ void _checkVer()
     while(true) {
         const char request[64] = {"http://nesca.d3w.org/version"};
         std::string buffer;
-        std::vector<std::string> headerVector {"X-Nescav3: True"};
-        Connector::nConnect(request, 80, &buffer, NULL, &headerVector);
+		std::vector<std::string> headerVector{ "X-Nescav3: True" };
+		Connector con;
+        con.nConnect(request, 80, &buffer, NULL, &headerVector);
 
         char *ptr1 = NULL;
         if(buffer.size() > 0)

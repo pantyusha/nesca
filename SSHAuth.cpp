@@ -90,8 +90,9 @@ int _sshConnect(const char *user, const char *pass, const char *host, int port) 
 
 char _get_ssh_banner(const char *ip, int port) {
     char recvBuff[256] = {0};
-    std::string buffer;
-    Connector::nConnect(ip, port, &buffer);
+	std::string buffer;
+	Connector con;
+	con.nConnect(ip, port, &buffer);
 
     int sz = buffer.size();
 

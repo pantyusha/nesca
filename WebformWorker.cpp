@@ -80,8 +80,9 @@ lopaStr WFClass::doGetCheck(const char *ip,
             char nip[256] = {0};
             sprintf(nip, "%s%s?%s=%s&%s=%s", ip, actionVal, userVal, login, passVal, pass);
 
-            std::string buffer;
-            if(Connector::nConnect(nip, port, &buffer) <= 0) return result;
+			std::string buffer;
+			Connector con;
+            if(con.nConnect(nip, port, &buffer) <= 0) return result;
 
             if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) +
                                                    "; login/pass: "+ QString(login) + ":" + QString(pass) +
@@ -134,7 +135,8 @@ lopaStr WFClass::doPostCheck(const char *ip,
             sprintf(postData, "%s=%s&%s=%s", userVal, login, passVal, pass);
 
             std::string buffer;
-            if(Connector::nConnect(nip, port, &buffer, postData) <= 0) return result;
+			Connector con;
+			if (con.nConnect(nip, port, &buffer, postData) <= 0) return result;
 
             if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " +
                                                    QString(login) + ":" + QString(pass) + ";	- Progress: (" +

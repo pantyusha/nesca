@@ -13,7 +13,7 @@
 class Connector {
 
 public:
-    static int nConnect(const char* ip, const int port, std::string *buffer,
+    int nConnect(const char* ip, const int port, std::string *buffer,
                         const char *postData = NULL,
                         const std::vector<std::string> *customHeaders = NULL,
 						const std::string *lpString = NULL,
@@ -23,6 +23,6 @@ public:
 	//	const std::vector<std::string> *customHeaders = NULL,
 	//	const std::string *lpString = NULL,
 	//	bool digestMode = false);
-    static int connectToPort(char *ip, int port);
+    int connectToPort(char *ip, int port);
 };
 #endif // CONNECTOR_H

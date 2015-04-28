@@ -175,8 +175,9 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 			}
 			
             std::string buffer;
-            if(doPost) res = Connector::nConnect(request, port, &buffer, postData); 
-			else res = Connector::nConnect(request, port, &buffer);
+			Connector con;
+			if (doPost) res = con.nConnect(request, port, &buffer, postData);
+			else res = con.nConnect(request, port, &buffer);
 
 			if (res == -2) return lps;
 			else if (res != -1) {

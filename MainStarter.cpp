@@ -911,10 +911,11 @@ void _connect() {
 			++ipCounter;
 
 			++cons;
+			Connector con;
 			for (int i = 0; i < MainStarter::portVector.size(); ++i)
 			{
 				if (!globalScanFlag) break;
-				if (Connector::connectToPort((char*)ip.c_str(), MainStarter::portVector[i]) == -2) break;
+				if (con.connectToPort((char*)ip.c_str(), MainStarter::portVector[i]) == -2) break;
 			};
 			--cons;
 			stt->doEmitionUpdateArc(gTargets);

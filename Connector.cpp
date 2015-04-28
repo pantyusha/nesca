@@ -159,7 +159,6 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nWriteCallback);
-		//curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, buffer);
 		int proxyPort = std::atoi(gProxyPort);
 		if (strlen(gProxyIP) != 0 && (proxyPort > 0 && proxyPort < 65535)) {
@@ -240,7 +239,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 				}
 				else stt->doEmitionRedFoundData("CURL error: (" + QString::number(res) + ") " + 
 					QString(ip) + ":" + QString::number(port));
-			} else return sz;
+			};
 			
 			if (res == 23 && sz > 0) {
 				return sz;

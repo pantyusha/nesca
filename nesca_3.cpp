@@ -16,6 +16,11 @@
 #include <qmessagebox.h>
 #include "progressbardrawer.h"
 #include "FileDownloader.h"
+#include "HikvisionLogin.h"
+
+NET_DVR_Init hik_init_ptr = NULL;
+NET_DVR_Cleanup hik_cleanup_ptr = NULL;
+NET_DVR_Login_V30 hik_login_ptr = NULL;
 
 QDate date = QDate::currentDate();
 int ver = 100*(100*(date.year()%100) + date.month()) + date.day();
@@ -2929,6 +2934,41 @@ QString GetColorCode(int mode, QString str)
 	return result;
 }
 
+void enableHikvisionSupport(){
+	HINSTANCE hGetProcIDDLL = LoadLibrary(L".\\HCNetSDK.dll");
+
+	if (!hGetProcIDDLL) {
+		HikVis::isInitialized = false;
+		stt->doEmitionRedFoundData("Could not load HCNetSDK.dll! Hikvision support disabled.");
+		return;
+	}
+
+	hik_init_ptr = (NET_DVR_Init)GetProcAddress(hGetProcIDDLL, "NET_DVR_Init");
+	if (!hik_init_ptr) {
+		HikVis::isInitialized = false;
+		stt->doEmitionRedFoundData("Could not locate hikInit()! Hikvision support disabled.");
+		return;
+	}
+
+	hik_login_ptr = (NET_DVR_Login_V30)GetProcAddress(hGetProcIDDLL, "NET_DVR_Login_V30");
+	if (!hik_login_ptr) {
+		HikVis::isInitialized = false;
+		stt->doEmitionRedFoundData("Could not locate hikLogin()! Hikvision support disabled.");
+		return;
+	}
+
+	hik_cleanup_ptr = (NET_DVR_Cleanup)GetProcAddress(hGetProcIDDLL, "NET_DVR_Cleanup");
+	if (!hik_cleanup_ptr) {
+		HikVis::isInitialized = false;
+		stt->doEmitionRedFoundData("Could not locate hikCleanup()! Hikvision support disabled.");
+		return;
+	}
+
+	HikVis::isInitialized = true;
+	stt->doEmitionGreenFoundData("Hikvision support enabled.");
+}
+
+
 nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
 {
 	setWindowFlags(Qt::FramelessWindowHint);
@@ -2990,7 +3030,8 @@ nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
 		qApp->quit();
 	};
 #endif
-	
+
+		
 	std::thread fuThread(FileDownloader::checkWebFiles);
 	fuThread.detach();
 
@@ -2998,6 +3039,12 @@ nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
 	_startMsgCheck();
 	qrp.setMinimal(true);
 	drawVerboseArcs(0);
+
+	//[5.39.163.202] 8000 (? ) open
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	enableHikvisionSupport();
+#endif
 }
 
 nesca_3::~nesca_3()

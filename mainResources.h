@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "base64.h"
 
 #include <libssh/libssh.h>
@@ -90,6 +90,28 @@ typedef int					BOOL;
 #define MAX_ADDR_LEN 128
 #endif
 
+struct NET_DVR_DEVICEINFO_V30
+{
+	unsigned char sSerialNumber; //序列号
+	unsigned char byAlarmInPortNum; //报警输入个数
+	unsigned char byAlarmOutPortNum; //报警输出个数
+	unsigned char byDiskNum; //硬盘个数
+	unsigned char byDVRType; //设备类型, 1:DVR 2:ATM DVR 3:DVS ......
+	unsigned char byChanNum; //模拟通道个数
+	unsigned char byStartChan; //起始通道号,例如DVS-1,DVR - 1
+	unsigned char byAudioChanNum; //语音通道数
+	unsigned char byIPChanNum; //最大数字通道个数
+	unsigned char byZeroChanNum; //零通道编码个数 //2010-01-16
+	unsigned char byMainProto; //主码流传输协议类型 0-private, 1-rtsp
+	unsigned char bySubProto; //子码流传输协议类型0-private, 1-rtsp
+	unsigned char bySupport; //能力，位与结果为0表示不支持，1表示支持，
+	unsigned char bySupport1; // 能力集扩充，位与结果为0表示不支持，1表示支持
+	unsigned char byRes1;
+	int wDevType; //设备型号
+
+	unsigned char byRes2; //保留
+};
+
 struct PathStr{
 	char codepage[32];
 	char headr[TITLE_MAX_SIZE];
@@ -136,3 +158,17 @@ public:
         int size,
         Lexems *lx);
 };
+
+//Hikvision SDK extern functions
+//typedef int(__stdcall *f_func)();
+typedef void(__stdcall *NET_DVR_Init)();
+typedef void(__stdcall *NET_DVR_Cleanup)();
+typedef int(__stdcall *NET_DVR_Login_V30)(const char * sDVRIP,
+	int wDVRPort,
+	const char * sUserName,
+	const char * sPassword,
+	NET_DVR_DEVICEINFO_V30 *lpDeviceInfo);
+
+extern NET_DVR_Init hik_init_ptr;
+extern NET_DVR_Cleanup hik_cleanup_ptr;
+extern NET_DVR_Login_V30 hik_login_ptr;

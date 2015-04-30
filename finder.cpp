@@ -2353,8 +2353,8 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 			_specFillerBA(ip, port, "[Hikvision] iVMS client required.", lps.login, lps.pass, 0);
 			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[Hikvision] iVMS client required ().", 
 				lps.login, lps.pass, "[Hikvision] iVMS", "UTF-8", "Basic Authorization");
-			return -1;
 		};
+		return -1;
 	}
 	else if (port == 22)
 	{

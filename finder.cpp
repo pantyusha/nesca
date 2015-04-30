@@ -1225,6 +1225,7 @@ int _specBrute(const char *ip, int port,
                 char *finalstr, int flag,
                 char *path, char *comment, char *cp, int size, const std::string *buffer)
 {
+	int y = strcmp(comment, "[DIGEST]");
 	const lopaStr &lps = BA::BALobby((string(ip) + string(path)).c_str(), 
 		port, 
 		(strcmp(comment, "[DIGEST]") == 0 ? true : false));

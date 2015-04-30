@@ -172,7 +172,7 @@ void _LoadPersInfoToLocalVars(int savedTabIndex) {
 		gMode = 1;
 		gThreads = ui->lineEditThread->text().toInt();
 
-		strcpy(currentIP, ui->lineEditStartIPDNS->text().toLocal8Bit().data());
+		strcpy(currentIP, ui->dnsLine->text().toLocal8Bit().data());
 		strcpy(gTLD, ui->lineILVL->text().toLocal8Bit().data());
 		strncpy(gPorts, ("-p" + ui->dnsPortLine->text()).toLocal8Bit().data(), 65536);
 		gPorts[ui->dnsPortLine->text().length() + 2] = '\0';
@@ -536,7 +536,9 @@ void SetValidators()
 		QRegExp("([\\d*|.|//|-])+"), 
 		NULL
 		);
-	
+
+	ui->ipLine->setValidator(validator);
+
 	validator = new QRegExpValidator(QRegExp("\\d{1,3}"), NULL);
 	ui->importThreads->setValidator(validator);
 	ui->threadLine->setValidator(validator);
@@ -551,7 +553,7 @@ void SetValidators()
 	ui->threadDelayBox->setValidator(validator);
 	
 	validator = new QRegExpValidator(QRegExp("(\\w|-|\\.|\\[|\\]|\\\\)+"), NULL);
-	ui->lineEditStartIPDNS->setValidator(validator);
+	ui->dnsLine->setValidator(validator);
 
 	validator = new QRegExpValidator(QRegExp("(\\w|-|\\.)+((\\w|-|\\.)+)+"), NULL);
 	ui->lineILVL->setValidator(validator);
@@ -1401,7 +1403,7 @@ void nesca_3::slotSaveImage(QAction *qwe)
 		{
 			QString fn = QString::number(QT.msec()) + "_" + 
 				(ME2ScanFlag ? QString("ME2") : QString("Voice")) + "_" + 
-				(ci == 0 ? ui->ipLine->text() : ui->lineEditStartIPDNS->text()) + ".png";
+				(ci == 0 ? ui->ipLine->text() : ui->dnsLine->text()) + ".png";
 			int ax = 27;
 			int ay = 2;
 			int w = ui->graphicLog->width() + 30;
@@ -1444,7 +1446,7 @@ void nesca_3::slotSaveImage(QAction *qwe)
 		{
             QString fn = QString::number(QT.msec()) + "_" + 
 				(PieStatFlag ? "PieStat" : "QoS") + "_" + 
-				(ci == 0 ? ui->ipLine->text() : ui->lineEditStartIPDNS->text()) + ".png";
+				(ci == 0 ? ui->ipLine->text() : ui->dnsLine->text()) + ".png";
 
 			QPixmap pixmap(ui->graphicLog->width(), ui->graphicLog->height());
 			QPainter painter(&pixmap);
@@ -2094,14 +2096,15 @@ void nesca_3::ConnectEvrthng()
 	connect ( ui->restoreDefaultPorts1, SIGNAL( clicked() ), this, SLOT( slotRestoreDefPorts() ) );
 	connect ( ui->restoreDefaultPorts2, SIGNAL( clicked() ), this, SLOT( slotRestoreDefPorts() ) );
     connect ( ui->restoreDefaultPorts3, SIGNAL( clicked() ), this, SLOT( slotRestoreDefPorts() ) );
-	connect ( ui->lineEditStartIPDNS, SIGNAL( textChanged(QString) ), this, SLOT( DNSLine_ValueChanged(QString) ) );
-	connect ( ui->ipLine, SIGNAL(				returnPressed() ), this, SLOT(		startScanButtonClicked() ) );
-	connect ( ui->threadLine, SIGNAL(			returnPressed() ), this, SLOT(		startScanButtonClicked() ) );
-	connect ( ui->ipmPortLine, SIGNAL(				returnPressed() ), this, SLOT(		startScanButtonClicked() ) );
-	connect ( ui->lineEditStartIPDNS, SIGNAL(	returnPressed() ), this, SLOT(		startScanButtonClickedDNS() ) );
-	connect ( ui->lineILVL, SIGNAL(				returnPressed() ), this, SLOT(		startScanButtonClickedDNS() ) );
-	connect ( ui->dnsPortLine, SIGNAL(			returnPressed() ), this, SLOT(		startScanButtonClickedDNS() ) );
-	connect ( ui->lineEditThread, SIGNAL(		returnPressed() ), this, SLOT(		startScanButtonClickedDNS() ) );
+	connect ( ui->dnsLine, SIGNAL(textChanged(QString)), this, SLOT(DNSLine_ValueChanged(QString)));
+
+	connect ( ui->ipLine, SIGNAL(				returnPressed() ), this, SLOT(	startScanButtonClicked() ) );
+	connect ( ui->threadLine, SIGNAL(			returnPressed() ), this, SLOT(	startScanButtonClicked() ) );
+	connect ( ui->ipmPortLine, SIGNAL(			returnPressed() ), this, SLOT(	startScanButtonClicked() ) );
+	connect ( ui->dnsLine, SIGNAL(				returnPressed() ), this, SLOT(	startScanButtonClickedDNS() ) );
+	connect ( ui->lineILVL, SIGNAL(				returnPressed() ), this, SLOT(	startScanButtonClickedDNS() ) );
+	connect ( ui->dnsPortLine, SIGNAL(			returnPressed() ), this, SLOT(	startScanButtonClickedDNS() ) );
+	connect ( ui->lineEditThread, SIGNAL(		returnPressed() ), this, SLOT(	startScanButtonClickedDNS() ) );
 	connect ( ui->logoLabel, SIGNAL( clicked() ), this, SLOT( logoLabelClicked() ) );
 	connect ( ui->me2ScanBut, SIGNAL( clicked() ), this, SLOT( activateME2ScanScene() ) );
 	connect ( ui->QoSScanBut, SIGNAL( clicked() ), this, SLOT( activateQoSScanBut() ) );
@@ -2227,7 +2230,7 @@ void RestoreSession()
                     qLex.replace("[az]", "\\l");
                     qLex.replace("[0z]", "\\w");
                     qLex.replace("[09]", "\\d");
-                    ui->lineEditStartIPDNS->setText(qLex);
+                    ui->dnsLine->setText(qLex);
 					lex = strtok(NULL, " ");
                     if(strstr(lex, ".") != NULL) {
                         strcpy(gTLD, lex);
@@ -2722,18 +2725,18 @@ void nesca_3::IPScanSeq()
 
 void nesca_3::DNSScanSeq()
 {
-	if (ui->lineEditStartIPDNS->text() != "")
+	if (ui->dnsLine->text() != "")
 	{
 		if (ui->dnsPortLine->text() != "")
 		{
-			if (ui->lineEditStartIPDNS->text().indexOf(".") > 0)
+			if (ui->dnsLine->text().indexOf(".") > 0)
 			{
 				stopFirst = false;
 				ui->tabMainWidget->setTabEnabled(0, false);
 				ui->tabMainWidget->setTabEnabled(2, false);
 
-				QStringList lst = ui->lineEditStartIPDNS->text().split(".");
-				ui->lineEditStartIPDNS->setText(lst[0]);
+				QStringList lst = ui->dnsLine->text().split(".");
+				ui->dnsLine->setText(lst[0]);
 				QString topLevelDomainStr;
 				for (int i = 1; i < lst.size(); ++i)
 				{
@@ -2746,7 +2749,7 @@ void nesca_3::DNSScanSeq()
 			saveOptions();
 
 			stt->setMode(1);
-			stt->setTarget(ui->lineEditStartIPDNS->text());
+			stt->setTarget(ui->dnsLine->text());
 			stt->setPorts(ui->dnsPortLine->text().replace(" ", ""));
 			stt->start();
 

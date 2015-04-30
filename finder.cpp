@@ -1227,13 +1227,12 @@ int _specBrute(const char *ip, int port,
 {
 	const lopaStr &lps = BA::BALobby((string(ip) + string(path)).c_str(), 
 		port, 
-		(strcmp(comment, "[DIGEST]") == 0 ? true : false), 
-		buffer);
+		(strcmp(comment, "[DIGEST]") == 0 ? true : false));
 	
 	if (strcmp(lps.other, "404") == 0) {
 
 		stt->doEmitionRedFoundData("BA - 404 <a style=\"color:#717171;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + QString(path) + "/\">" +
-			QString(ip) + ":" + QString::number(port) + QString(path) + "</a>");
+			QString(ip).mid(0, QString(ip).indexOf("/")) + ":" + QString::number(port) + QString(path) + "</a>");
 		return -1;
 	}
 
@@ -2512,8 +2511,8 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 	}
 	else if (flag == 34) //Hikvision ip cam
 	{
-		if (_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "Basic Authorization", cp, size, buffcpy) == -1){
-			_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/HIK/userCheck", "Basic Authorization", cp, size, buffcpy);
+		if (_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "[DIGEST]", cp, size, buffcpy) == -1){
+			_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/HIK/userCheck", "[DIGEST]", cp, size, buffcpy);
 		}
 	}
 	else if (flag == 35) //EasyCam
@@ -2673,7 +2672,7 @@ int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lex
 		char log[512] = { 0 };
 		++AnomC1;
 
-		const lopaStr &lps = BA::BALobby((string(ip) + "/~login").c_str(), port, false, buffcpy);
+		const lopaStr &lps = BA::BALobby((string(ip) + "/~login").c_str(), port, false);
 		sprintf(log, "[HFS]:<a href=\"http://%s:%d/\"><span style=\"color: #a1a1a1;\">%s:%d</span></a><font color=\"#0084ff\"> T: </font><font color=\"#ff9600\">%s Pass: %s:%s</font>",
 			ip, port, ip, port, finalstr, lps.login, lps.pass);
 

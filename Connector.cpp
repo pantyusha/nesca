@@ -161,11 +161,8 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nWriteCallback);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, buffer);
 		int proxyPort = std::atoi(gProxyPort);
-		if (strlen(gProxyIP) != 0 && (proxyPort > 0 && proxyPort < 65535)) {
-			curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
-			curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
-		}
-		else curl_easy_setopt(curl, CURLOPT_PROXY, "");
+		if (proxyPort > 0 && proxyPort < 65535) curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
+		curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut + 3);
@@ -200,8 +197,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 		else res = curl_easy_perform(curl);
 		
 		int sz = buffer->size();
-		if (res == CURLE_OK || 
-			(port == 21 && sz > 0)) {
+		if (res == CURLE_OK || (port == 21 && sz > 0)) {
 			if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
 			Activity += sz;
 

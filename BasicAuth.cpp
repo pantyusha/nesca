@@ -47,15 +47,19 @@ inline bool commenceHikvisionEx1(const char *ip, const int port, bool digestMode
 	return 0;
 }
 
-lopaStr BA::BABrute(const char *ip, const int port, bool digestMode, const std::string *buff) {
+lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
     string lpString;
     lopaStr lps = {"UNKNOWN", "", ""};
     int passCounter = 0;
 	int res = 0;
-	
-	int isDig = Utils::isDigest(buff);
+
+	std::string buff;
+	Connector con;
+	Sleep(1000);
+	con.nConnect(ip, port, &buff);
+	int isDig = Utils::isDigest(&buff);
 	if (isDig == -1) {
-		stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 detected - <a style=\"color:orange;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" +
+		stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 detected - <a style=\"color:orange;\" href=\"http://" + QString(ip).mid(0, QString(ip).indexOf("/")) + ":" + QString::number(port) + "/\">" +
 		QString(ip) + ":" + QString::number(port) + "</a></span>");
 		strcpy(lps.login, "");
 		return lps;
@@ -63,14 +67,14 @@ lopaStr BA::BABrute(const char *ip, const int port, bool digestMode, const std::
 	else if (isDig == 1) {
 		if (digestMode != true) {
 			digestMode = true;
-			stt->doEmitionRedFoundData("Digest selector mismatch - <a style=\"color:orange;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" +
+			stt->doEmitionRedFoundData("Digest selector mismatch - <a style=\"color:orange;\" href=\"http://" + QString(ip).mid(0, QString(ip).indexOf("/")) + ":" + QString::number(port) + "/\">" +
 				QString(ip) + ":" + QString::number(port) + "</a>");
 		}
 	}
 	else {
 		if (digestMode != false) {
 			digestMode = false;
-			stt->doEmitionRedFoundData("Digest selector mismatch - <a style=\"color:orange;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + "/\">" +
+			stt->doEmitionRedFoundData("Digest selector mismatch - <a style=\"color:orange;\" href=\"http://" + QString(ip).mid(0, QString(ip).indexOf("/")) + ":" + QString::number(port) + "/\">" +
 				QString(ip) + ":" + QString::number(port) + "</a>");
 		};
 	}
@@ -78,9 +82,9 @@ lopaStr BA::BABrute(const char *ip, const int port, bool digestMode, const std::
 	std::string buffer;
 
 	if (commenceHikvisionEx1(ip, port, digestMode)) {
-		stt->doEmitionGreenFoundData("Hikvision exploit triggered! (" + 
-			QString(ip) + ":" + 
-			QString::number(port) + ")");
+		//stt->doEmitionGreenFoundData("Hikvision exploit triggered! (" + 
+		//	QString(ip) + ":" + 
+		//	QString::number(port) + ")");
 		strcpy(lps.login, "anonymous");
 		strcpy(lps.pass, "\177\177\177\177\177\177");
 		return lps;
@@ -124,14 +128,14 @@ lopaStr BA::BABrute(const char *ip, const int port, bool digestMode, const std::
     return lps;
 }
 
-lopaStr BA::BALobby(const char *ip, const int port, bool digestMode, const std::string *buffer) {
+lopaStr BA::BALobby(const char *ip, const int port, bool digestMode) {
     if(gMaxBrutingThreads > 0) {
 
         while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
 		++baCount;
 		++BrutingThrds;
-		const lopaStr &lps = BABrute(ip, port, digestMode, buffer);
+		const lopaStr &lps = BABrute(ip, port, digestMode);
 		--BrutingThrds;
 
         return lps;

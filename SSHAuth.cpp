@@ -4,7 +4,6 @@
 int _sshConnect(const char *user, const char *pass, const char *host, int port) {
 
     CURL *curl = curl_easy_init();
-    curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 0L);
     char hostStr[128] = {0};
     ZeroMemory(hostStr, sizeof(hostStr));
     strcpy(hostStr, user);
@@ -14,6 +13,7 @@ int _sshConnect(const char *user, const char *pass, const char *host, int port) 
 
     if (curl)
     {
+		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
         curl_easy_setopt(curl, CURLOPT_URL, host);
         curl_easy_setopt(curl, CURLOPT_PORT, port);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -22,23 +22,18 @@ int _sshConnect(const char *user, const char *pass, const char *host, int port) 
         if(strlen(gProxyIP) != 0 && (proxyPort > 0 && proxyPort < 65535)) {
             curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
             curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
-        } else {
-            curl_easy_setopt(curl, CURLOPT_PROXY, "");
-        }
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut);
+        } else curl_easy_setopt(curl, CURLOPT_PROXY, "");
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, sshTimeout);
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, sshTimeout);
         curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1L);
 
         int res = curl_easy_perform(curl);
-
-        socket_t sock;
-        curl_easy_getinfo(curl, CURLINFO_LASTSOCKET, &sock);
-
-        if(res != CURLE_OK) {
-            curl_easy_cleanup(curl);
-            ++ssh;
-            return -2;
-        }
+		if (res != CURLE_OK) {
+			curl_easy_cleanup(curl);
+			return -2;
+		}
+        socket_t sock = -1;
+        res = curl_easy_getinfo(curl, CURLINFO_LASTSOCKET, &sock);
 
         if(sock != -1) {
             ssh_session ssh_session = ssh_new();
@@ -49,13 +44,14 @@ int _sshConnect(const char *user, const char *pass, const char *host, int port) 
                 return -1;
             };
 
+			ssh_options_set(ssh_session, SSH_OPTIONS_HOST, hostStr);
             ssh_options_set(ssh_session, SSH_OPTIONS_STRICTHOSTKEYCHECK, 0);
             ssh_options_set(ssh_session, SSH_OPTIONS_GSSAPI_DELEGATE_CREDENTIALS, 0);
             ssh_options_set(ssh_session, SSH_OPTIONS_TIMEOUT, &sshTimeout);
 
             //Fails to work on libssh-4.5 https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=688700
             res = ssh_options_set(ssh_session, SSH_OPTIONS_FD, &sock);
-
+			
             res = ssh_connect(ssh_session);
 
             if (res != SSH_OK) //Offline
@@ -86,22 +82,6 @@ int _sshConnect(const char *user, const char *pass, const char *host, int port) 
 
     ++ssh;
     return 0;
-}
-
-char _get_ssh_banner(const char *ip, int port) {
-    char recvBuff[256] = {0};
-	std::string buffer;
-	Connector con;
-	con.nConnect(ip, port, &buffer);
-
-    int sz = buffer.size();
-
-    if(sz != 0)
-    {
-        strncpy(recvBuff, buffer.c_str(), sz < 256 ? sz : 256);
-    };
-
-    return *recvBuff;
 }
 
 int check_ssh_pass(const char *user, const char *pass,
@@ -166,24 +146,25 @@ int SSHBrute(const char* host, int port, std::string *buffer, const char *banner
     return -1;
 }
 
-QString strIP;
-QString strPort;
 int SSHAuth::SSHLobby(const char *ip, int port, std::string *buffer)
 {
     if(gMaxBrutingThreads > 0) {
 
         while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
-        const char &banner = _get_ssh_banner(ip, port);
-        if(strlen(&banner) > 0)
+		std::string sshBanner;
+		Connector con;
+		con.nConnect(ip, port, &sshBanner);
+
+		if (strlen(sshBanner.c_str()) > 0)
         {
-			//BruteUtils::BConInc();
 			++BrutingThrds;
-			int res = SSHBrute(ip, port, buffer, &banner);
+			int res = SSHBrute(ip, port, buffer, sshBanner.c_str());
 			--BrutingThrds;
-            //BruteUtils::BConDec();
+
             return res;
-        };
-        return -1;
-    } else return -1;
+        }
+    }
+	
+	return -1;
 }

@@ -5,7 +5,7 @@
 #include <qjsonarray.h>
 #define RECV_MAX_SIZE 350000
 #define REQUEST_MAX_SIZE 4096
-#define PORTSET "80,81,88,8080,8081,60001,60002,8008,8888,554,9000,441,4111,6667,3536,22,21"
+#define PORTSET "80,81,88,8080,8081,60001,60002,8008,8888,554,9000,3536,21"
 #define CSSOCKET(Socket) shutdown(Socket, SD_BOTH); closesocket(Socket); Socket = -1;
 
 #ifndef CP_UTF8

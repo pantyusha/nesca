@@ -5,6 +5,8 @@
 #include "Connector.h"
 #include "Utils.h"
 
+int CheckKey_Th::isActiveKey = -1;
+
 void getSubStrEx(const char *src, char *startStr, char *endStr, char *dest, int szDest)
 {
 	ZeroMemory(dest, szDest);
@@ -69,6 +71,7 @@ int KeyCheckerMain()
 
         if(Utils::ustrstr(buffer, std::string("202 Accepted")) != -1) {
             stt->doEmitionGreenFoundData("Key is valid.");
+			CheckKey_Th::isActiveKey = 1;
             if(emitIfOK == 0) stt->doEmitionStartScanIP();
             else if(emitIfOK == 1) stt->doEmitionStartScanDNS();
             else if(emitIfOK == 2) stt->doEmitionStartScanImport();

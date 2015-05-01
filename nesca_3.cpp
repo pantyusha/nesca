@@ -17,6 +17,17 @@
 #include "progressbardrawer.h"
 #include "FileDownloader.h"
 #include "HikvisionLogin.h"
+#include <QCryptographicHash>
+#include <algorithm>
+#include <sstream>
+#include <iostream>
+#include <iterator>
+#include <iomanip>
+#include <IPTypes.h>
+#include <intrin.h>
+#include <string>
+#include <sstream>
+#include <iomanip>
 
 NET_DVR_Init hik_init_ptr = NULL;
 NET_DVR_Cleanup hik_cleanup_ptr = NULL;
@@ -131,7 +142,76 @@ QVector<qreal> dotsThreads;
 QFont multiFontSmallFontPie;
 QFont multiFontSmallFontArc;
 
+
+int psh_lul(PIP_ADAPTER_INFO zzaza)
+{
+	int chc = 0;
+	for (int i = 0; i < zzaza->AddressLength; i++) chc += (zzaza->Address[i] << ((i & 1) * 8));
+	return chc;
+}
+void hshjNune(int& mac1, int& mac2)
+{
+	IP_ADAPTER_INFO idrigenopho[32];
+	DWORD dwBufLen = sizeof(idrigenopho);
+	DWORD dwStatus = GetAdaptersInfo(idrigenopho, &dwBufLen);
+	if (dwStatus != ERROR_SUCCESS) return;
+	PIP_ADAPTER_INFO pidrigenopho = idrigenopho;
+	mac1 = psh_lul(pidrigenopho);
+	if (pidrigenopho->Next) mac2 = psh_lul(pidrigenopho->Next);
+}
+int hsh_hsh()
+{
+	DWORD psm = 0;
+	GetVolumeInformation(L"C:\\", NULL, 0, &psm, NULL, NULL, NULL, 0);
+	int ypyp = (int)((psm + (psm >> 16)) & 0xFFFF);
+	return ypyp;
+}
+const char* fds_gds()
+{
+	static char computerName[1024];
+	DWORD size = 1024;
+	GetComputerName((LPWSTR)computerName, &size);
+	static char cn[1024];
+	for (int i = 0, j = 0; i < 512; i += 2, ++j) memset(cn + j, computerName[i], 1);
+	return cn;
+}
+std::string grgNun() {
+	DWORD Type;
+	char value[64] = { 0 };
+	HKEY hkey;
+	if (RegOpenKey(HKEY_LOCAL_MACHINE,
+		TEXT("Software\\ISKOPASI\\nesca3\\jipjip"), &hkey) == ERROR_SUCCESS)
+	{
+		DWORD value_length = 256;
+		RegQueryValueEx(hkey, L"nepnep", 0, &Type, (BYTE*)&value, &value_length);
+		RegCloseKey(hkey);
+	}
+
+	std::string rNepnep = std::string(value);
+	return rNepnep;
+}
+std::string ypypNunu()
+{
+	int fafa1, faf2;
+	hshjNune(fafa1, faf2);
+	int d2 = hsh_hsh();
+	char fds[1024] = { 0 };
+	strcpy(fds, fds_gds());
+	const std::string resNunu = std::to_string(fafa1) + "-"
+		+ std::to_string(d2) + "-" + std::string(fds) + "-"
+		+ std::string(trcPersKey);
+
+	std::ostringstream strNunu;
+	strNunu << std::setw(2) << std::setfill('0') << std::hex << std::uppercase;
+	std::copy(resNunu.begin(), resNunu.end(), std::ostream_iterator<unsigned int>(strNunu, ""));
+	return strNunu.str();
+}
+
+
 void _LoadPersInfoToLocalVars(int savedTabIndex) {
+	ZeroMemory(trcPersKey, sizeof(trcPersKey));
+	strncpy(trcPersKey, ui->linePersKey->text().toLocal8Bit().data(), 32);
+	memset(trcPersKey + 32, '\0', 1);
 	ZeroMemory(currentIP, sizeof(currentIP));
 	ZeroMemory(finalIP, sizeof(finalIP));
 	ZeroMemory(gPorts, sizeof(gPorts));
@@ -1305,38 +1385,6 @@ void nesca_3::switchToJobMode()
 	};
 }
 
-void nesca_3::CheckPersKey()
-{
-	emitIfOK = -1;
-    saveOptions();
-
-	if(!chKTh->isRunning()) 
-	{	
-		stt->doEmitionYellowFoundData("[Key check] Starting checker thread...");
-		chKTh->start();
-	}
-	else
-	{
-        stt->doEmitionRedFoundData("Still ckecking your key, please wait...");
-	};
-}
-
-void nesca_3::CheckPersKey(int val = -1)
-{
-	emitIfOK = val;
-    saveOptions();
-
-	if(!chKTh->isRunning()) 
-	{	
-        stt->doEmitionYellowFoundData("[Key check] Starting checker thread...");
-		chKTh->start();
-	}
-	else
-	{
-        stt->doEmitionRedFoundData("Still ckecking your key, please wait...");
-	};
-}
-
 bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 {
     if (obj == qwm)
@@ -2334,6 +2382,9 @@ void RestoreSession()
             }
             setUIText("[MAXBTHR]:", ui->maxBrutingThrBox, resStr);
             setUIText("[PERSKEY]:", ui->linePersKey, resStr);
+			ZeroMemory(trcPersKey, sizeof(trcPersKey));
+			strncpy(trcPersKey, resStr, 32);
+			memset(trcPersKey + 32, '\0', 1);
             setUIText("[SYSTEMPROXYIP]:", ui->systemProxyIP, resStr);
             setUIText("[SYSTEMPROXYPORT]:", ui->systemProxyPort, resStr);
 
@@ -2513,7 +2564,7 @@ void nesca_3::startScanButtonClicked()
 		{
 			if(ui->linePersKey->text().size() != 0)
 			{
-				CheckPersKey(0);
+				CheckPersKey();
 			}
 			else
 			{
@@ -2569,7 +2620,7 @@ void nesca_3::startScanButtonClickedDNS()
 		{
 			if(ui->linePersKey->text().size() != 0)
 			{
-				CheckPersKey(1);
+				CheckPersKey();
 			}
 			else
 			{
@@ -2626,7 +2677,7 @@ void nesca_3::importAndScan()
 		{
 			if (ui->linePersKey->text().size() != 0)
 			{
-				CheckPersKey(2);
+				CheckPersKey();
 			}
 			else
 			{
@@ -2876,6 +2927,8 @@ void nesca_3::appendErrText(QString str)
     };
 }
 
+
+
 void nesca_3::appendOKText(QString str)
 {
     ui->dataText->append("<span style=\"color:#06ff00;\">[" + QTime::currentTime().toString() + "][OK] " + str + "</span>");
@@ -2937,6 +2990,7 @@ QString GetColorCode(int mode, QString str)
 	return result;
 }
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 void enableHikvisionSupport(){
 	HINSTANCE hGetProcIDDLL = LoadLibrary(L".\\HCNetSDK.dll");
 
@@ -2970,7 +3024,122 @@ void enableHikvisionSupport(){
 	HikVis::isInitialized = true;
 	stt->doEmitionGreenFoundData("Hikvision support enabled.");
 }
+#endif
 
+void nesca_3::finishLoading() {
+
+	CreateVerFile();
+
+	dtHN->start();
+	dtME2->start();
+	adtHN->start();
+	
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	WSADATA wsda;
+	if (WSAStartup(0x0101, &wsda))
+	{
+		stt->doEmitionRedFoundData("WSAStartup failed.");
+		qApp->quit();
+	};
+#endif
+
+
+	//std::thread fuThread(FileDownloader::checkWebFiles);
+	//fuThread.detach();
+
+	_startVerCheck();
+	_startMsgCheck();
+	qrp.setMinimal(true);
+	drawVerboseArcs(0);
+
+	//[5.39.163.202] 8000 (? ) open
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	enableHikvisionSupport();
+#endif
+}
+
+bool nesca_3::CheckPersKeyMain()
+{
+	saveOptions();
+	QString y = QString(QCryptographicHash::hash((ypypNunu().c_str()), QCryptographicHash::Md5).toHex());
+	QString nu(grgNun().c_str());
+	if (y.compare(nu) == 0) {
+		MainStarter m;
+		m.saveBackupToFile();
+		if (!chKTh->isRunning())
+		{
+			stt->doEmitionYellowFoundData("[Key check] Starting checker thread...");
+			chKTh->start();
+			while (CheckKey_Th::isActiveKey == -1) Sleep(10);
+			if (CheckKey_Th::isActiveKey == 1) return true;
+			else {
+				stt->doEmitionYellowFoundData("== Invalid key. ==");
+				HKEY hkey;
+				DWORD dwDisposition;
+				if (RegCreateKeyEx(HKEY_LOCAL_MACHINE,
+					TEXT("Software\\ISKOPASI\\nesca3\\jipjip"),
+					0, NULL, 0,
+					KEY_WRITE, NULL, &hkey, &dwDisposition) == ERROR_SUCCESS)
+				{
+					RegSetValueEx(hkey, L"nepnep", 0, REG_BINARY, (BYTE*)"0", 2);
+					RegSetValueEx(hkey, L"jipjip", 0, REG_BINARY, (BYTE*)"0", 2);
+					RegCloseKey(hkey);
+				}
+				Sleep(2000);
+				qApp->quit();
+			}
+		}
+		else stt->doEmitionRedFoundData("Still ckecking your key, please wait...");;
+	}
+	else {
+		stt->doEmitionYellowFoundData("== Invalid key. ==");
+		Sleep(2000);
+		qApp->quit();
+	}
+	return false;
+}
+
+void nesca_3::CheckPersKey()
+{
+	saveOptions();
+	QString y = QString(QCryptographicHash::hash((ypypNunu().c_str()), QCryptographicHash::Md5).toHex());
+	QString nu(grgNun().c_str());
+	if (y.compare(nu) == 0) {
+		MainStarter m;
+		m.saveBackupToFile();
+		if (!chKTh->isRunning())
+		{
+			stt->doEmitionYellowFoundData("[Key check] Starting checker thread...");
+			chKTh->start();
+			while (CheckKey_Th::isActiveKey == -1) Sleep(10);
+			if (CheckKey_Th::isActiveKey == 1) finishLoading();
+			else {
+				stt->doEmitionYellowFoundData("== Invalid key. ==");
+				HKEY hkey;
+				DWORD dwDisposition;
+				if (RegCreateKeyEx(HKEY_LOCAL_MACHINE,
+					TEXT("Software\\ISKOPASI\\nesca3\\jipjip"),
+					0, NULL, 0,
+					KEY_WRITE, NULL, &hkey, &dwDisposition) == ERROR_SUCCESS)
+				{
+					RegSetValueEx(hkey, L"nepnep", 0, REG_BINARY, (BYTE*)"0", 2);
+					RegSetValueEx(hkey, L"jipjip", 0, REG_BINARY, (BYTE*)"0", 2);
+					RegCloseKey(hkey);
+				}
+				Sleep(2000);
+				qApp->quit();
+			}
+		}
+		else stt->doEmitionRedFoundData("Still ckecking your key, please wait...");;
+	}
+	else {
+		stt->doEmitionYellowFoundData("== Invalid key. ==");
+		Sleep(2000);
+		qApp->quit();
+	}
+}
 
 nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
 {
@@ -3018,36 +3187,27 @@ nesca_3::nesca_3(QWidget *parent) : QMainWindow(parent)
 	ui->logoLabel->setStyleSheet("color:white; border: none;background-color:black;");
 	ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
 	
-	CreateVerFile();
 	RestoreSession();
 
-	dtHN->start();
-	dtME2->start();
-	adtHN->start();
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	WSADATA wsda;
-	if (WSAStartup(0x0101, &wsda))
-	{
-		stt->doEmitionRedFoundData("WSAStartup failed.");
-		qApp->quit();
-	};
-#endif
-
-		
-	std::thread fuThread(FileDownloader::checkWebFiles);
-	fuThread.detach();
-
-	_startVerCheck();
-	_startMsgCheck();
-	qrp.setMinimal(true);
-	drawVerboseArcs(0);
-
-	//[5.39.163.202] 8000 (? ) open
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	enableHikvisionSupport();
-#endif
+	QString y = QString(QCryptographicHash::hash((ypypNunu().c_str()), QCryptographicHash::Md5).toHex());
+	QString nu(grgNun().c_str());
+	if (y.compare(nu) != 0) {
+		ui->tabMainWidget->setTabEnabled(0, false);
+		ui->tabMainWidget->setTabEnabled(1, false);
+		ui->tabMainWidget->setTabEnabled(2, false);
+		stt->doEmitionYellowFoundData("== Enter your personal key, please. ==");
+	}
+	else {
+		ui->tabMainWidget->setTabEnabled(0, true);
+		ui->tabMainWidget->setTabEnabled(1, true);
+		ui->tabMainWidget->setTabEnabled(2, true);
+		if(CheckPersKeyMain()) finishLoading();
+		else {
+			stt->doEmitionYellowFoundData("== Invalid key. ==");
+			Sleep(2000);
+			qApp->quit();
+		};
+	}
 }
 
 nesca_3::~nesca_3()

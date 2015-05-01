@@ -719,6 +719,7 @@ void fputsf(char *text, int flag, char *msg)
 	else
 	{
 		stt->doEmitionRedFoundData("Cannot open file [FLAG: " + QString::number(flag) + "] " + QString::number(GetLastError()));
+		MainStarter::createResultFiles();
 	};
 }
 

@@ -97,7 +97,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideMiddle</enum>
@@ -115,6 +115,9 @@
       <bool>false</bool>
      </property>
      <widget class="QWidget" name="tab_4">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <attribute name="title">
        <string>IP Scan</string>
       </attribute>
@@ -395,6 +398,9 @@
       </widget>
      </widget>
      <widget class="QWidget" name="tab_5">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <attribute name="title">
        <string>DNS Scan</string>
       </attribute>
@@ -706,6 +712,9 @@
       </widget>
      </widget>
      <widget class="QWidget" name="tab_6">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <attribute name="title">
        <string>Import</string>
       </attribute>

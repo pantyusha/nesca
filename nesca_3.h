@@ -75,7 +75,7 @@ protected:
 		void slotDrawVoiceGrid(int factor);
         void slotDrawTextPlacers();
 		void CheckPersKey();
-		void CheckPersKey(int val);
+		bool CheckPersKeyMain();
         void slotRestoreDefPorts();
         void switchToJobMode();
 		void switchDataFields();
@@ -116,6 +116,7 @@ protected:
 		void appendRedBAData(QString str);
         void STTTerminate();
         void drawVerboseArcs(unsigned long gTargets);
+		void finishLoading();
 		void slotBlockButtons(bool value);
 private:
 	QPoint dragPosition;

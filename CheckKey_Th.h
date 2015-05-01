@@ -6,6 +6,7 @@
 extern int emitIfOK;
 class CheckKey_Th : public QThread
 {
+public: static int isActiveKey;
 	Q_OBJECT
 
 protected:

@@ -39,11 +39,15 @@ void _getNewMsg()
 	};
 }
 
-void MSGCheckerThread::run() 
+void MSGCheckerThread::run()
 {
-	for(;;)
-	{
-        Sleep(60000);
-        if(strlen(trcPersKey) != 0) _getNewMsg();
-	};
+	if (!msgChkRunnning) {
+		for (;;)
+		{
+			msgChkRunnning = true;
+			if (strlen(trcPersKey) != 0) _getNewMsg();
+			else { mct->doEmitionShowNewMsg(QString("No key detected.")); }
+			Sleep(60000);
+		};
+	}
 }

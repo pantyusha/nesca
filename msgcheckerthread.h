@@ -6,6 +6,7 @@
 
 class MSGCheckerThread : public QThread
 {
+private: bool msgChkRunnning = false;
 	Q_OBJECT
 public:
 	static void doEmitionShowNewMsg(QString str);

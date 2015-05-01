@@ -4,14 +4,6 @@
 
 bool HikVis::isInitialized = false;
 
-void HikVis::hikInit(){
-	//hik_init_ptr();
-}
-
-void HikVis::hikCleanup(){
-	//hik_cleanup_ptr();
-}
-
 lopaStr HikVis::hikLogin(const char * sDVRIP, int wDVRPort) 
 {
 	lopaStr lps = { "UNKNOWN", "", "" };

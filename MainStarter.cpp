@@ -416,7 +416,12 @@ void MainStarter::saveBackupToFile()
 		sprintf(saveStr, "[SESSION]:%d RESTORE_IMPORT_SESSION %d %s\n", gMode, gThreads, gPorts);
 		strcat(saveBuffer, saveStr);
 		ZeroMemory(saveStr, sizeof(saveStr));
-	};
+	}
+	else {
+		sprintf(saveStr, "[SESSION]: 0 1.1.1.1/32 0 -p80");
+		strcat(saveBuffer, saveStr);
+		ZeroMemory(saveStr, sizeof(saveStr));
+	}
 
 	sprintf(saveStr, "[NDBSERVER]:%s\n", trcSrv);
 	strcat(saveBuffer, saveStr);
@@ -1283,18 +1288,23 @@ void MainStarter::runAuxiliaryThreads() {
 	}
 }
 
-void MainStarter::start(const char* targets, const char* ports) {
-	
-	curl_global_init(CURL_GLOBAL_ALL);
-	
+void MainStarter::createResultFiles() {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	bool res = CreateDirectoryA(RESULT_DIR_NAME, NULL);
+	if(!res) stt->doEmitionRedFoundData("Failed to crete results.");
 #else
 	struct stat str = { 0 };
 	if (stat(RESULT_DIR_NAME, &str) == -1) {
 		mkdir(RESULT_DIR_NAME, 0700);
 	}
 #endif
+}
+
+void MainStarter::start(const char* targets, const char* ports) {
+	
+	curl_global_init(CURL_GLOBAL_ALL);
+	
+	createResultFiles();
 
 	if (loadTargets(targets) == -1 ||
 		loadPorts(ports, ',') == -1) {

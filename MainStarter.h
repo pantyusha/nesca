@@ -104,6 +104,7 @@ public:
 	void saver();
 	void saveBackupToFile();
 	int fileLoader(const char *fileName);
+	static void createResultFiles();
 	void start(const char* targets, const char* ports);
 };
 

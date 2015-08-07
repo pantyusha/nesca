@@ -24,20 +24,26 @@ extern QJsonArray *jsonArr;
 extern unsigned long long gTargetsNumber;
 extern long long unsigned int gTargets;
 extern std::atomic<int> cons, BrutingThrds, gThreads;
-extern char **loginLst, **passLst, **wfLoginLst, **wfPassLst, **sshlpLst;
+extern char **loginLst, **passLst,
+**wfLoginLst, **wfPassLst,
+**ftpLoginLst, **ftpPassLst,
+**sshlpLst;
 extern bool trackerOK, globalScanFlag, MapWidgetOpened,
     widgetIsHidden, gNegDebugMode,
     gDebugMode, horLineFlag, gPingNScan, gShuffle,
 	BALogSwitched;
 extern int found, indexIP, gMode, 
-	MaxPass, MaxLogin, MaxWFLogin, MaxWFPass, MaxSSHPass,
+	MaxPass, MaxLogin, 
+	MaxWFLogin, MaxWFPass,
+	MaxFTPLogin, MaxFTPPass,
+	MaxSSHPass,
     gMaxBrutingThreads,
-	gTimeOut, PieAnomC1, PieSusp, PieBA, PieLowl, PieWF, PieSSH, 
-	AnomC1, filtered, Overl, Lowl, Alive, saved,
-    Susp,
-    WF,
+	gTimeOut, PieCamerasC1, PieOther, PieBA, PieSSH,
+	camerasC1, filtered, Overl, Alive, saved,
+    other,
 	baCount,
-    ssh, globalPinger, gPingTimeout;
+    ssh, globalPinger, gPingTimeout,
+	cIndex;
 extern unsigned int Activity;
 extern char trcSrv[256], trcScr[256], trcProxy[128], trcPersKey[64],
     trcPort[32], trcSrvPortLine[32],

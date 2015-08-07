@@ -963,7 +963,28 @@ color: rgb(214, 214, 0);</string>
       <widget class="QGraphicsView" name="pbgv">
        <property name="geometry">
         <rect>
-         <x>437</x>
+         <x>451</x>
+         <y>20</y>
+         <width>26</width>
+         <height>102</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:rgb(38, 38, 38);
+border: 1px solid rgb(227, 227, 227);
+border-radius: 3px;</string>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+      </widget>
+      <widget class="QGraphicsView" name="pbgv_2">
+       <property name="geometry">
+        <rect>
+         <x>420</x>
          <y>20</y>
          <width>26</width>
          <height>102</height>
@@ -1640,6 +1661,9 @@ border-radius: 3px;</string>
      </property>
     </widget>
     <widget class="QTextBrowser" name="dataText">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -1699,68 +1723,6 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="openLinks">
       <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelStatus">
-     <property name="geometry">
-      <rect>
-       <x>19</x>
-       <y>783</y>
-       <width>41</width>
-       <height>10</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="lineWidth">
-      <number>1</number>
-     </property>
-     <property name="text">
-      <string>Status:</string>
-     </property>
-     <property name="wordWrap">
-      <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelStatus_Value">
-     <property name="geometry">
-      <rect>
-       <x>58</x>
-       <y>783</y>
-       <width>101</width>
-       <height>10</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="text">
-      <string>Idle</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelTargetsLeft">
@@ -2031,7 +1993,7 @@ p, li { white-space: pre-wrap; }
       <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
      </property>
      <property name="text">
-      <string>Anomalies</string>
+      <string>Cameras</string>
      </property>
      <property name="textFormat">
       <enum>Qt::AutoText</enum>
@@ -2089,7 +2051,7 @@ p, li { white-space: pre-wrap; }
       <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
      </property>
      <property name="text">
-      <string>Suspicious</string>
+      <string>Other</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelBads">
@@ -2115,7 +2077,7 @@ p, li { white-space: pre-wrap; }
       <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
      </property>
      <property name="text">
-      <string>WebForms</string>
+      <string>--</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelOverloads">
@@ -2167,7 +2129,7 @@ p, li { white-space: pre-wrap; }
       <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
      </property>
      <property name="text">
-      <string>Lowloads</string>
+      <string>--</string>
      </property>
     </widget>
     <widget class="QPushButton" name="logoLabel">
@@ -2375,63 +2337,13 @@ p, li { white-space: pre-wrap; }
       <set>QGraphicsView::CacheNone</set>
      </property>
     </widget>
-    <widget class="QTextBrowser" name="BAText">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>445</y>
-       <width>453</width>
-       <height>326</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(26, 26,26); color:rgb(83, 83, 83);border: 1px solid white;</string>
-     </property>
-     <property name="locale">
-      <locale language="Chinese" country="China"/>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
-     </property>
-     <property name="undoRedoEnabled">
-      <bool>false</bool>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-     <property name="html">
-      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Small Fonts'; font-size:7pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Eurostile'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="cursorWidth">
-      <number>5</number>
-     </property>
-     <property name="textInteractionFlags">
-      <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-     </property>
-     <property name="openExternalLinks">
-      <bool>true</bool>
-     </property>
-    </widget>
     <widget class="QPushButton" name="switcherBut">
      <property name="geometry">
       <rect>
-       <x>480</x>
-       <y>500</y>
+       <x>475</x>
+       <y>467</y>
        <width>16</width>
-       <height>205</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -2447,52 +2359,10 @@ p, li { white-space: pre-wrap; }
       <string>Brute activity</string>
      </property>
      <property name="styleSheet">
-      <string notr="true">border: 1px solid rgb(216, 216, 216);
-color: rgb(216, 216, 216);
-background-color: #000000;</string>
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
      </property>
      <property name="text">
       <string>&lt;</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelTracker">
-     <property name="geometry">
-      <rect>
-       <x>200</x>
-       <y>783</y>
-       <width>45</width>
-       <height>10</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Small Fonts</family>
-       <pointsize>7</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
-     </property>
-     <property name="lineWidth">
-      <number>1</number>
-     </property>
-     <property name="text">
-      <string>NS-Track:</string>
-     </property>
-     <property name="wordWrap">
-      <bool>false</bool>
      </property>
     </widget>
     <widget class="QGraphicsView" name="graphicActivityGrid">
@@ -3026,8 +2896,8 @@ background-color: #000000;</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>249</x>
-       <y>785</y>
+       <x>456</x>
+       <y>0</y>
        <width>8</width>
        <height>8</height>
       </rect>
@@ -3039,7 +2909,7 @@ background-color: #000000;</string>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: black; border: 1px solid white;</string>
+      <string notr="true">background-color: black; border: 1px solid #313131;</string>
      </property>
      <property name="text">
       <string/>
@@ -3127,15 +2997,98 @@ background-color: #000000;</string>
       <string>✔:</string>
      </property>
     </widget>
+    <widget class="QLineEdit" name="currentDirectoryLine">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>780</y>
+       <width>351</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
+     <property name="mouseTracking">
+      <bool>false</bool>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="frame">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTableView" name="BATableView">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>445</y>
+       <width>453</width>
+       <height>326</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Small Fonts</family>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(26, 26,26); border: 1px solid white;</string>
+     </property>
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <property name="cornerButtonEnabled">
+      <bool>false</bool>
+     </property>
+     <attribute name="horizontalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="verticalHeaderDefaultSectionSize">
+      <number>20</number>
+     </attribute>
+     <attribute name="verticalHeaderMinimumSectionSize">
+      <number>10</number>
+     </attribute>
+    </widget>
+    <zorder>BATableView</zorder>
     <zorder>graphicTextPlacer</zorder>
-    <zorder>BAText</zorder>
     <zorder>labelNesca_3</zorder>
     <zorder>tabMainWidget</zorder>
     <zorder>line</zorder>
     <zorder>exitButton</zorder>
     <zorder>dataText</zorder>
-    <zorder>labelStatus</zorder>
-    <zorder>labelStatus_Value</zorder>
     <zorder>line_2</zorder>
     <zorder>RedLabel</zorder>
     <zorder>YellowLabel</zorder>
@@ -3159,7 +3112,6 @@ background-color: #000000;</string>
     <zorder>graphicLog_2</zorder>
     <zorder>graphicLog_Upper</zorder>
     <zorder>switcherBut</zorder>
-    <zorder>labelTracker</zorder>
     <zorder>graphicActivityGrid</zorder>
     <zorder>graphicActivity</zorder>
     <zorder>VoiceScanBut</zorder>
@@ -3188,6 +3140,7 @@ background-color: #000000;</string>
     <zorder>labelRunningThreads</zorder>
     <zorder>labelSavedValue</zorder>
     <zorder>labelSaved</zorder>
+    <zorder>currentDirectoryLine</zorder>
    </widget>
    <widget class="QWidget" name="widgetJOB" native="true">
     <property name="geometry">

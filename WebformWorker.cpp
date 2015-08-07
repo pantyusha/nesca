@@ -28,8 +28,6 @@ lopaStr WFClass::parseResponse(const char *ip,
                 && Utils::ustrstr(*buffer, std::string("forbidden")) == -1
                 ) {
 
-            stt->doEmition_BAGreenData("[+] " + QString(ip) + ":" + QString::number(port) + " - WF pass: " +
-                                       QString(login) + ":" + QString(pass));
             strcpy(result.login, login);
             strcpy(result.pass, pass);
             return result;
@@ -56,6 +54,7 @@ lopaStr WFClass::doGetCheck(const char *ip,
     lopaStr result = {"UNKNOWN", "", ""};
     int passCounter = 0;
     int firstCycle = 0;
+	int rowIndex = -1;
 
     char login[128] = {0};
     char pass[32] = {0};
@@ -84,10 +83,17 @@ lopaStr WFClass::doGetCheck(const char *ip,
 			Connector con;
             if(con.nConnect(nip, port, &buffer) <= 0) return result;
 
-            if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) +
-                                                   "; login/pass: "+ QString(login) + ":" + QString(pass) +
-                                                   ";	- Progress: (" + 
-												   QString::number((passCounter++/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
+			if (BALogSwitched) {
+				if (rowIndex == -1) {
+					//stt->doEmitionAddBARow(rowIndex, QString(ip) + ":" + QString::number(port),
+					//	QString(login) + ":" + QString(pass),
+					//	QString::number((++passCounter / (double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%");
+				}
+				else {
+					stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass),
+						QString::number((++passCounter / (double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%");
+				}
+			}
 
             result = parseResponse(ip, port, &buffer, formVal, login, pass);
             if(i == 0) ++i;
@@ -108,6 +114,7 @@ lopaStr WFClass::doPostCheck(const char *ip,
     lopaStr result = {"UNKNOWN", "", ""};
     int passCounter = 0;
     int firstCycle = 0;
+	int rowIndex = -1;
 
     char login[128] = {0};
     char pass[32] = {0};
@@ -136,11 +143,19 @@ lopaStr WFClass::doPostCheck(const char *ip,
 
             std::string buffer;
 			Connector con;
-			if (con.nConnect(nip, port, &buffer, postData) <= 0) return result;
-
-            if(BALogSwitched) stt->doEmitionBAData("Checked WF: " + QString(ip) + ":" + QString::number(port) + "; login/pass: " +
-                                                   QString(login) + ":" + QString(pass) + ";	- Progress: (" +
-                                                   QString::number((passCounter/(double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%)");
+			if (con.nConnect(nip, port, &buffer, postData) <= 0) return result;			
+			
+			if (BALogSwitched) {
+				if (rowIndex == -1) {
+					//stt->doEmitionAddBARow(rowIndex, QString(ip) + ":" + QString::number(port),
+					//	QString(login) + ":" + QString(pass),
+					//	QString::number((++passCounter / (double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%");
+				}
+				else {
+					stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass),
+						QString::number((++passCounter / (double)(MaxWFPass*MaxWFLogin)) * 100).mid(0, 4) + "%");
+				}
+			}
             ++passCounter;
 
             return parseResponse(ip, port, &buffer, formVal, login, pass);

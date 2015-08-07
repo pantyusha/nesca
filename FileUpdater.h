@@ -14,7 +14,10 @@ public:
     static long oldPassLstSize;
     static long oldSSHLstSize;
     static long oldWFLoginLstSize;
-    static long oldWFPassLstSize;
+	static long oldWFPassLstSize;
+	static long oldFTPLoginLstSize;
+	static long oldFTPPassLstSize;
+
     static bool ready;
     static std::condition_variable cv;
     static std::mutex filesUpdatingMutex;

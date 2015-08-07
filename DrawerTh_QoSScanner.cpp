@@ -12,10 +12,10 @@ void DrawerTh_QoSScanner::run()
 		{
 			lstOfLabels.clear();
 			lstOfLabels.append(Alive);
-			lstOfLabels.append(AnomC1);
-			lstOfLabels.append(WF);
-			lstOfLabels.append(Susp);
-			lstOfLabels.append(Lowl);
+			lstOfLabels.append(camerasC1);
+			//lstOfLabels.append(WF);
+			lstOfLabels.append(other);
+			//lstOfLabels.append(Lowl);
 			lstOfLabels.append(baCount);
 			lstOfLabels.append(Overl);
 			lstOfLabels.append(ssh);
@@ -29,25 +29,25 @@ void DrawerTh_QoSScanner::run()
 		else
 		{
 			msleep(500);
-			AnomC1 = 0;
-			WF = 0;
+			camerasC1 = 0;
+			//WF = 0;
 			baCount = 0;
 			filtered = 0;
 			Overl = 0;
-			Lowl = 0;
+			//Lowl = 0;
 			Alive = 0;
-			Susp = 0;
+			other = 0;
 			ssh = 0;
 		};
 		
-		AnomC1 = 0;
-		WF = 0;
+		camerasC1 = 0;
+		//WF = 0;
 		baCount = 0;
 		filtered = 0;
 		Overl = 0;
-		Lowl = 0;
+		//Lowl = 0;
 		Alive = 0;
-		Susp = 0;
+		other = 0;
 		ssh = 0;
 		msleep(2000);
 	};

@@ -46,7 +46,7 @@ void MSGCheckerThread::run()
 		{
 			msgChkRunnning = true;
 			if (strlen(trcPersKey) != 0) _getNewMsg();
-			else { mct->doEmitionShowNewMsg(QString("No key detected.")); }
+			//else { mct->doEmitionShowNewMsg(QString("No key detected.")); }
 			Sleep(60000);
 		};
 	}

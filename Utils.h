@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <qstring.h>
 #include <vector>
+#include <qdatetime.h>
 
 using namespace std;
 
@@ -23,6 +24,7 @@ private:
 };
 
 class Utils {
+private: static std::string startDate;
 public:
 	static int isDigest(const std::string *buffer);
 
@@ -82,6 +84,9 @@ public:
 	static std::string getStrValue(const std::string &data, const std::string &delim1, const std::string &delim2);
 	static std::vector<std::string> splitToStrVector(const std::string &s, char delim);
 	static std::vector<int> splitToIntVector(const std::string &s, char delim);
+	static void saveStartDate();
+	static std::string getStartDate();
+	static void emitScaryError();
 };
 
 #endif // UTILS_H

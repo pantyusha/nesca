@@ -104,15 +104,15 @@ void DrawerTh_VoiceScanner::run()
 	{
 		if(widgetIsHidden == false && tray->isVisible() == false)
 		{
-			makeVoiceLine(Alive, AnomC1, WF, Susp, Lowl, baCount, Overl, WF, ssh);
+			makeVoiceLine(Alive, camerasC1, 0, other, 0, baCount, Overl, 0, ssh);
 			Alive = 0;
-			AnomC1 = 0;
-			WF = 0;
+			camerasC1 = 0;
+			//WF = 0;
 			filtered = 0;
-			Lowl = 0;
+			//Lowl = 0;
 			baCount = 0;
 			Overl = 0;
-			Susp = 0;
+			other = 0;
 			ssh = 0;
 
 			vsTh->doEmitAddLine();
@@ -122,13 +122,13 @@ void DrawerTh_VoiceScanner::run()
 		{
 			msleep(500);
 			Alive = 0;
-			AnomC1 = 0;
-			WF = 0;
+			camerasC1 = 0;
+			//WF = 0;
 			filtered = 0;
-			Lowl = 0;
+			//Lowl = 0;
 			baCount = 0;
 			Overl = 0;
-			Susp = 0;
+			other = 0;
 			ssh = 0;
 		};
 	};

@@ -24,7 +24,7 @@ public:
         if(gMaxBrutingThreads > 0) {
             while(BrutingThrds >= gMaxBrutingThreads) Sleep(700);
 
-            ++WF;
+            //++WF;
 
 			++BrutingThrds; 
 			//BConInc();

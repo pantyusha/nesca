@@ -40,8 +40,8 @@ int MakePolygonLine(int gWidth)
         xtx = x + tx;
 		if(xtx > 1 && xtx < 31) 
 		{
-            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - AnomC1 * 2 - fact1 : ME2YPOS);
-			if(AnomC1 > 0) 
+            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - camerasC1 * 2 - fact1 : ME2YPOS);
+			if (camerasC1 > 0)
 			{
                 if(xtx < 16 ) fact1+=2;
 				else fact1-=2;
@@ -50,9 +50,9 @@ int MakePolygonLine(int gWidth)
 
 		if(xtx > 34 && xtx < 72) 
 		{
-            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - WF * 2 - fact2 : ME2YPOS);
+            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - /*WF*/0 * 2 - fact2 : ME2YPOS);
 
-			if(WF > 0) 
+			if(/*WF*/0 > 0) 
 			{
                 if(xtx < 52 ) fact2+=2;
 				else fact2-=2;
@@ -72,9 +72,9 @@ int MakePolygonLine(int gWidth)
 
 		if(xtx > 114 && xtx < 152) 
 		{
-            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - Susp * 2 - fact4 : ME2YPOS);
+            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - other * 2 - fact4 : ME2YPOS);
 
-			if(Susp > 0) 
+			if (other > 0)
 			{
                 if(xtx < 132 ) fact4+=2;
 				else fact4-=2;
@@ -94,9 +94,9 @@ int MakePolygonLine(int gWidth)
 
         if(xtx > 194 && xtx < 232)
 		{
-            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - Lowl * 2 - fact6 : ME2YPOS);
+            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - /*Lowl*/0 * 2 - fact6 : ME2YPOS);
 
-			if(Lowl > 0) 
+			if(/*Lowl*/0 > 0) 
 			{
                 if(xtx < 212 ) fact6+=2;
 				else fact6-=2;
@@ -118,14 +118,14 @@ int MakePolygonLine(int gWidth)
         tx = x;
 	};
 
-	AnomC1 = 0;
-	WF = 0;
+	camerasC1 = 0;
+	//WF = 0;
 	baCount = 0;
 	filtered = 0;
 	Overl = 0;
-	Lowl = 0;
+	//Lowl = 0;
 	Alive = 0;
-	Susp = 0;
+	other = 0;
 
 	DrawerTh_ME2Scanner::polyVect.append(QPointF(gWidth, ME2YPOS));
 	return DrawerTh_ME2Scanner::polyVect.size();
@@ -148,14 +148,14 @@ void DrawerTh_ME2Scanner::run()
 		else
 		{
 			msleep(1000);
-			AnomC1 = 0;
-			WF = 0;
+			camerasC1 = 0;
+			//WF = 0;
 			baCount = 0;
 			filtered = 0;
 			Overl = 0;
-			Lowl = 0;
+			//Lowl = 0;
 			Alive = 0;
-			Susp = 0;
+			other = 0;
 		};
         msleep(100);
 	};

@@ -48,12 +48,12 @@ void checkWeb(const char *fileName, std::string *oldLM) {
 
 void FileDownloader::checkWebFiles() {
     while (true) {
-        checkWeb("negatives.txt", &lastModifiedNeg);
-        checkWeb("login.txt", &lastModifiedL);
-        checkWeb("pass.txt", &lastModifiedP);
-        checkWeb("sshpass.txt", &lastModifiedSSH);
-        checkWeb("wflogin.txt", &lastModifiedWFL);
-        checkWeb("wfpass.txt", &lastModifiedWFP);
+        checkWeb(NEGATIVE_FN, &lastModifiedNeg);
+		checkWeb(LOGIN_FN, &lastModifiedL);
+		checkWeb(PASS_FN, &lastModifiedP);
+		checkWeb(SSH_PASS_FN, &lastModifiedSSH);
+		checkWeb(WF_LOGIN_FN, &lastModifiedWFL);
+		checkWeb(WF_PASS_FN, &lastModifiedWFP);
         Sleep(600000);
     }
 }

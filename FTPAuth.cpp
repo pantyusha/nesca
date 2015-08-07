@@ -17,26 +17,26 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 
 	int res = 0;
 	int passCounter = 0;
+	int rowIndex = -1;
 
     char login[128] = {0};
     char pass[32] = {0};
 	char nip[128] = { 0 };
 
-    for(int i = 0; i < MaxLogin; ++i)
+	for (int i = 0; i < MaxFTPLogin; ++i)
     {
         if(!globalScanFlag) return lps;
-        FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
-        if(strlen(loginLst[i]) <= 1) continue;
+		FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready; });
+		strcpy(login, ftpLoginLst[i]);
+		if (strlen(login) <= 1) continue;
 
-        strcpy(login, loginLst[i]);
 
-        for(int j = 0; j < MaxPass; ++j)
+		for (int j = 0; j < MaxFTPPass; ++j)
         {
             if(!globalScanFlag) return lps;
-            FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
-            if(strlen(passLst[j]) <= 1) continue;
-
-            strcpy(pass, passLst[j]);
+			FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready; });
+			strcpy(pass, ftpPassLst[j]);
+			if (strlen(pass) <= 1) continue;
 
             lpString = string(login) + ":" + string(pass);
 			
@@ -44,23 +44,54 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 			sprintf(nip, "ftp://%s", ip);
 			Connector con;
 			res = con.nConnect(nip, port, &buffer, NULL, NULL, &lpString);
-			if (res == -2) return lps;
+			if (res == -2) {
+				if (rowIndex == -1) {
+					nesca_3::addBARow(QString(ip) + ":" + QString::number(port), "--", "FAIL");
+				}
+				else {
+					stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
+				}
+				return lps;
+			}
 			else if (res != -1) {
 				if (!globalScanFlag) return lps;
                 strcpy(lps.login, login);
                 strcpy(lps.pass, pass);
 				ps->directoryCount = std::count(buffer.begin(), buffer.end(), '\n');
+
+				if (rowIndex == -1) {
+					nesca_3::addBARow(QString(ip) + ":" + QString::number(port), QString(login) + ":" + QString(pass), "OK");
+				}
+				else {
+					stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass), "OK");
+				}
+				
 				return lps;
 			};
 
-			if (BALogSwitched) stt->doEmitionBAData("FTP: " + QString(ip) + ":" + QString::number(port) +
-                "; l/p: " + QString(login) + ":" + QString(pass) + ";	- Progress: (" +
-				QString::number((++passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
-
-            Sleep(100);
+			if (BALogSwitched) {
+				if (rowIndex == -1) {
+					rowIndex = nesca_3::addBARow(QString(ip) + ":" + QString::number(port),
+						QString(login) + ":" + QString(pass),
+						QString::number((passCounter / (double)(MaxFTPPass*MaxFTPLogin)) * 100).mid(0, 4) + "%");
+				}
+				else {
+					stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass),
+						QString::number((passCounter / (double)(MaxFTPPass*MaxFTPLogin)) * 100).mid(0, 4) + "%");
+				}
+			}
+			else { rowIndex = -1; }
+			++passCounter;
+            Sleep(50);
         }
     }
 
+	if (rowIndex == -1) {
+		nesca_3::addBARow(QString(ip) + ":" + QString::number(port), "--", "FAIL");
+	}
+	else {
+		stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
+	}
     return lps;
 }
 
@@ -69,15 +100,13 @@ lopaStr FTPA::FTPLobby(const char *ip, const int port, PathStr *ps) {
         while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
 		++baCount;
-		//BruteUtils::BConInc();
 		++BrutingThrds;
 		const lopaStr &lps = FTPBrute(ip, port, ps);
 		--BrutingThrds;
-        //BruteUtils::BConDec();
 
         return lps;
     } else {
-        lopaStr lps = {"UNKNOWN", "", ""};;
+        lopaStr lps = {"UNKNOWN", "", ""};
         return lps;
     }
 }

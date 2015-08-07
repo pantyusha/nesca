@@ -3,6 +3,11 @@
 #include "STh.h"
 #include "mainResources.h"
 
+char **loginLst, **passLst;
+char **wfLoginLst, **wfPassLst;
+char **ftpLoginLst, **ftpPassLst;
+char **sshlpLst;
+
 bool FileUpdater::running = false;
 long FileUpdater::oldNegLstSize = 0;
 long FileUpdater::oldLoginLstSize = 0;
@@ -10,6 +15,8 @@ long FileUpdater::oldPassLstSize = 0;
 long FileUpdater::oldSSHLstSize = 0;
 long FileUpdater::oldWFLoginLstSize = 0;
 long FileUpdater::oldWFPassLstSize = 0;
+long FileUpdater::oldFTPLoginLstSize = 0;
+long FileUpdater::oldFTPPassLstSize = 0;
 int FileUpdater::gNegativeSize = 0;
 std::mutex FileUpdater::filesUpdatingMutex;
 std::condition_variable FileUpdater::cv;
@@ -18,7 +25,7 @@ std::unique_lock<std::mutex> FileUpdater::lk;
 std::vector<std::string> FileUpdater::negativeVector;
 
 void negativeLoader() {
-	std::ifstream file("negatives.txt");
+	std::ifstream file(NEGATIVE_FN);
 	std::string line;
 
 	while (std::getline(file, line)) FileUpdater::negativeVector.push_back(line);
@@ -41,7 +48,7 @@ void updateLogin() {
 
     char buffFG[32] = {0};
 
-    FILE *loginList = fopen("login.txt", "r");
+    FILE *loginList = fopen(LOGIN_FN, "r");
 
     if(loginList != NULL)
     {
@@ -94,7 +101,7 @@ void updatePass() {
 
     char buffFG[32] = {0};
 
-    FILE *passList = fopen("pass.txt", "r");
+    FILE *passList = fopen(PASS_FN, "r");
 
     if(passList != NULL)
     {
@@ -148,7 +155,7 @@ void updateSSH() {
     char buffFG[32] = {0};
     ZeroMemory(buffFG, sizeof(buffFG));
 
-    FILE *sshlpList = fopen("sshpass.txt", "r");
+	FILE *sshlpList = fopen(SSH_PASS_FN, "r");
 
     if(sshlpList != NULL)
     {
@@ -202,7 +209,7 @@ void updateWFLogin() {
     char buffFG[32] = {0};
     ZeroMemory(buffFG, sizeof(buffFG));
 
-    FILE *wfLoginList = fopen("wflogin.txt", "r");
+    FILE *wfLoginList = fopen(WF_LOGIN_FN, "r");
 
     if(wfLoginList != NULL)
     {
@@ -251,7 +258,7 @@ void updateWFPass() {
     char buffFG[32] = {0};
     ZeroMemory(buffFG, sizeof(buffFG));
 
-    FILE *wfPassList = fopen("wfpass.txt", "r");
+	FILE *wfPassList = fopen(WF_PASS_FN, "r");
 
     if(wfPassList != NULL)
     {
@@ -286,7 +293,104 @@ void updateWFPass() {
         fclose(wfPassList);
     }
 }
+void updateFTPLogin() {
 
+	if (ftpLoginLst != NULL)
+	{
+		for (int i = 0; i < MaxFTPLogin; ++i) delete[]ftpLoginLst[i];
+		delete[]ftpLoginLst;
+		ftpLoginLst = NULL;
+	};
+
+	MaxFTPLogin = 0;
+
+	char buffFG[32] = { 0 };
+	ZeroMemory(buffFG, sizeof(buffFG));
+
+	FILE *ftpLoginList = fopen(FTP_LOGIN_FN, "r");
+
+	if (ftpLoginList != NULL)
+	{
+		while (fgets(buffFG, 32, ftpLoginList) != NULL)
+		{
+			MaxFTPLogin++;
+			ZeroMemory(buffFG, sizeof(buffFG));
+		};
+
+		rewind(ftpLoginList);
+
+		ftpLoginLst = new char*[MaxFTPLogin];
+
+		for (int j = 0; j < MaxFTPLogin; j++)
+		{
+			ftpLoginLst[j] = new char[32];
+		};
+
+		int i = 0;
+		while (fgets(buffFG, 32, ftpLoginList) != NULL)
+		{
+			memset(ftpLoginLst[i], 0, strlen(buffFG) + 1);
+
+			if (strstr(buffFG, "\n") != NULL) strncat(ftpLoginLst[i++], buffFG, strlen(buffFG) - 1);
+			else strncat(ftpLoginLst[i++], buffFG, strlen(buffFG));
+			ZeroMemory(buffFG, sizeof(buffFG));
+		};
+
+		if (FileUpdater::oldFTPLoginLstSize == 0) stt->doEmitionGreenFoundData("FTP login list loaded (" + QString::number(MaxFTPLogin) + " entries)");
+		else stt->doEmitionFoundData("<font color=\"Pink\">FTP login list updated (" + QString::number(MaxFTPLogin) + " entries)</font>");
+
+		fclose(ftpLoginList);
+	}
+}
+void updateFTPPass() {
+
+	if (ftpPassLst != NULL)
+	{
+		for (int i = 0; i < MaxFTPPass; ++i) delete[]ftpPassLst[i];
+		delete[]ftpPassLst;
+		ftpPassLst = NULL;
+	};
+
+	MaxFTPPass = 0;
+
+	char buffFG[32] = { 0 };
+	ZeroMemory(buffFG, sizeof(buffFG));
+
+	FILE *ftpPassList = fopen(FTP_PASS_FN, "r");
+
+	if (ftpPassList != NULL)
+	{
+		while (fgets(buffFG, 32, ftpPassList) != NULL)
+		{
+			++MaxFTPPass;
+			ZeroMemory(buffFG, sizeof(buffFG));
+		};
+
+		rewind(ftpPassList);
+
+		ftpPassLst = new char*[MaxFTPPass];
+
+		for (int j = 0; j < MaxFTPPass; j++)
+		{
+			ftpPassLst[j] = new char[32];
+		};
+
+		int i = 0;
+		while (fgets(buffFG, 32, ftpPassList) != NULL)
+		{
+			memset(ftpPassLst[i], 0, strlen(buffFG) + 1);
+
+			if (strstr(buffFG, "\n") != NULL) strncat(ftpPassLst[i++], buffFG, strlen(buffFG) - 1);
+			else strncat(ftpPassLst[i++], buffFG, strlen(buffFG));
+			ZeroMemory(buffFG, sizeof(buffFG));
+		};
+
+		if (FileUpdater::oldFTPPassLstSize == 0) stt->doEmitionGreenFoundData("FTP password list loaded (" + QString::number(MaxFTPPass) + " entries)");
+		else stt->doEmitionFoundData("<font color=\"Pink\">FTP password list updated (" + QString::number(MaxFTPPass) + " entries)</font>");
+
+		fclose(ftpPassList);
+	}
+}
 long getFileSize(const char *fileName) {
     std::ifstream in(fileName, std::ifstream::ate | std::ifstream::binary);
     return in.tellg();
@@ -316,12 +420,14 @@ void FileUpdater::updateLists() {
 }
 
 void FileUpdater::loadOnce() {
-	updateList("negatives.txt", &oldNegLstSize, (void*(*)(void))updateNegatives);
-	updateList("login.txt", &oldLoginLstSize, (void*(*)(void))updateLogin);
-	updateList("pass.txt", &oldPassLstSize, (void*(*)(void))updatePass);
-	updateList("sshpass.txt", &oldSSHLstSize, (void*(*)(void))updateSSH);
-	updateList("wflogin.txt", &oldWFLoginLstSize, (void*(*)(void))updateWFLogin);
-	updateList("wfpass.txt", &oldWFPassLstSize, (void*(*)(void))updateWFPass);
+	updateList(NEGATIVE_FN, &oldNegLstSize, (void*(*)(void))updateNegatives);
+	updateList(LOGIN_FN, &oldLoginLstSize, (void*(*)(void))updateLogin);
+	updateList(PASS_FN, &oldPassLstSize, (void*(*)(void))updatePass);
+	updateList(SSH_PASS_FN, &oldSSHLstSize, (void*(*)(void))updateSSH);
+	updateList(WF_LOGIN_FN, &oldWFLoginLstSize, (void*(*)(void))updateWFLogin);
+	updateList(WF_PASS_FN, &oldWFPassLstSize, (void*(*)(void))updateWFPass);
+	updateList(FTP_LOGIN_FN, &oldFTPLoginLstSize, (void*(*)(void))updateFTPLogin);
+	updateList(FTP_PASS_FN, &oldFTPPassLstSize, (void*(*)(void))updateFTPPass);
 }
 
 void FileUpdater::FUClear() {
@@ -329,7 +435,9 @@ void FileUpdater::FUClear() {
     oldNegLstSize = 0;
     oldLoginLstSize = 0;
     oldPassLstSize = 0;
-    oldSSHLstSize = 0;
-    oldWFLoginLstSize = 0;
-    oldWFPassLstSize = 0;
+	oldSSHLstSize = 0;
+	oldWFLoginLstSize = 0;
+	oldWFPassLstSize = 0;
+	oldFTPLoginLstSize = 0;
+	oldFTPPassLstSize = 0;
 }

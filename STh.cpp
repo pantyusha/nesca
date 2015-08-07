@@ -1,6 +1,18 @@
 #include "STh.h"
 #include "externData.h"
 
+//BA TablelistView
+void STh::doEmitionChangeBARow(int index, QString loginPass, QString percentage)
+{
+	emit stt->signalChangeBARow(index, loginPass, percentage);
+}
+
+void STh::doEmitionUpdatePB2()
+{
+	cIndex = 0;
+	emit stt->updPB2();
+}
+
 void STh::doEmitionShowRedVersion()
 {
 	emit stt->showRedVersion();	
@@ -29,18 +41,7 @@ void STh::doEmitionFoundData(QString str)
 {
 	emit stt->changeFoundData(str);
 }
-void STh::doEmitionBAData(QString str)
-{
-	emit stt->changeBAData(str);
-}
-void STh::doEmition_BARedData(QString str)
-{
-	emit stt->changeRedBAData(str);	
-}
-void STh::doEmition_BAGreenData(QString str)
-{
-	emit stt->changeGreenBAData(str);
-}
+
 void STh::doEmitionRedFoundData(QString str)
 {
 	emit stt->changeRedFoundData(str);
@@ -56,10 +57,6 @@ void STh::doEmitionYellowFoundData(QString str)
 void STh::doEmitionDebugFoundData(QString str)
 {
 	emit stt->changeDebugFoundData(str);
-}
-void STh::doEmitionChangeStatus(QString str)
-{
-	emit stt->changeStatus(str);
 }
 void STh::doEmitionKillSttThread()
 {

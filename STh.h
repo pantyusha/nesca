@@ -14,11 +14,23 @@ class STh : public QThread
 private:
 	QString target = "";
 	QString ports = "";
+	QList<int> coloredIndexes;
 
 public:
+	void addColoredIndex(int index)
+	{
+		coloredIndexes.push_back(index);
+	}
+	QList<int> getColoredIndexes()
+	{
+		return coloredIndexes;
+	}
+
 	void setMode(short mode);
 	void setTarget(QString target);
 	void setPorts(QString ports);
+
+	static int baModelSize();
 
 	static void doEmitionDataSaved(bool status);
 	static void doEmitionStartScanIP();
@@ -26,19 +38,20 @@ public:
 	static void doEmitionStartScanImport();
 	static void doEmitionAddIncData(QString ip, QString str);
 	static void doEmitionAddOutData(QString str);
-	static void doEmition_BAGreenData(QString str);
-    static void doEmition_BARedData(QString str);
+
 	static void doEmitionFoundData(QString str);
 	static void doEmitionRedFoundData(QString str);
 	static void doEmitionGreenFoundData(QString);
 	static void doEmitionYellowFoundData(QString);
-    static void doEmitionChangeStatus(QString);
     static void doEmitionKillSttThread();
-	static void doEmitionBAData(QString str);
+
 	static void doEmitionDebugFoundData(QString);
 	static void doEmitionShowRedVersion();
 	static void doEmitionUpdateArc(unsigned long gTargets);
 	static void doEmitionBlockButton(bool value);
+	//BA TablelistView
+	static void doEmitionChangeBARow(int index, QString loginPass, QString percentage);
+	static void doEmitionUpdatePB2();
 
 signals:
 public: signals: void showRedVersion();
@@ -46,20 +59,20 @@ public: signals: void startScanIP();
 public: signals: void startScanDNS();
 public: signals: void startScanImport();
 public: signals: void signalDataSaved(bool);
-public: signals: void changeGreenBAData(QString);
-public: signals: void changeRedBAData(QString);
-public: signals: void changeBAData(QString);
+public: signals : void updPB2();
+		
 public: signals: void changeFoundData(QString);
 public: signals: void changeRedFoundData(QString);
 public: signals: void changeGreenFoundData(QString);
 public: signals: void changeYellowFoundData(QString);
 public: signals: void changeDebugFoundData(QString);
-public: signals: void changeStatus(QString);
 public: signals: void killSttThread();
 public: signals: void sIncData(QString, QString);
 public: signals : void sOutData(QString);
 public: signals : void signalUpdateArc(unsigned long);
 public: signals : void signalBlockButton(bool);
+		//BA TablelistView
+public: signals : void signalChangeBARow(int, QString, QString);
 
 protected:
 	void run();

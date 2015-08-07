@@ -11,6 +11,7 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
     char pass[128] = {0};
     char request[1024] = {0};
     int passCounter = 1;
+	int rowIndex = -1;
 
     std::vector<char*> negVector;
     if(strcmp(SPEC, "IPC") == 0)
@@ -179,7 +180,15 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 			if (doPost) res = con.nConnect(request, port, &buffer, postData);
 			else res = con.nConnect(request, port, &buffer);
 
-			if (res == -2) return lps;
+			if (res == -2) {
+				if (rowIndex == -1) {
+					nesca_3::addBARow(QString(ip) + ":" + QString::number(port), "--", "FAIL");
+				}
+				else {
+					stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
+				}
+				return lps;
+			}
 			else if (res != -1) {
 				for (int i = 0; i < negVector.size(); ++i)
 				{
@@ -194,18 +203,40 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 				{
 					strcpy(lps.login, loginLst[i]);
 					strcpy(lps.pass, passLst[j]);
+
+					if (rowIndex == -1) {
+						nesca_3::addBARow(QString(ip) + ":" + QString::number(port), QString(login) + ":" + QString(pass), "OK");
+					}
+					else {
+						stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass), "OK");
+					}
+
 					return lps;
 				};
 			}
 			
-            if (BALogSwitched) stt->doEmitionBAData("IPC: " + QString(ip) + ":" + QString::number(port) +
-                "; l/p: " + QString(login) + ":" + QString(pass) + ";	- Progress: (" +
-                QString::number((passCounter++ / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
-
+			if (BALogSwitched) {
+				if (rowIndex == -1) {
+					rowIndex = nesca_3::addBARow(QString(ip) + ":" + QString::number(port),
+						QString(login) + ":" + QString(pass),
+						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
+				}
+				else {
+					stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass),
+						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
+				}
+			}
+			else { rowIndex = -1; }
+			++passCounter;
             Sleep(100);
         };
     };
-
+	if (rowIndex == -1) {
+		nesca_3::addBARow(QString(ip) + ":" + QString::number(port), "--", "FAIL");
+	}
+	else {
+		stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
+	}
     return lps;
 }
 

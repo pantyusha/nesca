@@ -84,17 +84,19 @@ int _sshConnect(const char *user, const char *pass, const char *host, int port) 
     return 0;
 }
 
-int check_ssh_pass(const char *user, const char *pass,
+int check_ssh_pass(const int rowIndex, const char *user, const char *pass,
                    const char *userPass, const char *host, int port,
                    std::string *buffer, const char *banner) {
-    int res = -1;
-    if(BALogSwitched) stt->doEmitionBAData("Probing SSH: " + QString(userPass) + "@" + QString(host) + ":" + QString::number(port));
-
-    res = _sshConnect(user, pass, host, port);
+    int res = _sshConnect(user, pass, host, port);
 
     if(res == 0)
     {
-        stt->doEmition_BAGreenData("[+] SSH: " + QString(userPass) + "@" + QString(host));
+		if (rowIndex == -1) {
+			nesca_3::addBARow(QString(host) + ":" + QString::number(port), QString(userPass) + "@" + QString(host), "OK");
+		}
+		else {
+			stt->doEmitionChangeBARow(rowIndex, QString(userPass) + "@" + QString(host), "OK");
+		}
         buffer->append(userPass);
         buffer->append("@");
         buffer->append(host);
@@ -112,6 +114,8 @@ int SSHBrute(const char* host, int port, std::string *buffer, const char *banner
     char temp[64] = {0};
     char *ptr1 = 0;
     int res = -1;
+	int rowIndex = -1;
+	int passCounter = 0;
 
     for(int i = 0; i < MaxSSHPass; ++i)
     {
@@ -126,23 +130,59 @@ int SSHBrute(const char* host, int port, std::string *buffer, const char *banner
 
         strncpy(login, temp, ptr1 - temp);
         strcpy(pass, ptr1 + 1);
-        res = check_ssh_pass(login, pass, temp, host, port, buffer, banner);
+
+		if (BALogSwitched) {
+			if (rowIndex == -1) {
+				rowIndex = nesca_3::addBARow(QString(host) + ":" + QString::number(port),
+					QString(login) + ":" + QString(pass),
+					QString::number((passCounter / (double)(MaxSSHPass)) * 100).mid(0, 4) + "%");
+			}
+			else {
+				stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass),
+					QString::number((passCounter / (double)(MaxSSHPass)) * 100).mid(0, 4) + "%");
+			}
+		}
+		else { rowIndex = -1; }
+		++passCounter;
+
+        res = check_ssh_pass(rowIndex, login, pass, temp, host, port, buffer, banner);
         ZeroMemory(login, sizeof(login));
         ZeroMemory(pass, sizeof(pass));
         ZeroMemory(temp, sizeof(temp));
 
         if(res == 0)
         {
-            if(i == 0) return -2; //Failhit
+			if (i == 0) {
+				if (rowIndex == -1) {
+					nesca_3::addBARow(QString(host) + ":" + QString::number(port), "--", "FAILHIT");
+				}
+				else {
+					stt->doEmitionChangeBARow(rowIndex, "--", "FAILHIT");
+				}
+				return -2; //Failhit
+			}
             return 1;
         }
         else if(res == -2)
-        {
+		{
+			if (rowIndex == -1) {
+				nesca_3::addBARow(QString(host) + ":" + QString::number(port), "--", "FAIL");
+			}
+			else {
+				stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
+			}
             return -2;
         };
 
         Sleep(500);
-    };
+	};
+
+	if (rowIndex == -1) {
+		nesca_3::addBARow(QString(host) + ":" + QString::number(port), "--", "FAIL");
+	}
+	else {
+		stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
+	}
     return -1;
 }
 

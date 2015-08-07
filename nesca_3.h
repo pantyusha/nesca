@@ -18,6 +18,10 @@
 #include <qtextcodec.h>
 #include <libssh/libssh.h>
 
+#include <QStringListModel.h>
+#include <QStandardItemModel.h>
+#include <QList.h>
+
 extern Ui::nesca_3Class *ui;
 extern bool widgetIsHidden, QOSWait,
     ME2ScanFlag, QoSScanFlag, VoiceScanFlag, PieStatFlag,
@@ -28,18 +32,21 @@ extern QVector<int> vAlivLst, vAnomLst, vWFLst, vSuspLst, vLowlLst, vBALst, vSSH
 extern QList<int> lstOfLabels;
 extern QSystemTrayIcon *tray;
 
+extern QStandardItemModel *BAModel;
+
 class nesca_3 : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	nesca_3(QWidget *parent = 0);
+	nesca_3(bool isWM, QWidget *parent);
 	~nesca_3();
 
 	void ConnectEvrthng();
 	void ChangeLabelIpRange_Value(QString str);
 	void ChangeLabelIPS_Value(QString str);
 	void newListItem(QString str);
+	static int addBARow(QString ip, QString loginPass, QString percentage);
 
 public:
     static int perc;
@@ -57,7 +64,9 @@ protected:
 		void ThreadDelay_ChangeValue(QString val);
 		void ChangePingerOK(bool val);
 		void changeNSTrackLabel(bool status);
-		void slotPBUpdate();
+		void slotPBUpdate(); 
+		void slotPB2Update();
+		void slotPB2DrawPointer(int pointer);
         void DNSLine_ValueChanged();
         void slotShowRedVersion();
         void slotTabChanged(int index);
@@ -112,12 +121,13 @@ protected:
 		void appendDebugText(QString str);
 		void appendNotifyText(QString str);
         void appendDefaultText(QString str);
-		void appendGreenBAData(QString str);
-		void appendRedBAData(QString str);
         void STTTerminate();
         void drawVerboseArcs(unsigned long gTargets);
 		void finishLoading();
 		void slotBlockButtons(bool value);
+		//BA TablelistView
+		void slotChangeBARow(const int index, const QString loginPass, const QString percentage);
+
 private:
 	QPoint dragPosition;
 };
@@ -129,6 +139,85 @@ public:
 public:
 	void contextMenuEvent(QContextMenuEvent *event);
 };
+
+class PekoWidget : public QWidget
+{
+	Q_OBJECT;
+public:
+	static int m_xPos;
+	static int m_yPos;
+	static int m_windowCounter;
+	static int offset;
+
+	PekoWidget(QWidget *parent = 0) : QWidget(parent)
+	{
+	}
+		PekoWidget(const int qmwXPos, const int qmwYPos, QWidget *parent = 0) : QWidget(parent)
+		{
+			offset = 5;
+			setWindowFlags(Qt::FramelessWindowHint | Qt::SubWindow);
+			installEventFilter(this);
+			setStyleSheet(
+				"background-color:qlineargradient(spread:pad, x1:0.541, y1:0.500364, x2:0.54, y2:0, stop:0 rgba(16, 16, 16, 255), stop:1 rgba(0, 0, 0, 255));");
+
+			if (m_xPos >= 1200) {
+				m_xPos = 305;
+				offset += 5;
+			}
+			setGeometry(qmwXPos - m_xPos, qmwYPos + m_yPos, 300, 200);
+			if (m_windowCounter++ < 3) {
+				m_yPos += 200 + offset;
+			}
+			else {
+				m_windowCounter = 0;
+				m_xPos += 305;
+				m_yPos = 0;
+			}
+		};
+protected:
+	bool switchWindows;
+	void paintEvent(QPaintEvent *e)
+	{
+		QPainter painter(this);
+		painter.setPen(QColor(255, 255, 255, 60));
+		painter.drawRoundedRect(0, 0, width() - 1, height() - 1, 0, 1);
+		QWidget::paintEvent(e);
+
+	}
+	void mousePressEvent(QMouseEvent *evt)
+	{
+		switchWindows = false;
+		if (evt->button() == Qt::LeftButton)
+		{
+			switchWindows = true;
+			oldPos = evt->globalPos();
+			evt->accept();
+		}
+		else if (evt->button() == Qt::RightButton)
+		{
+			ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
+			this->hide();
+		};
+	}
+	void mouseMoveEvent(QMouseEvent *evt)
+	{
+		switchWindows = false;
+		const QPoint delta = evt->globalPos() - oldPos;
+		move(x() + delta.x(), y() + delta.y());
+		oldPos = evt->globalPos();
+	}
+	void mouseReleaseEvent()
+	{
+		if (switchWindows)
+		{
+			switchWindows = false;
+		};
+	}
+
+private:
+	QPoint oldPos;
+};
+
 class PopupMsgWidget : public QWidget
 {
 	Q_OBJECT

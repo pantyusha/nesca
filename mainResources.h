@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "base64.h"
-
 #include <libssh/libssh.h>
 #include <curl/curl.h>
 #include <vector>
@@ -9,6 +8,9 @@
 #include <time.h>
 #include <process.h>
 #include <conio.h>
+#include <direct.h>
+
+#define GetCurrentDir _getcwd
 #else
 #include <string>
 #include <iostream>
@@ -28,7 +30,9 @@
 #include <fcntl.h>
 #include <math.h>
 #include <cstring>
+#include <unistd.h>
 
+#define GetCurrentDir getcwd
 #define ZeroMemory(Destination,Length) memset((Destination),0,(Length))
 #define Sleep(msecs) usleep((msecs)*1000)
 #define WSAGetLastError() errno
@@ -84,7 +88,37 @@ typedef int					BOOL;
 
 #define TITLE_MAX_SIZE 512
 #define COOKIE_MAX_SIZE 1024
-#define RESULT_DIR_NAME "./result_files-" __DATE__
+#define TYPE1 "camera"
+#define TYPE2 "other"
+#define TYPE3 "auth"
+#define TYPE4 "ftp"
+#define TYPE5 "ssh"
+
+#define PWD_LIST_FOLDER "./pwd_lists/"
+#define LOGIN_FN PWD_LIST_FOLDER"login.txt"
+#define PASS_FN PWD_LIST_FOLDER"pass.txt"
+#define FTP_LOGIN_FN PWD_LIST_FOLDER"ftplogin.txt"
+#define FTP_PASS_FN PWD_LIST_FOLDER"ftppass.txt"
+#define WF_LOGIN_FN PWD_LIST_FOLDER"wflogin.txt"
+#define WF_PASS_FN PWD_LIST_FOLDER"wfpass.txt"
+#define SSH_PASS_FN PWD_LIST_FOLDER"sshpass.txt"
+#define NEGATIVE_FN PWD_LIST_FOLDER"negatives.txt"
+
+#define HTTP_FILE_STYLE "<style> #recvSpan{display: inline-block;width: 150px;} \
+	#hostSpan{display: inline-block;width: 200px;} \
+	body { background-color: #141414; font-family: monospace; font-size:95%;} \
+	#ipd{background:black;width:100%;white-space:nowrap;overflow-x:none;display:inline-block;} \
+	#ipd:hover{color: #909090;background:#202020;} \
+	#tit{text-align:center;border:1px solid #5d5d5d;} \
+	a{color: gray;text-decoration: underline;} \
+	a:focus{ outline-style: dashed;outline-width:1px; outline-color: red;}</style>"
+
+#define HTTP_FILE_HEADER "<div id=\"tit\"><a href=\""TYPE1".html\">."TYPE1"</a> \
+	<a href=\""TYPE2".html\">."TYPE2"</a> \
+	<a href=\""TYPE3".html\">."TYPE3"</a> \
+	<a href=\""TYPE4".html\">."TYPE4"</a> \
+	<a href=\""TYPE5".html\">."TYPE5"</a> \
+	</div><br><br>"
 
 #ifndef MAX_ADDR_LEN
 #define MAX_ADDR_LEN 128
@@ -145,12 +179,12 @@ public:
 		iterationCount = 0;
 	}
 
-    int header(char *ip,
+	/*int getHeader(char *ip,
         int port,
         const char str[],
         Lexems *l,
         PathStr *ps,
-        std::vector<std::string> *lst, int size);
+        std::vector<std::string> *lst, int size);*/
 
 	int filler(char* ip, 
 		int port,
@@ -172,3 +206,5 @@ typedef int(__stdcall *NET_DVR_Login_V30)(const char * sDVRIP,
 extern NET_DVR_Init hik_init_ptr;
 extern NET_DVR_Cleanup hik_cleanup_ptr;
 extern NET_DVR_Login_V30 hik_login_ptr;
+
+

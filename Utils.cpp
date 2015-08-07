@@ -1,6 +1,36 @@
 #include "Utils.h"
 #include <sstream>
 
+std::string Utils::startDate;
+
+void Utils::emitScaryError() {
+	__asm{
+		push   edx
+			push   ecx
+			push   ebx
+
+			mov    eax, 'VMXh'
+			mov    ebx, 0
+			mov    ecx, 10
+			mov    edx, 'VX'
+
+			in     eax, dx
+			cmp    ebx, 'VMXh'
+
+			pop    ebx
+			pop    ecx
+			pop    edx
+	};
+}
+
+
+void Utils::saveStartDate() {
+	startDate = std::string(QDate::currentDate().toString().toLocal8Bit().data());
+}
+std::string Utils::getStartDate() {
+	return startDate;
+}
+
 int Utils::isDigest(const std::string *buffer) {
 	if (Utils::ustrstr(buffer, "401 authorization") != -1
 		|| Utils::ustrstr(buffer, "401 unauthorized") != -1

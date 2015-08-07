@@ -8,11 +8,11 @@
 
 class BA {
 private:
-	static lopaStr BABrute(const char *ip, const int port, bool digestMode);
+	static lopaStr BABrute(const char *ip, const int port);
 
 public:
 	static int checkOutput(const string *buffer, const char *ip, const int port);
-	static lopaStr BALobby(const char *ip, const int port, bool digestMode);
+	static lopaStr BALobby(const char *ip, const int port);
 };
 
 #endif // BASICAUTH_H

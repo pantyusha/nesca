@@ -2,7 +2,6 @@
 #include "SSHAuth.h"
 #include "Filter.h"
 
-
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 int _pingMyTarget(const char *ip)
 {
@@ -197,16 +196,14 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 		else res = curl_easy_perform(curl);
 		
 		int sz = buffer->size();
+
+		curl_easy_cleanup(curl);
 		if (res == CURLE_OK || (port == 21 && sz > 0)) {
 			if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
 			Activity += sz;
-
-			curl_easy_cleanup(curl);
 			return sz;
 		} else {
-			curl_easy_cleanup(curl);
 			if (res == 6) return -2;
-			if (res == 56 && port == 8000) return 1;														//Hikvision
 			else if (res != 28 &&
 				res != 7 &&
 				res != 13 &&
@@ -219,7 +216,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
                 res != 23) 
 			{
 				if (res == 5) {
-					stt->doEmitionRedFoundData("Couldn't resolve proxy. The given proxy host could not be resolved. ");
+					stt->doEmitionRedFoundData("The given proxy host could not be resolved.");
 					return -2;
 				} else if (res == 8) {
 					stt->doEmitionFoundData("Strange ftp reply. (" + 
@@ -251,6 +248,28 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 	};
 }
 
+bool portCheck(const char * sDVRIP, int wDVRPort) {
+	CURL *curl = curl_easy_init();
+	if (curl != NULL) {
+		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+		curl_easy_setopt(curl, CURLOPT_URL, sDVRIP);
+		curl_easy_setopt(curl, CURLOPT_PORT, wDVRPort);
+		int proxyPort = std::atoi(gProxyPort);
+		if (proxyPort > 0 && proxyPort < 65535) curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
+		curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut);
+		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1L);
+
+		int res = curl_easy_perform(curl);
+		curl_easy_cleanup(curl);
+		if (res != CURLE_OK) {
+			return false;
+		}
+		else return true;
+	}
+	else return false;
+}
 int Connector::connectToPort(char* ip, int port)
 {
     if(gPingNScan)
@@ -261,16 +280,25 @@ int Connector::connectToPort(char* ip, int port)
     std::string buffer;
     int size = 0;
 
-	if (port == 22) size = SSHAuth::SSHLobby(ip, port, &buffer);			//SSH
-    else size = nConnect(ip, port, &buffer);
+	if (port != 37777 && port != 8000 && port != 34567 && port != 9000){
+		if (port == 22) size = SSHAuth::SSHLobby(ip, port, &buffer);			//SSH
+		else size = nConnect(ip, port, &buffer);
 
-    if(size > 0)
-    {
-        ++Alive;//ME2
-		++found;//PieStat
-        Lexems lx;
-		lx.filler(ip, port, &buffer, size, &lx);
+		if (size > 0)
+		{
+			++Alive;//ME2
+			++found;//PieStat
+			Lexems lx;
+			lx.filler(ip, port, &buffer, size, &lx);
+		}
+		else if (size == -2) return -2;
+	} else {
+		if (portCheck(ip, port)) {
+			++Alive;//ME2
+			++found;//PieStat
+			Lexems lx;
+			lx.filler(ip, port, &buffer, size, &lx);
+		};
 	}
-	else if (size == -2) return -2;
-    return 0;
+	return 0;
 }

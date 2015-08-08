@@ -2443,6 +2443,8 @@ std::string getHeader(const std::string *buffcpy, const int flag) {
 
 	return result;
 }
+
+#define RVI_START_FILE "<Organization>\n\t<Department name=\"root\">\n\t\t"
 void parseFlag(int flag, char* ip, int port, int size, const std::string &header, char* cp) {
 
 	//Streaming server?
@@ -2558,16 +2560,32 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 			char fileName[256] = { 0 };
 			char date[64] = { 0 };
 			strcpy(date, Utils::getStartDate().c_str());
-			sprintf(fileName, "./result_files-%s/rvifile_%s.csv", date, date);
-			FILE *f = fopen(fileName, "a");
-			if (f != NULL) {
-				char string[1024] = { 0 };
-				sprintf(string, "\"%s\",\"0\",%s,\"%d\",\"2\",\"%s\",\"%s\",\"0\",\"1\",\"0\",\"0\"\n",
-					ip, ip, port, lps.login, lps.pass);
-				fputs(string, f);
-				fclose(f);
+			sprintf(fileName, "./result_files-%s/rvifile_%s(%s).xml", 
+				date, date, Utils::getStartTime().c_str());
+
+			char string[1024] = { 0 };
+			if (fopen(fileName, "r") == NULL) {
+				FILE *f = fopen(fileName, "a");
+				if (f != NULL) {
+					sprintf(string, RVI_START_FILE"<Device title=\"%s\" ip=\"%s\" port=\"%d\" user=\"%s\" password=\"%s\"/>\n\t</Department>\n</Organization>\n",
+							ip, ip, port, lps.login, lps.pass);
+					fputs(string, f);
+					fclose(f);
+				}
+				else stt->doEmitionRedFoundData("Cannot open xml - \"" + QString::fromLocal8Bit(fileName));
 			}
-			else stt->doEmitionRedFoundData("Cannot open csv - \"" + QString(fileName));
+			else {
+				FILE *f = fopen(fileName, "r+");
+				if (f != NULL) {
+					fseek(f, -35, SEEK_END);
+					sprintf(string, "\n\t\t<Device title=\"%s\" ip=\"%s\" port=\"%d\" user=\"%s\" password=\"%s\"/>\n\t</Department>\n</Organization>\n",
+						ip, ip, port, lps.login, lps.pass);
+					fputs(string, f);
+					fclose(f);
+				}
+				else stt->doEmitionRedFoundData("Cannot open xml - \"" + QString::fromLocal8Bit(fileName));
+
+			}
 			rviStop = false;
 		};
 		return;

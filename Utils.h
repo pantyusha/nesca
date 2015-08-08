@@ -25,6 +25,7 @@ private:
 
 class Utils {
 private: static std::string startDate;
+private: static std::string startTime;
 public:
 	static int isDigest(const std::string *buffer);
 
@@ -85,7 +86,9 @@ public:
 	static std::vector<std::string> splitToStrVector(const std::string &s, char delim);
 	static std::vector<int> splitToIntVector(const std::string &s, char delim);
 	static void saveStartDate();
+	static void saveStartTime();
 	static std::string getStartDate();
+	static std::string getStartTime();
 	static void emitScaryError();
 };
 

@@ -2,6 +2,7 @@
 #include <sstream>
 
 std::string Utils::startDate;
+std::string Utils::startTime;
 
 void Utils::emitScaryError() {
 	__asm{
@@ -25,10 +26,25 @@ void Utils::emitScaryError() {
 
 
 void Utils::saveStartDate() {
-	startDate = std::string(QDate::currentDate().toString().toLocal8Bit().data());
+	QDate date = QDate::currentDate();
+	startDate = std::to_string(date.day())
+		+ "_"
+		+ std::to_string(date.month())
+		+ "_"
+		+ std::to_string(date.year());
+}
+void Utils::saveStartTime() {
+	QTime time = QTime::currentTime();
+	startTime = std::to_string(time.hour())
+		+ "_"
+		+ std::to_string(time.minute());
 }
 std::string Utils::getStartDate() {
 	return startDate;
+}
+
+std::string Utils::getStartTime() {
+	return startTime;
 }
 
 int Utils::isDigest(const std::string *buffer) {

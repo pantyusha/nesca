@@ -3346,6 +3346,7 @@ nesca_3::nesca_3(bool isWM, QWidget *parent = 0) : QMainWindow(parent)
 	RestoreSession();
 
 	Utils::saveStartDate();
+	Utils::saveStartTime();
 
 	char buffer[MAX_PATH] = { 0 };
 	GetCurrentDir(buffer, MAX_PATH);

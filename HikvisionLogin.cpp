@@ -302,8 +302,12 @@ int rvi_login_ptr(const char *sDVRIP, int wDVRPort, const char *login, const cha
 
 	if (res != SOCKET_ERROR) {
 		send(sock, newlp, 32, 0);
+		Activity += strlen(newlp);
+		stt->doEmitionAddOutData(QString(newlp));
 		char buff[32] = { 0 };
 		recvWT(sock, buff, 16, gTimeOut, &bTO);
+		Activity += strlen(buff);
+		stt->doEmitionAddIncData(QString(sDVRIP) + ":" + QString(wDVRPort), QString(buff));
 
 		shutdown(sock, SD_BOTH);
 		closesocket(sock);

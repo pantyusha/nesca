@@ -2531,7 +2531,11 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 			char fileName[256] = { 0 };
 			char date[64] = { 0 };
 			strcpy(date, Utils::getStartDate().c_str());
-			sprintf(fileName, "./result_files-%s/hikkafile_%s.csv", date, date);
+			if (HikVis::hikCounter >= 256) {
+				HikVis::hikCounter = 0;
+				HikVis::hikPart++;
+			}
+			sprintf(fileName, "./result_files-%s/hikkafile_%s_part_%d.csv", date, date, HikVis::hikPart);
 			FILE *f = fopen(fileName, "a");
 			if (f != NULL) {
 				char string[1024] = { 0 };
@@ -2541,6 +2545,7 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 				fclose(f);
 			}
 			else stt->doEmitionRedFoundData("Cannot open csv - \"" + QString(fileName));
+			HikVis::hikCounter++;
 			hikkaStop = false;
 		};
 		return;
@@ -2560,8 +2565,12 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 			char fileName[256] = { 0 };
 			char date[64] = { 0 };
 			strcpy(date, Utils::getStartDate().c_str());
-			sprintf(fileName, "./result_files-%s/rvifile_%s(%s).xml", 
-				date, date, Utils::getStartTime().c_str());
+			if (HikVis::rviCounter >= 256) {
+				HikVis::rviCounter = 0;
+				HikVis::rviPart++;
+			}
+			sprintf(fileName, "./result_files-%s/rvifile_%s(%s)_part_%d.xml", 
+				date, date, Utils::getStartTime().c_str(), HikVis::rviPart);
 
 			char string[1024] = { 0 };
 			FILE *fc = fopen(fileName, "r");
@@ -2585,8 +2594,8 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 					fclose(f);
 				}
 				else stt->doEmitionRedFoundData("Cannot open xml - \"" + QString::fromLocal8Bit(fileName) + " Err:" + QString::number(GetLastError()));
-
 			}
+			HikVis::rviCounter++;
 			rviStop = false;
 		};
 		return;

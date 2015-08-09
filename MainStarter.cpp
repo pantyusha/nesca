@@ -1180,8 +1180,8 @@ struct Corac {
 	int index;
 	std::string ip;
 };
-
 void MainStarter::startImportScan(){
+
 	if (MainStarter::flCounter == 0)
 	{
 		stt->doEmitionRedFoundData("Empty IP list.");
@@ -1417,7 +1417,11 @@ int thread_cleanup(void)
 	return 1;
 }
 
+#include "HikvisionLogin.h"
+
 void MainStarter::start(const char* targets, const char* ports) {
+	HikVis::hikCounter = 0;
+	HikVis::rviCounter = 0;
 	saveBackup = true;
 	curl_global_init(CURL_GLOBAL_ALL);
 	

@@ -11,6 +11,11 @@ private: lopaStr hikLogin(const char * sDVRIP, int wDVRPort);
 		 lopaStr rviLogin(const char * sDVRIP, int wDVRPort);
 
 public:
+	static int hikCounter;
+	static int rviCounter;
+	static int hikPart;
+	static int rviPart;
+public:
 	static bool checkHikk(const char * sDVRIP, int port);
 	static bool checkRVI(const char * sDVRIP, int port);
 	static bool checkSAFARI(const char * sDVRIP, int port);

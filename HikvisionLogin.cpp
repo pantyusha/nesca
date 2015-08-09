@@ -3,6 +3,10 @@
 #include "FileUpdater.h"
 
 bool HikVis::isInitialized = false;
+int HikVis::hikCounter = 0;
+int HikVis::hikPart = 0;
+int HikVis::rviCounter = 0;
+int HikVis::rviPart = 0;
 
 const char headerSAFARI[128] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x60, 0x52, 0x00, 0x00, 0x00, 0x7b, 0x22, 0x4d, 0x4f,
@@ -307,7 +311,7 @@ int rvi_login_ptr(const char *sDVRIP, int wDVRPort, const char *login, const cha
 		char buff[32] = { 0 };
 		recvWT(sock, buff, 16, gTimeOut, &bTO);
 		Activity += strlen(buff);
-		stt->doEmitionAddIncData(QString(sDVRIP) + ":" + QString(wDVRPort), QString(buff));
+		stt->doEmitionAddIncData(QString(sDVRIP) + ":" + QString::number(wDVRPort), QString(buff));
 
 		shutdown(sock, SD_BOTH);
 		closesocket(sock);

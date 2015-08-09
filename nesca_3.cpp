@@ -3334,6 +3334,11 @@ nesca_3::nesca_3(bool isWM, QWidget *parent = 0) : QMainWindow(parent)
 	SetValidators();
 	ConnectEvrthng();
 
+	HikVis::hikCounter = 0;
+	HikVis::rviCounter = 0;
+	HikVis::hikPart = 0;
+	HikVis::rviPart = 0;
+
 	QTime time = QTime::currentTime();
 	qsrand((uint)time.msec());
 

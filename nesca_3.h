@@ -50,7 +50,7 @@ public:
 
 public:
     static int perc;
-    static int savedTabIndex;
+	static int savedTabIndex;
 protected:
 	bool eventFilter(QObject* obj, QEvent *event);
 	void run();

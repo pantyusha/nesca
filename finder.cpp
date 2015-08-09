@@ -2564,7 +2564,8 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 				date, date, Utils::getStartTime().c_str());
 
 			char string[1024] = { 0 };
-			if (fopen(fileName, "r") == NULL) {
+			FILE *fc = fopen(fileName, "r");
+			if (fc == NULL) {
 				FILE *f = fopen(fileName, "a");
 				if (f != NULL) {
 					sprintf(string, RVI_START_FILE"<Device title=\"%s\" ip=\"%s\" port=\"%d\" user=\"%s\" password=\"%s\"/>\n\t</Department>\n</Organization>\n",
@@ -2572,9 +2573,9 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 					fputs(string, f);
 					fclose(f);
 				}
-				else stt->doEmitionRedFoundData("Cannot open xml - \"" + QString::fromLocal8Bit(fileName));
-			}
-			else {
+				else stt->doEmitionRedFoundData("Cannot open xml - \"" + QString::fromLocal8Bit(fileName) + " Err:" + QString::number(GetLastError()));
+			} else {
+				fclose(fc);
 				FILE *f = fopen(fileName, "r+");
 				if (f != NULL) {
 					fseek(f, -35, SEEK_END);
@@ -2583,7 +2584,7 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 					fputs(string, f);
 					fclose(f);
 				}
-				else stt->doEmitionRedFoundData("Cannot open xml - \"" + QString::fromLocal8Bit(fileName));
+				else stt->doEmitionRedFoundData("Cannot open xml - \"" + QString::fromLocal8Bit(fileName) + " Err:" + QString::number(GetLastError()));
 
 			}
 			rviStop = false;

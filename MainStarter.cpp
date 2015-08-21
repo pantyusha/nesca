@@ -1387,11 +1387,11 @@ void MainStarter::start(const char* targets, const char* ports) {
 	else if (gMode == 1) startDNSScan();
 	else startImportScan();
 
-	saveBackup = false;
-
 	stt->doEmitionYellowFoundData("Stopping threads...");
 
 	while (cons > 0 || jsonArr->size() > 0) Sleep(2000);
+	saveBackupToFile();
+	saveBackup = false;
 	
 	thread_cleanup();
 

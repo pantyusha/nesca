@@ -7,12 +7,6 @@ void STh::doEmitionChangeBARow(int index, QString loginPass, QString percentage)
 	emit stt->signalChangeBARow(index, loginPass, percentage);
 }
 
-void STh::doEmitionUpdatePB2()
-{
-	cIndex = 0;
-	emit stt->updPB2();
-}
-
 void STh::doEmitionShowRedVersion()
 {
 	emit stt->showRedVersion();	

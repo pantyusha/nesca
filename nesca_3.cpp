@@ -15,7 +15,6 @@
 #include <qdesktopservices.h>
 #include <qmessagebox.h>
 #include "progressbardrawer.h"
-#include "ColoredIndexBarDrawer.h"
 #include "FileDownloader.h"
 #include "HikvisionLogin.h"
 #include <QCryptographicHash>
@@ -80,7 +79,6 @@ ActivityDrawerTh_HorNet *adtHN = new ActivityDrawerTh_HorNet();
 DrawerTh_VoiceScanner *vsTh = new DrawerTh_VoiceScanner();
 PieStat *psTh = new PieStat();
 ProgressbarDrawer *pbTh = new ProgressbarDrawer();
-ColoredIndexBarDrawer *pbTh2 = new ColoredIndexBarDrawer();
 
 bool MapWidgetOpened = false;
 bool globalScanFlag;
@@ -94,7 +92,6 @@ QGraphicsScene *sceneActivityGrid;
 QGraphicsScene *sceneTextPlacer;
 QGraphicsScene *sceneVoice;
 QGraphicsScene *pbScene;
-QGraphicsScene *pb2Scene;
 QGraphicsScene *jobRangeVisualScene;
 
 QString importFileName = "";
@@ -152,7 +149,6 @@ int PekoWidget::m_xPos = 305;
 int PekoWidget::m_yPos = 0;
 int PekoWidget::m_windowCounter = 0;
 int PekoWidget::offset = 0;
-
 
 
 int psh_lul(PIP_ADAPTER_INFO zzaza)
@@ -401,7 +397,6 @@ void setSceneArea()
 	sceneTextPlacer = new QGraphicsScene();
 	sceneVoice = new QGraphicsScene();
 	pbScene = new QGraphicsScene();
-	pb2Scene = new QGraphicsScene();
 	jobRangeVisualScene = new QGraphicsScene();
 
 	ui->graphicLog->setScene(sceneGrid);
@@ -413,7 +408,6 @@ void setSceneArea()
 	ui->graphicTextPlacer->setScene(sceneTextPlacer);
 	ui->graphicsVoice->setScene(sceneVoice);
 	ui->pbgv->setScene(pbScene);
-	ui->pbgv_2->setScene(pb2Scene);
 	ui->jobRangeVisual->setScene(jobRangeVisualScene);
 	
 	ui->graphicLog->setSceneRect(0, 0, ui->graphicLog->width(), ui->graphicLog->height());
@@ -425,7 +419,6 @@ void setSceneArea()
 	ui->graphicTextPlacer->setSceneRect(0, 0, ui->graphicTextPlacer->width(), ui->graphicTextPlacer->height());
 	ui->graphicsVoice->setSceneRect(0, 0, ui->graphicsVoice->width(), ui->graphicsVoice->height());
 	ui->pbgv->setSceneRect(0, 0, ui->pbgv->width(), ui->pbgv->height());
-	ui->pbgv_2->setSceneRect(0, 0, ui->pbgv_2->width(), ui->pbgv_2->height());
 	ui->jobRangeVisual->setSceneRect(0, 0, ui->jobRangeVisual->width(), ui->jobRangeVisual->height());
 
 
@@ -2101,40 +2094,6 @@ void nesca_3::slotPBUpdate()
 	pbScene->addLine(4, 77, 6, 77, pbPen);
 	pbScene->addLine(4, 88, 6, 88, pbPen);
 }
-#include <unordered_map>
-std::unordered_map<int, QColor> colorMap = { 
-	{ 0, QColor("#DC143C") },
-	{ 1, QColor("#000080") },
-	{ 2, QColor("#3CB371") },
-	{ 3, QColor("#20B2AA") },
-	{ 4, QColor("#00BFFF") },
-	{ 5, QColor("#DEB887") }
-};
-int ciSz = 1;
-void nesca_3::slotPB2Update()
-{
-	pb2Scene->clear();
-	QList<int> cIndexes = stt->getColoredIndexes();
-
-	ciSz = cIndexes.size();
-	int percValue = ciSz / 100;
-
-	for (int i = 0, j = 0; i < ciSz; i += percValue, j++) {
-		int val = ciSz - i;
-		if (val < percValue) {
-			percValue = val;
-		}
-		pb2Scene->addLine(0, j, 26, j, colorMap[cIndexes[i]]);
-	}
-}
-
-void nesca_3::slotPB2DrawPointer(int pointer) {
-	QGraphicsRectItem* rect = new QGraphicsRectItem(0, 0, 26, pointer);
-	rect->setBrush(QBrush(QColor(0, 0, 0, 100)));
-	pb2Scene->addItem(rect);
-	//pb2Scene->addRect(0, pointer, 26, pointer, QColor(255, 255, 255, 160));
-	pb2Scene->addLine(0, pointer, 26, pointer, QColor(255, 255, 255, 255));
-}
 void nesca_3::changeNSTrackLabel(bool status)
 {
 	if(status) ui->NSTrackStatusLabel->setStyleSheet("background-color: green; border: 1px solid white;");
@@ -2255,8 +2214,6 @@ void nesca_3::ConnectEvrthng()
 {
 	connect(stt, SIGNAL(signalBlockButton(bool)), this, SLOT(slotBlockButtons(bool)));
 	connect(pbTh, SIGNAL(upd()), this, SLOT(slotPBUpdate()));
-	connect(stt, SIGNAL(updPB2()), this, SLOT(slotPB2Update()));
-	connect(pbTh2, SIGNAL(drawPointerPB2(int)), this, SLOT(slotPB2DrawPointer(int)));
 	connect ( ui->secretMessageBut_1, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
 	connect ( ui->secretMessageBut_2, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
 	connect ( ui->secretMessageBut_3, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
@@ -2691,7 +2648,6 @@ void nesca_3::trayButtonClicked()
 void nesca_3::ChangeShuffle(bool val)
 {
 	gShuffle = val;
-	ui->pbgv_2->setVisible(val);
 }
 
 void nesca_3::ChangeTrackerOK(bool val)
@@ -3007,7 +2963,6 @@ void nesca_3::ImportScanSeq()
 
 		startFlag = true;
 		pbTh->start();
-		pbTh2->start();
 		ui->importButton->setText("Stop");
 		ui->importButton->setStyleSheet(
 			" #importButton {"
@@ -3176,9 +3131,9 @@ void nesca_3::finishLoading() {
 
 	CreateVerFile();
 
-	dtHN->start();
-	dtME2->start();
-	adtHN->start();
+	//dtHN->start();
+	//dtME2->start();
+	//adtHN->start();
 	
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)

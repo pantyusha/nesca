@@ -35,6 +35,6 @@ void ActivityDrawerTh_HorNet::run()
 		makeActLine(((float)Activity / (nm != 0 ? nm : 1)) * 10);
 		adtHN->doEmitDrawActivityLine(QString::number(Activity) + "b");
 		Activity = 0;
-		msleep(150);
+		msleep(200);
 	};
 }

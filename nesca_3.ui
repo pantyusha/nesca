@@ -963,28 +963,7 @@ color: rgb(214, 214, 0);</string>
       <widget class="QGraphicsView" name="pbgv">
        <property name="geometry">
         <rect>
-         <x>451</x>
-         <y>20</y>
-         <width>26</width>
-         <height>102</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color:rgb(38, 38, 38);
-border: 1px solid rgb(227, 227, 227);
-border-radius: 3px;</string>
-       </property>
-       <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
-       </property>
-       <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
-       </property>
-      </widget>
-      <widget class="QGraphicsView" name="pbgv_2">
-       <property name="geometry">
-        <rect>
-         <x>420</x>
+         <x>440</x>
          <y>20</y>
          <width>26</width>
          <height>102</height>

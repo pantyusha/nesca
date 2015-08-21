@@ -6,6 +6,9 @@
 #include <qjsonvalue.h>
 #include <qjsonarray.h>
 #include <qjsondocument.h>
+#include "IPRandomizer.h"
+#include "HikvisionLogin.h"
+#include <ctime>
 
 int gTimeOut = 3;
 int gPingTimeout = 1;
@@ -1176,10 +1179,6 @@ void MainStarter::startDNSScan(){
 	};
 }
 
-struct Corac {
-	int index;
-	std::string ip;
-};
 void MainStarter::startImportScan(){
 
 	if (MainStarter::flCounter == 0)
@@ -1190,35 +1189,21 @@ void MainStarter::startImportScan(){
 		return;
 	};
 
-	//std::vector<std::string> ipVec;
-	std::vector<Corac> ipVec;
 	struct in_addr tAddr;
-	int ipOffset = 6;
-	//for (gflIndex = 0; gflIndex < MainStarter::flCounter; ++gflIndex)
-	for (gflIndex = 0; gflIndex < MainStarter::flCounter; gflIndex += ipOffset)
-	{	
-		//sprintf(metaRange, "%d.%d.%d.%d-%d.%d.%d.%d",
-		//	ipsstartfl[gflIndex][0], ipsstartfl[gflIndex][1], ipsstartfl[gflIndex][2], ipsstartfl[gflIndex][3], 
-		//	ipsendfl[gflIndex][0], ipsendfl[gflIndex][1], ipsendfl[gflIndex][2], ipsendfl[gflIndex][3]);
 
-		//ip1 = (ipsstartfl[gflIndex][0] * 16777216) +
-		//	(ipsstartfl[gflIndex][1] * 65536) +
-		//	(ipsstartfl[gflIndex][2] * 256) +
-		//	ipsstartfl[gflIndex][3];
-		//ip2 = (ipsendfl[gflIndex][0] * 16777216) +
-		//	(ipsendfl[gflIndex][1] * 65536) +
-		//	(ipsendfl[gflIndex][2] * 256) +
-		//	ipsendfl[gflIndex][3];
-
-		switch (gShuffle) {
-		case true: {
+	switch (gShuffle) {
+	case true: {
+				   int ipOffset = 6;
+				   for (gflIndex = 0; gflIndex < MainStarter::flCounter; gflIndex += ipOffset)
+				   {
 					   int ipGap = MainStarter::flCounter - gflIndex;
 					   if (ipGap < ipOffset)
 					   {
 						   ipOffset = ipGap;
 					   };
 
-					   for (int j = gflIndex, coracIndex = 0; j < gflIndex + ipOffset; ++j, coracIndex++)
+					   std::vector<IPRangeHolder> ipRangeVec;
+					   for (int j = gflIndex; j < gflIndex + ipOffset; ++j)
 					   {
 						   /*sprintf(metaRange, "%d.%d.%d.%d-%d.%d.%d.%d",
 							   ipsstartfl[j][0], ipsstartfl[j][1], ipsstartfl[j][2], ipsstartfl[j][3],
@@ -1232,94 +1217,54 @@ void MainStarter::startImportScan(){
 							   (ipsendfl[j][2] * 256) +
 							   ipsendfl[j][3];
 
-						   for (unsigned long i = ip1; i <= ip2; ++i)
-						   {
-							   if (!globalScanFlag) goto haters_gonna_hate_IM;
-
-							   tAddr.s_addr = ntohl(i);
-							   Corac corac;
-							   corac.ip = std::string(inet_ntoa(tAddr));
-							   corac.index = coracIndex;
-							   ipVec.push_back(corac);
-						   }
+						   IPRangeHolder holder;
+						   holder.ip1 = ip1;
+						   holder.ip2 = ip2;
+						   ipRangeVec.push_back(holder);
 					   }
+					   IPRandomizer ipRandomizer(ipRangeVec, 20000);
 
-					   std::random_shuffle(ipVec.begin(), ipVec.end());
-					   for (int k = 0; k < ipVec.size(); ++k)
-					   {
-						   stt->addColoredIndex(ipVec[k].index);
-					   }
-
-					   stt->doEmitionUpdatePB2();
-					   
-					   while (ipVec.size() != 0) {
-						   ++cIndex;
-						   //stt->doEmitionDrawPointerPB2(pointer++);
+					   int ip = 0;
+					   while ((ip = ipRandomizer.getNext()) != 0) {
 						   while (cons >= gThreads && globalScanFlag) Sleep(500);
 						   if (!globalScanFlag) goto haters_gonna_hate_IM;
 
 						   ++indexIP;
 
-						   strcpy(currentIP, ipVec[0].ip.c_str());
-						   ipVec.erase(ipVec.begin());
+						   tAddr.s_addr = ntohl(ip);
+						   strcpy(currentIP, inet_ntoa(tAddr));
 						   verboseProgress(gTargets);
 
 						   Threader::fireThread(currentIP, (void*(*)(void))_connect);
 					   }
+				   }
+			   haters_gonna_hate_IM:;
+				   break;
+	}
+	case false: {
+					ip1 = (ipsstartfl[gflIndex][0] * 16777216) +
+						(ipsstartfl[gflIndex][1] * 65536) +
+						(ipsstartfl[gflIndex][2] * 256) +
+						ipsstartfl[gflIndex][3];
+					ip2 = (ipsendfl[gflIndex][0] * 16777216) +
+						(ipsendfl[gflIndex][1] * 65536) +
+						(ipsendfl[gflIndex][2] * 256) +
+						ipsendfl[gflIndex][3];
+					struct in_addr tAddr;
+					for (unsigned long i = ip1; i <= ip2; ++i) {
 
-					  // for (unsigned long i = ip1; i <= ip2; ++i) {
+						while (cons >= gThreads && globalScanFlag) Sleep(500);
+						if (!globalScanFlag) break;
 
-						 //  if (!globalScanFlag) break;
+						++indexIP;
 
-						 //  tAddr.s_addr = ntohl(i);
-						 //  ipVec.push_back(inet_ntoa(tAddr));
-
-						 //  if (ipVec.size() >= (gTargets > 10000 ? 10000 : gTargets)) {
-
-							//   std::random_shuffle(ipVec.begin(), ipVec.end());
-							//   while (ipVec.size() != 0) {
-
-							//	   while (cons >= gThreads && globalScanFlag) Sleep(500);
-							//	   if (!globalScanFlag) goto haters_gonna_hate_IM;
-
-							//	   ++indexIP;
-
-							//	   strcpy(currentIP, ipVec[0].c_str());
-							//	   ipVec.erase(ipVec.begin());
-							//	   verboseProgress(gTargets);
-
-							//	   Threader::fireThread(currentIP, (void*(*)(void))_connect);
-							//   }
-						 //  }
-					  // }
-				   haters_gonna_hate_IM:;
-					   break;
-		}
-		case false: {
-						ip1 = (ipsstartfl[gflIndex][0] * 16777216) +
-							(ipsstartfl[gflIndex][1] * 65536) +
-							(ipsstartfl[gflIndex][2] * 256) +
-							ipsstartfl[gflIndex][3];
-						ip2 = (ipsendfl[gflIndex][0] * 16777216) +
-							(ipsendfl[gflIndex][1] * 65536) +
-							(ipsendfl[gflIndex][2] * 256) +
-							ipsendfl[gflIndex][3];
-						struct in_addr tAddr;
-						for (unsigned long i = ip1; i <= ip2; ++i) {
-
-							while (cons >= gThreads && globalScanFlag) Sleep(500);
-							if (!globalScanFlag) break;
-
-							++indexIP;
-
-							tAddr.s_addr = ntohl(i);
-							strcpy(currentIP, inet_ntoa(tAddr));
-							verboseProgress(gTargets);
-							Threader::fireThread(currentIP, (void*(*)(void))_connect);
-						}
-						break;
-		};
-		}
+						tAddr.s_addr = ntohl(i);
+						strcpy(currentIP, inet_ntoa(tAddr));
+						verboseProgress(gTargets);
+						Threader::fireThread(currentIP, (void*(*)(void))_connect);
+					}
+					break;
+	};
 	}
 }
 
@@ -1417,9 +1362,9 @@ int thread_cleanup(void)
 	return 1;
 }
 
-#include "HikvisionLogin.h"
-
 void MainStarter::start(const char* targets, const char* ports) {
+	std::srand(std::time(NULL));
+
 	HikVis::hikCounter = 0;
 	HikVis::rviCounter = 0;
 	saveBackup = true;

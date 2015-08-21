@@ -65,8 +65,6 @@ protected:
 		void ChangePingerOK(bool val);
 		void changeNSTrackLabel(bool status);
 		void slotPBUpdate(); 
-		void slotPB2Update();
-		void slotPB2DrawPointer(int pointer);
         void DNSLine_ValueChanged();
         void slotShowRedVersion();
         void slotTabChanged(int index);

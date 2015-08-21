@@ -51,7 +51,6 @@ public:
 	static void doEmitionBlockButton(bool value);
 	//BA TablelistView
 	static void doEmitionChangeBARow(int index, QString loginPass, QString percentage);
-	static void doEmitionUpdatePB2();
 
 signals:
 public: signals: void showRedVersion();
@@ -59,7 +58,6 @@ public: signals: void startScanIP();
 public: signals: void startScanDNS();
 public: signals: void startScanImport();
 public: signals: void signalDataSaved(bool);
-public: signals : void updPB2();
 		
 public: signals: void changeFoundData(QString);
 public: signals: void changeRedFoundData(QString);

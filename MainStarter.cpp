@@ -31,6 +31,9 @@ bool gPingNScan = false;
 std::atomic<int> cons = 0, BrutingThrds = 0, gThreads;
 std::vector<int> MainStarter::portVector;
 int MainStarter::flCounter = 0;
+int MainStarter::gflIndex = 0;
+unsigned int **MainStarter::ipsstartfl = NULL;
+unsigned int **MainStarter::ipsendfl = NULL;
 bool MainStarter::savingBackUpFile = false;
 QJsonArray *jsonArr = new QJsonArray();
 bool horLineFlag = false;
@@ -368,7 +371,7 @@ void MainStarter::saveBackupToFile()
 		{
 			if (!saveBackup) return;
 			FILE *savingFile = fopen("tempIPLst.bk", "w");
-			if (savingFile != NULL)
+			if (NULL != savingFile)
 			{
 				if (gflIndex < MainStarter::flCounter) {
 					sprintf(ipRange, "%d.%d.%d.%d-%d.%d.%d.%d\n",
@@ -483,15 +486,19 @@ void MainStarter::saveBackupToFile()
 }
 
 bool saverRunning = false;
+void MainStarter::saveBK() {
+	while (savingBackUpFile) Sleep(400);
+	savingBackUpFile = true;
+	saveBackupToFile();
+	savingBackUpFile = false;
+}
 void MainStarter::saver()
 {
 	saverRunning = true;
 	Sleep(1000);
 	while (saveBackup && globalScanFlag)
 	{
-		savingBackUpFile = true;
-		saveBackupToFile();
-		savingBackUpFile = false;
+		saveBK();
 		Sleep(10000);
 	};
 	saverRunning = false;
@@ -1365,6 +1372,10 @@ int thread_cleanup(void)
 void MainStarter::start(const char* targets, const char* ports) {
 	std::srand(std::time(NULL));
 
+	MainStarter::flCounter = 0;
+	MainStarter::gflIndex = 0;
+	MainStarter::ipsstartfl = NULL;
+	MainStarter::ipsendfl = NULL;
 	HikVis::hikCounter = 0;
 	HikVis::rviCounter = 0;
 	saveBackup = true;
@@ -1390,7 +1401,7 @@ void MainStarter::start(const char* targets, const char* ports) {
 	stt->doEmitionYellowFoundData("Stopping threads...");
 
 	while (cons > 0 || jsonArr->size() > 0) Sleep(2000);
-	saveBackupToFile();
+	MainStarter::saveBK();
 	saveBackup = false;
 	
 	thread_cleanup();

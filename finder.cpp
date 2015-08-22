@@ -354,7 +354,9 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 				)																		return 33; //GEO web ip cam
 
     if(Utils::ustrstr(buffcpy, "hikvision-webs") != -1
-        || (Utils::ustrstr(buffcpy, "hikvision digital") != -1 
+		|| (
+		(Utils::ustrstr(buffcpy, "hikvision digital") != -1 
+		|| Utils::ustrstr(buffcpy, "doc/page/login.asp") != -1)
 		&& Utils::ustrstr(buffcpy, "dvrdvs-webs") != -1)
         || (Utils::ustrstr(buffcpy, "lapassword") != -1 
 		&& Utils::ustrstr(buffcpy, "lausername") != -1 

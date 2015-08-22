@@ -10,9 +10,9 @@
 class MainStarter {
 private: char dnsTarget[256];
 		 int ipsstart[4], ipsend[4];
-		 unsigned int **ipsstartfl = NULL, **ipsendfl = NULL;
+		 static unsigned int **ipsstartfl, **ipsendfl;
 		 unsigned long ip1, ip2;
-		 int gflIndex = 0;
+		 static int gflIndex;
 
 private:
 	void startIPScan();
@@ -25,6 +25,8 @@ public:
 	static std::vector<int> portVector;
 	static int flCounter;
 	static bool savingBackUpFile;
+	void saveBackupToFile();
+	void saveBK();
 
 public:
 	MainStarter()
@@ -54,56 +56,56 @@ public:
 		FileUpdater::negativeVector.clear();
 		if (loginLst != NULL)
 		{
-			for (int i = 0; i < MaxLogin; ++i) delete[]loginLst[i];
-			delete[]loginLst;
+			for (int i = 0; i < MaxLogin; ++i) delete[] loginLst[i];
+			delete[] loginLst;
 			loginLst = NULL;
 		};
 		if (passLst != NULL)
 		{
-			for (int i = 0; i < MaxPass; ++i) delete[]passLst[i];
-			delete[]passLst;
+			for (int i = 0; i < MaxPass; ++i) delete[] passLst[i];
+			delete[] passLst;
 			passLst = NULL;
 		};
 		if (wfPassLst != NULL)
 		{
-			for (int i = 0; i < MaxWFPass; ++i) delete[]wfPassLst[i];
-			delete[]wfPassLst;
+			for (int i = 0; i < MaxWFPass; ++i) delete[] wfPassLst[i];
+			delete[] wfPassLst;
 			wfPassLst = NULL;
 		};
 		if (wfLoginLst != NULL)
 		{
-			for (int i = 0; i < MaxWFLogin; ++i) delete[]wfLoginLst[i];
-			delete[]wfLoginLst;
+			for (int i = 0; i < MaxWFLogin; ++i) delete[] wfLoginLst[i];
+			delete[] wfLoginLst;
 			wfLoginLst = NULL;
 		};
 		if (ftpPassLst != NULL)
 		{
-			for (int i = 0; i < MaxFTPPass; ++i) delete[]ftpPassLst[i];
-			delete[]ftpPassLst;
+			for (int i = 0; i < MaxFTPPass; ++i) delete[] ftpPassLst[i];
+			delete[] ftpPassLst;
 			ftpPassLst = NULL;
 		};
 		if (ftpLoginLst != NULL)
 		{
-			for (int i = 0; i < MaxFTPLogin; ++i) delete[]ftpLoginLst[i];
-			delete[]ftpLoginLst;
+			for (int i = 0; i < MaxFTPLogin; ++i) delete[] ftpLoginLst[i];
+			delete[] ftpLoginLst;
 			ftpLoginLst = NULL;
 		};
 		if (sshlpLst != NULL)
 		{
-			for (int i = 0; i < MaxSSHPass; ++i) delete[]sshlpLst[i];
-			delete[]sshlpLst;
+			for (int i = 0; i < MaxSSHPass; ++i) delete[] sshlpLst[i];
+			delete[] sshlpLst;
 			sshlpLst = NULL;
 		};
 		if (ipsstartfl != NULL)
 		{
-			for (int i = 0; i < flCounter; ++i) delete[]ipsstartfl[i];
-			delete[]ipsstartfl;
+			for (int i = 0; i < flCounter; ++i) delete[] ipsstartfl[i];
+			delete[] ipsstartfl;
 			ipsstartfl = NULL;
 		};
 		if (ipsendfl != NULL)
 		{
-			for (int i = 0; i < flCounter; ++i) delete[]ipsendfl[i];
-			delete[]ipsendfl;
+			for (int i = 0; i < flCounter; ++i) delete[] ipsendfl[i];
+			delete[] ipsendfl;
 			ipsendfl = NULL;
 		};
 
@@ -113,7 +115,6 @@ public:
 	void unBlockButtons();
 	void runAuxiliaryThreads();
 	void saver();
-	void saveBackupToFile();
 	int fileLoader(const char *fileName);
 	static void createResultFiles();
 	void start(const char* targets, const char* ports);

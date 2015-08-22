@@ -2158,6 +2158,7 @@ QList<QStandardItem *> setRow(QString ip, QString loginPass, QString percentage)
 }
 std::atomic<bool> isBAModelLocked = false;
 int nesca_3::addBARow(QString ip, QString loginPass, QString percentage) {
+	if (!globalScanFlag) return -1;
 	while (isBAModelLocked) Sleep(10);
 	isBAModelLocked = true;
 	BAModel->appendRow(setRow(ip, loginPass, percentage));

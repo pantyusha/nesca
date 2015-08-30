@@ -188,7 +188,7 @@ public:
 
 	int filler(char* ip, 
 		int port,
-		const std::string *buffcpy,
+		std::string *buffcpy,
         int size,
         Lexems *lx);
 };

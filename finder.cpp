@@ -418,7 +418,15 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 		&& Utils::ustrstr(buffcpy, "jsmain/liveview.js") != -1
 		)																				return 54; //Beward (http://46.146.243.88:88/login.asp)
 	if (Utils::ustrstr(buffcpy, "get_status.cgi") != -1
-		&& Utils::ustrstr(buffcpy, "str_device+") != -1)								return 55; //QCam (http://1.177.123.118:8080/)
+		&& Utils::ustrstr(buffcpy, "str_device+") != -1
+		)																				return 55; //QCam (http://1.177.123.118:8080/)
+	if (Utils::ustrstr(buffcpy, "EagleEyes") != -1
+		&& (Utils::ustrstr(buffcpy, "/Login.cgi?rnd=") != -1
+		|| Utils::ustrstr(buffcpy, "mobile480.htm") != -1)
+		)																				return 56; //EaglesEye (http://203.190.113.34:88/nobody/mobile480.htm)
+	if (Utils::ustrstr(buffcpy, "dvr_remember") != -1
+		&& Utils::ustrstr(buffcpy, "login_chk_usr_pwd") != -1
+		)																				return 57; //Network video client (http://203.190.113.54:60001/)
 
     if(((Utils::ustrstr(buffcpy, "220") != -1) && (port == 21)) ||
         (Utils::ustrstr(buffcpy, "220 diskStation ftp server ready") != -1) ||
@@ -428,7 +436,6 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 
 	if (Utils::ustrstr(buffcpy, "camera") != -1 ||
 		Utils::ustrstr(buffcpy, "webcamxp") != -1 ||
-		Utils::ustrstr(buffcpy, "video") != -1 ||
 		Utils::ustrstr(buffcpy, "ipcam") != -1 ||
 		Utils::ustrstr(buffcpy, "smart ip") != -1 ||
 		Utils::ustrstr(buffcpy, "sanpshot_icon") != -1 ||
@@ -2408,42 +2415,193 @@ std::string getTitle(const char *str, const int flag) {
 			};
 		};
 	}
-	else if ((ptr1 = strstri(str, "<body>")) != NULL) {
+	
+	if ((ptr1 = strstri(str, "<body>")) != NULL) {
 		char *ptr2 = strstri(ptr1, "</body>");
-		int sz = ptr2 - ptr1;
+		if (NULL != ptr2) {
+			int sz = ptr2 - ptr1;
 
-		strncat(finalstr, ptr1 + 6, (sz > 64 ? 64 : sz) - 6);
+			if (ptr1 + 6 == ptr2) {
+				strcat(finalstr, "[Empty body]");
+			}
+			else {
+				strncat(finalstr, ptr1 + 6, (sz > 64 ? 64 : sz) - 6);
+			}
+		}
+		else {
+			strcat(finalstr, "No closing tag detected.");
+		}
 	}
 	else if ((ptr1 = strstri(str, "<html>")) != NULL) {
 		char *ptr2 = strstri(ptr1, "</html>");
-		int sz = ptr2 - ptr1;
+		if (NULL != ptr2) {
+			int sz = ptr2 - ptr1;
 
-		strncat(finalstr, ptr1 + 6, (sz > 64 ? 64 : sz) - 6);
+			strncat(finalstr, ptr1 + 6, (sz > 64 ? 64 : sz) - 6);
+		}
+		else {
+			strcat(finalstr, "No closing tag detected.");
+		}
 	}
 	else if ((ptr1 = strstri(str, "\r\n\r\n")) != NULL) {
 		strncat(finalstr, ptr1 + 4, 128);
 	}
+	else {
+		strncat(finalstr, str, strlen(str));
+	}
 	std::string result = "";
 
-		if (flag == 1) {
-			result = "[PK]";
-		}
-
-		result += std::string(finalstr);
-		return result;
-}
-std::string getHeader(const std::string *buffcpy, const int flag) {
-	std::string &result = getTitle(buffcpy->c_str(), flag);
-	
-	if (result.size() == 0) {
-		if (Utils::ustrstr(buffcpy, "redir") != std::string::npos) {
-			result += "[R]";
-		};
-		//result += "[Ξ]";
-		result += buffcpy->substr(0, 128);
+	if (flag == 1) {
+		result = "[PK]";
 	}
 
+	result += std::string(finalstr);
 	return result;
+}
+bool equivRedirectHandler(std::string *buff, char* ip, int port, Lexems *counter) {
+	if (NULL == buff || 0 == buff->size()) {
+		return false;
+	}
+
+	if (counter->iterationCount > 2) {
+		stt->doEmitionFoundData(QString(ip) + ":" + QString::number(port) + " - infinite loop detected.");
+		return true;
+	}
+
+	std::string buffcpy = *buff;
+	int pos = STRSTR((const std::string *) &buffcpy, "http-equiv=\"refresh\"");
+	if (-1 == pos) pos = STRSTR((const std::string *) &buffcpy, "http-equiv=refresh");
+	if (-1 == pos) pos = STRSTR((const std::string *) &buffcpy, "http-equiv='refresh'");
+	if (-1 == pos) {
+		return false;
+	}
+
+	const std::string tempString = buffcpy.substr(pos + 17);
+
+	int urlPos = STRSTR(&tempString, "url=");
+	int delimPosFirst = tempString.find_first_of(" \n>\"'", urlPos);
+	int delimPosSecond = tempString.find_first_of(" \n>\"'", delimPosFirst);
+
+	std::string location;
+	if (delimPosFirst == delimPosSecond) {
+		location = tempString.substr(urlPos + 4, delimPosFirst - (urlPos + 4));
+	}
+	else {
+		location = tempString.substr(delimPosFirst + 1, delimPosSecond);
+	}
+
+	Connector con;
+	int newPort = port;
+	if (location[0] == '/') {
+		std::string tIP = std::string(ip) + location;
+		stt->doEmitionYellowFoundData("Redirecting to -> " + QString(tIP.c_str()));
+		con.nConnect(location.c_str(), port, &buffcpy);
+	}
+	else if (-1 != STRSTR(location, "http://")) {
+		int httpProto = STRSTR(location, "http://");
+
+		int portPos = location.find(":", 7);
+		if (-1 != portPos) {
+			int portPosEnd = location.find("/ \n>\"'", portPos + 7);
+			newPort = std::stoi(location.substr(portPos + 1, portPosEnd));
+			stt->doEmitionYellowFoundData("Redirecting to -> " + QString(location.c_str()));
+			con.nConnect(location.c_str(), newPort, &buffcpy);
+		}
+		else {
+			stt->doEmitionYellowFoundData("Redirecting to -> " + QString(location.c_str()));
+			con.nConnect(location.c_str(), port, &buffcpy);
+		}
+	}
+	else if (-1 != STRSTR(location, "https://")) {
+		int httpProto = STRSTR(location, "https://");
+
+		int portPos = location.find(":", 8);
+		if (-1 != portPos) {
+			int portPosEnd = location.find("/ \n>\"'", portPos + 8);
+			newPort = std::stoi(location.substr(portPos + 1, portPosEnd));
+			stt->doEmitionYellowFoundData("Redirecting to -> " + QString(location.c_str()));
+			con.nConnect(location.c_str(), newPort, &buffcpy);
+		}
+		else {
+			stt->doEmitionYellowFoundData("Redirecting to -> " + QString(location.c_str()));
+			con.nConnect(location.c_str(), 443, &buffcpy);
+		}
+	}
+	else {
+		std::string tIP = std::string(ip) + (location[0] == '/' ? "" : "/") + location;
+		stt->doEmitionYellowFoundData("Redirecting to -> " + QString(tIP.c_str()));
+		con.nConnect(tIP.c_str(), port, &buffcpy);
+	}
+
+	++counter->iterationCount;
+
+
+	if (equivRedirectHandler(&buffcpy, ip, newPort, counter)) {
+		*buff = buffcpy;
+	}
+	
+	return buff->size() > 0;
+}
+bool jsRedirectHandler(std::string *buff, char* ip, int port, Lexems *counter) {
+	if (NULL == buff || 0 == buff->size()) {
+		return false;
+	}
+
+	if (counter->iterationCount > 2) {
+		stt->doEmitionFoundData(QString(ip) + ":" + QString::number(port) + " - infinite loop detected.");
+		return true;
+	}
+
+	std::string buffcpy = *buff;
+
+	int pos = STRSTR((const std::string *) &buffcpy, "location.href =");
+	if (-1 == pos) pos = STRSTR((const std::string *) &buffcpy, "location.href=");
+	if (-1 == pos) pos = STRSTR((const std::string *) &buffcpy, "location.replace");
+	if (-1 == pos) {
+		return false;
+	}
+
+	int eqPos = buffcpy.find_first_of("=(", pos);
+	int spacePosFirst = buffcpy.find_first_not_of(" ", eqPos);
+	int spacePosSecond = buffcpy.find_first_of(");", spacePosFirst);
+	std::string subRedirect = buffcpy.substr(spacePosFirst + 1, spacePosSecond - spacePosFirst - 1);
+	int quotePosFirst = subRedirect.find_first_of("\"'");
+	if (-1 == quotePosFirst) {
+		return false;
+	}
+	int quotePosSecond = subRedirect.find_first_of("\"'", quotePosFirst + 1);
+	
+	std::string subLocation = subRedirect.substr(quotePosFirst + 1, quotePosSecond - quotePosFirst - 1);
+	std::string location = std::string(ip) + (subLocation[0] == '/' ? "" : "/") + subLocation;
+
+	Connector con;
+	stt->doEmitionYellowFoundData("Redirecting to -> " + QString(location.c_str()));
+	con.nConnect(location.c_str(), port, &buffcpy);
+
+	++counter->iterationCount;
+
+	if (jsRedirectHandler(&buffcpy, ip, port, counter)) {
+		*buff = buffcpy;
+	}
+
+	return buff->size() > 0;
+}
+std::string getHeader(const std::string *buffcpy, const int flag) {
+	if (STRSTR(buffcpy, "<frame name=\"mainframe\" src=\"main.html\"") != -1) {
+		return "[IP-camera]";
+	}
+	else {
+		std::string &result = getTitle(buffcpy->c_str(), flag);
+
+		if (result.size() == 0) {
+			if (Utils::ustrstr(buffcpy, "redir") != std::string::npos) {
+				result += "[R]";
+			};
+			//result += "[Ξ]";
+			result += buffcpy->substr(0, 128);
+		}
+		return result;
+	}
 }
 
 #define RVI_START_FILE "<Organization>\n\t<Department name=\"root\">\n\t\t"
@@ -2533,7 +2691,7 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 			char fileName[256] = { 0 };
 			char date[64] = { 0 };
 			strcpy(date, Utils::getStartDate().c_str());
-			if (HikVis::hikCounter >= 256) {
+			if (HikVis::hikCounter >= 255) {
 				HikVis::hikCounter = 0;
 				HikVis::hikPart++;
 			}
@@ -2567,7 +2725,7 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 			char fileName[256] = { 0 };
 			char date[64] = { 0 };
 			strcpy(date, Utils::getStartDate().c_str());
-			if (HikVis::rviCounter >= 256) {
+			if (HikVis::rviCounter >= 255) {
 				HikVis::rviCounter = 0;
 				HikVis::rviPart++;
 			}
@@ -2776,6 +2934,14 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 	{
 		_specBrute(ip, port, "IP Camera", flag, "/videostream.cgi", "Basic Authorization", cp, size);
 	}
+	else if (flag == 56) //EaglesEye
+	{
+		_specBrute(ip, port, "IP Camera", flag, "/Login.cgi?rnd=000148921789481", "Basic Authorization", cp, size);
+	}
+	else if (flag == 57) //Juan
+	{
+		_specWEBIPCAMBrute(ip, port, "[JUAN] WEB IP Camera", flag, "WEB Authorization", cp, size, "JUAN");
+	}
 	else if (flag == 20) //AXIS Camera
 	{
 		if (_specBrute(ip, port, "AXIS Camera", flag, "/mjpg/video.mjpg", "Basic Authorization", cp, size) == -1) {
@@ -2846,26 +3012,95 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 	//	putInFile(flag, ip, port, size, finalstr, cp);
 	//};
 }
-int Lexems::filler(char* ip, int port, const std::string *buffcpy, int size, Lexems *lx)
+void handleRedirects(std::string *buffcpy, char* ip, int port) {
+
+	Lexems counter;
+	counter.iterationCount = 0;
+	equivRedirectHandler(buffcpy, ip, port, &counter);
+	counter.iterationCount = 0;
+	jsRedirectHandler(buffcpy, ip, port, &counter);
+}
+int handleFramesets(std::string *buffcpy, char* ip, int port, int flag) {
+	if (NULL == buffcpy || 0 == buffcpy->size()) {
+		return flag;
+	}
+
+	int pos;
+	if ((pos = STRSTR((const std::string *) buffcpy, "<frameset ")) != -1) {
+		
+		Connector con;
+		int framePos = pos + 9;
+
+		while (framePos != -1) {
+			framePos = buffcpy->find("<frame ", framePos + 1);
+			if (-1 == framePos) {
+				framePos = buffcpy->find("<FRAME ", framePos + 1);
+				if (-1 == framePos) {
+					break;
+				}
+			}
+			int framePosEnd = buffcpy->find(">", framePos);
+
+			std::string frameString = buffcpy->substr(framePos, framePosEnd - framePos);
+
+			int frameSrcPos = frameString.find("src");
+			if (-1 == frameSrcPos) {
+				frameSrcPos = frameString.find("SRC");
+			}
+			if (-1 != frameSrcPos) {
+				int eqPos = frameString.find_first_of("=", frameSrcPos);
+				if (-1 != eqPos) {
+					int quotePos1 = frameString.find_first_of("\"'", eqPos);
+					if (-1 != quotePos1) {
+						int quotePos2 = frameString.find_first_of("\"'", quotePos1 + 1);
+
+						if (quotePos1 != quotePos2) {
+							std::string location = frameString.substr(quotePos1 + 1, quotePos2 - quotePos1 - 1);
+							std::string tIP = std::string(ip) + (location[0] == '/' ? "" : "/") + location;
+							std::string buff;
+							int sz = con.nConnect(tIP.c_str(), port, &buff);
+							int flg = contentFilter((const std::string *) &buff, port, ip, "UTF-8", sz);
+							if (flg == -1) {
+								return -1;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return flag;
+}
+int Lexems::filler(char* ip, int port, std::string *buffcpy, int size, Lexems *lx)
 {
 	if (port == 22) {
 		_saveSSH(ip, 22, size, buffcpy->c_str());
 		return -1;
-	} else if (Utils::ustrstr(buffcpy, "SSH-2.0-OpenSSH") != -1 ||
-		Utils::ustrstr(buffcpy, "SSH-2.0-mod_sftp") != -1) {
+	}
+	else if (Utils::ustrstr((const std::string *) buffcpy, "SSH-2.0-OpenSSH") != -1 ||
+		Utils::ustrstr((const std::string *) buffcpy, "SSH-2.0-mod_sftp") != -1) {
 		std::string sshBuff;
 		int res = SSHAuth::SSHLobby(ip, port, &sshBuff);
 		if (res != -1 && res != -2) _saveSSH(ip, port, size, (char*)sshBuff.c_str());
 		return -1;
 	};
 
+	handleRedirects(buffcpy, ip, port);
+
 	char cp[32] = { 0 };
 	strncpy(cp, getCodePage(buffcpy->c_str()), 32);
-	int flag = contentFilter(buffcpy, port, ip, cp, size);
+	int flag = contentFilter((const std::string *) buffcpy, port, ip, cp, size);
 	if (flag != -1) {
-		const std::string &header = getHeader(buffcpy, flag);
-
-		parseFlag(flag, ip, port, size, header, cp);
+		if (flag < 2 || flag > 6) {
+			const std::string &header = getHeader((const std::string *) buffcpy, flag);
+			if ((flag = handleFramesets(buffcpy, ip, port, flag)) == -1) {
+				return -1;
+			}
+			parseFlag(flag, ip, port, size, header, cp);
+		}
+		else {
+			parseFlag(flag, ip, port, size, "", cp);
+		}
 		return flag;
 	}
 	else {

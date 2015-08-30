@@ -7,6 +7,8 @@
 #include <vector>
 #include <qdatetime.h>
 
+#define STRSTR(buff, str) Utils::ustrstr(buff, str)
+
 using namespace std;
 
 template<typename charT>

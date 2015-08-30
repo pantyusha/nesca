@@ -202,15 +202,23 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 			if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
 			Activity += sz;
 			return sz;
-		} else {
+		}
+		else if (res == CURLE_LOGIN_DENIED && port == 21) {
+			return -1;
+		}
+		else if (res == CURLE_OPERATION_TIMEDOUT
+			|| res == CURLE_COULDNT_CONNECT
+			|| res == CURLE_SEND_ERROR
+			|| res == CURLE_RECV_ERROR
+			) {
+			return -1;
+		}
+		else {
 			if (res == 6) return -2;
-			else if (res != 28 &&
-				res != 7 &&
-				res != 13 &&
+			else if (res != 13 &&
 				res != 67 &&
 				res != 52 &&
 				res != 56 &&
-				res != 55 &&
 				res != 35 &&
 				res != 19 &&
                 res != 23) 
@@ -234,10 +242,11 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 					QString(ip) + ":" + QString::number(port));
 			};
 			
-			if (res == 23 && sz > 0) {
-				return sz;
-			}
-			else return -1;
+			//if (res == 23 && sz > 0) {
+			//	return sz;
+			//}
+			return sz;
+			//else return -1;
 		}
 
 		if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));

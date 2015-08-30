@@ -2159,31 +2159,36 @@ QList<QStandardItem *> setRow(QString ip, QString loginPass, QString percentage)
 std::atomic<bool> isBAModelLocked = false;
 int nesca_3::addBARow(QString ip, QString loginPass, QString percentage) {
 	if (!globalScanFlag) return -1;
-	while (isBAModelLocked) Sleep(10);
-	isBAModelLocked = true;
-	BAModel->appendRow(setRow(ip, loginPass, percentage));
-	int index = BAModel->rowCount() - 1;
-	isBAModelLocked = false;
+	if (BALogSwitched) {
+		while (isBAModelLocked) Sleep(10);
+		isBAModelLocked = true;
+		BAModel->appendRow(setRow(ip, loginPass, percentage));
+		int index = BAModel->rowCount() - 1;
+		isBAModelLocked = false;
 
-	if (percentage.compare("OK") == 0) {
-		BAModel->setData(BAModel->index(index, 0), QBrush(QColor(Qt::green).darker(160)), Qt::BackgroundRole);
-		BAModel->setData(BAModel->index(index, 1), QBrush(QColor(Qt::green).darker(160)), Qt::BackgroundRole);
-		BAModel->setData(BAModel->index(index, 2), QBrush(QColor(Qt::green).darker(160)), Qt::BackgroundRole);
+		if (percentage.compare("OK") == 0) {
+			BAModel->setData(BAModel->index(index, 0), QBrush(QColor(Qt::green).darker(160)), Qt::BackgroundRole);
+			BAModel->setData(BAModel->index(index, 1), QBrush(QColor(Qt::green).darker(160)), Qt::BackgroundRole);
+			BAModel->setData(BAModel->index(index, 2), QBrush(QColor(Qt::green).darker(160)), Qt::BackgroundRole);
 
-		BAModel->item(index, 0)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
-		BAModel->item(index, 1)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
-		BAModel->item(index, 2)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
+			BAModel->item(index, 0)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
+			BAModel->item(index, 1)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
+			BAModel->item(index, 2)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
+		}
+		else if (percentage.contains("FAIL") || percentage.contains("404")) {
+			BAModel->setData(BAModel->index(index, 0), QBrush(QColor(Qt::red).darker(160)), Qt::BackgroundRole);
+			BAModel->setData(BAModel->index(index, 1), QBrush(QColor(Qt::red).darker(160)), Qt::BackgroundRole);
+			BAModel->setData(BAModel->index(index, 2), QBrush(QColor(Qt::red).darker(160)), Qt::BackgroundRole);
+
+			BAModel->item(index, 0)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
+			BAModel->item(index, 1)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
+			BAModel->item(index, 2)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
+		}
+		return index;
 	}
-	else if (percentage.contains("FAIL") || percentage.contains("404")) {
-		BAModel->setData(BAModel->index(index, 0), QBrush(QColor(Qt::red).darker(160)), Qt::BackgroundRole);
-		BAModel->setData(BAModel->index(index, 1), QBrush(QColor(Qt::red).darker(160)), Qt::BackgroundRole);
-		BAModel->setData(BAModel->index(index, 2), QBrush(QColor(Qt::red).darker(160)), Qt::BackgroundRole);
-
-		BAModel->item(index, 0)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
-		BAModel->item(index, 1)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
-		BAModel->item(index, 2)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
+	else {
+		return 0;
 	}
-	return index;
 }
 void nesca_3::slotChangeBARow(int rowIndex, QString loginPass, QString percentage) {
 	QModelIndex index = BAModel->index(rowIndex, 1, QModelIndex());
@@ -3132,9 +3137,9 @@ void nesca_3::finishLoading() {
 
 	CreateVerFile();
 
-	//dtHN->start();
-	//dtME2->start();
-	//adtHN->start();
+	dtHN->start();
+	dtME2->start();
+	adtHN->start();
 	
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)

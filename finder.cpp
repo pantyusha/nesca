@@ -2493,9 +2493,9 @@ bool equivRedirectHandler(std::string *buff, char* ip, int port, Lexems *counter
 	Connector con;
 	int newPort = port;
 	if (location[0] == '/') {
-		std::string tIP = std::string(ip) + location;
+		std::string tIP = std::string(ip) + ":" + std::to_string(port) + location;
 		stt->doEmitionYellowFoundData("Redirecting to -> " + QString(tIP.c_str()));
-		con.nConnect(location.c_str(), port, &buffcpy);
+		con.nConnect(tIP.c_str(), port, &buffcpy);
 	}
 	else if (-1 != STRSTR(location, "http://")) {
 		int httpProto = STRSTR(location, "http://");
@@ -2503,9 +2503,14 @@ bool equivRedirectHandler(std::string *buff, char* ip, int port, Lexems *counter
 		int portPos = location.find(":", 7);
 		if (-1 != portPos) {
 			int portPosEnd = location.find("/ \n>\"'", portPos + 7);
-			newPort = std::stoi(location.substr(portPos + 1, portPosEnd));
-			stt->doEmitionYellowFoundData("Redirecting to -> " + QString(location.c_str()));
-			con.nConnect(location.c_str(), newPort, &buffcpy);
+			if (-1 != portPosEnd) {
+				newPort = std::stoi(location.substr(portPos + 1, portPosEnd));
+				stt->doEmitionYellowFoundData("Redirecting to -> " + QString(location.c_str()));
+				con.nConnect(location.c_str(), newPort, &buffcpy);
+			}
+			else {
+				stt->doEmitionYellowFoundData(QString(ip) + ":" + QString(port) + " Redirector error -> " + QString(location.c_str()));
+			}
 		}
 		else {
 			stt->doEmitionYellowFoundData("Redirecting to -> " + QString(location.c_str()));
@@ -2518,9 +2523,14 @@ bool equivRedirectHandler(std::string *buff, char* ip, int port, Lexems *counter
 		int portPos = location.find(":", 8);
 		if (-1 != portPos) {
 			int portPosEnd = location.find("/ \n>\"'", portPos + 8);
-			newPort = std::stoi(location.substr(portPos + 1, portPosEnd));
-			stt->doEmitionYellowFoundData("Redirecting to -> " + QString(location.c_str()));
-			con.nConnect(location.c_str(), newPort, &buffcpy);
+			if (-1 != portPosEnd) {
+				newPort = std::stoi(location.substr(portPos + 1, portPosEnd));
+				stt->doEmitionYellowFoundData("Redirecting to -> " + QString(location.c_str()));
+				con.nConnect(location.c_str(), newPort, &buffcpy);
+			}
+			else  {
+				stt->doEmitionYellowFoundData(QString(ip) + ":" + QString(port) + " Redirector error -> " + QString(location.c_str()));
+			}
 		}
 		else {
 			stt->doEmitionYellowFoundData("Redirecting to -> " + QString(location.c_str()));
@@ -2535,24 +2545,69 @@ bool equivRedirectHandler(std::string *buff, char* ip, int port, Lexems *counter
 
 	++counter->iterationCount;
 
+	equivRedirectHandler(&buffcpy, ip, newPort, counter);
 
-	if (equivRedirectHandler(&buffcpy, ip, newPort, counter)) {
-		*buff = buffcpy;
-	}
+	buff->clear();
+	buff->assign(buffcpy);
 	
 	return buff->size() > 0;
+}
+std::string getScriptField(std::string *buff) {
+	int pos1 = STRSTR((const std::string *)buff, "<script");
+	pos1 = buff->find(">", pos1) + 1;
+	int pos2 = STRSTR((const std::string *)buff, "</script>");
+	if (-1 == pos2) {
+		return "";
+	}
+
+	while (pos1 == pos2) {
+		std::string tempBuff;
+		tempBuff.assign(buff->substr(pos1 + 9));
+		buff->clear();
+		buff->assign(tempBuff);
+		pos1 = STRSTR((const std::string *)buff, "<script");
+		pos1 = buff->find(">", pos1) + 1;
+		pos2 = STRSTR((const std::string *)buff, "</script>");
+		if (-1 == pos2) {
+			return "";
+		}
+	}
+
+	if (-1 == pos1 || -1 == pos2) {
+		return "";
+	}
+
+	std::string scriptBuff = buff->substr(pos1, pos2 - pos1);
+
+	int commentPos1 = scriptBuff.find("<!--");
+	if (-1 != commentPos1) {
+		int commentPos2 = scriptBuff.find("-->");
+
+		if (-1 != commentPos2) {
+			std::string finalScriptBuff = scriptBuff.substr(0, commentPos1);
+			finalScriptBuff.append(scriptBuff.substr(commentPos2 + 3, scriptBuff.size() - (commentPos2 + 3)));
+
+			return finalScriptBuff;
+		}
+		else {
+			return "";
+		}
+	}
+	else {
+		return scriptBuff;
+	}
 }
 bool jsRedirectHandler(std::string *buff, char* ip, int port, Lexems *counter) {
 	if (NULL == buff || 0 == buff->size()) {
 		return false;
 	}
 
-	if (counter->iterationCount > 2) {
+	if (counter->iterationCount > 3) {
 		stt->doEmitionFoundData(QString(ip) + ":" + QString::number(port) + " - infinite loop detected.");
 		return true;
 	}
-
-	std::string buffcpy = *buff;
+	
+	std::string &buffcpy = getScriptField(buff);
 
 	int pos = STRSTR((const std::string *) &buffcpy, "location.href =");
 	if (-1 == pos) pos = STRSTR((const std::string *) &buffcpy, "location.href=");
@@ -2572,7 +2627,28 @@ bool jsRedirectHandler(std::string *buff, char* ip, int port, Lexems *counter) {
 	int quotePosSecond = subRedirect.find_first_of("\"'", quotePosFirst + 1);
 	
 	std::string subLocation = subRedirect.substr(quotePosFirst + 1, quotePosSecond - quotePosFirst - 1);
-	std::string location = std::string(ip) + (subLocation[0] == '/' ? "" : "/") + subLocation;
+	std::string location = "";
+	if (-1 != STRSTR((const std::string *) &buffcpy, "http")) {
+		if (-1 != STRSTR((const std::string *) &buffcpy, "https")) {
+			location += "https://";
+		}
+		else if (-1 != STRSTR((const std::string *) &buffcpy, "http")) {
+			location += "http://";
+		}
+
+		int quotePosSecond2 = subRedirect.find_first_of(";\n", quotePosFirst + 1);
+		std::string redirectLine = subRedirect.substr(quotePosFirst + 1, quotePosSecond2 - (quotePosFirst + 1));
+		int posFinalAddition = redirectLine.find_last_of("+");
+		std::string finalAddition = redirectLine.substr(posFinalAddition + 1);
+		int pos1 = finalAddition.find_first_of("'\"");
+		int pos2 = finalAddition.find_first_of("'\"", pos1 + 1);
+
+		std::string path = finalAddition.substr(pos1 + 1, pos2 - (pos1 + 1));
+		location += std::string(ip) + "/" + path;
+	}
+	else {
+		location = std::string(ip) + (subLocation[0] == '/' ? "" : "/") + subLocation;
+	}
 
 	Connector con;
 	stt->doEmitionYellowFoundData("Redirecting to -> " + QString(location.c_str()));
@@ -2580,18 +2656,23 @@ bool jsRedirectHandler(std::string *buff, char* ip, int port, Lexems *counter) {
 
 	++counter->iterationCount;
 
-	if (jsRedirectHandler(&buffcpy, ip, port, counter)) {
-		*buff = buffcpy;
-	}
+	jsRedirectHandler(&buffcpy, ip, port, counter);
+
+	buff->clear();
+	buff->assign(buffcpy);
 
 	return buff->size() > 0;
 }
 std::string getHeader(const std::string *buffcpy, const int flag) {
 	if (STRSTR(buffcpy, "<frame name=\"mainframe\" src=\"main.html\"") != -1) {
-		return "[IP-camera]";
+		return "[IPCam]";
+	}
+	else if (STRSTR(buffcpy, "MOBOTIX AG") != -1) {
+		return "[MOBOTIC IPCam]";
 	}
 	else {
-		std::string &result = getTitle(buffcpy->c_str(), flag);
+		std::string tempBuff = buffcpy->c_str();
+		std::string &result = getTitle(tempBuff.c_str(), flag);
 
 		if (result.size() == 0) {
 			if (Utils::ustrstr(buffcpy, "redir") != std::string::npos) {

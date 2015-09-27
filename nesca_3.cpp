@@ -3257,9 +3257,9 @@ void nesca_3::CheckPersKey()
 
 nesca_3::nesca_3(bool isWM, QWidget *parent = 0) : QMainWindow(parent)
 {
-	if (isWM) {
+	/*if (isWM) {
 		Utils::emitScaryError();
-	}
+	}*/
 	setWindowFlags(Qt::FramelessWindowHint);
 
 	gthis = this;
@@ -3322,7 +3322,7 @@ nesca_3::nesca_3(bool isWM, QWidget *parent = 0) : QMainWindow(parent)
 	ui->BATableView->setModel(BAModel);
 	ui->BATableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-	bool DONOTSCAN = true;
+	/*bool DONOTSCAN = true;
 	if (isWM) {
 		Utils::emitScaryError();
 	}
@@ -3383,7 +3383,12 @@ nesca_3::nesca_3(bool isWM, QWidget *parent = 0) : QMainWindow(parent)
 		ui->tabMainWidget->setTabEnabled(1, true);
 		ui->tabMainWidget->setTabEnabled(2, true);
 		finishLoading();
-	}
+	}*/
+
+	ui->tabMainWidget->setTabEnabled(0, true);
+	ui->tabMainWidget->setTabEnabled(1, true);
+	ui->tabMainWidget->setTabEnabled(2, true);
+	finishLoading();
 
 /*
 	FILE* pipe = NULL;

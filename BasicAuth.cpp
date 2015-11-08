@@ -60,7 +60,7 @@ lopaStr BA::BABrute(const char *ip, const int port) {
 	int isDig = Utils::isDigest(&buff);
 	QString ipString = QString(ip).mid(0, QString(ip).indexOf("/")) + ":" + QString::number(port);
 	if (isDig == -1) {
-		stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 detected - <a style=\"color:orange;\" href=\"http://" + ipString + "/\">" +
+		stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 found - <a style=\"color:orange;\" href=\"http://" + ipString + "/\">" +
 			ipString + "</a></span>");
 		strcpy(lps.login, "");
 		return lps;

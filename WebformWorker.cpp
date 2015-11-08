@@ -34,9 +34,9 @@ lopaStr WFClass::parseResponse(const char *ip,
 
         } else {
 
-            if(Utils::ustrstr(*buffer, std::string("501 not implemented")) != -1) stt->doEmitionRedFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: 501 Not Implemented.");
+            if(Utils::ustrstr(*buffer, std::string("501 not implemented")) != -1) stt->doEmitionRedFoundData("<a href=\"" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: 501 Not Implemented.");
 
-            if(Utils::ustrstr(*buffer, std::string("404 not found")) != -1) stt->doEmitionRedFoundData("<a href=\"http://" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: 404 Not Found.");
+            if(Utils::ustrstr(*buffer, std::string("404 not found")) != -1) stt->doEmitionRedFoundData("<a href=\"" + QString(ip) + ":" + QString::number(port) + "\"><font color=\"#c3c3c3\">" + QString(ip) + ":" + QString::number(port) + "</font></a> - [WF]: 404 Not Found.");
 
             return result;
         }
@@ -182,7 +182,7 @@ lopaStr WFClass::_WFBrute( const char *ip,
     } else if(strstri(methodVal, "post") != NULL) {
         lps = doPostCheck(ip, port, actionVal, userVal, passVal, formVal);
     } else {
-        stt->doEmitionFoundData("<a href=\"http://" + QString(ip) +
+        stt->doEmitionFoundData("<a href=\"" + QString(ip) +
                                 ":" + QString::number(port)
                                 + "\"><font color=\"#c3c3c3\">" +
                                 QString(ip) + ":" + QString::number(port) +

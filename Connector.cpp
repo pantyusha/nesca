@@ -288,25 +288,35 @@ int Connector::connectToPort(char* ip, int port)
 
     std::string buffer;
     int size = 0;
+	char tempIp[128] = { 0 };
+	int sz = strlen(ip);
+	if (443 == port) {
+		strcpy(tempIp, "https://");
+		strncat(tempIp, ip, sz > 119 ? 119 : sz);
+	}
+	else {
+		strcpy(tempIp, "http://");
+		strncat(tempIp, ip, sz > 119 ? 119 : sz);
+	}
 
 	if (port != 37777 && port != 8000 && port != 34567 && port != 9000){
 		if (port == 22) size = SSHAuth::SSHLobby(ip, port, &buffer);			//SSH
-		else size = nConnect(ip, port, &buffer);
+		else size = nConnect(tempIp, port, &buffer);
 
 		if (size > 0)
 		{
 			++Alive;//ME2
 			++found;//PieStat
 			Lexems lx;
-			lx.filler(ip, port, &buffer, size, &lx);
+			lx.filler(tempIp, port, &buffer, size, &lx);
 		}
 		else if (size == -2) return -2;
 	} else {
-		if (portCheck(ip, port)) {
+		if (portCheck(tempIp, port)) {
 			++Alive;//ME2
 			++found;//PieStat
 			Lexems lx;
-			lx.filler(ip, port, &buffer, size, &lx);
+			lx.filler(tempIp, port, &buffer, size, &lx);
 		};
 	}
 	return 0;

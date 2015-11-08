@@ -2104,15 +2104,27 @@ void nesca_3::onLinkClicked(QUrl link)
 {
 	QString lnk = link.toString();
 	if (lnk.compare("[PEKO]") == 0) {
+		QFont fnt = QFont("small_font.ttf", 7, 1);
 		PekoWidget *pekoWidget = new PekoWidget(x(), y());
 
 		QPushButton *pkExitButton = new QPushButton("x", pekoWidget);
 		pkExitButton->setGeometry(285, 2, 10, 15);
 		pkExitButton->setStyleSheet("background-color: rgba(0, 0, 0, 0); color: rgba(255, 0, 0);");
-		pkExitButton->setFont(QFont("small_font.ttf", 7, 1));
+		pkExitButton->setFont(fnt);
 
-		QTableView *pkResultTable = new QTableView(this);
-		pkResultTable->setGeometry(0, 5, 300, 195);
+		QLabel *percentageLabel = new QLabel(pekoWidget);
+		percentageLabel->setGeometry(2, 2, 30, 15);
+		percentageLabel->setText("0%");
+		percentageLabel->setStyleSheet("color:rgb(150, 150, 150); border: none;");
+		percentageLabel->setFont(fnt);
+
+		QTextBrowser *pkResultTB = new QTextBrowser(pekoWidget);
+		pkResultTB->setGeometry(1, 20, 298, 179);
+		pkResultTB->setStyleSheet("color:rgb(150, 150, 150); border: 1px solid #515151;");
+		pkResultTB->setFont(fnt);
+		pkResultTB->append("PeKa-scan not ready yet.");
+
+		connect(pkExitButton, SIGNAL(click()), pekoWidget, SLOT(pekoExitButtonClicked()));
 
 		pekoWidget->show();
 	}
@@ -2635,6 +2647,11 @@ void nesca_3::exitButtonClicked()
 #endif
 	Threader::cleanUp();
 	qApp->quit();
+}
+
+void PekoWidget::pekoExitButtonClicked()
+{
+	this->close();
 }
 
 void nesca_3::trayButtonClicked()
@@ -3316,7 +3333,7 @@ nesca_3::nesca_3(bool isWM, QWidget *parent = 0) : QMainWindow(parent)
 
 	char buffer[MAX_PATH] = { 0 };
 	GetCurrentDir(buffer, MAX_PATH);
-	ui->currentDirectoryLine->setText(QString(string(buffer).c_str()));
+	ui->currentDirectoryLine->setText(QString::fromLocal8Bit(string(buffer).c_str()));
 	
 	BAModel = new QStandardItemModel();
 	ui->BATableView->setModel(BAModel);

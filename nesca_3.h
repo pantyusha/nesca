@@ -172,6 +172,8 @@ public:
 				m_yPos = 0;
 			}
 		};
+		protected slots:
+		void pekoExitButtonClicked();
 protected:
 	bool switchWindows;
 	void paintEvent(QPaintEvent *e)
@@ -194,7 +196,7 @@ protected:
 		else if (evt->button() == Qt::RightButton)
 		{
 			ui->newMessageLabel->setStyleSheet("color:rgba(255, 0, 0, 0);background-color: rgba(2, 2, 2, 0);");
-			this->hide();
+			this->close();
 		};
 	}
 	void mouseMoveEvent(QMouseEvent *evt)

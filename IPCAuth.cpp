@@ -94,7 +94,8 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
     {
         if(!globalScanFlag) break;
         if(strcmp(loginLst[i], " ") == 0) continue;
-        ZeroMemory(login, sizeof(login));
+        //ZeroMemory(login, sizeof(login));
+		login[0] = 0;
         strcpy(login, loginLst[i]);
 
         for(int j = 0; j < MaxPass; ++j)
@@ -103,10 +104,12 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
             if(!globalScanFlag) break;
             if(strcmp(passLst[j], " ") == 0) continue;
 
-            ZeroMemory(pass, sizeof(pass));
+            //ZeroMemory(pass, sizeof(pass));
+			pass[0] = 0;
             strcpy(pass, passLst[j]);
 
-            ZeroMemory(request, sizeof(request));
+            //ZeroMemory(request, sizeof(request));
+			request[0] = 0;
             if(strcmp(SPEC, "IPC") == 0)
             {
                 sprintf(request, "%s:%d/login.xml?user=%s&usr=%s&password=%s&pwd=%s",

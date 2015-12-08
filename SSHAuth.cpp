@@ -5,7 +5,6 @@ int _sshConnect(const char *user, const char *pass, const char *host, int port) 
 
     CURL *curl = curl_easy_init();
     char hostStr[128] = {0};
-    ZeroMemory(hostStr, sizeof(hostStr));
     strcpy(hostStr, user);
     strcat(hostStr, "@");
     strcat(hostStr, host);
@@ -146,9 +145,12 @@ int SSHBrute(const char* host, int port, std::string *buffer, const char *banner
 		++passCounter;
 
         res = check_ssh_pass(rowIndex, login, pass, temp, host, port, buffer, banner);
-        ZeroMemory(login, sizeof(login));
-        ZeroMemory(pass, sizeof(pass));
-        ZeroMemory(temp, sizeof(temp));
+        //ZeroMemory(login, sizeof(login));
+        //ZeroMemory(pass, sizeof(pass));
+        //ZeroMemory(temp, sizeof(temp));
+		login[0] = 0;
+		pass[0] = 0;
+		temp[0] = 0;
 
         if(res == 0)
         {

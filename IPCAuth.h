@@ -14,7 +14,8 @@ private:
 public:
     IPC() {
         doPost = false;
-        ZeroMemory(postData, 1024);
+        //ZeroMemory(postData, 1024);
+		postData[0] = 0;
     }
 
     lopaStr IPCLobby(const char *ip, int port, char *SPEC);

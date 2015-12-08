@@ -217,13 +217,18 @@ std::string ypypNunu()
 
 
 void _LoadPersInfoToLocalVars(int savedTabIndex) {
-	ZeroMemory(trcPersKey, sizeof(trcPersKey));
+	//ZeroMemory(trcPersKey, sizeof(trcPersKey));
+	trcPersKey[0] = 0;
 	strncpy(trcPersKey, ui->linePersKey->text().toLocal8Bit().data(), 32);
 	memset(trcPersKey + 32, '\0', 1);
-	ZeroMemory(currentIP, sizeof(currentIP));
-	ZeroMemory(finalIP, sizeof(finalIP));
-	ZeroMemory(gPorts, sizeof(gPorts));
-	ZeroMemory(gTLD, sizeof(gTLD));
+	currentIP[0] = 0;
+	finalIP[0] = 0;
+	gPorts[0] = 0;
+	gTLD[0] = 0;
+	//ZeroMemory(currentIP, sizeof(currentIP));
+	//ZeroMemory(finalIP, sizeof(finalIP));
+	//ZeroMemory(gPorts, sizeof(gPorts));
+	//ZeroMemory(gTLD, sizeof(gTLD));
 
 	if (savedTabIndex == 0)
 	{
@@ -2353,8 +2358,10 @@ void setUIText(char *field, QLineEdit *qle, const char *resStr) {
 }
 void RestoreSession()
 {
-	ZeroMemory(gPorts, sizeof(gPorts));
-	ZeroMemory(gTLD, sizeof(gTLD));
+	//ZeroMemory(gPorts, sizeof(gPorts));
+	//ZeroMemory(gTLD, sizeof(gTLD));
+	gPorts[0] = 0;
+	gTLD[0] = 0;
 
 	FILE *resFile = fopen("restore", "r");
 	char resStr[128] = {0};
@@ -2509,13 +2516,15 @@ void RestoreSession()
 			}
 			setUIText("[MAXBTHR]:", ui->maxBrutingThrBox, resStr);
 			setUIText("[PERSKEY]:", ui->linePersKey, resStr);
-			ZeroMemory(trcPersKey, sizeof(trcPersKey));
+			//ZeroMemory(trcPersKey, sizeof(trcPersKey));
+			trcPersKey[0] = 0;
 			strncpy(trcPersKey, resStr, 32);
 			memset(trcPersKey + 32, '\0', 1);
 			setUIText("[SYSTEMPROXYIP]:", ui->systemProxyIP, resStr);
 			setUIText("[SYSTEMPROXYPORT]:", ui->systemProxyPort, resStr);
 
-			ZeroMemory(resStr, sizeof(resStr));
+			resStr[0] = 0;
+			//ZeroMemory(resStr, sizeof(resStr));
 		};
 
 		fclose(resFile);

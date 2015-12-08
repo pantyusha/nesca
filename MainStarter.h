@@ -42,9 +42,11 @@ public:
 		indexIP = 0;
 		flCounter = 0;
 		gflIndex = 0;
-
+/*
 		ZeroMemory(ipsstart, sizeof(ipsstart));
-		ZeroMemory(ipsend, sizeof(ipsend));
+		ZeroMemory(ipsend, sizeof(ipsend));*/
+		ipsstart[0] = 0;
+		ipsend[0] = 0;
 	}
 	~MainStarter(){
 		FileUpdater::FUClear();

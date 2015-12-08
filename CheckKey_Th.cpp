@@ -9,7 +9,8 @@ int CheckKey_Th::isActiveKey = -1;
 
 void getSubStrEx(const char *src, char *startStr, char *endStr, char *dest, int szDest)
 {
-	ZeroMemory(dest, szDest);
+	//ZeroMemory(dest, szDest);
+	dest[0] = 0;
     char *ptr1 = strstri((const char*)src, startStr);
 	if(ptr1 != NULL)
 	{
@@ -24,7 +25,8 @@ void getSubStrEx(const char *src, char *startStr, char *endStr, char *dest, int 
 }
 void getSubStr(char *src, char *startStr, char *endStr, char *dest, int szDest)
 {
-	ZeroMemory(dest, szDest);
+	//ZeroMemory(dest, szDest);
+	dest[0] = 0;
     char *ptr1 = strstri((const char*)src, startStr);
 	if(ptr1 != NULL)
 	{

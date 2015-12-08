@@ -57,13 +57,17 @@ lopaStr BA::BABrute(const char *ip, const int port) {
 	Connector con;
 
 	con.nConnect(ip, port, &buff);
-	int isDig = Utils::isDigest(&buff);
-	QString ipString = QString(ip).mid(0, QString(ip).indexOf("/")) + ":" + QString::number(port);
-	if (isDig == -1) {
-		stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 found - <a style=\"color:orange;\" href=\"http://" + ipString + "/\">" +
+	//QString ipString = QString(ip).mid(0, QString(ip).indexOf("/", 8)) + ":" + QString::number(port);
+	QString ipString = QString(ip);
+	if (buff.size() == 0) {
+		stt->doEmitionFoundData("<span style=\"color:orange;\">Empty BA probe - <a style=\"color:orange;\" href=\"" + ipString + "/\">" +
 			ipString + "</a></span>");
-		strcpy(lps.login, "");
 		return lps;
+	}
+	int isDig = Utils::isDigest(&buff);
+	if (isDig == -1) {
+		stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 found - <a style=\"color:orange;\" href=\"" + ipString + "/\">" +
+			ipString + "</a></span>");
 	}
 	else if (isDig == 1) digestMode = true; 
 	else digestMode = false;

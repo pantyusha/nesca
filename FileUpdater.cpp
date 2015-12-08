@@ -55,7 +55,8 @@ void updateLogin() {
         while(fgets(buffFG, 32, loginList) != NULL)
         {
             MaxLogin++;
-            ZeroMemory(buffFG, sizeof(buffFG));
+            //ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
         };
 
         rewind(loginList);
@@ -74,7 +75,8 @@ void updateLogin() {
 
             if(strstr(buffFG, "\n") != NULL) strncat(loginLst[i++], buffFG, strlen(buffFG) - 1);
             else strncat(loginLst[i++], buffFG, strlen(buffFG));
-            ZeroMemory(buffFG, sizeof(buffFG));
+            //ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
         };
 
         if(FileUpdater::oldLoginLstSize == 0) stt->doEmitionGreenFoundData("Login list loaded (" + QString::number(MaxLogin) + " entries)");
@@ -108,7 +110,8 @@ void updatePass() {
         while(fgets(buffFG, 32, passList) != NULL)
         {
             MaxPass++;
-            ZeroMemory(buffFG, sizeof(buffFG));
+            //ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
         };
 
         rewind(passList);
@@ -127,7 +130,8 @@ void updatePass() {
 
             if(strstr(buffFG, "\n") != NULL) strncat(passLst[i++], buffFG, strlen(buffFG) - 1);
             else  strncat(passLst[i++], buffFG, strlen(buffFG));
-            ZeroMemory(buffFG, sizeof(buffFG));
+            //ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
         };
 
         if(FileUpdater::oldPassLstSize == 0) stt->doEmitionGreenFoundData("Password list loaded (" + QString::number(MaxPass) + " entries)");
@@ -153,7 +157,7 @@ void updateSSH() {
     MaxSSHPass = 0;
 
     char buffFG[32] = {0};
-    ZeroMemory(buffFG, sizeof(buffFG));
+    //ZeroMemory(buffFG, sizeof(buffFG));
 
 	FILE *sshlpList = fopen(SSH_PASS_FN, "r");
 
@@ -162,7 +166,8 @@ void updateSSH() {
         while(fgets(buffFG, 32, sshlpList) != NULL)
         {
             ++MaxSSHPass;
-            ZeroMemory(buffFG, sizeof(buffFG));
+            //ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
         };
 
         rewind(sshlpList);
@@ -180,8 +185,9 @@ void updateSSH() {
             memset(sshlpLst[i], 0, strlen(buffFG) + 1);
 
             if(strstr(buffFG, "\n") != NULL) strncat(sshlpLst[i++], buffFG, strlen(buffFG) - 1);
-            else strncat(sshlpLst[i++], buffFG, strlen(buffFG));
-            ZeroMemory(buffFG, sizeof(buffFG));
+			else strncat(sshlpLst[i++], buffFG, strlen(buffFG));
+			//ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
         };
 
         if(FileUpdater::oldSSHLstSize == 0) stt->doEmitionGreenFoundData("SSH Password list loaded (" + QString::number(MaxSSHPass) + " entries)");
@@ -207,7 +213,6 @@ void updateWFLogin() {
     MaxWFLogin = 0;
 
     char buffFG[32] = {0};
-    ZeroMemory(buffFG, sizeof(buffFG));
 
     FILE *wfLoginList = fopen(WF_LOGIN_FN, "r");
 
@@ -215,8 +220,9 @@ void updateWFLogin() {
     {
         while(fgets(buffFG, 32, wfLoginList) != NULL)
         {
-            MaxWFLogin++;
-            ZeroMemory(buffFG, sizeof(buffFG));
+			MaxWFLogin++;
+			//ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
         };
 
         rewind(wfLoginList);
@@ -234,8 +240,9 @@ void updateWFLogin() {
             memset(wfLoginLst[i], 0, strlen(buffFG) + 1);
 
             if(strstr(buffFG, "\n") != NULL) strncat(wfLoginLst[i++], buffFG, strlen(buffFG) - 1);
-            else strncat(wfLoginLst[i++], buffFG, strlen(buffFG));
-            ZeroMemory(buffFG, sizeof(buffFG));
+			else strncat(wfLoginLst[i++], buffFG, strlen(buffFG));
+			//ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
         };
 
         if(FileUpdater::oldWFLoginLstSize == 0) stt->doEmitionGreenFoundData("WFLogin list loaded (" + QString::number(MaxWFLogin) + " entries)");
@@ -256,7 +263,6 @@ void updateWFPass() {
     MaxWFPass = 0;
 
     char buffFG[32] = {0};
-    ZeroMemory(buffFG, sizeof(buffFG));
 
 	FILE *wfPassList = fopen(WF_PASS_FN, "r");
 
@@ -264,8 +270,9 @@ void updateWFPass() {
     {
         while(fgets(buffFG, 32, wfPassList) != NULL)
         {
-            MaxWFPass++;
-            ZeroMemory(buffFG, sizeof(buffFG));
+			MaxWFPass++;
+			//ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
         };
 
         rewind(wfPassList);
@@ -283,8 +290,9 @@ void updateWFPass() {
             memset(wfPassLst[i], 0, strlen(buffFG) + 1);
 
             if(strstr(buffFG, "\n") != NULL) strncat(wfPassLst[i++], buffFG, strlen(buffFG) - 1);
-            else strncat(wfPassLst[i++], buffFG, strlen(buffFG));
-            ZeroMemory(buffFG, sizeof(buffFG));
+			else strncat(wfPassLst[i++], buffFG, strlen(buffFG));
+			//ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
         };
 
         if(FileUpdater::oldWFPassLstSize == 0) stt->doEmitionGreenFoundData("WFPassword list loaded (" + QString::number(MaxWFPass) + " entries)");
@@ -305,7 +313,6 @@ void updateFTPLogin() {
 	MaxFTPLogin = 0;
 
 	char buffFG[32] = { 0 };
-	ZeroMemory(buffFG, sizeof(buffFG));
 
 	FILE *ftpLoginList = fopen(FTP_LOGIN_FN, "r");
 
@@ -314,7 +321,8 @@ void updateFTPLogin() {
 		while (fgets(buffFG, 32, ftpLoginList) != NULL)
 		{
 			MaxFTPLogin++;
-			ZeroMemory(buffFG, sizeof(buffFG));
+			//ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
 		};
 
 		rewind(ftpLoginList);
@@ -333,7 +341,8 @@ void updateFTPLogin() {
 
 			if (strstr(buffFG, "\n") != NULL) strncat(ftpLoginLst[i++], buffFG, strlen(buffFG) - 1);
 			else strncat(ftpLoginLst[i++], buffFG, strlen(buffFG));
-			ZeroMemory(buffFG, sizeof(buffFG));
+			//ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
 		};
 
 		if (FileUpdater::oldFTPLoginLstSize == 0) stt->doEmitionGreenFoundData("FTP login list loaded (" + QString::number(MaxFTPLogin) + " entries)");
@@ -354,7 +363,6 @@ void updateFTPPass() {
 	MaxFTPPass = 0;
 
 	char buffFG[32] = { 0 };
-	ZeroMemory(buffFG, sizeof(buffFG));
 
 	FILE *ftpPassList = fopen(FTP_PASS_FN, "r");
 
@@ -363,7 +371,8 @@ void updateFTPPass() {
 		while (fgets(buffFG, 32, ftpPassList) != NULL)
 		{
 			++MaxFTPPass;
-			ZeroMemory(buffFG, sizeof(buffFG));
+			//ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
 		};
 
 		rewind(ftpPassList);
@@ -382,7 +391,8 @@ void updateFTPPass() {
 
 			if (strstr(buffFG, "\n") != NULL) strncat(ftpPassLst[i++], buffFG, strlen(buffFG) - 1);
 			else strncat(ftpPassLst[i++], buffFG, strlen(buffFG));
-			ZeroMemory(buffFG, sizeof(buffFG));
+			//ZeroMemory(buffFG, sizeof(buffFG));
+			buffFG[0] = 0;
 		};
 
 		if (FileUpdater::oldFTPPassLstSize == 0) stt->doEmitionGreenFoundData("FTP password list loaded (" + QString::number(MaxFTPPass) + " entries)");

@@ -225,8 +225,10 @@ lopaStr HikVis::hikLogin(const char * sDVRIP, int wDVRPort)
 		for (int j = 0; j < MaxPass; ++j) {
 			FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready; });
 			if (!globalScanFlag) return lps;
-			ZeroMemory(login, 64);
-			ZeroMemory(pass, 64);
+			/*ZeroMemory(login, 64);
+			ZeroMemory(pass, 64);*/
+			login[0] = 0;
+			pass[0] = 0;
 			strcpy(login, loginLst[i]);
 			strcpy(pass, passLst[j]);
 
@@ -340,8 +342,10 @@ lopaStr HikVis::rviLogin(const char * sDVRIP, int wDVRPort)
 		for (int j = 0; j < MaxPass; ++j) {
 			FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready; });
 			if (!globalScanFlag) return lps;
-			ZeroMemory(login, 64);
-			ZeroMemory(pass, 64);
+			/*ZeroMemory(login, 64);
+			ZeroMemory(pass, 64);*/
+			login[0] = 0;
+			pass[0] = 0;
 			strcpy(login, loginLst[i]);
 			strcpy(pass, passLst[j]);
 

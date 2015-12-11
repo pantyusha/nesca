@@ -2831,9 +2831,9 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 		lopaStr lps = hv.HVLobby(ip, port);
 		if (strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0)
 		{
-			_specFillerBA(ip, port, "[Hikvision] iVMS client required.", lps.login, lps.pass, 0);
-			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[Hikvision] iVMS client required ().",
-				lps.login, lps.pass, "[Hikvision] iVMS", "UTF-8", "Basic Authorization");
+			_specFillerBA(ip, port, "[Hikvision IVMS].", lps.login, lps.pass, 0);
+			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[Hikvision IVMS] ().",
+				lps.login, lps.pass, "[Hikvision IVMS]", "UTF-8", "Basic Authorization");
 
 			while (hikkaStop) Sleep(10);
 			hikkaStop = true;
@@ -2865,9 +2865,9 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 		lopaStr lps = hv.RVILobby(ip, port);
 		if (strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0)
 		{
-			_specFillerBA(ip, port, "[RVI] RVI VSS client required.", lps.login, lps.pass, 0);
-			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[RVI] RVI VSS client required ().",
-				lps.login, lps.pass, "[RVI] RVI", "UTF-8", "Basic Authorization");
+			_specFillerBA(ip, port, "[RVI].", lps.login, lps.pass, 0);
+			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[RVI] ().",
+				lps.login, lps.pass, "[RVI]", "UTF-8", "Basic Authorization");
 
 			while (rviStop) Sleep(10);
 			rviStop = true;

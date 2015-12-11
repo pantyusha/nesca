@@ -79,8 +79,8 @@ int MainStarter::fileLoader(const char *fileName) {
 
 	ipsstartfl = new unsigned int*[importFileSize + 1];
 	ipsendfl = new unsigned int*[importFileSize + 1];
-	ipsstartfl[0] = 0;
-	ipsendfl[0] = 0;
+	//ipsstartfl[0] = 0;
+	//ipsendfl[0] = 0;
 	/*ZeroMemory(ipsstartfl, sizeof(ipsstartfl));
 	ZeroMemory(ipsendfl, sizeof(ipsendfl));*/
 
@@ -91,8 +91,8 @@ int MainStarter::fileLoader(const char *fileName) {
 
 		//ZeroMemory(ipsstartfl[i], sizeof(ipsstartfl[i]));
 		//ZeroMemory(ipsendfl[i], sizeof(ipsendfl[i]));
-		ipsstartfl[i] = 0;
-		ipsendfl[i] = 0;
+		//ipsstartfl[i] = 0;
+		//ipsendfl[i] = 0;
 	};
 
 	std::vector<std::string> shuffleArray;

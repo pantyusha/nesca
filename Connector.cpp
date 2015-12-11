@@ -250,6 +250,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 		}
 
 		if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
+
 		return sz;
     } else {
         stt->doEmitionRedFoundData("Curl error.");
@@ -312,11 +313,11 @@ int Connector::connectToPort(char* ip, int port)
 		}
 		else if (size == -2) return -2;
 	} else {
-		if (portCheck(tempIp, port)) {
+		if (portCheck(ip, port)) {
 			++Alive;//ME2
 			++found;//PieStat
 			Lexems lx;
-			lx.filler(tempIp, port, &buffer, size, &lx);
+			lx.filler(ip, port, &buffer, size, &lx);
 		};
 	}
 	return 0;

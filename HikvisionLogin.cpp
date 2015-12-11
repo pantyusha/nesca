@@ -80,10 +80,24 @@ bool HikVis::checkHikk(const char * sDVRIP, int port) {
 	if (inet_addr(sDVRIP) != INADDR_NONE) sa.sin_addr.s_addr = inet_addr(sDVRIP);
 	else if (host = gethostbyname(sDVRIP)) ((unsigned long*)&sa.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 #endif
-	else return false;
+	else {
+		if (gNegDebugMode)
+		{
+			stt->doEmitionDebugFoundData("inet_addr error - iVMS check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+		}
+		return false;
+	}
 
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (sock == INVALID_SOCKET) return false;
+	if (sock == INVALID_SOCKET) {
+		if (gNegDebugMode)
+		{
+			stt->doEmitionDebugFoundData("Socket error - iVMS check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+		}
+		return false;
+	}
 
 	struct linger linger = { 1, gTimeOut };
 	setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *)&linger, sizeof(linger));
@@ -104,12 +118,31 @@ bool HikVis::checkHikk(const char * sDVRIP, int port) {
 		shutdown(sock, SD_BOTH);
 		closesocket(sock);
 
-		if (buff[3] == 0x10) return true;
-		else return false;
+		if (buff[3] == 0x10) {
+			if (gNegDebugMode)
+			{
+				stt->doEmitionDebugFoundData("iVMS check succeeded [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+			}
+			return true;
+		}
+		else {
+			if (gNegDebugMode)
+			{
+				stt->doEmitionDebugFoundData("iVMS check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+			}
+			return false;
+		}
 	}
 	
 	shutdown(sock, SD_BOTH);
-	closesocket(sock); 
+	closesocket(sock);
+	if (gNegDebugMode)
+	{
+		stt->doEmitionDebugFoundData("Unknown error - iVMS check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+			"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+	}
 	return false;
 }
 
@@ -126,10 +159,24 @@ bool HikVis::checkRVI(const char * sDVRIP, int port) {
 	if (inet_addr(sDVRIP) != INADDR_NONE) sa.sin_addr.s_addr = inet_addr(sDVRIP);
 	else if (host = gethostbyname(sDVRIP)) ((unsigned long*)&sa.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 #endif
-	else return false;
+	else {
+		if (gNegDebugMode)
+		{
+			stt->doEmitionDebugFoundData("inet_addr error - RVI check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+		}
+		return false;
+	}
 
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (sock == INVALID_SOCKET) return false;
+	if (sock == INVALID_SOCKET) {
+		if (gNegDebugMode)
+		{
+			stt->doEmitionDebugFoundData("Socket error - RVI check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+		}
+		return false;
+	}
 
 	struct linger linger = { 1, gTimeOut };
 	setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *)&linger, sizeof(linger));
@@ -150,12 +197,31 @@ bool HikVis::checkRVI(const char * sDVRIP, int port) {
 		shutdown(sock, SD_BOTH);
 		closesocket(sock);
 
-		if (buff[0] == -80) return true;
-		else return false;
+		if (buff[0] == -80) {
+			if (gNegDebugMode)
+			{
+				stt->doEmitionDebugFoundData("RVI check succeeded [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+			}
+			return true;
+		}
+		else {
+			if (gNegDebugMode)
+			{
+				stt->doEmitionDebugFoundData("RVI check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+			}
+			return false;
+		}
 	}
 
 	shutdown(sock, SD_BOTH);
 	closesocket(sock);
+	if (gNegDebugMode)
+	{
+		stt->doEmitionDebugFoundData("Unknown error - RVI check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+			"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+	}
 	return false;
 }
 
@@ -172,10 +238,24 @@ bool HikVis::checkSAFARI(const char * sDVRIP, int port) {
 	if (inet_addr(sDVRIP) != INADDR_NONE) sa.sin_addr.s_addr = inet_addr(sDVRIP);
 	else if (host = gethostbyname(sDVRIP)) ((unsigned long*)&sa.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
 #endif
-	else return false;
+	else {
+		if (gNegDebugMode)
+		{
+			stt->doEmitionDebugFoundData("inet_addr error - SAFARI check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+		}
+		return false;
+	}
 
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (sock == INVALID_SOCKET) return false;
+	if (sock == INVALID_SOCKET) {
+		if (gNegDebugMode)
+		{
+			stt->doEmitionDebugFoundData("Socket error - SAFARI check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+		}
+		return false;
+	}
 
 	struct linger linger = { 1, gTimeOut };
 	setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *)&linger, sizeof(linger));
@@ -197,15 +277,39 @@ bool HikVis::checkSAFARI(const char * sDVRIP, int port) {
 		closesocket(sock);
 
 		if (buff[0] != '\0') {
+			if (gNegDebugMode)
+			{
+				stt->doEmitionDebugFoundData("SAFARI check succeeded [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+			}
 			return true;
 		}
 
-		if (buff[0] == 8) return true;
-		else return false;
+		if (buff[0] == 8) {
+			if (gNegDebugMode)
+			{
+				stt->doEmitionDebugFoundData("SAFARI check succeeded [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+			}
+			return true;
+		}
+		else {
+			if (gNegDebugMode)
+			{
+				stt->doEmitionDebugFoundData("SAFARI check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+			}
+			return false;
+		}
 	}
 
 	shutdown(sock, SD_BOTH);
 	closesocket(sock);
+	if (gNegDebugMode)
+	{
+		stt->doEmitionDebugFoundData("Unknown error - SAFARI check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+			"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+	}
 	return false;
 }
 

@@ -233,7 +233,7 @@ bool isNegative(const std::string *buff, const char *ip, int port, const char *c
 		FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready; });
 		if (!globalScanFlag) return true;
 
-		if (Utils::ustrstr(std::string(codedStr.toLocal8Bit().data()), negEntry) != -1){
+		if (Utils::ustrstr(std::string(codedStr.toLocal8Bit().data()), negEntry) != -1) {
 			if (gNegDebugMode)
 			{
 				QTextCodec *nCodec = QTextCodec::codecForName("Windows-1251");
@@ -282,6 +282,11 @@ int globalSearchPrnt(const std::string *buff)
 		{
 			//if(gNegDebugMode) stt->doEmitionDebugFoundData("Printer detected.");	
 
+			if (gNegDebugMode)
+			{
+				QTextCodec *nCodec = QTextCodec::codecForName("Windows-1251");
+				stt->doEmitionDebugFoundData("Printer ignored");
+			}
 			return -1;
 	};
 
@@ -294,19 +299,43 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 			if (HikVis::checkSAFARI(ip, port))												return 6; //Safari CCTV
 			else if (HikVis::checkHikk(ip, port))											return 4; //Hikkvision iVMS
 			else if (HikVis::checkRVI(ip, port))											return 5; //RVI
-			else																			return -1;
+			else
+			{
+				if (gNegDebugMode)
+				{
+					stt->doEmitionDebugFoundData("Safari CCTV check failed - ignoring [<a href=\"" + QString(ip) + ":" + QString::number(port) +
+						"/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>]");
+				}
+				return -1;
+			}
 		}
 		else if(port == 8000) {
 			if (HikVis::checkHikk(ip, port))												return 4; //Hikkvision iVMS
 			else if (HikVis::checkRVI(ip, port))											return 5; //RVI
 			//else if (HikVis::checkSAFARI(ip, port))											return 6; //Safari CCTV
-			else																			return -1;
+			else
+			{
+				if (gNegDebugMode)
+				{
+					stt->doEmitionDebugFoundData("Hikkvision iVMS check failed - ignoring [<a href=\"" + QString(ip) + ":" + QString::number(port) +
+						"/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>]");
+				}
+				return -1;
+			}
 		}
 		else if (port == 37777) {
 			if (HikVis::checkRVI(ip, port))													return 5; //RVI
 			else if(HikVis::checkHikk(ip, port))											return 4; //Hikkvision iVMS
 			else if (HikVis::checkSAFARI(ip, port))											return 6; //Safari CCTV
-			else																			return -1;
+			else
+			{
+				if (gNegDebugMode)
+				{
+					stt->doEmitionDebugFoundData("RVI check failed - ignoring [<a href=\"" + QString(ip) + ":" + QString::number(port) +
+						"/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>]");
+				}
+				return -1;
+			}
 		}
 	}
 
@@ -2831,8 +2860,8 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 		lopaStr lps = hv.HVLobby(ip, port);
 		if (strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0)
 		{
-			_specFillerBA(ip, port, "[Hikvision IVMS].", lps.login, lps.pass, 0);
-			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[Hikvision IVMS] ().",
+			_specFillerBA(ip, port, "[Hikvision IVMS]", lps.login, lps.pass, 0);
+			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[Hikvision IVMS] ()",
 				lps.login, lps.pass, "[Hikvision IVMS]", "UTF-8", "Basic Authorization");
 
 			while (hikkaStop) Sleep(10);
@@ -2865,8 +2894,8 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 		lopaStr lps = hv.RVILobby(ip, port);
 		if (strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0)
 		{
-			_specFillerBA(ip, port, "[RVI].", lps.login, lps.pass, 0);
-			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[RVI] ().",
+			_specFillerBA(ip, port, "[RVI]", lps.login, lps.pass, 0);
+			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[RVI] ()",
 				lps.login, lps.pass, "[RVI]", "UTF-8", "Basic Authorization");
 
 			while (rviStop) Sleep(10);

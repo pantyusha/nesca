@@ -1381,10 +1381,10 @@ void MainStarter::runAuxiliaryThreads() {
 		std::thread lpThread(FileUpdater::updateLists);
 		lpThread.detach();
 	}
-	if (!trackerRunning) {
-		std::thread trackerThread(_tracker);
-		trackerThread.detach();
-	}
+	//if (!trackerRunning) {
+	//	std::thread trackerThread(_tracker);
+	//	trackerThread.detach();
+	//}
 	if (!ipPerSecTimer) {
 		std::thread timerThread(_IPPerSecTimer);
 		timerThread.detach();

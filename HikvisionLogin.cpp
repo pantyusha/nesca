@@ -110,29 +110,41 @@ bool HikVis::checkHikk(const char * sDVRIP, int port) {
 		char tBuff[32] = { 0 };
 		int offset = 0;
 		int sz = 0;
+		int bsz = 0;
 		while ((sz = recvWT(sock, tBuff, 16, gTimeOut, &bTO)) > 0) {
 			memcpy(buff + offset, tBuff, sz);
 			offset = sz;
+			bsz += sz;
 		}
 
 		shutdown(sock, SD_BOTH);
 		closesocket(sock);
 
-		if (buff[3] == 0x10) {
+		if (bsz == 0) {
 			if (gNegDebugMode)
 			{
-				stt->doEmitionDebugFoundData("iVMS check succeeded [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
-					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
-			}
-			return true;
-		}
-		else {
-			if (gNegDebugMode)
-			{
-				stt->doEmitionDebugFoundData("iVMS check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+				stt->doEmitionDebugFoundData("iVMS check failed - size = 0, code = (" + QString::number(sz) + ") [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
 					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
 			}
 			return false;
+		}
+		else {
+			if (buff[3] == 0x10) {
+				if (gNegDebugMode)
+				{
+					stt->doEmitionDebugFoundData("iVMS check succeeded [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+						"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+				}
+				return true;
+			}
+			else {
+				if (gNegDebugMode)
+				{
+					stt->doEmitionDebugFoundData("iVMS check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+						"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+				}
+				return false;
+			}
 		}
 	}
 	
@@ -189,29 +201,41 @@ bool HikVis::checkRVI(const char * sDVRIP, int port) {
 		char tBuff[32] = { 0 };
 		int offset = 0;
 		int sz = 0;
+		int bsz = 0;
 		while ((sz = recvWT(sock, tBuff, 16, gTimeOut, &bTO)) > 0) {
 			memcpy(buff + offset, tBuff, sz);
 			offset = sz;
+			bsz += sz;
 		}
 
 		shutdown(sock, SD_BOTH);
 		closesocket(sock);
-
-		if (buff[0] == -80) {
+		if (bsz == 0) {
 			if (gNegDebugMode)
 			{
-				stt->doEmitionDebugFoundData("RVI check succeeded [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
-					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
-			}
-			return true;
-		}
-		else {
-			if (gNegDebugMode)
-			{
-				stt->doEmitionDebugFoundData("RVI check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+				stt->doEmitionDebugFoundData("RVI check failed - size = 0, code = (" + QString::number(sz) + ") [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
 					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
 			}
 			return false;
+		}
+		else {
+			if (buff[0] == -80) {
+				if (gNegDebugMode)
+				{
+					stt->doEmitionDebugFoundData("RVI check succeeded [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+						"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+				}
+				return true;
+			}
+			else {
+				if (gNegDebugMode)
+				{
+					stt->doEmitionDebugFoundData("RVI check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+						"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+					stt->doEmitionDebugFoundData("Buffer: " + QString(buff).toLocal8Bit().toHex());
+				}
+				return false;
+			}
 		}
 	}
 
@@ -268,38 +292,50 @@ bool HikVis::checkSAFARI(const char * sDVRIP, int port) {
 		char tBuff[128] = { 0 };
 		int offset = 0;
 		int sz = 0;
+		int bsz = 0;
 		while ((sz = recvWT(sock, tBuff, 128, gTimeOut, &bTO)) > 0) {
 			memcpy(buff + offset, tBuff, sz);
 			offset = sz;
+			bsz += sz;
 		}
 
 		shutdown(sock, SD_BOTH);
 		closesocket(sock);
 
-		if (buff[0] != '\0') {
+		if (bsz == 0) {
 			if (gNegDebugMode)
 			{
-				stt->doEmitionDebugFoundData("SAFARI check succeeded [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
-					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
-			}
-			return true;
-		}
-
-		if (buff[0] == 8) {
-			if (gNegDebugMode)
-			{
-				stt->doEmitionDebugFoundData("SAFARI check succeeded [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
-					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
-			}
-			return true;
-		}
-		else {
-			if (gNegDebugMode)
-			{
-				stt->doEmitionDebugFoundData("SAFARI check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+				stt->doEmitionDebugFoundData("SAFARI check failed - size = 0, code = (" + QString::number(sz) + ") [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
 					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
 			}
 			return false;
+		}
+		else {
+			if (buff[0] != '\0') {
+				if (gNegDebugMode)
+				{
+					stt->doEmitionDebugFoundData("SAFARI check succeeded [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+						"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+				}
+				return true;
+			}
+
+			if (buff[0] == 8) {
+				if (gNegDebugMode)
+				{
+					stt->doEmitionDebugFoundData("SAFARI check succeeded [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+						"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+				}
+				return true;
+			}
+			else {
+				if (gNegDebugMode)
+				{
+					stt->doEmitionDebugFoundData("SAFARI check failed [<a href=\"" + QString(sDVRIP) + ":" + QString::number(port) +
+						"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(port) + "</font></a>]");
+				}
+				return false;
+			}
 		}
 	}
 

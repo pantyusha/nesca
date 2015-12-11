@@ -213,8 +213,8 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 			) {
 			if (gNegDebugMode)
 			{
-				stt->doEmitionDebugFoundData("NConnect failed (curl_code: " + QString::number(res) + ") [<a href=\"" + QString(ip) + ":" + QString::number(port) +
-					"/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) + "</font></a>]");
+				stt->doEmitionDebugFoundData("NConnect failed (curl_code: " + QString::number(res) + ") [<a href=\"" + QString(ip) +
+					"/\"><font color=\"#0084ff\">" + QString(ip) + " Port:" + QString::number(port) + "</font></a>]");
 			}
 			SOCKET eNobuffSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 			shutdown(eNobuffSocket, SD_BOTH);

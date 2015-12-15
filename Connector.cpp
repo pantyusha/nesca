@@ -271,104 +271,119 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 }
 
 bool portCheck(const char * sDVRIP, int wDVRPort) {
-	sockaddr_in sa;
-	sa.sin_family = AF_INET;
-	sa.sin_port = htons(wDVRPort);
+//	sockaddr_in sa;
+//	sa.sin_family = AF_INET;
+//	sa.sin_port = htons(wDVRPort);
+//
+//	hostent *host = NULL;
+//#if defined(WIN32)
+//	if (inet_addr(sDVRIP) != INADDR_NONE) sa.sin_addr.S_un.S_addr = inet_addr(sDVRIP);
+//#else
+//	if (inet_addr(sDVRIP) != INADDR_NONE) sa.sin_addr.s_addr = inet_addr(sDVRIP);
+//#endif
+//	else if (host = gethostbyname(sDVRIP)) ((unsigned long*)&sa.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
+//	else {
+//		stt->doEmitionDebugFoundData("Port check failed - inet_addr failure. [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
+//			"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
+//		return false;
+//	}
+//
+//	SOCKET sock = INVALID_SOCKET;
+//	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+//	if (sock == INVALID_SOCKET) return false;
+//	else if (ENOBUFS == sock || ENOMEM == sock) {
+//		stt->doEmitionRedFoundData("Insufficient buffer/memory space. Sleeping for 10 sec..."); 
+//		return false;
+//	}
+//	
+//	int res = connect(sock, (sockaddr*)&sa, sizeof(sa));
+//
+//	//shutdown(sock, SD_BOTH);
+//	//closesocket(sock);
+//	int resE = WSAGetLastError();
+//	if (res == SOCKET_ERROR) {
+//		if (gNegDebugMode)
+//		{
+//			stt->doEmitionDebugFoundData("Port check failed - SOCKET_ERROR. [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
+//				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
+//		}
+//		return false;
+//	}
+//	else {
+//		stt->doEmitionDebugFoundData("WSAGetLastError1: " + QString::number(resE) + "socket: " + QString::number(sock) + " [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
+//			"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
+//		char tBuff[1] = { 0 };
+//		int recvCode = send(sock, tBuff, 0, 0);
+//		resE = WSAGetLastError();
+//		stt->doEmitionDebugFoundData("WSAGetLastError2: " + QString::number(resE) + ") [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
+//			"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
+//		if (-1 == recvCode) {
+//			stt->doEmitionDebugFoundData("Port check failed (recv code: " + QString::number(recvCode) + ") [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
+//				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
+//			return false;
+//		}
+//		shutdown(sock, SD_BOTH);
+//		closesocket(sock);
+//		if (gNegDebugMode)
+//		{
+//			stt->doEmitionDebugFoundData("Port check succeeded (curl_code: " + QString::number(res) + ") [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
+//				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
+//		}
+//		return true;
+//	}
+//
+//	if (gNegDebugMode)
+//	{
+//		stt->doEmitionDebugFoundData("Port check failed - unknown socket error. [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
+//			"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
+//	}
+//	return false;
 
-	hostent *host = NULL;
-#if defined(WIN32)
-	if (inet_addr(sDVRIP) != INADDR_NONE) sa.sin_addr.S_un.S_addr = inet_addr(sDVRIP);
-	else if (host = gethostbyname(sDVRIP)) ((unsigned long*)&sa.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
-#else
-	if (inet_addr(sDVRIP) != INADDR_NONE) sa.sin_addr.s_addr = inet_addr(sDVRIP);
-	else if (host = gethostbyname(sDVRIP)) ((unsigned long*)&sa.sin_addr)[0] = ((unsigned long**)host->h_addr_list)[0][0];
-#endif
-	else return false;
-
-	SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (sock == INVALID_SOCKET) return -1;
-	else if (ENOBUFS == sock || ENOMEM == sock) {
-		stt->doEmitionRedFoundData("Insufficient buffer/memory space. Sleeping for 10 sec..."); 
-		return -1;
-	}
-
-	struct linger linger = { 1, gTimeOut };
-	setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *)&linger, sizeof(linger));
-
-	int res = connect(sock, (sockaddr*)&sa, sizeof(sa));
-
-	shutdown(sock, SD_BOTH);
-	closesocket(sock);
-
-	if (res == SOCKET_ERROR) {
-		if (gNegDebugMode)
-		{
-			stt->doEmitionDebugFoundData("Port check failed - SOCKET_ERROR. [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
-				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
+	CURL *curl = curl_easy_init();
+	if (curl != NULL) {
+		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+		curl_easy_setopt(curl, CURLOPT_URL, sDVRIP);
+		curl_easy_setopt(curl, CURLOPT_PORT, wDVRPort);
+		int proxyPort = std::atoi(gProxyPort);
+		if (proxyPort > 0 && proxyPort < 65535) curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
+		curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut);
+		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1L);
+		int res = curl_easy_perform(curl);
+		curl_easy_cleanup(curl);
+		if (res != CURLE_OK) {
+			if (gNegDebugMode)
+			{
+				stt->doEmitionDebugFoundData("Port check failed (curl_code: " + QString::number(res) + ") [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
+					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
+				SOCKET eNobuffSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+				shutdown(eNobuffSocket, SD_BOTH);
+				closesocket(eNobuffSocket);
+				if (ENOBUFS == eNobuffSocket || ENOMEM == eNobuffSocket) {
+					stt->doEmitionRedFoundData("Insufficient buffer/memory space. Sleeping for 10 sec...");
+					Sleep(10000);
+				}
+			}
+			return false;
 		}
-		return false;
+		else {
+			if (gNegDebugMode)
+			{
+				stt->doEmitionDebugFoundData("Port check succeeded (curl_code: " + QString::number(res) + ") [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
+					"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
+			}
+			return true;
+		}
 	}
 	else {
 		if (gNegDebugMode)
 		{
-			stt->doEmitionDebugFoundData("Port check succeeded (curl_code: " + QString::number(res) + ") [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
+			stt->doEmitionDebugFoundData("Port check failed - curl_easy_init() error. [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
 				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
 		}
-		return true;
+		return false;
 	}
-
-	if (gNegDebugMode)
-	{
-		stt->doEmitionDebugFoundData("Port check failed - unknown socket error. [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
-			"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
-	}
-	return false;
-
-	//CURL *curl = curl_easy_init();
-	//if (curl != NULL) {
-	//	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
-	//	curl_easy_setopt(curl, CURLOPT_URL, sDVRIP);
-	//	curl_easy_setopt(curl, CURLOPT_PORT, wDVRPort);
-	//	int proxyPort = std::atoi(gProxyPort);
-	//	if (proxyPort > 0 && proxyPort < 65535) curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
-	//	curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
-	//	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
-	//	curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut);
-	//	//curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1L); //DO_NOT_USE. Windows XP - returns CURLE_OK even if port is closed.
-	//	int res = curl_easy_perform(curl);
-	//	curl_easy_cleanup(curl);
-	//	if (res != CURLE_OK) {
-	//		if (gNegDebugMode)
-	//		{
-	//			stt->doEmitionDebugFoundData("Port check failed (curl_code: " + QString::number(res) + ") [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
-	//				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
-	//		}
-	//		SOCKET eNobuffSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	//		shutdown(eNobuffSocket, SD_BOTH);
-	//		closesocket(eNobuffSocket);
-	//		if (ENOBUFS == eNobuffSocket || ENOMEM == eNobuffSocket) {
-	//			stt->doEmitionRedFoundData("Insufficient buffer/memory space. Sleeping for 10 sec...");
-	//			Sleep(10000);
-	//		}
-	//		return false;
-	//	}
-	//	else {
-	//		if (gNegDebugMode)
-	//		{
-	//			stt->doEmitionDebugFoundData("Port check succeeded (curl_code: " + QString::number(res) + ") [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
-	//				"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
-	//		}
-	//		return true;
-	//	}
-	//}
-	//else {
-	//	if (gNegDebugMode)
-	//	{
-	//		stt->doEmitionDebugFoundData("Port check failed - curl_easy_init() error. [<a href=\"" + QString(sDVRIP) + ":" + QString::number(wDVRPort) +
-	//			"/\"><font color=\"#0084ff\">" + QString(sDVRIP) + ":" + QString::number(wDVRPort) + "</font></a>]");
-	//	}
-	//	return false;
-	//}
 }
 int Connector::connectToPort(char* ip, int port)
 {

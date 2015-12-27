@@ -40,8 +40,6 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 
             lpString = string(login) + ":" + string(pass);
 			
-			nip[0] = 0;
-			sprintf(nip, "ftp://%s", ip);
 			Connector con;
 			res = con.nConnect(nip, port, &buffer, NULL, NULL, &lpString);
 			if (res == -2) {

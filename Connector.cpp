@@ -398,12 +398,14 @@ int Connector::connectToPort(char* ip, int port)
 	int sz = strlen(ip);
 	if (443 == port) {
 		strcpy(tempIp, "https://");
-		strncat(tempIp, ip, sz > 119 ? 119 : sz);
+	}
+	else if (21 == port) {
+		strcpy(tempIp, "ftp://");
 	}
 	else {
 		strcpy(tempIp, "http://");
-		strncat(tempIp, ip, sz > 119 ? 119 : sz);
 	}
+	strncat(tempIp, ip, sz > 119 ? 119 : sz);
 
 	if (port != 37777 && port != 8000 && port != 34567 && port != 9000){
 		if (port == 22) size = SSHAuth::SSHLobby(ip, port, &buffer);			//SSH

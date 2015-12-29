@@ -3208,7 +3208,7 @@ int handleFramesets(std::string *buffcpy, char* ip, int port, int flag) {
 		
 		Connector con;
 		int framePos = pos + 9;
-
+		int counter = 0;
 		while (framePos != -1) {
 			framePos = buffcpy->find("<frame ", framePos + 1);
 			if (-1 == framePos) {
@@ -3233,6 +3233,9 @@ int handleFramesets(std::string *buffcpy, char* ip, int port, int flag) {
 						int quotePos2 = frameString.find_first_of("\"'", quotePos1 + 1);
 
 						if (quotePos1 != quotePos2) {
+							if (counter++ > 5) {
+								return 0;
+							};
 							std::string location = frameString.substr(quotePos1 + 1, quotePos2 - quotePos1 - 1);
 							std::string tIP = std::string(ip) + (location[0] == '/' ? "" : "/") + location;
 							std::string buff;

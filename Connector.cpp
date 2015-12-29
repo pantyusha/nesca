@@ -130,11 +130,12 @@ size_t nWriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 	//return realsize;
 }
 
-int Connector::nConnect(const char* ip, const int port, std::string *buffer,
-                        const char *postData,
-                        const std::vector<std::string> *customHeaders,
-                        const std::string *lpString,
-						bool digestMode){
+int pConnect(const char* ip, const int port, std::string *buffer,
+	const char *postData,
+	const std::vector<std::string> *customHeaders,
+	const std::string *lpString,
+	bool digestMode)
+{
 	buffer->clear();
 	int res = 0;
 	CURL *curl = curl_easy_init();
@@ -174,7 +175,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 			for (auto &ch : *customHeaders) chunk = curl_slist_append(chunk, ch.c_str());
 			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
 		}
-		
+
 		if (lpString != NULL) {
 			curl_easy_setopt(curl, CURLOPT_UNRESTRICTED_AUTH, 1L);
 			curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, 1L);
@@ -183,7 +184,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 			{
 				curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_DIGEST);
 				res = curl_easy_perform(curl);
-				
+
 				if (port != 21 && lpString != NULL) {
 					int pos = Utils::ustrstr(*buffer, "\r\n\r\n");
 					if (pos != -1) {
@@ -194,7 +195,7 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 			else res = curl_easy_perform(curl);
 		}
 		else res = curl_easy_perform(curl);
-		
+
 		int sz = buffer->size();
 
 		curl_easy_cleanup(curl);
@@ -233,14 +234,15 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 				res != 56 &&
 				res != 35 &&
 				res != 19 &&
-                res != 23) 
+				res != 23)
 			{
 				if (res == 5) {
 					stt->doEmitionRedFoundData("The given proxy host could not be resolved.");
 					return -2;
-				} else if (res == 8) {
-					stt->doEmitionFoundData("Strange ftp reply. (" + 
-						QString::number(res) + ") " + QString(ip) + 
+				}
+				else if (res == 8) {
+					stt->doEmitionFoundData("Strange ftp reply. (" +
+						QString::number(res) + ") " + QString(ip) +
 						":" + QString::number(port));
 					return -2;
 				}
@@ -250,10 +252,10 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 						":" + QString::number(port));
 					return -2;
 				}
-				else stt->doEmitionRedFoundData("CURL error: (" + QString::number(res) + ") " + 
+				else stt->doEmitionRedFoundData("CURL error: (" + QString::number(res) + ") " +
 					QString(ip) + ":" + QString::number(port));
 			};
-			
+
 			//if (res == 23 && sz > 0) {
 			//	return sz;
 			//}
@@ -264,10 +266,40 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 		if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
 
 		return sz;
-    } else {
-        stt->doEmitionRedFoundData("Curl error.");
-        return -1;
+	}
+	else {
+		stt->doEmitionRedFoundData("Curl error.");
+		return -1;
 	};
+}
+
+void eraser(std::string *buffer, const std::string delim1, const std::string delim2) {
+	int pos = -1;
+	while ((pos = buffer->find(delim1)) != -1) {
+		int ePos = buffer->find(delim2, pos);
+		if (ePos != -1) {
+			buffer->erase(pos, ePos - pos - 1 + delim2.length());
+		}
+		else {
+			buffer->erase(pos, buffer->length() - pos - 1);
+		}
+	}
+}
+void cutoutComments(std::string *buffer) {
+	eraser(buffer, "<!--", "-->");
+	eraser(buffer, "/*", "*/");
+	eraser(buffer, "//", "\n");
+}
+
+int Connector::nConnect(const char* ip, const int port, std::string *buffer,
+                        const char *postData,
+                        const std::vector<std::string> *customHeaders,
+                        const std::string *lpString,
+						bool digestMode){
+	int res = pConnect(ip, port, buffer, postData, customHeaders, lpString, digestMode);
+	cutoutComments(buffer);
+
+	return buffer->size();
 }
 
 bool portCheck(const char * sDVRIP, int wDVRPort) {

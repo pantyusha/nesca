@@ -87,7 +87,7 @@ int KeyCheckerMain()
             stt->doEmitionYellowFoundData("[Key check] 503 Backend not responding!");
         } else {
             char header[64] = {0};
-            getSubStrEx(buffer.c_str(), "http/1.1 ", "\r\n", header, 64);
+            getSubStrEx(buffer.c_str(), (char *) "http/1.1 ", (char *) "\r\n", header, 64);
             stt->doEmitionRedFoundData("[Key check] FAIL! An error occured. (" + QString::number(WSAGetLastError()) + ") Header: <u>" + QString::fromLocal8Bit(header) + "</u>");
             if(gDebugMode) stt->doEmitionDebugFoundData(QString(buffer.c_str()));
         };

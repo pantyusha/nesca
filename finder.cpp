@@ -588,12 +588,12 @@ int __checkFileExistence(int flag)
 {
 	char fileName[64] = {0};
 
-	if (flag == -22) sprintf(fileName, "./result_files-%s/"TYPE5".html", Utils::getStartDate().c_str());
-	else if (flag == 0 || flag == 15 || flag == -10) sprintf(fileName, "./result_files-%s/"TYPE1".html", Utils::getStartDate().c_str());
-	else if (flag == 3) sprintf(fileName, "./result_files-%s/"TYPE2".html", Utils::getStartDate().c_str());
-	else if (flag == 16) sprintf(fileName, "./result_files-%s/"TYPE4".html", Utils::getStartDate().c_str());
+	if (flag == -22) sprintf(fileName, "./result_files-%s/" TYPE5 ".html", Utils::getStartDate().c_str());
+	else if (flag == 0 || flag == 15 || flag == -10) sprintf(fileName, "./result_files-%s/" TYPE1 ".html", Utils::getStartDate().c_str());
+	else if (flag == 3) sprintf(fileName, "./result_files-%s/" TYPE2 ".html", Utils::getStartDate().c_str());
+	else if (flag == 16) sprintf(fileName, "./result_files-%s/" TYPE4 ".html", Utils::getStartDate().c_str());
 	else if(flag >= 17 || flag == 11 || flag == 12 
-		|| flag == 13 || flag == 14 || flag == 1) sprintf(fileName, "./result_files-%s/"TYPE3".html", Utils::getStartDate().c_str());
+		|| flag == 13 || flag == 14 || flag == 1) sprintf(fileName, "./result_files-%s/" TYPE3 ".html", Utils::getStartDate().c_str());
 
 	FILE *f = fopen(fileName, "r");
 	if(f == NULL) return true;
@@ -608,7 +608,7 @@ bool ftsOther = true;
 bool ftsSSH = true;
 bool ftsFTP = true;
 bool ftsBA = true;
-std::atomic<bool> fOpened = false;
+std::atomic<bool> fOpened(false);
 void fputsf(char *text, int flag, char *msg)
 {
     FILE *file = NULL;
@@ -618,25 +618,25 @@ void fputsf(char *text, int flag, char *msg)
 	if(flag == 0 || flag == 15 || flag == -10) 
 	{
 		if (ftsCameras) ftsCameras = __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/"TYPE1".html", Utils::getStartDate().c_str());
+		sprintf(fileName, "./result_files-%s/" TYPE1 ".html", Utils::getStartDate().c_str());
 		file = fopen(fileName, "a");
 	}
 	else if(flag == 1) 
 	{
 		if(ftsOther) ftsOther			= __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/"TYPE2".html", Utils::getStartDate().c_str());
+		sprintf(fileName, "./result_files-%s/" TYPE2 ".html", Utils::getStartDate().c_str());
 		file = fopen(fileName, "a");
 	}
 	else if(flag == -22) 
 	{
 		if(ftsSSH) ftsSSH				= __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/"TYPE5".html", Utils::getStartDate().c_str());
+		sprintf(fileName, "./result_files-%s/" TYPE5 ".html", Utils::getStartDate().c_str());
 		file = fopen(fileName, "a");
 	}
 	else if(flag == 3) 
 	{
 		if(ftsFTP) ftsFTP				= __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/"TYPE4".html", Utils::getStartDate().c_str());
+		sprintf(fileName, "./result_files-%s/" TYPE4 ".html", Utils::getStartDate().c_str());
 		file = fopen(fileName, "a");
 	}
 	else if(flag >= 17 || flag == 11 || flag == 12 
@@ -644,7 +644,7 @@ void fputsf(char *text, int flag, char *msg)
 		) 
 	{
 		if(ftsBA) ftsBA					= __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/"TYPE3".html", Utils::getStartDate().c_str());
+		sprintf(fileName, "./result_files-%s/" TYPE3 ".html", Utils::getStartDate().c_str());
 		file = fopen(fileName, "a");
 	}
 	else stt->doEmitionRedFoundData("Unknown flag [FLAG: " + QString::number(flag) + "]");
@@ -702,7 +702,7 @@ void fputsf(char *text, int flag, char *msg)
 		{
 			char tmsg[1024] = {0};
 			ftsCameras = false;
-			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>"TYPE1"</title>");
+			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>" TYPE1 "</title>");
 			strcat(tmsg, msg);
 			strcat(tmsg, HTTP_FILE_STYLE);
 			fputs (tmsg, file);
@@ -712,7 +712,7 @@ void fputsf(char *text, int flag, char *msg)
 		{
 			char tmsg[1024] = {0};
 			ftsOther = false;
-			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>"TYPE2"</title>");
+			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>" TYPE2 "</title>");
 			strcat(tmsg, msg);
 			strcat(tmsg, HTTP_FILE_STYLE);
 			fputs (tmsg, file);
@@ -722,7 +722,7 @@ void fputsf(char *text, int flag, char *msg)
 		{
 			char tmsg[1024] = {0};
 			ftsOther = false;
-			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>"TYPE5"</title>");
+			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>" TYPE5 "</title>");
 			strcat(tmsg, msg);
 			strcat(tmsg, HTTP_FILE_STYLE);
 			fputs (tmsg, file);
@@ -732,7 +732,7 @@ void fputsf(char *text, int flag, char *msg)
 		{
 			char tmsg[1024] = {0};
 			ftsFTP = false;
-			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>"TYPE4"</title>");
+			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>" TYPE4 "</title>");
 			strcat(tmsg, msg);
 			strcat(tmsg, HTTP_FILE_STYLE);
 			fputs (tmsg, file);
@@ -742,7 +742,7 @@ void fputsf(char *text, int flag, char *msg)
 		{
 			char tmsg[1024] = {0};
 			ftsBA = false;
-			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>"TYPE3"</title>");
+			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>" TYPE3 "</title>");
 			strcat(tmsg, msg);
 			strcat(tmsg, HTTP_FILE_STYLE);
 			fputs (tmsg, file);
@@ -766,8 +766,8 @@ void fputsf(char *text, int flag, char *msg)
 	};
 }
 
-#define REDIRECT_PIC "<img src='data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAESSURBVHjaYvj//z8DEPxnBBEgFkAAMUJFGBgOHToEYv0HCCAGkAiMA6KZGBjgKhjs7OwYAAKIAWYKCMP0w5WDaBaQUmTABNaHBAACCMUMkDa49VAzWRgZGf/DjDlha8dQxohwBUgO7CyYsTBJZAD3Gkg1uiRQjhEggLAqAEnA2CzIkjC3wPhgE6CuhzvS4jCEDXIXzCS417r+M/xHDymUwAX5Aj3kUEzAhuFRia4T5gawN3GFAYgGCNA3FZgAAIKwiq7vrR4LI3MuTZBAnYpbTQrUszHsiOl8RFxFKeLYc0cGS9E4UeQX844pnrL1Wq0JA6+esQHbBk15y9fclaMVn6aQT9WY8RrRaF8Z1wp4Z5mrLRz17qdV1HtPAAAAAElFTkSuQmCC'/>"
-#define PEKO_PIC "<a href='[PEKO]'><img src='data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAADkSURBVHjaYvj//z8DEECIQ4cO/QcIIEaoCANcBCCAwCKHDx+GCzMxIAE7OzsGgABiQDLlP4jNwsjICNILVgFiM4AMgqkAYUao6XAzAAIIxQyQamQdIDkmZDNhAMQHYZAcE8wodEUwAPca2EVoACjHCBBAWBWAJGBsFmRJFP/BTED2FnowgRQwoYQbEhvFF8jGo7OZGHAAmIlM6MZj9SauMADRAAGGkgawKcRlMkpII2vEFSXYQgMejsRqxmYIRjDCJNFpZDbBYMYWqrhSHEoYkOoFnKkRm2HorsIajYSiEzn6YAAAuoS1lVGw2nsAAAAASUVORK5CYII='/></a>"
+#define REDIRECT_PIC "<img src='data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAICAIAAAB/FOjAAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAA7SURBVHjaYmIgEbAA8f///4lUzcjIyILMAxE4lMINZUEWAxE4DIazmcjxA6YxRGkg0ussxJsNAQABBgDDuAwgjmnSVwAAAABJRU5ErkJggg=='/>"
+#define PEKO_PIC "<a href='[PEKO]'><img src='data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAICAIAAAB/FOjAAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABASURBVHjaYmAgETAC8Yd1fESqFgj6BNLw//9/Yo1nZGSBsPg/SgHJTwLPiXISSTYQpe4/BIHNZSHJBnIAQIABAEhuFAfSpDW+AAAAAElFTkSuQmCC'/></a>"
 
 void putInFile(int flag, const char *ip, int port, int size, const char *finalstr, char *cp)
 {
@@ -819,12 +819,12 @@ void putInFile(int flag, const char *ip, int port, int size, const char *finalst
 	//Generic camera
 	if(flag == 0 || flag == 15 || flag == -10)
 	{
-		fillGlobalLogData(ip, port, std::to_string(size).c_str(), finalstr, "", "", "", cp, TYPE1);
+		fillGlobalLogData(ip, port, std::to_string(size).c_str(), finalstr, "", "", "", cp,  TYPE1 );
 	}
 	//Other
 	else if(flag == 1)
 	{
-		fillGlobalLogData(ip, port, std::to_string(size).c_str(), finalstr, "", "", "", cp, TYPE2);
+		fillGlobalLogData(ip, port, std::to_string(size).c_str(), finalstr, "", "", "", cp,  TYPE2 );
 	}
 	//Special camera (Hikk, RVI, Safari, etc)
 	if(flag != 6 && flag != 5 && flag != 4)
@@ -2363,8 +2363,8 @@ void _getLinkFromJSLocation(char *dataBuff, char *str, char *tag, char *ip, int 
 
 
 
-static std::atomic<bool> hikkaStop = false;
-static std::atomic<bool> rviStop = false;
+static std::atomic<bool> hikkaStop(false);
+static std::atomic<bool> rviStop(false);
 std::string getTitle(const char *str, const int flag) {
 	const char *ptr1 = NULL, *secondStr = NULL;
 	char finalstr[512] = { 0 };
@@ -2695,7 +2695,8 @@ bool jsRedirectHandler(std::string *buff, char* ip, int port, Lexems *counter) {
 		return false;
 	}
 	
-	std::string &buffcpy = getScriptField(buff);
+	const std::string &buffcpy_ref = getScriptField(buff);
+	std::string buffcpy = buffcpy_ref;
 	int sz = buffcpy.size();
 	if (sz > 500) return false;
 
@@ -2769,11 +2770,12 @@ std::string getHeader(const std::string *buffcpy, const int flag) {
 	}
 	else {
 		std::string tempBuff = buffcpy->c_str();
-		std::string &result = getTitle(tempBuff.c_str(), flag);
+		const std::string &result_ref = getTitle(tempBuff.c_str(), flag);
+		std::string result = result_ref;
 
 		if (result.size() == 0) {
 			if (Utils::ustrstr(buffcpy, "redir") != std::string::npos) {
-				result += "[R]";
+				result.append("[R]");
 			};
 			//result += "[Ξ]";
 			result += buffcpy->substr(0, 128);
@@ -3012,17 +3014,19 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 		con.nConnect(std::string(std::string(ip) + "/config/cam_portal.cgi").c_str(), port, &buff);
 		int nPort = port;
 		for (int i = 0; i < 16; ++i) {
-			std::string &cam_link_data = Utils::getStrValue(buff, "cam_link[" + std::to_string(i) + "]", ";");
+			const std::string &cam_link_data = Utils::getStrValue(buff, "cam_link[" + std::to_string(i) + "]", ";");
 			if (cam_link_data.size() != 0) {
-				std::string &newURL = Utils::getStrValue(cam_link_data, "src=\"", "\"");
+				const std::string &newURL = Utils::getStrValue(cam_link_data, "src=\"", "\"");
 				if (newURL.size() != 0) {
-					std::string &newIP = Utils::getStrValue(newURL, "http://", "/");
+					const std::string &newIP = Utils::getStrValue(newURL, "http://", "/");
 					if (newIP.size() != 0) {
-						std::string &newPath = newURL.substr(newURL.find(newIP) + newIP.length());
+						const std::string &newPath = newURL.substr(newURL.find(newIP) + newIP.length());
 						std::vector<std::string> portVec = Utils::splitToStrVector(newIP, ':');
 						stt->doEmitionYellowFoundData("[PaCr] Url found:" + QString(newURL.c_str()));
 
-						portVec.size() == 2 ? nPort = std::stoi(portVec[1]) : NULL;
+						if(portVec.size() == 2) {
+							nPort = std::stoi(portVec[1]);
+						}
 
 						_specBrute(newIP.c_str(), nPort, QString("[Panasonic] IP Camera (" +
 							QString(newIP.c_str()) + ":" + QString::number(nPort) + ")").toLocal8Bit().data(), flag,

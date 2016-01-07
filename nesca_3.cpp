@@ -3131,7 +3131,7 @@ QString GetColorCode(int mode, QString str)
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 void enableHikvisionSupport(){
-	HINSTANCE hGetProcIDDLL = LoadLibrary(".\\HCNetSDK.dll");
+	HINSTANCE hGetProcIDDLL = LoadLibrary(L".\\HCNetSDK.dll");
 
 	if (!hGetProcIDDLL) {
 		HikVis::isInitialized = false;

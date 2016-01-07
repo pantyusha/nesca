@@ -414,10 +414,10 @@ bool portCheck(const char * sDVRIP, int wDVRPort) {
 }
 int Connector::connectToPort(char* ip, int port)
 {
-    //if(gPingNScan)
-    //{
-    //    if(_pingMyTarget(ip) == 0) return -2;
-    //};
+    if(gPingNScan)
+    {
+        if(_pingMyTarget(ip) == 0) return -2;
+    };
 
     std::string buffer;
     int size = 0;

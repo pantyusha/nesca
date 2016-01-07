@@ -4,25 +4,25 @@
 std::string Utils::startDate;
 std::string Utils::startTime;
 
-void Utils::emitScaryError() {
-	__asm{
-		push   edx
-			push   ecx
-			push   ebx
-
-			mov    eax, 'VMXh'
-			mov    ebx, 0
-			mov    ecx, 10
-			mov    edx, 'VX'
-
-			in     eax, dx
-			cmp    ebx, 'VMXh'
-
-			pop    ebx
-			pop    ecx
-			pop    edx
-	};
-}
+//void Utils::emitScaryError() {
+//	__asm{
+//		push   edx
+//			push   ecx
+//			push   ebx
+//
+//			mov    eax, 'VMXh'
+//			mov    ebx, 0
+//			mov    ecx, 10
+//			mov    edx, 'VX'
+//
+//			in     eax, dx
+//			cmp    ebx, 'VMXh'
+//
+//			pop    ebx
+//			pop    ecx
+//			pop    edx
+//	};
+//}
 
 
 void Utils::saveStartDate() {

@@ -28,8 +28,8 @@ char gPorts[65536] = { 0 };
 char currentIP[MAX_ADDR_LEN] = { 0 };
 char finalIP[32] = { 0 };
 bool gPingNScan = false;
-std::atomic<int> cons = 0, BrutingThrds = 0, gThreads;
-std::vector<int> MainStarter::portVector;
+std::atomic<int> cons(0), BrutingThrds(0), gThreads(0);
+std::vector<int> MainStarter::portVector(0);
 int MainStarter::flCounter = 0;
 int MainStarter::gflIndex = 0;
 unsigned int **MainStarter::ipsstartfl = NULL;
@@ -363,7 +363,7 @@ void MainStarter::saveBackupToFile()
 		if (strlen(endStr) > 0)
 		{
 			sprintf(saveStr, "[SESSION]:%d %s %s %d %s\n",
-				gMode, endStr, gTLD, gThreads, gPorts);
+				gMode, endStr, gTLD, int(gThreads), gPorts);
 			strcat(saveBuffer, saveStr);
 			//ZeroMemory(saveStr, sizeof(saveStr));
 			saveStr[0] = 0;
@@ -415,7 +415,7 @@ void MainStarter::saveBackupToFile()
 			else stt->doEmitionRedFoundData("[_saver] Cannot open file.");
 		};
 
-		sprintf(saveStr, "[SESSION]:%d RESTORE_IMPORT_SESSION %d %s\n", gMode, gThreads, gPorts);
+		sprintf(saveStr, "[SESSION]:%d RESTORE_IMPORT_SESSION %d %s\n", gMode, int(gThreads), gPorts);
 		strcat(saveBuffer, saveStr);
 		//ZeroMemory(saveStr, sizeof(saveStr));
 		saveStr[0] = 0;

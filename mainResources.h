@@ -88,11 +88,11 @@ typedef int					BOOL;
 
 #define TITLE_MAX_SIZE 512
 #define COOKIE_MAX_SIZE 1024
-#define TYPE1 "camera"
-#define TYPE2 "other"
-#define TYPE3 "auth"
-#define TYPE4 "ftp"
-#define TYPE5 "ssh"
+#define  TYPE1  "camera"
+#define  TYPE2  "other"
+#define  TYPE3  "auth"
+#define  TYPE4  "ftp"
+#define  TYPE5  "ssh"
 
 #define PWD_LIST_FOLDER "./pwd_lists/"
 #define LOGIN_FN PWD_LIST_FOLDER"login.txt"
@@ -113,11 +113,11 @@ typedef int					BOOL;
 	a{color: gray;text-decoration: underline;} \
 	a:focus{ outline-style: dashed;outline-width:1px; outline-color: red;}</style>"
 
-#define HTTP_FILE_HEADER "<div id=\"tit\"><a href=\""TYPE1".html\">."TYPE1"</a> \
-	<a href=\""TYPE2".html\">."TYPE2"</a> \
-	<a href=\""TYPE3".html\">."TYPE3"</a> \
-	<a href=\""TYPE4".html\">."TYPE4"</a> \
-	<a href=\""TYPE5".html\">."TYPE5"</a> \
+#define HTTP_FILE_HEADER "<div id=\"tit\"><a href=\"" TYPE1 ".html\">." TYPE1 "</a> \
+	<a href=\"" TYPE2 ".html\">." TYPE2 "</a> \
+	<a href=\"" TYPE3 ".html\">." TYPE3 "</a> \
+	<a href=\"" TYPE4 ".html\">." TYPE4 "</a> \
+	<a href=\"" TYPE5 ".html\">." TYPE5 "</a> \
 	</div><br><br>"
 
 #ifndef MAX_ADDR_LEN

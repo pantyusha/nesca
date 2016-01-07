@@ -30,7 +30,7 @@ void Threader::cleanUp() {
 	lk.release();
 	Sleep(200);
     threadId = 0;
-    std::queue<std::string> empty = {};
+    std::queue<std::string> empty;
 	std::swap(ipQueue, empty);
 	ready = false;
 }

@@ -11,7 +11,6 @@
 #include <QGraphicsView> 
 #include <QGraphicsScene> 
 #include <QGraphicsItem>
-#include "ui_nesca_3.h"
 #include <QSystemTrayIcon>
 #include <QtGui/qevent.h>
 #include <qthread.h>
@@ -21,6 +20,7 @@
 #include <QStringListModel.h>
 #include <QStandardItemModel.h>
 #include <QList.h>
+#include <ui_nesca_3.h>
 
 extern Ui::nesca_3Class *ui;
 extern bool widgetIsHidden, QOSWait,
@@ -43,9 +43,9 @@ public:
 	~nesca_3();
 
 	void ConnectEvrthng();
-	void ChangeLabelIpRange_Value(QString str);
-	void ChangeLabelIPS_Value(QString str);
-	void newListItem(QString str);
+//	void ChangeLabelIpRange_Value(QString str);
+//	void ChangeLabelIPS_Value(QString str);
+//	void newListItem(QString str);
 	static int addBARow(QString ip, QString loginPass, QString percentage);
 
 public:
@@ -81,8 +81,8 @@ protected:
         void slotClearLogs();
 		void slotDrawVoiceGrid(int factor);
         void slotDrawTextPlacers();
-		void CheckPersKey();
-		bool CheckPersKeyMain();
+//		void CheckPersKey();
+//		bool CheckPersKeyMain();
         void slotRestoreDefPorts();
         void switchToJobMode();
 		void switchDataFields();

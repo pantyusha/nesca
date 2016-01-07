@@ -28,7 +28,13 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <QtGui/qvalidator.h>
+#include <QtWidgets/qtextbrowser.h>
 #include "Utils.h"
+#include <QPushButton.h>
+#include <QLabel.h>
+#include <QtWidgets/qlineedit.h>
+#include <QtWidgets/qheaderview.h>
 
 
 NET_DVR_Init hik_init_ptr = NULL;
@@ -150,72 +156,72 @@ int PekoWidget::m_yPos = 0;
 int PekoWidget::m_windowCounter = 0;
 int PekoWidget::offset = 0;
 
-
-int psh_lul(PIP_ADAPTER_INFO zzaza)
-{
-	int chc = 0;
-	for (int i = 0; i < zzaza->AddressLength; i++) chc += (zzaza->Address[i] << ((i & 1) * 8));
-	return chc;
-}
-void hshjNune(int& mac1, int& mac2)
-{
-	IP_ADAPTER_INFO idrigenopho[32];
-	DWORD dwBufLen = sizeof(idrigenopho);
-	DWORD dwStatus = GetAdaptersInfo(idrigenopho, &dwBufLen);
-	if (dwStatus != ERROR_SUCCESS) return;
-	PIP_ADAPTER_INFO pidrigenopho = idrigenopho;
-	mac1 = psh_lul(pidrigenopho);
-	if (pidrigenopho->Next) mac2 = psh_lul(pidrigenopho->Next);
-}
-int hsh_hsh()
-{
-	DWORD psm = 0;
-	GetVolumeInformation(L"C:\\", NULL, 0, &psm, NULL, NULL, NULL, 0);
-	int ypyp = (int)((psm + (psm >> 16)) & 0xFFFF);
-	return ypyp;
-}
-const char* fds_gds()
-{
-	static char computerName[1024];
-	DWORD size = 1024;
-	GetComputerName((LPWSTR)computerName, &size);
-	static char cn[1024];
-	for (int i = 0, j = 0; i < 512; i += 2, ++j) memset(cn + j, computerName[i], 1);
-	return cn;
-}
-std::string grgNun() {
-	DWORD Type;
-	char value[64] = { 0 };
-	HKEY hkey;
-	if (RegOpenKey(HKEY_LOCAL_MACHINE,
-		TEXT("Software\\ISKOPASI\\nesca3\\jipjip"), &hkey) == ERROR_SUCCESS)
-	{
-		DWORD value_length = 256;
-		RegQueryValueEx(hkey, L"nepnep", 0, &Type, (BYTE*)&value, &value_length);
-		RegCloseKey(hkey);
-	}
-
-	std::string rNepnep = std::string(value);
-	return rNepnep;
-}
-std::string ypypNunu()
-{
-	int fafa1, faf2;
-	hshjNune(fafa1, faf2);
-	int d2 = hsh_hsh();
-	char fds[1024] = { 0 };
-	strcpy(fds, fds_gds());
-	const std::string resNunu = std::to_string(fafa1) + "-"
-		+ std::to_string(d2) + "-" + std::string(fds) + "-"
-		+ std::string(trcPersKey);
-
-	std::ostringstream strNunu;
-	strNunu << std::setw(2) << std::setfill('0') << std::hex << std::uppercase;
-	std::copy(resNunu.begin(), resNunu.end(), std::ostream_iterator<unsigned int>(strNunu, ""));
-	return strNunu.str();
-}
-
-
+//
+//int psh_lul(PIP_ADAPTER_INFO zzaza)
+//{
+//	int chc = 0;
+//	for (int i = 0; i < zzaza->AddressLength; i++) chc += (zzaza->Address[i] << ((i & 1) * 8));
+//	return chc;
+//}
+//void hshjNune(int& mac1, int& mac2)
+//{
+//	IP_ADAPTER_INFO idrigenopho[32];
+//	DWORD dwBufLen = sizeof(idrigenopho);
+//	DWORD dwStatus = GetAdaptersInfo(idrigenopho, &dwBufLen);
+//	if (dwStatus != ERROR_SUCCESS) return;
+//	PIP_ADAPTER_INFO pidrigenopho = idrigenopho;
+//	mac1 = psh_lul(pidrigenopho);
+//	if (pidrigenopho->Next) mac2 = psh_lul(pidrigenopho->Next);
+//}
+//int hsh_hsh()
+//{
+//	DWORD psm = 0;
+//	GetVolumeInformation("C:\\", NULL, 0, &psm, NULL, NULL, NULL, 0);
+//	int ypyp = (int)((psm + (psm >> 16)) & 0xFFFF);
+//	return ypyp;
+//}
+//const char* fds_gds()
+//{
+//	static char computerName[1024];
+//	DWORD size = 1024;
+//	GetComputerName(computerName, &size);
+//	static char cn[1024];
+//	for (int i = 0, j = 0; i < 512; i += 2, ++j) memset(cn + j, computerName[i], 1);
+//	return cn;
+//}
+//std::string grgNun() {
+//	DWORD Type;
+//	char value[64] = { 0 };
+//	HKEY hkey;
+//	if (RegOpenKey(HKEY_LOCAL_MACHINE,
+//		TEXT("Software\\ISKOPASI\\nesca3\\jipjip"), &hkey) == ERROR_SUCCESS)
+//	{
+//		DWORD value_length = 256;
+//		RegQueryValueEx(hkey, "nepnep", 0, &Type, (BYTE*)&value, &value_length);
+//		RegCloseKey(hkey);
+//	}
+//
+//	std::string rNepnep = std::string(value);
+//	return rNepnep;
+//}
+//std::string ypypNunu()
+//{
+//	int fafa1, faf2;
+//	hshjNune(fafa1, faf2);
+//	int d2 = hsh_hsh();
+//	char fds[1024] = { 0 };
+//	strcpy(fds, fds_gds());
+//	const std::string resNunu = std::to_string(fafa1) + "-"
+//		+ std::to_string(d2) + "-" + std::string(fds) + "-"
+//		+ std::string(trcPersKey);
+//
+//	std::ostringstream strNunu;
+//	strNunu << std::setw(2) << std::setfill('0') << std::hex << std::uppercase;
+//	std::copy(resNunu.begin(), resNunu.end(), std::ostream_iterator<unsigned int>(strNunu, ""));
+//	return strNunu.str();
+//}
+//
+//
 void _LoadPersInfoToLocalVars(int savedTabIndex) {
 	//ZeroMemory(trcPersKey, sizeof(trcPersKey));
 	trcPersKey[0] = 0;
@@ -2173,7 +2179,7 @@ QList<QStandardItem *> setRow(QString ip, QString loginPass, QString percentage)
 	items.append(item3);
 	return items;
 }
-std::atomic<bool> isBAModelLocked = false;
+std::atomic<bool> isBAModelLocked(false);
 int nesca_3::addBARow(QString ip, QString loginPass, QString percentage) {
 	if (!globalScanFlag) return -1;
 	if (BALogSwitched) {
@@ -3125,7 +3131,7 @@ QString GetColorCode(int mode, QString str)
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 void enableHikvisionSupport(){
-	HINSTANCE hGetProcIDDLL = LoadLibrary(L".\\HCNetSDK.dll");
+	HINSTANCE hGetProcIDDLL = LoadLibrary(".\\HCNetSDK.dll");
 
 	if (!hGetProcIDDLL) {
 		HikVis::isInitialized = false;
@@ -3195,86 +3201,86 @@ void nesca_3::finishLoading() {
 #endif
 }
 
-bool nesca_3::CheckPersKeyMain()
-{
-	saveOptions();
-	QString y = QString(QCryptographicHash::hash((ypypNunu().c_str()), QCryptographicHash::Md5).toHex());
-	QString nu(grgNun().c_str());
-	if (y.compare(nu) == 0) {
-		MainStarter m;
-		m.saveBackupToFile();
-		if (!chKTh->isRunning())
-		{
-			stt->doEmitionYellowFoundData("[Key check] Starting checker thread...");
-			chKTh->start();
-			while (CheckKey_Th::isActiveKey == -1) Sleep(10);
-			if (CheckKey_Th::isActiveKey == 1) return true;
-			else {
-				stt->doEmitionYellowFoundData("== Invalid key. ==");
-				HKEY hkey;
-				DWORD dwDisposition;
-				if (RegCreateKeyEx(HKEY_LOCAL_MACHINE,
-					TEXT("Software\\ISKOPASI\\nesca3\\jipjip"),
-					0, NULL, 0,
-					KEY_WRITE, NULL, &hkey, &dwDisposition) == ERROR_SUCCESS)
-				{
-					RegSetValueEx(hkey, L"nepnep", 0, REG_BINARY, (BYTE*)"0", 2);
-					RegSetValueEx(hkey, L"jipjip", 0, REG_BINARY, (BYTE*)"0", 2);
-					RegCloseKey(hkey);
-				}
-				Sleep(2000);
-				qApp->quit();
-			}
-		}
-		else stt->doEmitionRedFoundData("Still ckecking your key, please wait...");;
-	}
-	else {
-		stt->doEmitionYellowFoundData("== Invalid key. ==");
-		Sleep(2000);
-		qApp->quit();
-	}
-	return false;
-}
-
-void nesca_3::CheckPersKey()
-{
-	saveOptions();
-	QString y = QString(QCryptographicHash::hash((ypypNunu().c_str()), QCryptographicHash::Md5).toHex());
-	QString nu(grgNun().c_str());
-	if (y.compare(nu) == 0) {
-		MainStarter m;
-		m.saveBackupToFile();
-		if (!chKTh->isRunning())
-		{
-			stt->doEmitionYellowFoundData("[Key check] Starting checker thread...");
-			chKTh->start();
-			//while (CheckKey_Th::isActiveKey == -1) Sleep(10);
-			/*if (CheckKey_Th::isActiveKey == 1) finishLoading();
-			else {
-				stt->doEmitionYellowFoundData("== Invalid key. ==");
-				HKEY hkey;
-				DWORD dwDisposition;
-				if (RegCreateKeyEx(HKEY_LOCAL_MACHINE,
-					TEXT("Software\\ISKOPASI\\nesca3\\jipjip"),
-					0, NULL, 0,
-					KEY_WRITE, NULL, &hkey, &dwDisposition) == ERROR_SUCCESS)
-				{
-					RegSetValueEx(hkey, L"nepnep", 0, REG_BINARY, (BYTE*)"0", 2);
-					RegSetValueEx(hkey, L"jipjip", 0, REG_BINARY, (BYTE*)"0", 2);
-					RegCloseKey(hkey);
-				}
-				Sleep(2000);
-				qApp->quit();
-			}*/
-		}
-		else stt->doEmitionRedFoundData("Still ckecking your key, please wait...");;
-	}
-	else {
-		stt->doEmitionYellowFoundData("== Invalid key. ==");
-		Sleep(2000);
-		qApp->quit();
-	}
-}
+//bool nesca_3::CheckPersKeyMain()
+//{
+//	saveOptions();
+//	QString y = QString(QCryptographicHash::hash((ypypNunu().c_str()), QCryptographicHash::Md5).toHex());
+//	QString nu(grgNun().c_str());
+//	if (y.compare(nu) == 0) {
+//		MainStarter m;
+//		m.saveBackupToFile();
+//		if (!chKTh->isRunning())
+//		{
+//			stt->doEmitionYellowFoundData("[Key check] Starting checker thread...");
+//			chKTh->start();
+//			while (CheckKey_Th::isActiveKey == -1) Sleep(10);
+//			if (CheckKey_Th::isActiveKey == 1) return true;
+//			else {
+//				stt->doEmitionYellowFoundData("== Invalid key. ==");
+//				HKEY hkey;
+//				DWORD dwDisposition;
+//				if (RegCreateKeyEx(HKEY_LOCAL_MACHINE,
+//					TEXT("Software\\ISKOPASI\\nesca3\\jipjip"),
+//					0, NULL, 0,
+//					KEY_WRITE, NULL, &hkey, &dwDisposition) == ERROR_SUCCESS)
+//				{
+//					RegSetValueEx(hkey, "nepnep", 0, REG_BINARY, (BYTE*)"0", 2);
+//					RegSetValueEx(hkey, "jipjip", 0, REG_BINARY, (BYTE*)"0", 2);
+//					RegCloseKey(hkey);
+//				}
+//				Sleep(2000);
+//				qApp->quit();
+//			}
+//		}
+//		else stt->doEmitionRedFoundData("Still ckecking your key, please wait...");;
+//	}
+//	else {
+//		stt->doEmitionYellowFoundData("== Invalid key. ==");
+//		Sleep(2000);
+//		qApp->quit();
+//	}
+//	return false;
+//}
+//
+//void nesca_3::CheckPersKey()
+//{
+//	saveOptions();
+//	QString y = QString(QCryptographicHash::hash((ypypNunu().c_str()), QCryptographicHash::Md5).toHex());
+//	QString nu(grgNun().c_str());
+//	if (y.compare(nu) == 0) {
+//		MainStarter m;
+//		m.saveBackupToFile();
+//		if (!chKTh->isRunning())
+//		{
+//			stt->doEmitionYellowFoundData("[Key check] Starting checker thread...");
+//			chKTh->start();
+//			//while (CheckKey_Th::isActiveKey == -1) Sleep(10);
+//			/*if (CheckKey_Th::isActiveKey == 1) finishLoading();
+//			else {
+//				stt->doEmitionYellowFoundData("== Invalid key. ==");
+//				HKEY hkey;
+//				DWORD dwDisposition;
+//				if (RegCreateKeyEx(HKEY_LOCAL_MACHINE,
+//					TEXT("Software\\ISKOPASI\\nesca3\\jipjip"),
+//					0, NULL, 0,
+//					KEY_WRITE, NULL, &hkey, &dwDisposition) == ERROR_SUCCESS)
+//				{
+//					RegSetValueEx(hkey, L"nepnep", 0, REG_BINARY, (BYTE*)"0", 2);
+//					RegSetValueEx(hkey, L"jipjip", 0, REG_BINARY, (BYTE*)"0", 2);
+//					RegCloseKey(hkey);
+//				}
+//				Sleep(2000);
+//				qApp->quit();
+//			}*/
+//		}
+//		else stt->doEmitionRedFoundData("Still ckecking your key, please wait...");;
+//	}
+//	else {
+//		stt->doEmitionYellowFoundData("== Invalid key. ==");
+//		Sleep(2000);
+//		qApp->quit();
+//	}
+//}
 
 //#define IRC_CHAN "iskopasi_lab03"
 //#define eicar1 "X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"

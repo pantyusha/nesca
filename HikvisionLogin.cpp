@@ -42,7 +42,7 @@ const char loginRVIHeaderEnd[8] = {
 
 
 int recvWT(
-	int Socket,
+	SOCKET socket,
 	char *Buffer,
 	int Len,
 	long Timeout,
@@ -52,13 +52,13 @@ int recvWT(
 	int n;
 	struct timeval Time;
 	FD_ZERO(&ReadSet);
-	FD_SET(Socket, &ReadSet);
+	FD_SET(socket, &ReadSet);
 	Time.tv_sec = Timeout;
 	Time.tv_usec = 0;
 	*bTimedOut = FALSE;
-	n = select(Socket + 1, &ReadSet, NULL, NULL, &Time);
+	n = select(socket + 1, &ReadSet, NULL, NULL, &Time);
 	if (n > 0) { /* got some data */
-		return recv(Socket, Buffer, Len, 0);
+		return recv(socket, Buffer, Len, 0);
 	}
 	if (n == 0) { /* timeout */
 		*bTimedOut = TRUE;

@@ -584,17 +584,16 @@ void fillGlobalLogData(const char *ip, int port, const char *sz, const char *tit
 	};
 }
 
-
 int __checkFileExistence(int flag)
 {
 	char fileName[64] = {0};
 
-	if (flag == -22) sprintf(fileName, "./result_files-%s/" TYPE5 ".html", Utils::getStartDate().c_str());
-	else if (flag == 0 || flag == 15 || flag == -10) sprintf(fileName, "./result_files-%s/" TYPE1 ".html", Utils::getStartDate().c_str());
-	else if (flag == 3) sprintf(fileName, "./result_files-%s/" TYPE2 ".html", Utils::getStartDate().c_str());
-	else if (flag == 16) sprintf(fileName, "./result_files-%s/" TYPE4 ".html", Utils::getStartDate().c_str());
+	if (flag == -22) sprintf(fileName, "./result_files-%s/"TYPE5".html", Utils::getStartDate().c_str());
+	else if (flag == 0 || flag == 15 || flag == -10) sprintf(fileName, "./result_files-%s/"TYPE1".html", Utils::getStartDate().c_str());
+	else if (flag == 3) sprintf(fileName, "./result_files-%s/"TYPE2".html", Utils::getStartDate().c_str());
+	else if (flag == 16) sprintf(fileName, "./result_files-%s/"TYPE4".html", Utils::getStartDate().c_str());
 	else if(flag >= 17 || flag == 11 || flag == 12 
-		|| flag == 13 || flag == 14 || flag == 1) sprintf(fileName, "./result_files-%s/" TYPE3 ".html", Utils::getStartDate().c_str());
+		|| flag == 13 || flag == 14 || flag == 1) sprintf(fileName, "./result_files-%s/"TYPE3".html", Utils::getStartDate().c_str());
 
 	FILE *f = fopen(fileName, "r");
 	if(f == NULL) return true;
@@ -619,25 +618,25 @@ void fputsf(char *text, int flag, char *msg)
 	if(flag == 0 || flag == 15 || flag == -10) 
 	{
 		if (ftsCameras) ftsCameras = __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/" TYPE1 ".html", Utils::getStartDate().c_str());
+		sprintf(fileName, "./result_files-%s/"TYPE1".html", Utils::getStartDate().c_str());
 		file = fopen(fileName, "a");
 	}
 	else if(flag == 1) 
 	{
 		if(ftsOther) ftsOther			= __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/" TYPE2 ".html", Utils::getStartDate().c_str());
+		sprintf(fileName, "./result_files-%s/"TYPE2".html", Utils::getStartDate().c_str());
 		file = fopen(fileName, "a");
 	}
 	else if(flag == -22) 
 	{
 		if(ftsSSH) ftsSSH				= __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/" TYPE5 ".html", Utils::getStartDate().c_str());
+		sprintf(fileName, "./result_files-%s/"TYPE5".html", Utils::getStartDate().c_str());
 		file = fopen(fileName, "a");
 	}
 	else if(flag == 3) 
 	{
 		if(ftsFTP) ftsFTP				= __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/" TYPE4 ".html", Utils::getStartDate().c_str());
+		sprintf(fileName, "./result_files-%s/"TYPE4".html", Utils::getStartDate().c_str());
 		file = fopen(fileName, "a");
 	}
 	else if(flag >= 17 || flag == 11 || flag == 12 
@@ -645,7 +644,7 @@ void fputsf(char *text, int flag, char *msg)
 		) 
 	{
 		if(ftsBA) ftsBA					= __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/" TYPE3 ".html", Utils::getStartDate().c_str());
+		sprintf(fileName, "./result_files-%s/"TYPE3".html", Utils::getStartDate().c_str());
 		file = fopen(fileName, "a");
 	}
 	else stt->doEmitionRedFoundData("Unknown flag [FLAG: " + QString::number(flag) + "]");
@@ -703,7 +702,7 @@ void fputsf(char *text, int flag, char *msg)
 		{
 			char tmsg[1024] = {0};
 			ftsCameras = false;
-			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>" TYPE1 "</title>");
+			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>"TYPE1"</title>");
 			strcat(tmsg, msg);
 			strcat(tmsg, HTTP_FILE_STYLE);
 			fputs (tmsg, file);
@@ -713,7 +712,7 @@ void fputsf(char *text, int flag, char *msg)
 		{
 			char tmsg[1024] = {0};
 			ftsOther = false;
-			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>" TYPE2 "</title>");
+			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>"TYPE2"</title>");
 			strcat(tmsg, msg);
 			strcat(tmsg, HTTP_FILE_STYLE);
 			fputs (tmsg, file);
@@ -723,7 +722,7 @@ void fputsf(char *text, int flag, char *msg)
 		{
 			char tmsg[1024] = {0};
 			ftsOther = false;
-			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>" TYPE5 "</title>");
+			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>"TYPE5"</title>");
 			strcat(tmsg, msg);
 			strcat(tmsg, HTTP_FILE_STYLE);
 			fputs (tmsg, file);
@@ -733,7 +732,7 @@ void fputsf(char *text, int flag, char *msg)
 		{
 			char tmsg[1024] = {0};
 			ftsFTP = false;
-			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>" TYPE4 "</title>");
+			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>"TYPE4"</title>");
 			strcat(tmsg, msg);
 			strcat(tmsg, HTTP_FILE_STYLE);
 			fputs (tmsg, file);
@@ -743,7 +742,7 @@ void fputsf(char *text, int flag, char *msg)
 		{
 			char tmsg[1024] = {0};
 			ftsBA = false;
-			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>" TYPE3 "</title>");
+			strcpy(tmsg, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>"TYPE3"</title>");
 			strcat(tmsg, msg);
 			strcat(tmsg, HTTP_FILE_STYLE);
 			fputs (tmsg, file);
@@ -767,8 +766,8 @@ void fputsf(char *text, int flag, char *msg)
 	};
 }
 
-#define REDIRECT_PIC "<img src='data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAICAIAAAB/FOjAAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAA7SURBVHjaYmIgEbAA8f///4lUzcjIyILMAxE4lMINZUEWAxE4DIazmcjxA6YxRGkg0ussxJsNAQABBgDDuAwgjmnSVwAAAABJRU5ErkJggg=='/>"
-#define PEKO_PIC "<a href='[PEKO]'><img src='data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAICAIAAAB/FOjAAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABASURBVHjaYmAgETAC8Yd1fESqFgj6BNLw//9/Yo1nZGSBsPg/SgHJTwLPiXISSTYQpe4/BIHNZSHJBnIAQIABAEhuFAfSpDW+AAAAAElFTkSuQmCC'/></a>"
+#define REDIRECT_PIC "<img src='data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAESSURBVHjaYvj//z8DEPxnBBEgFkAAMUJFGBgOHToEYv0HCCAGkAiMA6KZGBjgKhjs7OwYAAKIAWYKCMP0w5WDaBaQUmTABNaHBAACCMUMkDa49VAzWRgZGf/DjDlha8dQxohwBUgO7CyYsTBJZAD3Gkg1uiRQjhEggLAqAEnA2CzIkjC3wPhgE6CuhzvS4jCEDXIXzCS417r+M/xHDymUwAX5Aj3kUEzAhuFRia4T5gawN3GFAYgGCNA3FZgAAIKwiq7vrR4LI3MuTZBAnYpbTQrUszHsiOl8RFxFKeLYc0cGS9E4UeQX844pnrL1Wq0JA6+esQHbBk15y9fclaMVn6aQT9WY8RrRaF8Z1wp4Z5mrLRz17qdV1HtPAAAAAElFTkSuQmCC'/>"
+#define PEKO_PIC "<a href='[PEKO]'><img src='data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAADkSURBVHjaYvj//z8DEECIQ4cO/QcIIEaoCANcBCCAwCKHDx+GCzMxIAE7OzsGgABiQDLlP4jNwsjICNILVgFiM4AMgqkAYUao6XAzAAIIxQyQamQdIDkmZDNhAMQHYZAcE8wodEUwAPca2EVoACjHCBBAWBWAJGBsFmRJFP/BTED2FnowgRQwoYQbEhvFF8jGo7OZGHAAmIlM6MZj9SauMADRAAGGkgawKcRlMkpII2vEFSXYQgMejsRqxmYIRjDCJNFpZDbBYMYWqrhSHEoYkOoFnKkRm2HorsIajYSiEzn6YAAAuoS1lVGw2nsAAAAASUVORK5CYII='/></a>"
 
 void putInFile(int flag, const char *ip, int port, int size, const char *finalstr, char *cp)
 {

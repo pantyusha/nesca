@@ -23,7 +23,7 @@ extern QJsonArray *jsonArr;
 
 extern unsigned long long gTargetsNumber;
 extern long long unsigned int gTargets;
-extern std::atomic<int> cons(0), BrutingThrds(0), gThreads(0);
+extern std::atomic<int> cons, BrutingThrds, gThreads;
 extern char **loginLst, **passLst,
 **wfLoginLst, **wfPassLst,
 **ftpLoginLst, **ftpPassLst,

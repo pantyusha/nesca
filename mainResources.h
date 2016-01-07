@@ -113,11 +113,11 @@ typedef int					BOOL;
 	a{color: gray;text-decoration: underline;} \
 	a:focus{ outline-style: dashed;outline-width:1px; outline-color: red;}</style>"
 
-#define HTTP_FILE_HEADER "<div id=\"tit\"><a href=\"" TYPE1 ".html\">." TYPE1 "</a> \
-	<a href=\"" TYPE2 ".html\">." TYPE2 "</a> \
-	<a href=\"" TYPE3 ".html\">." TYPE3 "</a> \
-	<a href=\"" TYPE4 ".html\">." TYPE4 "</a> \
-	<a href=\"" TYPE5 ".html\">." TYPE5 "</a> \
+#define HTTP_FILE_HEADER "<div id=\"tit\"><a href=\""TYPE1".html\">."TYPE1"</a> \
+	<a href=\""TYPE2".html\">."TYPE2"</a> \
+	<a href=\""TYPE3".html\">."TYPE3"</a> \
+	<a href=\""TYPE4".html\">."TYPE4"</a> \
+	<a href=\""TYPE5".html\">."TYPE5"</a> \
 	</div><br><br>"
 
 #ifndef MAX_ADDR_LEN

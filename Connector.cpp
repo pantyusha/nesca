@@ -212,6 +212,11 @@ int pConnect(const char* ip, const int port, std::string *buffer,
 			|| res == CURLE_SEND_ERROR
 			|| res == CURLE_RECV_ERROR
 			) {
+			if (gNegDebugMode)
+			{
+				stt->doEmitionDebugFoundData("NConnect failed (curl_code: " + QString::number(res) + ") [<a href=\"" + QString(ip) +
+					"/\"><font color=\"#0084ff\">" + QString(ip) + " Port:" + QString::number(port) + "</font></a>]");
+			}
 			SOCKET eNobuffSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 			shutdown(eNobuffSocket, SD_BOTH);
 			closesocket(eNobuffSocket);

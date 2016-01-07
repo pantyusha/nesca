@@ -56,13 +56,17 @@ lopaStr BA::BABrute(const char *ip, const int port) {
 	std::string buff;
 	Connector con;
 
-	con.nConnect(ip, port, &buff);
+	int sz = con.nConnect(ip, port, &buff);
 	//QString ipString = QString(ip).mid(0, QString(ip).indexOf("/", 8)) + ":" + QString::number(port);
 	QString ipString = QString(ip);
-	if (buff.size() == 0) {
-		stt->doEmitionFoundData("<span style=\"color:orange;\">Empty BA probe - <a style=\"color:orange;\" href=\"" + ipString + "/\">" +
-			ipString + "</a></span>");
-		return lps;
+	if (sz == 0) {
+		//Retry
+		Sleep(2000);
+
+		if (sz == 0) {
+			stt->doEmitionFoundData("<span style=\"color:orange;\">Empty BA probe - <a style=\"color:orange;\" href=\"" + ipString + "/\">" + ipString + "</a></span>");
+			return lps;
+		}
 	}
 	int isDig = Utils::isDigest(&buff);
 	if (isDig == -1) {

@@ -258,7 +258,7 @@ bool isNegative(const std::string *buff, const char *ip, int port, const char *c
 				QTextCodec *nCodec = QTextCodec::codecForName("Windows-1251");
 				stt->doEmitionDebugFoundData("[<a href=\"" + QString(ip) + ":" + QString::number(port) +
 					"/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) +
-					"</font></a>" + "]\tNegative hit: Size:" + QString::number(nSz));
+					"</font></a>]\tNegative hit: Size:" + QString::number(nSz));
 			}
 			return true;
 		}
@@ -284,7 +284,7 @@ int globalSearchPrnt(const std::string *buff)
 
 			if (gNegDebugMode)
 			{
-				QTextCodec *nCodec = QTextCodec::codecForName("Windows-1251");
+				/*QTextCodec *nCodec = QTextCodec::codecForName("Windows-1251");*/
 				stt->doEmitionDebugFoundData("Printer ignored");
 			}
 			return -1;
@@ -336,6 +336,11 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 				}
 				return -1;
 			}
+		} else {
+			//stt->doEmitionDebugFoundData("[<a href=\"" + QString(ip) + ":" + QString::number(port) +
+			//	"/\"><font color=\"#0084ff\">" + QString(ip) + ":" + QString::number(port) +
+			//	"</font></a>]\tNegative hit: Size: 0");
+			//return -1;
 		}
 	}
 
@@ -531,9 +536,7 @@ int contentFilter(const std::string *buff, int port, const char *ip, const char 
 	//return res;
 
 	if (sz < 180000) {
-		int result = 1; //Other - default
-		result = firstStage(buff, port, ip, cp, sz);
-		return result;
+		return firstStage(buff, port, ip, cp, sz);
 	}
 	else {
 		return 1;
@@ -2766,7 +2769,12 @@ std::string getHeader(const std::string *buffcpy, const int flag) {
 		return "[Mobotic IPCam]";
 	}
 	else if (STRSTR(buffcpy, "iomega=") != -1) {
-		return "[IOmega NAS]";
+		if (STRSTR(buffcpy, "<div id=\"nocontent\">")) {
+			return "[IOmega NAS] (Empty)";
+		}
+		else {
+			return "[IOmega NAS]";
+		}
 	}
 	else {
 		std::string tempBuff = buffcpy->c_str();
@@ -3202,33 +3210,27 @@ void handleRedirects(std::string *buffcpy, char* ip, int port) {
 	counter.iterationCount = 0;
 	jsRedirectHandler(buffcpy, ip, port, &counter);
 }
-int handleFramesets(std::string *buffcpy, char* ip, int port, int flag) {
-	if (NULL == buffcpy || 0 == buffcpy->size()) {
+int handleFramesets(std::string *buffcpyOrig, char* ip, int port, int flag) {
+	if (NULL == buffcpyOrig || 0 == buffcpyOrig->size()) {
 		return flag;
 	}
 
+	std::string buffcpy = *buffcpyOrig;
+	std::transform(buffcpy.begin(), buffcpy.end(), buffcpy.begin(), ::tolower);
+
 	int pos;
-	if ((pos = STRSTR((const std::string *) buffcpy, "<frameset ")) != -1) {
+	if ((pos = STRSTR(buffcpy, "<frameset ")) != -1) {
 		
 		Connector con;
-		int framePos = pos + 9;
+		int framePos = buffcpy.find("<frame ", pos + 10);
 		int counter = 0;
 		while (framePos != -1) {
-			framePos = buffcpy->find("<frame ", framePos + 1);
-			if (-1 == framePos) {
-				framePos = buffcpy->find("<FRAME ", framePos + 1);
-				if (-1 == framePos) {
-					break;
-				}
-			}
-			int framePosEnd = buffcpy->find(">", framePos);
+			int framePosEnd = buffcpy.find(">", framePos);
 
-			std::string frameString = buffcpy->substr(framePos, framePosEnd - framePos);
+			std::string frameString = buffcpy.substr(framePos, framePosEnd - framePos);
+			framePos = buffcpy.find("<frame ", framePos + 1);
 
 			int frameSrcPos = frameString.find("src");
-			if (-1 == frameSrcPos) {
-				frameSrcPos = frameString.find("SRC");
-			}
 			if (-1 != frameSrcPos) {
 				int eqPos = frameString.find_first_of("=", frameSrcPos);
 				if (-1 != eqPos) {
@@ -3236,19 +3238,29 @@ int handleFramesets(std::string *buffcpy, char* ip, int port, int flag) {
 					if (-1 != quotePos1) {
 						int quotePos2 = frameString.find_first_of("\"'", quotePos1 + 1);
 
-						if (quotePos1 != quotePos2) {
+						//if (quotePos1 != quotePos2) {
+							std::string location = frameString.substr(quotePos1 + 1, quotePos2 - quotePos1 - 1);
 							if (counter++ > 5) {
 								return 0;
 							};
-							std::string location = frameString.substr(quotePos1 + 1, quotePos2 - quotePos1 - 1);
+							if (location.size() == 0) {
+								continue;
+							}
 							std::string tIP = std::string(ip) + (location[0] == '/' ? "" : "/") + location;
 							std::string buff;
+							Sleep(5000);
 							int sz = con.nConnect(tIP.c_str(), port, &buff);
+							if (-1 == sz) {
+								continue;
+							}
 							int flg = contentFilter((const std::string *) &buff, port, ip, "UTF-8", sz);
 							if (flg == -1) {
 								return -1;
 							}
-						}
+							else if (flg > 1) {
+								return flg;
+							}
+						//}
 					}
 				}
 			}

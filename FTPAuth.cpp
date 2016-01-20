@@ -21,7 +21,7 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 
     char login[128] = {0};
     char pass[32] = {0};
-	char nip[128] = { 0 };
+	//char nip[128] = { 0 };
 
 	for (int i = 0; i < MaxFTPLogin; ++i)
     {
@@ -29,7 +29,6 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 		FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready; });
 		strcpy(login, ftpLoginLst[i]);
 		if (strlen(login) <= 1) continue;
-
 
 		for (int j = 0; j < MaxFTPPass; ++j)
         {
@@ -41,7 +40,7 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
             lpString = string(login) + ":" + string(pass);
 			
 			Connector con;
-			res = con.nConnect(nip, port, &buffer, NULL, NULL, &lpString);
+			res = con.nConnect(ip, port, &buffer, NULL, NULL, &lpString);
 			if (res == -2) {
 				if (rowIndex == -1) {
 					nesca_3::addBARow(QString(ip) + ":" + QString::number(port), "--", "FAIL");

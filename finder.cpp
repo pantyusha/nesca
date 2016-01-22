@@ -462,6 +462,7 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 	if (Utils::ustrstr(buffcpy, "dvr_remember") != -1
 		&& Utils::ustrstr(buffcpy, "login_chk_usr_pwd") != -1
 		)																				return 57; //Network video client (http://203.190.113.54:60001/)
+	//if (Utils::ustrstr(buffcpy, "ShareCenter") != -1)									return 58; //ShareCenter (http://49.50.207.6/)
 
 	if (Utils::ustrstr(buffcpy, "nas - ") != -1
 		&& Utils::ustrstr(buffcpy, "login.html?pg=index.html") != -1)					return 1; //https NAS (https://90.224.187.151/)
@@ -3288,15 +3289,15 @@ int Lexems::filler(char* ip, int port, std::string *buffcpy, int size, Lexems *l
 	strncpy(cp, getCodePage(buffcpy->c_str()), 32);
 	int flag = contentFilter((const std::string *) buffcpy, port, ip, cp, size);
 	if (flag != -1) {
+		const std::string &header = getHeader((const std::string *) buffcpy, flag);
 		if (flag < 2 || flag > 6) {
-			const std::string &header = getHeader((const std::string *) buffcpy, flag);
 			if ((flag = handleFramesets(buffcpy, ip, port, flag)) == -1) {
 				return -1;
 			}
 			parseFlag(flag, ip, port, size, header, cp);
 		}
 		else {
-			parseFlag(flag, ip, port, size, "", cp);
+			parseFlag(flag, ip, port, size, header, cp);
 		}
 		return flag;
 	}

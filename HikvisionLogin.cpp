@@ -540,6 +540,7 @@ lopaStr HikVis::HVLobby(const char *ip, const int port) {
 
 		++baCount;
 		++BrutingThrds;
+		stt->doEmitionUpdateArc(gTargets);
 		const lopaStr &lps = hikLogin(ip, port);
 		--BrutingThrds;
 
@@ -558,6 +559,7 @@ lopaStr HikVis::RVILobby(const char *ip, const int port) {
 
 		++baCount;
 		++BrutingThrds;
+		stt->doEmitionUpdateArc(gTargets);
 		const lopaStr &lps = rviLogin(ip, port);
 		--BrutingThrds;
 

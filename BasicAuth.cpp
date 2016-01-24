@@ -158,6 +158,7 @@ lopaStr BA::BALobby(const char *ip, const int port) {
 
 		++baCount;
 		++BrutingThrds;
+		stt->doEmitionUpdateArc(gTargets);
 		const lopaStr &lps = BABrute(ip, port);
 		--BrutingThrds;
 

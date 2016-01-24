@@ -201,6 +201,7 @@ int SSHAuth::SSHLobby(const char *ip, int port, std::string *buffer)
 		if (strlen(sshBanner.c_str()) > 0)
         {
 			++BrutingThrds;
+			stt->doEmitionUpdateArc(gTargets);
 			int res = SSHBrute(ip, port, buffer, sshBanner.c_str());
 			--BrutingThrds;
 

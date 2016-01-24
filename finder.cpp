@@ -390,10 +390,10 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 
     if(Utils::ustrstr(buffcpy, "hikvision-webs") != -1
 		|| (
-		(Utils::ustrstr(buffcpy, "hikvision digital") != -1 
-		|| Utils::ustrstr(buffcpy, "doc/page/login.asp") != -1)
-		&& Utils::ustrstr(buffcpy, "dvrdvs-webs") != -1)
-        || (Utils::ustrstr(buffcpy, "lapassword") != -1 
+		(Utils::ustrstr(buffcpy, "hikvision digital") != -1 || Utils::ustrstr(buffcpy, "doc/page/login.asp") != -1)
+		&& Utils::ustrstr(buffcpy, "dvrdvs-webs") != -1 || Utils::ustrstr(buffcpy, "app-webs") != -1)
+		|| 
+		(Utils::ustrstr(buffcpy, "lapassword") != -1 
 		&& Utils::ustrstr(buffcpy, "lausername") != -1 
 		&& Utils::ustrstr(buffcpy, "dologin()") != -1)
 		)																				return 34; //hikvision cam
@@ -462,6 +462,8 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 	if (Utils::ustrstr(buffcpy, "dvr_remember") != -1
 		&& Utils::ustrstr(buffcpy, "login_chk_usr_pwd") != -1
 		)																				return 57; //Network video client (http://203.190.113.54:60001/)
+	if (Utils::ustrstr(buffcpy, "QlikView") != -1)										return 58; //QLikView (http://203.96.113.183/qlikview/login.htm)
+
 	//if (Utils::ustrstr(buffcpy, "ShareCenter") != -1)									return 58; //ShareCenter (http://49.50.207.6/)
 
 	if (Utils::ustrstr(buffcpy, "nas - ") != -1
@@ -2724,22 +2726,33 @@ bool jsRedirectHandler(std::string *buff, char* ip, int port, Lexems *counter) {
 	std::string subLocation = subRedirect.substr(quotePosFirst + 1, quotePosSecond - quotePosFirst - 1);
 	std::string location = "";
 	if (-1 != STRSTR((const std::string *) &buffcpy, "http")) {
-		if (-1 != STRSTR((const std::string *) &buffcpy, "https")) {
-			location += "https://";
-		}
-		else if (-1 != STRSTR((const std::string *) &buffcpy, "http")) {
-			location += "http://";
-		}
+//		/*if (-1 != STRSTR((const std::string *) &buffcpy, "https")) {
+//			location += "https://";
+//		}
+//		else if (-1 != STRSTR((const std::string *) &buffcpy, "http")) {
+//			location += "http://";
+//		}
+//*/
+//		int quotePosSecond2 = subLocation.find_first_of(";\n", quotePosFirst + 1);
+//		std::string redirectLine = subLocation.substr(quotePosFirst + 1, quotePosSecond2 - (quotePosFirst + 1));
+//		int posFinalAddition = redirectLine.find_last_of("+");
+//		std::string finalAddition = redirectLine.substr(posFinalAddition + 1);
+//		int pos1 = finalAddition.find_first_of("'\"");
+//		int pos2 = finalAddition.find_first_of("'\"", pos1 + 1);
+//
+//		std::string path = finalAddition.substr(pos1 + 1, pos2 - (pos1 + 1));
+		//location += std::string(ip) + "/" + path;
 
-		int quotePosSecond2 = subRedirect.find_first_of(";\n", quotePosFirst + 1);
-		std::string redirectLine = subRedirect.substr(quotePosFirst + 1, quotePosSecond2 - (quotePosFirst + 1));
-		int posFinalAddition = redirectLine.find_last_of("+");
-		std::string finalAddition = redirectLine.substr(posFinalAddition + 1);
-		int pos1 = finalAddition.find_first_of("'\"");
-		int pos2 = finalAddition.find_first_of("'\"", pos1 + 1);
-
-		std::string path = finalAddition.substr(pos1 + 1, pos2 - (pos1 + 1));
-		location += std::string(ip) + "/" + path;
+		int portDelim = subLocation.find(":", 7);
+		if (-1 != portDelim) {
+			std::string portString = subLocation.substr(portDelim + 1);
+			int trimPos = portString.find("/");
+			if (-1 != trimPos) {
+				portString = portString.substr(0, trimPos);
+			}
+			port = std::stoi(portString);
+		}
+		location = subLocation;
 	}
 	else {
 		location = std::string(ip) + (subLocation[0] == '/' ? "" : "/") + subLocation;
@@ -3132,6 +3145,10 @@ void parseFlag(int flag, char* ip, int port, int size, const std::string &header
 	else if (flag == 57) //Juan
 	{
 		_specWEBIPCAMBrute(ip, port, "[JUAN] WEB IP Camera", flag, "WEB Authorization", cp, size, "JUAN");
+	}
+	else if (flag == 58) //QLikView
+	{
+		_specBrute(ip, port, "[QLikView] IP Camera", flag, "/QvAJAXZfc/Authenticate.aspx?_=1453661324640", "Basic Authorization", cp, size);
 	}
 	else if (flag == 20) //AXIS Camera
 	{

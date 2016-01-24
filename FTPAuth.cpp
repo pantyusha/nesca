@@ -98,6 +98,7 @@ lopaStr FTPA::FTPLobby(const char *ip, const int port, PathStr *ps) {
 
 		++baCount;
 		++BrutingThrds;
+		stt->doEmitionUpdateArc(gTargets);
 		const lopaStr &lps = FTPBrute(ip, port, ps);
 		--BrutingThrds;
 

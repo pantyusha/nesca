@@ -908,7 +908,6 @@ void _tracker() {
 }
 
 void verboseProgress(unsigned long target) {
-
 	stt->doEmitionUpdateArc(gTargets);
 	if (gTargets > 0) --gTargets;
 

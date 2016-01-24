@@ -286,9 +286,9 @@ void eraser(std::string *buffer, const std::string delim1, const std::string del
 	}
 }
 void cutoutComments(std::string *buffer) {
+	//eraser(buffer, "//", "\n"); //Cant's handle urls: http://bla.bla
 	eraser(buffer, "<!--", "-->");
 	eraser(buffer, "/*", "*/");
-	eraser(buffer, "//", "\n");
 }
 
 int Connector::nConnect(const char* ip, const int port, std::string *buffer,

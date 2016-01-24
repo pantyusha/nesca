@@ -259,6 +259,7 @@ lopaStr IPC::IPCLobby(const char *ip, int port, char *SPEC) {
 
 		++baCount;
 		++BrutingThrds;
+		stt->doEmitionUpdateArc(gTargets);
 		lopaStr lps = IPCBrute(ip, port, SPEC);
 		--BrutingThrds;
 

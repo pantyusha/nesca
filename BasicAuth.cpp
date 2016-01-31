@@ -1,5 +1,4 @@
 #include "BasicAuth.h"
-#include "FileUpdater.h"
 
 int BA::checkOutput(const string *buffer, const char *ip, const int port) {
     if((Utils::ustrstr(*buffer, "200 ok") != -1 ||
@@ -45,7 +44,40 @@ inline bool commenceHikvisionEx1(const char *ip, const int port, bool digestMode
 	return 0;
 }
 
-lopaStr BA::BABrute(const char *ip, const int port) {
+std::string getLocation(const std::string *buff) {
+	std::string buffLower = *buff;
+	std::transform(buffLower.begin(), buffLower.end(), buffLower.begin(), ::tolower);
+	int pos1 = buffLower.find("location: ");
+
+	if (-1 != pos1) {
+		std::string location = buff->substr(pos1 + 10, buff->find("\r\n", pos1) - pos1 - 10);
+		return location;
+	}
+
+	return "";
+}
+
+void setNewIP(const char *ipOrig, char *ip, std::string *buff, int size) {
+	strncpy(ip, ipOrig, size);
+	const std::string &location = getLocation(buff);
+	if (location.size() > 0) {
+		if (Utils::ustrstr(location, "http") != -1) {
+			strncpy(ip, location.c_str(), size);
+		}
+		else {
+			int ipLength = (int)strstr(ipOrig + 8, "/");
+			if (0 != ipLength) {
+				strncpy(ip, ipOrig, ipLength);
+				strncat(ip, location.c_str(), size - ipLength);
+			}
+			else {
+				strncat(ip, location.c_str(), size);
+			}
+		}
+	}
+}
+
+lopaStr BA::BABrute(const char *ipOrig, const int port, bool performDoubleCheck) {
 	bool digestMode = true;
 	string lpString;
     lopaStr lps = {"UNKNOWN", "", ""};
@@ -56,22 +88,63 @@ lopaStr BA::BABrute(const char *ip, const int port) {
 	std::string buff;
 	Connector con;
 
-	int sz = con.nConnect(ip, port, &buff);
-	//QString ipString = QString(ip).mid(0, QString(ip).indexOf("/", 8)) + ":" + QString::number(port);
-	QString ipString = QString(ip);
-	if (sz == 0) {
-		//Retry
-		Sleep(2000);
+	int sz = con.nConnect(ipOrig, port, &buff);
 
-		if (sz == 0) {
+	char ip[256] = { 0 };
+	
+	if (sz == 0) {
+		if (performDoubleCheck) {
+			//Retry
+			Sleep(gTimeOut);
+			sz = con.nConnect(ip, port, &buff);
+			if (sz == 0) {
+				Sleep(gTimeOut);
+				sz = con.nConnect(ip, port, &buff);
+				if (sz == 0) {
+					QString ipString = QString(ip);
+					stt->doEmitionFoundData("<span style=\"color:orange;\">Empty BA probe - <a style=\"color:orange;\" href=\"" + ipString + "/\">" + ipString + "</a></span>");
+					return lps;
+				}
+				else {
+					setNewIP(ipOrig, ip, &buff, 256);
+				}
+			}
+			else {
+				setNewIP(ipOrig, ip, &buff, 256);
+			}
+		}
+		else {
+			QString ipString = QString(ip);
 			stt->doEmitionFoundData("<span style=\"color:orange;\">Empty BA probe - <a style=\"color:orange;\" href=\"" + ipString + "/\">" + ipString + "</a></span>");
 			return lps;
 		}
 	}
+	else {
+		setNewIP(ipOrig, ip, &buff, 256);
+	}
+
 	int isDig = Utils::isDigest(&buff);
 	if (isDig == -1) {
-		stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 found - <a style=\"color:orange;\" href=\"" + ipString + "/\">" +
-			ipString + "</a></span>");
+		if (performDoubleCheck) {
+			Sleep(gTimeOut);
+			int sz = con.nConnect(ip, port, &buff);
+			isDig = Utils::isDigest(&buff);
+			if (isDig == -1) {
+				Sleep(gTimeOut);
+				int sz = con.nConnect(ip, port, &buff);
+				isDig = Utils::isDigest(&buff);
+				if (isDig == -1) {
+					QString ipString = QString(ip);
+					stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 found - <a style=\"color:orange;\" href=\"" + ipString + "/\">" + ipString + "</a></span>");
+					return lps;
+				}
+			}
+		}
+		else {
+			QString ipString = QString(ip);
+			stt->doEmitionFoundData("<span style=\"color:orange;\">No 401 found - <a style=\"color:orange;\" href=\"" + ipString + "/\">" + ipString + "</a></span>");
+			return lps;
+		}
 	}
 	else if (isDig == 1) digestMode = true; 
 	else digestMode = false;
@@ -99,7 +172,7 @@ lopaStr BA::BABrute(const char *ip, const int port) {
 				if (res == -2) {
 
 					if (rowIndex == -1) {
-						nesca_3::addBARow(QString(ip) + ":" + QString::number(port), "--", "404");
+						nesca_3::addBARow(QString(ip), "--", "404");
 					}
 					else {
 						stt->doEmitionChangeBARow(rowIndex, "--", "404");
@@ -113,7 +186,7 @@ lopaStr BA::BABrute(const char *ip, const int port) {
 				}
 				if (res == 1) {
 					if (rowIndex == -1) {
-						nesca_3::addBARow(QString(ip) + ":" + QString::number(port), QString(loginLst[i]) + ":" + QString(passLst[j]), "OK");
+						nesca_3::addBARow(QString(ip), QString(loginLst[i]) + ":" + QString(passLst[j]), "OK");
 					}
 					else {
 						stt->doEmitionChangeBARow(rowIndex, QString(loginLst[i]) + ":" + QString(passLst[j]), "OK");
@@ -127,7 +200,7 @@ lopaStr BA::BABrute(const char *ip, const int port) {
 
 			if (BALogSwitched) {
 				if (rowIndex == -1) {
-					rowIndex = nesca_3::addBARow(QString(ip) + ":" + QString::number(port),
+					rowIndex = nesca_3::addBARow(QString(ip),
 						QString(loginLst[i]) + ":" + QString(passLst[j]),
 						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
 				}
@@ -143,7 +216,7 @@ lopaStr BA::BABrute(const char *ip, const int port) {
     }
 
 	if (rowIndex == -1) {
-		nesca_3::addBARow(QString(ip) + ":" + QString::number(port), "--", "FAIL");
+		nesca_3::addBARow(QString(ip), "--", "FAIL");
 	}
 	else {
 		stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
@@ -151,7 +224,7 @@ lopaStr BA::BABrute(const char *ip, const int port) {
     return lps;
 }
 
-lopaStr BA::BALobby(const char *ip, const int port) {
+lopaStr BA::BALobby(const char *ip, const int port, bool performDoubleCheck) {
     if(gMaxBrutingThreads > 0) {
 
         while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
@@ -159,7 +232,7 @@ lopaStr BA::BALobby(const char *ip, const int port) {
 		++baCount;
 		++BrutingThrds;
 		stt->doEmitionUpdateArc(gTargets);
-		const lopaStr &lps = BABrute(ip, port);
+		const lopaStr &lps = BABrute(ip, port, performDoubleCheck);
 		--BrutingThrds;
 
         return lps;

@@ -25,6 +25,24 @@ std::string Utils::startTime;
 //}
 
 
+std::string Utils::getHeaderValue(std::string *buff, const std::string headerValue, const std::string outputName) {
+	if (buff->size() > 0) {
+		int headerSize = headerValue.size();
+		int pos = buff->find(headerValue);
+		if (-1 != pos) {
+			int diff = pos + headerSize;
+			std::string fieldChunk = buff->substr(diff, buff->find("\r\n", pos) - diff);
+			std::string fieldHeader = outputName + fieldChunk.substr(0, fieldChunk.find(";"));
+			return fieldHeader;
+		}
+		else {
+			return "";
+		}
+	}
+	else {
+		return "";
+	}
+}
 void Utils::saveStartDate() {
 	QDate date = QDate::currentDate();
 	startDate = std::to_string(date.day())

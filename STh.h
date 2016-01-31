@@ -43,6 +43,7 @@ public:
 	static void doEmitionRedFoundData(QString str);
 	static void doEmitionGreenFoundData(QString);
 	static void doEmitionYellowFoundData(QString);
+	static void doEmitionFoundDataCustom(QString, QString);
     static void doEmitionKillSttThread();
 
 	static void doEmitionDebugFoundData(QString);
@@ -62,6 +63,7 @@ public: signals: void signalDataSaved(bool);
 public: signals: void changeFoundData(QString);
 public: signals: void changeRedFoundData(QString);
 public: signals: void changeGreenFoundData(QString);
+public: signals: void foundDataCustom(QString, QString);
 public: signals: void changeYellowFoundData(QString);
 public: signals: void changeDebugFoundData(QString);
 public: signals: void killSttThread();

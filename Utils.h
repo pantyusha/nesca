@@ -92,6 +92,7 @@ public:
 	static std::string getStartDate();
 	static std::string getStartTime();
 	static void emitScaryError();
+	static std::string getHeaderValue(std::string *buff, const std::string headerValue, const std::string outputName);
 };
 
 #endif // UTILS_H

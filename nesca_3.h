@@ -47,7 +47,7 @@ public:
 //	void ChangeLabelIPS_Value(QString str);
 //	void newListItem(QString str);
 	static int addBARow(QString ip, QString loginPass, QString percentage);
-
+	bool nesca_3::etEventFilter(QObject* object, QEvent* event);
 public:
     static int perc;
 	static int savedTabIndex;
@@ -116,6 +116,7 @@ protected:
 		void ChangeLabelTO_ValueChanged(QString);
 		void appendErrText(QString str);
 		void appendOKText(QString str);
+		void appendTextCustom(QString str, QString color);
 		void appendDebugText(QString str);
 		void appendNotifyText(QString str);
         void appendDefaultText(QString str);

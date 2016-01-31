@@ -44,6 +44,10 @@ void STh::doEmitionGreenFoundData(QString str)
 {
 	emit stt->changeGreenFoundData(str);
 }
+void STh::doEmitionFoundDataCustom(QString str, QString color)
+{
+	emit stt->foundDataCustom(str, color);
+}
 void STh::doEmitionYellowFoundData(QString str)
 {
 	emit stt->changeYellowFoundData(str);

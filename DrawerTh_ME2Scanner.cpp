@@ -34,13 +34,14 @@ int MakePolygonLine(int gWidth)
 		fact7 = 0;
 
 	bool state = stt->isRunning();
-	for(int i = 1; i < 130; ++i)
+	int activityVal = log(1 + Activity)/3 + 2;
+	for(int i = 1; i < 136; ++i)
 	{
         x = qrand() % 4 + i;
         xtx = x + tx;
 		if(xtx > 1 && xtx < 31) 
 		{
-            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - camerasC1 * 2 - fact1 : ME2YPOS);
+            qp = QPointF(xtx, state ? qrand() % activityVal + ME2YPOS - camerasC1 * 2 - fact1 : ME2YPOS);
 			if (camerasC1 > 0)
 			{
                 if(xtx < 16 ) fact1+=2;
@@ -50,7 +51,7 @@ int MakePolygonLine(int gWidth)
 
 		if(xtx > 34 && xtx < 72) 
 		{
-            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - /*WF*/0 * 2 - fact2 : ME2YPOS);
+            qp = QPointF(xtx, state ? qrand() % activityVal + ME2YPOS - /*WF*/0 * 2 - fact2 : ME2YPOS);
 
 			if(/*WF*/0 > 0) 
 			{
@@ -61,7 +62,7 @@ int MakePolygonLine(int gWidth)
 
 		if(xtx > 74 && xtx < 112) 
 		{
-			qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - baCount * 2 - fact3 : ME2YPOS);
+			qp = QPointF(xtx, state ? qrand() % activityVal + ME2YPOS - baCount * 2 - fact3 : ME2YPOS);
 
 			if (baCount > 0)
 			{
@@ -72,7 +73,7 @@ int MakePolygonLine(int gWidth)
 
 		if(xtx > 114 && xtx < 152) 
 		{
-            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - other * 2 - fact4 : ME2YPOS);
+            qp = QPointF(xtx, state ? qrand() % activityVal + ME2YPOS - other * 2 - fact4 : ME2YPOS);
 
 			if (other > 0)
 			{
@@ -83,7 +84,7 @@ int MakePolygonLine(int gWidth)
 
 		if(xtx > 154 && xtx < 192) 
 		{
-            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - Overl * 2 - fact5 : ME2YPOS);
+            qp = QPointF(xtx, state ? qrand() % activityVal + ME2YPOS - Overl * 2 - fact5 : ME2YPOS);
 
 			if(Overl > 0) 
 			{
@@ -94,7 +95,7 @@ int MakePolygonLine(int gWidth)
 
         if(xtx > 194 && xtx < 232)
 		{
-            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - /*Lowl*/0 * 2 - fact6 : ME2YPOS);
+            qp = QPointF(xtx, state ? qrand() % activityVal + ME2YPOS - /*Lowl*/0 * 2 - fact6 : ME2YPOS);
 
 			if(/*Lowl*/0 > 0) 
 			{
@@ -105,7 +106,7 @@ int MakePolygonLine(int gWidth)
 
         if(xtx > 234 && xtx < 278)
 		{
-            qp = QPointF(xtx, state ? qrand() % 3 + ME2YPOS - Alive * 2 - fact7 : ME2YPOS);
+            qp = QPointF(xtx, state ? qrand() % activityVal + ME2YPOS - Alive * 2 - fact7 : ME2YPOS);
 
 			if(Alive > 0) 
 			{

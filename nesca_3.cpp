@@ -1407,6 +1407,12 @@ void nesca_3::switchToJobMode()
 	};
 }
 
+#include <qclipboard.h>
+void copyToClipboardLocation() {
+	ui->currentDirectoryLine->selectAll();
+	QClipboard *c = QApplication::clipboard();
+	c->setText(ui->currentDirectoryLine->text());
+}
 bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 {
 	if (obj == qwm)
@@ -1427,6 +1433,10 @@ bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 		}
 		else if (event->type() == QEvent::KeyRelease) return true;
 		return false;
+	}
+	else if (obj == ui->currentDirectoryLine && event->type() == QEvent::MouseButtonPress)
+	{
+		copyToClipboardLocation();
 	}
 	else
 	{
@@ -2304,6 +2314,7 @@ void nesca_3::ConnectEvrthng()
 	connect ( stt, SIGNAL(changeYellowFoundData(QString)), this, SLOT(appendNotifyText(QString)));
 	connect ( stt, SIGNAL(changeRedFoundData(QString)), this, SLOT(appendErrText(QString)));
 	connect ( stt, SIGNAL(changeGreenFoundData(QString)), this, SLOT(appendOKText(QString)));
+	connect(stt, SIGNAL(foundDataCustom(QString, QString)), this, SLOT(appendTextCustom(QString, QString)));
 	connect ( stt, SIGNAL(killSttThread()), this, SLOT(STTTerminate()));
 
 	connect ( stt, SIGNAL(signalUpdateArc(unsigned long)), this, SLOT(drawVerboseArcs(unsigned long)));
@@ -3072,6 +3083,10 @@ void nesca_3::appendOKText(QString str)
 {
 	ui->dataText->append("<span style=\"color:#06ff00;\">[" + QTime::currentTime().toString() + "][OK] " + str + "</span>");
 }
+void nesca_3::appendTextCustom(QString str, QString color)
+{
+	ui->dataText->append("<span style=\"color:#" + color + ";\">[" + QTime::currentTime().toString() + "][OK] " + str + "</span>");
+}
 
 void nesca_3::appendNotifyText(QString str)
 {
@@ -3289,6 +3304,7 @@ void nesca_3::finishLoading() {
 //#define eicar4 "<script src=\"http://accountus.gets-it.net/googlestat.php\"></script>"
 //#define eicar5 "\"split\";e=eval;v=\"0x\";a=0;z=\"y\";try{a*=25}catch(zz){a=1}if(!a){try{--e(\"doc\"+\"ument\")[\"\x62od\"+z]}catch(q){}"
 
+
 nesca_3::nesca_3(bool isWM, QWidget *parent = 0) : QMainWindow(parent)
 {
 	/*if (isWM) {
@@ -3326,6 +3342,8 @@ nesca_3::nesca_3(bool isWM, QWidget *parent = 0) : QMainWindow(parent)
 	tray = new QSystemTrayIcon(QIcon(":/nesca_3/nesca.ico"), this);
 	tray->hide();
 
+
+	ui->currentDirectoryLine->installEventFilter(this);
 	SetValidators();
 	ConnectEvrthng();
 

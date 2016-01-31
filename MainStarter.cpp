@@ -1347,27 +1347,30 @@ void MainStarter::startImportScan(){
 				   break;
 	}
 	case false: {
-					ip1 = (ipsstartfl[gflIndex][0] * 16777216) +
-						(ipsstartfl[gflIndex][1] * 65536) +
-						(ipsstartfl[gflIndex][2] * 256) +
-						ipsstartfl[gflIndex][3];
-					ip2 = (ipsendfl[gflIndex][0] * 16777216) +
-						(ipsendfl[gflIndex][1] * 65536) +
-						(ipsendfl[gflIndex][2] * 256) +
-						ipsendfl[gflIndex][3];
-					struct in_addr tAddr;
-					for (unsigned long i = ip1; i <= ip2; ++i) {
+		for (gflIndex = 0; gflIndex < MainStarter::flCounter; gflIndex++) {
+			if (!globalScanFlag) break;
+			ip1 = (ipsstartfl[gflIndex][0] * 16777216) +
+				(ipsstartfl[gflIndex][1] * 65536) +
+				(ipsstartfl[gflIndex][2] * 256) +
+				ipsstartfl[gflIndex][3];
+			ip2 = (ipsendfl[gflIndex][0] * 16777216) +
+				(ipsendfl[gflIndex][1] * 65536) +
+				(ipsendfl[gflIndex][2] * 256) +
+				ipsendfl[gflIndex][3];
+			struct in_addr tAddr;
+			for (unsigned long i = ip1; i <= ip2; ++i) {
 
-						while (cons >= gThreads && globalScanFlag) Sleep(500);
-						if (!globalScanFlag) break;
+				while (cons >= gThreads && globalScanFlag) Sleep(500);
+				if (!globalScanFlag) break;
 
-						++indexIP;
+				++indexIP;
 
-						tAddr.s_addr = ntohl(i);
-						strcpy(currentIP, inet_ntoa(tAddr));
-						verboseProgress(gTargets);
-						Threader::fireThread(currentIP, (void*(*)(void))_connect);
-					}
+				tAddr.s_addr = ntohl(i);
+				strcpy(currentIP, inet_ntoa(tAddr));
+				verboseProgress(gTargets);
+				Threader::fireThread(currentIP, (void*(*)(void))_connect);
+			}
+		}
 					break;
 	};
 	}

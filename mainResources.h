@@ -186,7 +186,7 @@ public:
         PathStr *ps,
         std::vector<std::string> *lst, int size);*/
 
-	int filler(char* ip, 
+	int filler(char* ip, char *ipRaw,
 		int port,
 		std::string *buffcpy,
         int size,

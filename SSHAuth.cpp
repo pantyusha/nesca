@@ -91,7 +91,7 @@ int check_ssh_pass(const int rowIndex, const char *user, const char *pass,
     if(res == 0)
     {
 		if (rowIndex == -1) {
-			nesca_3::addBARow(QString(host) + ":" + QString::number(port), QString(userPass) + "@" + QString(host), "OK");
+			nesca_3::addBARow(QString(host), QString(userPass) + "@" + QString(host), "OK");
 		}
 		else {
 			stt->doEmitionChangeBARow(rowIndex, QString(userPass) + "@" + QString(host), "OK");
@@ -127,6 +127,8 @@ int SSHBrute(const char* host, int port, std::string *buffer, const char *banner
             return -1;
         }
 
+		ZeroMemory(login, 32);
+		ZeroMemory(pass, 32);
         strncpy(login, temp, ptr1 - temp);
         strcpy(pass, ptr1 + 1);
 

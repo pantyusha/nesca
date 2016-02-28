@@ -349,7 +349,7 @@ bool HikVis::checkSAFARI(const char * sDVRIP, int port) {
 	return false;
 }
 
-
+#include "Utils.h"
 lopaStr HikVis::hikLogin(const char * sDVRIP, int wDVRPort) 
 {
 	lopaStr lps = { "UNKNOWN", "", "" };
@@ -358,18 +358,15 @@ lopaStr HikVis::hikLogin(const char * sDVRIP, int wDVRPort)
 	strcpy(ip, sDVRIP);
 	int rowIndex = -1;
 
-	char login[64] = { 0 };
-	char pass[64] = { 0 };
+	char login[32] = { 0 };
+	char pass[32] = { 0 };
 
 	for (int i = 0; i < MaxLogin; ++i) {
+		FileUpdater::cv.wait(FileUpdater::lk, [] {return FileUpdater::ready; });
+		strcpy(login, loginLst[i]);
 		for (int j = 0; j < MaxPass; ++j) {
 			FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready; });
 			if (!globalScanFlag) return lps;
-			/*ZeroMemory(login, 64);
-			ZeroMemory(pass, 64);*/
-			login[0] = 0;
-			pass[0] = 0;
-			strcpy(login, loginLst[i]);
 			strcpy(pass, passLst[j]);
 
 			NET_DVR_DEVICEINFO_V30 *info = 0;
@@ -380,39 +377,20 @@ lopaStr HikVis::hikLogin(const char * sDVRIP, int wDVRPort)
 				strcpy(lps.login, login);
 				strcpy(lps.pass, pass);
 
-				if (rowIndex == -1) {
-					nesca_3::addBARow(QString(ip) + ":" + QString::number(wDVRPort), QString(login) + ":" + QString(pass), "OK");
-				}
-				else {
-					stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass), "OK");
-				}
-
+				rowIndex = Utils::addBARow(QString(ip) + ":" + QString::number(wDVRPort), QString(login) + ":" + QString(pass), "OK", rowIndex);
+				
 				return lps;
 			}
 
-			if (BALogSwitched) {
-				if (rowIndex == -1) {
-					rowIndex = nesca_3::addBARow(QString(ip) + ":" + QString::number(wDVRPort),
-						QString(login) + ":" + QString(pass),
-						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
-				}
-				else {
-					stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass),
-						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
-				}
-			}
-			else{ rowIndex = -1; }
+			rowIndex = Utils::addBARow(QString(ip) + ":" + QString::number(wDVRPort), QString(login) + ":" + QString(pass), QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%", rowIndex);
+
 			++passCounter;
 			Sleep(200);
 		}
 	}
 
-	if (rowIndex == -1) {
-		nesca_3::addBARow(QString(ip) + ":" + QString::number(wDVRPort), "--", "FAIL");
-	}
-	else {
-		stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
-	}
+	rowIndex = Utils::addBARow(QString(ip) + ":" + QString::number(wDVRPort), "--", "FAIL", rowIndex);
+
 	return lps;
 }
 
@@ -467,6 +445,7 @@ int rvi_login_ptr(const char *sDVRIP, int wDVRPort, const char *login, const cha
 	return -1;
 }
 
+#include "Utils.h"
 lopaStr HikVis::rviLogin(const char * sDVRIP, int wDVRPort)
 {
 	lopaStr lps = { "UNKNOWN", "", "" };
@@ -475,18 +454,15 @@ lopaStr HikVis::rviLogin(const char * sDVRIP, int wDVRPort)
 	strcpy(ip, sDVRIP);
 	int rowIndex = -1;
 
-	char login[64] = { 0 };
-	char pass[64] = { 0 };
+	char login[32] = { 0 };
+	char pass[32] = { 0 };
 
 	for (int i = 0; i < MaxLogin; ++i) {
+		FileUpdater::cv.wait(FileUpdater::lk, [] {return FileUpdater::ready; });
+		strcpy(login, loginLst[i]);
 		for (int j = 0; j < MaxPass; ++j) {
 			FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready; });
 			if (!globalScanFlag) return lps;
-			/*ZeroMemory(login, 64);
-			ZeroMemory(pass, 64);*/
-			login[0] = 0;
-			pass[0] = 0;
-			strcpy(login, loginLst[i]);
 			strcpy(pass, passLst[j]);
 
 			if (strlen(login) > 8) break;
@@ -496,39 +472,20 @@ lopaStr HikVis::rviLogin(const char * sDVRIP, int wDVRPort)
 				strcpy(lps.login, login);
 				strcpy(lps.pass, pass);
 
-				if (rowIndex == -1) {
-					nesca_3::addBARow(QString(ip) + ":" + QString::number(wDVRPort), QString(login) + ":" + QString(pass), "OK");
-				}
-				else {
-					stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass), "OK");
-				}
+				rowIndex = Utils::addBARow(QString(ip) + ":" + QString::number(wDVRPort), QString(login) + ":" + QString(pass), "OK", rowIndex);
 
 				return lps;
 			}
 
-			if (BALogSwitched) {
-				if (rowIndex == -1) {
-					rowIndex = nesca_3::addBARow(QString(ip) + ":" + QString::number(wDVRPort),
-						QString(login) + ":" + QString(pass),
-						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
-				}
-				else {
-					stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass),
-						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
-				}
-			}
-			else { rowIndex = -1; }
+			rowIndex = Utils::addBARow(QString(ip) + ":" + QString::number(wDVRPort), QString(login) + ":" + QString(pass), QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%", rowIndex);
+
 			++passCounter;
 			Sleep(200);
 		}
 	}
 
-	if (rowIndex == -1) {
-		nesca_3::addBARow(QString(ip) + ":" + QString::number(wDVRPort), "--", "FAIL");
-	}
-	else {
-		stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
-	}
+	rowIndex = Utils::addBARow(QString(ip) + ":" + QString::number(wDVRPort), "--", "FAIL", rowIndex);
+
 	return lps;
 }
 

@@ -14,6 +14,6 @@ public:
 protected:
 	void run();
 };
-extern ProgressbarDrawer *pbTh;
+//extern ProgressbarDrawer *pbTh;
 
 #endif // PROGRESSBARDRAWER_H

@@ -1,8 +1,10 @@
 #include "Utils.h"
 #include <sstream>
+#include "STh.h"
 
 std::string Utils::startDate;
 std::string Utils::startTime;
+std::string Utils::currentTarget;
 
 //void Utils::emitScaryError() {
 //	__asm{
@@ -45,24 +47,42 @@ std::string Utils::getHeaderValue(std::string *buff, const std::string headerVal
 }
 void Utils::saveStartDate() {
 	QDate date = QDate::currentDate();
-	startDate = std::to_string(date.day())
-		+ "_"
-		+ std::to_string(date.month())
-		+ "_"
-		+ std::to_string(date.year());
+	startDate = date.toString("dd.MM.yyyy").toUtf8().constData();
 }
+
 void Utils::saveStartTime() {
 	QTime time = QTime::currentTime();
-	startTime = std::to_string(time.hour())
-		+ "_"
-		+ std::to_string(time.minute());
+	startTime = time.toString("HH_mm").toUtf8().constData();
 }
 std::string Utils::getStartDate() {
 	return startDate;
 }
 
+int Utils::addBARow(QString str1, QString str2, QString str3, int rowIndex) {
+	if (BALogSwitched) {
+		if (rowIndex == -1) {
+			rowIndex = nesca_3::addBARow(str1, str2, str3);
+		}
+		else {
+			stt->doEmitionChangeBARow(rowIndex, str2, str3);
+		}
+
+		return rowIndex;
+	}
+	
+	return -1;
+}
+
 std::string Utils::getStartTime() {
 	return startTime;
+}
+
+void Utils::setCurrentTarget(const std::string target) {
+	currentTarget = target;
+}
+
+std::string Utils::getCurrentTarget() {
+	return currentTarget;
 }
 
 int Utils::isDigest(const std::string *buffer) {

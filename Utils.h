@@ -28,6 +28,7 @@ private:
 class Utils {
 private: static std::string startDate;
 private: static std::string startTime;
+private: static std::string currentTarget;
 public:
 	static int isDigest(const std::string *buffer);
 
@@ -53,7 +54,7 @@ public:
 		else return -1;
 	}
 
-	template<typename T> static int ustrstr(const T *str1,
+	template<typename T> static int ustrstr(T *str1,
 		const char* str2c,
 		const locale& loc = locale()) {
 
@@ -91,7 +92,10 @@ public:
 	static void saveStartTime();
 	static std::string getStartDate();
 	static std::string getStartTime();
+	static void setCurrentTarget(const std::string target);
+	static std::string getCurrentTarget();
 	static void emitScaryError();
+	static int addBARow(QString str1, QString str2, QString str3, int rowIndex);
 	static std::string getHeaderValue(std::string *buff, const std::string headerValue, const std::string outputName);
 };
 

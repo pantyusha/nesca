@@ -88,21 +88,22 @@ typedef int					BOOL;
 
 #define TITLE_MAX_SIZE 512
 #define COOKIE_MAX_SIZE 1024
-#define  TYPE1  "camera"
-#define  TYPE2  "other"
-#define  TYPE3  "auth"
-#define  TYPE4  "ftp"
-#define  TYPE5  "ssh"
+#define TYPE1 "camera"
+#define TYPE2 "other"
+#define TYPE3 "auth"
+#define TYPE4 "ftp"
+#define TYPE5 "ssh"
+#define DIR_NAME "results_"
 
 #define PWD_LIST_FOLDER "./pwd_lists/"
-#define LOGIN_FN PWD_LIST_FOLDER"login.txt"
-#define PASS_FN PWD_LIST_FOLDER"pass.txt"
-#define FTP_LOGIN_FN PWD_LIST_FOLDER"ftplogin.txt"
-#define FTP_PASS_FN PWD_LIST_FOLDER"ftppass.txt"
-#define WF_LOGIN_FN PWD_LIST_FOLDER"wflogin.txt"
-#define WF_PASS_FN PWD_LIST_FOLDER"wfpass.txt"
-#define SSH_PASS_FN PWD_LIST_FOLDER"sshpass.txt"
-#define NEGATIVE_FN PWD_LIST_FOLDER"negatives.txt"
+#define LOGIN_FN PWD_LIST_FOLDER "login.txt"
+#define PASS_FN PWD_LIST_FOLDER "pass.txt"
+#define FTP_LOGIN_FN PWD_LIST_FOLDER "ftplogin.txt"
+#define FTP_PASS_FN PWD_LIST_FOLDER "ftppass.txt"
+#define WF_LOGIN_FN PWD_LIST_FOLDER "wflogin.txt"
+#define WF_PASS_FN PWD_LIST_FOLDER "wfpass.txt"
+#define SSH_PASS_FN PWD_LIST_FOLDER "sshpass.txt"
+#define NEGATIVE_FN PWD_LIST_FOLDER "negatives.txt"
 
 #define HTTP_FILE_STYLE "<style> #recvSpan{display: inline-block;width: 150px;} \
 	#hostSpan{display: inline-block;width: 200px;} \

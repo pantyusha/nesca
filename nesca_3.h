@@ -64,7 +64,6 @@ protected:
 		void ThreadDelay_ChangeValue(QString val);
 		void ChangePingerOK(bool val);
 		void changeNSTrackLabel(bool status);
-		void slotPBUpdate(); 
         void DNSLine_ValueChanged();
         void slotShowRedVersion();
         void slotTabChanged(int index);
@@ -126,6 +125,7 @@ protected:
 		void slotBlockButtons(bool value);
 		//BA TablelistView
 		void slotChangeBARow(const int index, const QString loginPass, const QString percentage);
+		void slotEditFilter();
 
 private:
 	QPoint dragPosition;

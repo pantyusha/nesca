@@ -1399,7 +1399,7 @@ void MainStarter::runAuxiliaryThreads() {
 
 void MainStarter::createResultFiles() {
 	char fileName[256] = { 0 };
-	sprintf(fileName, "./result_files-%s", Utils::getStartDate().c_str());
+	sprintf(fileName, "./" DIR_NAME "%s_%s", Utils::getStartDate().c_str(), Utils::getCurrentTarget().c_str());
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	bool res = CreateDirectoryA(fileName, NULL);
 	if (!res) {
@@ -1484,6 +1484,10 @@ void MainStarter::start(const char* targets, const char* ports) {
 	
 	thread_setup();
 
+
+	QString fileSuffix = QString(targets);
+	fileSuffix = fileSuffix.mid(fileSuffix.lastIndexOf("/") + 1);
+	Utils::setCurrentTarget(fileSuffix.toUtf8().constData());
 	createResultFiles();
 
 	if (loadTargets(targets) == -1 ||

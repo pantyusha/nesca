@@ -90,6 +90,10 @@ lopaStr BA::BABrute(const char *ipOrig, const int port, bool performDoubleCheck)
 
 	int sz = con.nConnect(ipOrig, port, &buff);
 
+	if (Utils::ustrstr(&buff, "404 not found") != -1 || Utils::ustrstr(&buff, "404 site") != -1) {
+		return lps;
+	}
+
 	char ip[256] = { 0 };
 	
 	if (sz == 0) {
@@ -124,6 +128,11 @@ lopaStr BA::BABrute(const char *ipOrig, const int port, bool performDoubleCheck)
 	}
 
 	int isDig = Utils::isDigest(&buff);
+	if (-2 == isDig) {
+		QString ipString = QString(ip);
+		stt->doEmitionFoundData("<span style=\"color:orange;\">404 not found - <a style=\"color:orange;\" href=\"" + ipString + "/\">" + ipString + "</a></span>");
+		return lps;
+	}
 	if (isDig == -1) {
 		if (performDoubleCheck) {
 			Sleep(gTimeOut);
@@ -157,26 +166,31 @@ lopaStr BA::BABrute(const char *ipOrig, const int port, bool performDoubleCheck)
 		return lps;
 	}
 
+	char login[32] = { 0 };
+	char pass[32] = { 0 };
     for(int i = 0; i < MaxLogin; ++i) {
+		FileUpdater::cv.wait(FileUpdater::lk, [] {return FileUpdater::ready; });
+		strcpy(login, loginLst[i]);
         for (int j = 0; j < MaxPass; ++j) {
             FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
             if (!globalScanFlag) return lps;
 
-            lpString = string(loginLst[i]) + ":" + string(passLst[j]);
+			strcpy(pass, passLst[j]);
+
+            lpString = string(login) + ":" + string(pass);
 
 			Connector con;
 			res = con.nConnect(ip, port, &buffer, NULL, NULL, &lpString, digestMode);
-			if (res == -2) return lps;
+			if (res == -2) {
+				rowIndex = Utils::addBARow(QString(ip), QString(login) + ":" + QString(pass), "TIMEOUT", rowIndex);
+				
+				return lps;
+			}
 			else if (res != -1) {
 				res = checkOutput(&buffer, ip, port);
 				if (res == -2) {
 
-					if (rowIndex == -1) {
-						nesca_3::addBARow(QString(ip), "--", "404");
-					}
-					else {
-						stt->doEmitionChangeBARow(rowIndex, "--", "404");
-					}
+					rowIndex = Utils::addBARow(QString(ip), "--", "404", rowIndex);
 					strcpy(lps.other, "404");
 					return lps;
 				}
@@ -185,42 +199,21 @@ lopaStr BA::BABrute(const char *ipOrig, const int port, bool performDoubleCheck)
 					break;
 				}
 				if (res == 1) {
-					if (rowIndex == -1) {
-						nesca_3::addBARow(QString(ip), QString(loginLst[i]) + ":" + QString(passLst[j]), "OK");
-					}
-					else {
-						stt->doEmitionChangeBARow(rowIndex, QString(loginLst[i]) + ":" + QString(passLst[j]), "OK");
-					}
+					rowIndex = Utils::addBARow(QString(ip), QString(login) + ":" + QString(pass), "OK", rowIndex);
 
-					strcpy(lps.login, loginLst[i]);
-					strcpy(lps.pass, passLst[j]);
+					strcpy(lps.login, login);
+					strcpy(lps.pass, pass);
 					return lps;
 				};
 			}
 
-			if (BALogSwitched) {
-				if (rowIndex == -1) {
-					rowIndex = nesca_3::addBARow(QString(ip),
-						QString(loginLst[i]) + ":" + QString(passLst[j]),
-						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
-				}
-				else {
-					stt->doEmitionChangeBARow(rowIndex, QString(loginLst[i]) + ":" + QString(passLst[j]), 
-						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
-				}
-			}
-			else { rowIndex = -1; }
+			rowIndex = Utils::addBARow(QString(ip), QString(login) + ":" + QString(pass), QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%", rowIndex);
 			++passCounter;
             Sleep(50);
         }
     }
 
-	if (rowIndex == -1) {
-		nesca_3::addBARow(QString(ip), "--", "FAIL");
-	}
-	else {
-		stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
-	}
+	rowIndex = Utils::addBARow(QString(ip), "--", "FAIL", rowIndex);
     return lps;
 }
 

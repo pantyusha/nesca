@@ -8,7 +8,7 @@
 #include <iphlpapi.h>
 #include <icmpapi.h>
 #pragma comment(lib, "iphlpapi.lib")
-#pragma comment(lib,"curllib.lib")
+//#pragma comment(lib,"libcurldll.a")
 #endif
 
 #include <openssl/err.h>
@@ -39,7 +39,8 @@ public:
                         const std::vector<std::string> *customHeaders = NULL,
 						const std::string *lpString = NULL,
 						bool digestMode = false,
-						bool isRTSP = false);
+						bool isRTSP = false, bool isDigest = true);
     int connectToPort(char *ip, int port);
+	int checkIsDigestRTSP(const char *ip, std::string *buffer);
 };
 #endif // CONNECTOR_H

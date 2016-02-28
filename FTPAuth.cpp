@@ -19,9 +19,8 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 	int passCounter = 0;
 	int rowIndex = -1;
 
-    char login[128] = {0};
+    char login[32] = {0};
     char pass[32] = {0};
-	//char nip[128] = { 0 };
 
 	for (int i = 0; i < MaxFTPLogin; ++i)
     {
@@ -37,18 +36,12 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 			strcpy(pass, ftpPassLst[j]);
 			if (strlen(pass) <= 1) continue;
 
-            lpString = string(login)
-				+ string(pass);
+            lpString = string(login) + string(pass);
 			
 			Connector con;
 			res = con.nConnect(ip, port, &buffer, NULL, NULL, &lpString);
 			if (res == -2) {
-				if (rowIndex == -1) {
-					nesca_3::addBARow(QString(ip), "--", "FAIL");
-				}
-				else {
-					stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
-				}
+				rowIndex = Utils::addBARow(QString(ip), "--", "FAIL", rowIndex);
 				return lps;
 			}
 			else if (res != -1) {
@@ -57,39 +50,18 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
                 strcpy(lps.pass, pass);
 				ps->directoryCount = std::count(buffer.begin(), buffer.end(), '\n');
 
-				if (rowIndex == -1) {
-					nesca_3::addBARow(QString(ip), QString(login) + ":" + QString(pass), "OK");
-				}
-				else {
-					stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass), "OK");
-				}
+				rowIndex = Utils::addBARow(QString(ip), QString(login) + ":" + QString(pass), "OK", rowIndex);
 				
 				return lps;
 			};
 
-			if (BALogSwitched) {
-				if (rowIndex == -1) {
-					rowIndex = nesca_3::addBARow(QString(ip),
-						QString(login) + ":" + QString(pass),
-						QString::number((passCounter / (double)(MaxFTPPass*MaxFTPLogin)) * 100).mid(0, 4) + "%");
-				}
-				else {
-					stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass),
-						QString::number((passCounter / (double)(MaxFTPPass*MaxFTPLogin)) * 100).mid(0, 4) + "%");
-				}
-			}
-			else { rowIndex = -1; }
+			rowIndex = Utils::addBARow(QString(ip), QString(login) + ":" + QString(pass), QString::number((passCounter / (double)(MaxFTPPass*MaxFTPLogin)) * 100).mid(0, 4) + "%", rowIndex);
 			++passCounter;
             Sleep(50);
         }
     }
 
-	if (rowIndex == -1) {
-		nesca_3::addBARow(QString(ip), "--", "FAIL");
-	}
-	else {
-		stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
-	}
+	rowIndex = Utils::addBARow(QString(ip), "--", "FAIL", rowIndex);
     return lps;
 }
 

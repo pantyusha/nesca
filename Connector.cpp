@@ -99,10 +99,10 @@ int my_trace(CURL *handle, curl_infotype type,
   if (type == CURLINFO_HEADER_OUT) {
 	  //data[size] = '\0';
 	  //Activity += strlen(data);
+	  data[size] = '\0';
 	  QString qData = QString(data);
 	  Activity += qData.length();
 	  stt->doEmitionAddOutData(qData);
-	  data[0] = '\0';
   }
   //else if (type == CURLINFO_HEADER_IN) {
 	 // QString qData = QString(data);
@@ -164,6 +164,7 @@ int pConnect(const char* ip, const int port, std::string *buffer,
 			"Mozilla/5.0 (X11; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0");
 		curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
 		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0L);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nWriteCallback);
@@ -208,7 +209,10 @@ int pConnect(const char* ip, const int port, std::string *buffer,
 		int sz = buffer->size();
 
 		curl_easy_cleanup(curl);
-		if (res == CURLE_OK || (port == 21 && sz > 0)) {
+
+		if (res == 35) {
+			return -1;
+		} else if (res == CURLE_OK || sz > 0) {
 			return sz;
 		}
 		else if (res == CURLE_LOGIN_DENIED && port == 21) {
@@ -270,7 +274,7 @@ int pConnect(const char* ip, const int port, std::string *buffer,
 		return -1;
 	};
 }
-int pConnectRTSP(const char* ip, const int port, std::string *buffer, const std::string *lpString)
+int pConnectRTSP(const char* ip, const int port, std::string *buffer, const std::string *lpString, bool isDigest)
 {
 	buffer->clear();
 	int res = 0;
@@ -278,7 +282,7 @@ int pConnectRTSP(const char* ip, const int port, std::string *buffer, const std:
 
 	if (curl != NULL)
 	{
-		//curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 		if (MapWidgetOpened) {
 			struct data config;
 			config.trace_ascii = 1; /* enable ascii tracing */
@@ -287,124 +291,41 @@ int pConnectRTSP(const char* ip, const int port, std::string *buffer, const std:
 			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 		}
 
-		char newIP[128] = {0};
-		strcpy(newIP, "rtsp://");
-		strncat(newIP, ip, 96);
-		strcat(newIP, "/ch1/main");
-		/*int y = curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
-		y = curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
-		y = curl_easy_setopt(curl, CURLOPT_HEADERDATA, stdout);*/
-		//curl_easy_setopt(curl, CURLOPT_URL, newIP);
-		//curl_easy_setopt(curl, CURLOPT_PORT, port);
-		curl_easy_setopt(curl, CURLOPT_RTSP_STREAM_URI, newIP);
-		//y = curl_easy_setopt(curl, CURLOPT_RTSP_REQUEST, (long)CURL_RTSPREQ_OPTIONS);
-		//int y = curl_easy_setopt(curl, CURLOPT_URL, ip);
-		//y = curl_easy_setopt(curl, CURLOPT_RTSP_STREAM_URI, ip);
-		//curl_easy_setopt(curl, CURLOPT_PORT, port);
-		/*y = curl_easy_setopt(curl, CURLOPT_RTSP_REQUEST, (long)CURL_RTSPREQ_OPTIONS);
-		res = curl_easy_perform(curl);
-		y = curl_easy_setopt(curl, CURLOPT_RTSP_REQUEST, (long)CURL_RTSPREQ_DESCRIBE);*/
-		res = curl_easy_perform(curl);
-
-		//curl_easy_setopt(curl, CURLOPT_RTSP_REQUEST, (long)CURL_RTSPREQ_DESCRIBE);
-		//curl_easy_setopt(curl, CURLOPT_USERAGENT,
-		//	"Mozilla/5.0 (X11; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0");
-		//curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
-		//curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1L);
-		//curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-		//curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-		//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nWriteCallback);
-		//curl_easy_setopt(curl, CURLOPT_WRITEDATA, buffer);
-		//int proxyPort = std::atoi(gProxyPort);
-		//if (proxyPort > 0 && proxyPort < 65535) curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
-		//curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
-		////curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-		//curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
-		//curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut + 3);
-
-		//if (lpString != NULL) {
-		//	curl_easy_setopt(curl, CURLOPT_UNRESTRICTED_AUTH, 1L);
-		//	//curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, 1L);
-		//	curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
-		//	//curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_DIGEST);
-		//	res = curl_easy_perform(curl);
-		//	/*if (digestMode)
-		//	{
-		//		curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_DIGEST);
-		//		res = curl_easy_perform(curl);
-
-		//		if (port != 21 && lpString != NULL) {
-		//			int pos = Utils::ustrstr(*buffer, "\r\n\r\n");
-		//			if (pos != -1) {
-		//				*buffer = buffer->substr(pos + 4);
-		//			}
-		//		}
-		//	}
-		//	else res = curl_easy_perform(curl);*/
-		//}
-		//else res = curl_easy_perform(curl);
-
-		int sz = buffer->size();
-
-		curl_easy_cleanup(curl);
-		if (res == CURLE_OK || (port == 21 && sz > 0)) {
-			if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
-			Activity += sz;
-			return sz;
-		}
-		else if (res == CURLE_LOGIN_DENIED && port == 21) {
-			return -1;
-		}
-		else if (res == CURLE_OPERATION_TIMEDOUT
-			|| res == CURLE_COULDNT_CONNECT
-			|| res == CURLE_SEND_ERROR
-			|| res == CURLE_RECV_ERROR
-			) {
-			SOCKET eNobuffSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-			shutdown(eNobuffSocket, SD_BOTH);
-			closesocket(eNobuffSocket);
-			if (ENOBUFS == eNobuffSocket || ENOMEM == eNobuffSocket) {
-				stt->doEmitionRedFoundData("Insufficient buffer/memory space. Sleeping for 10 sec...");
-				Sleep(10000);
-			}
-			return -1;
+		curl_easy_setopt(curl, CURLOPT_RTSP_REQUEST, CURL_RTSPREQ_DESCRIBE);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT,
+			"LibVLC/2.1.5 (LIVE555 Streaming Media v2014.05.27)");
+		curl_easy_setopt(curl, CURLOPT_URL, ip);
+		curl_easy_setopt(curl, CURLOPT_RTSP_STREAM_URI, ip);
+		curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nWriteCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, buffer);
+		int proxyPort = std::atoi(gProxyPort);
+		if (proxyPort > 0 && proxyPort < 65535) curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
+		curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut + 3);
+		if (isDigest) {
+			curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_DIGEST);
 		}
 		else {
-			if (res == 6) return -2;
-			else if (res != 13 &&
-				res != 67 &&
-				res != 52 &&
-				res != 56 &&
-				res != 35 &&
-				res != 19 &&
-				res != 23)
-			{
-				if (res == 5) {
-					stt->doEmitionRedFoundData("The given proxy host could not be resolved.");
-					return -2;
-				}
-				else if (res == 8) {
-					stt->doEmitionFoundData("Strange ftp reply. (" +
-						QString::number(res) + ") " + QString(ip));
-					return -2;
-				}
-				else if (res == 18) {
-					return -2;
-				}
-				else stt->doEmitionRedFoundData("CURL error: (" + QString::number(res) + ") " + QString(ip));
-			};
+			curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_BASIC);
+		}
+		curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
 
+		res = curl_easy_perform(curl);
+
+		int sz = buffer->size();
+		curl_easy_cleanup(curl);
+
+		if (res == CURLE_OK || sz > 0) {
 			return sz;
 		}
-
-		if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
-
-		return sz;
-	}
-	else {
-		stt->doEmitionRedFoundData("Curl error.");
+		
 		return -1;
-	};
+	}
+
+	stt->doEmitionRedFoundData("Curl error.");
+	return -1;
 }
 
 void eraser(std::string *buffer, const std::string delim1, const std::string delim2) {
@@ -430,14 +351,14 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
                         const std::vector<std::string> *customHeaders,
                         const std::string *lpString,
 						bool digestMode,
-						bool isRTSP){
+						bool isRTSP, bool isDigest){
 	int res = 0;
 	
 	if (!isRTSP) {
 		res = pConnect(ip, port, buffer, postData, customHeaders, lpString, digestMode);
 	}
 	else {
-		res = pConnectRTSP(ip, port, buffer, lpString);
+		res = pConnectRTSP(ip, port, buffer, lpString, isDigest);
 	}
 	cutoutComments(buffer);
 
@@ -445,6 +366,67 @@ int Connector::nConnect(const char* ip, const int port, std::string *buffer,
 	Activity += buffer->size();
 
 	return res;
+}
+
+int Connector::checkIsDigestRTSP(const char *ip, std::string *buffer) {
+
+	buffer->clear();
+	int res = 0;
+	CURL *curl = curl_easy_init();
+
+	if (curl != NULL)
+	{
+		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+		if (MapWidgetOpened) {
+			struct data config;
+			config.trace_ascii = 1; /* enable ascii tracing */
+			curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
+			curl_easy_setopt(curl, CURLOPT_DEBUGDATA, &config);
+			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+		}
+
+		curl_easy_setopt(curl, CURLOPT_RTSP_REQUEST, CURL_RTSPREQ_DESCRIBE);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT,
+			"LibVLC/2.1.5 (LIVE555 Streaming Media v2014.05.27)");
+		curl_easy_setopt(curl, CURLOPT_URL, ip);
+		curl_easy_setopt(curl, CURLOPT_RTSP_STREAM_URI, ip);
+		curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nWriteCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, buffer);
+		int proxyPort = std::atoi(gProxyPort);
+		if (proxyPort > 0 && proxyPort < 65535) curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxyPort);
+		curl_easy_setopt(curl, CURLOPT_PROXY, gProxyIP);
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, gTimeOut);
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut + 3);
+
+		res = curl_easy_perform(curl);
+
+		int sz = buffer->size();
+
+		curl_easy_cleanup(curl);
+		if (res == CURLE_OK || sz > 0) {
+			if (MapWidgetOpened) stt->doEmitionAddIncData(QString(ip), QString(buffer->c_str()));
+			Activity += sz;
+
+			if (Utils::ustrstr(buffer, "200 ok") != -1) {
+				return 2;
+			}
+			else if (Utils::ustrstr(buffer, "not found") != -1) {
+				return -1;
+			}
+			else if (Utils::ustrstr(buffer, "digest") != -1) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
+		}
+
+		return -1;
+	}
+
+	stt->doEmitionRedFoundData("Curl error.");
+	return -1;
 }
 
 bool portCheck(const char * sDVRIP, int wDVRPort) {
@@ -581,6 +563,9 @@ int Connector::connectToPort(char* ip, int port)
 		//strcpy(tempIp, "ftp://");
 		sprintf(tempIp, "ftp://%s:%d", ip, port);
 	}
+	/*else if (554 == port) {
+		sprintf(tempIp, "rtsp://%s:%d", ip, port);
+	}*/
 	else {
 		//strcpy(tempIp, "http://");
 		sprintf(tempIp, "http://%s:%d", ip, port);

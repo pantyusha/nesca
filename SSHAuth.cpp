@@ -83,19 +83,15 @@ int _sshConnect(const char *user, const char *pass, const char *host, int port) 
     return 0;
 }
 
-int check_ssh_pass(const int rowIndex, const char *user, const char *pass,
+int check_ssh_pass(int rowIndex, const char *user, const char *pass,
                    const char *userPass, const char *host, int port,
                    std::string *buffer, const char *banner) {
     int res = _sshConnect(user, pass, host, port);
 
     if(res == 0)
     {
-		if (rowIndex == -1) {
-			nesca_3::addBARow(QString(host), QString(userPass) + "@" + QString(host), "OK");
-		}
-		else {
-			stt->doEmitionChangeBARow(rowIndex, QString(userPass) + "@" + QString(host), "OK");
-		}
+		rowIndex = Utils::addBARow(QString(host), QString(userPass) + "@" + QString(host), "OK", rowIndex);
+
         buffer->append(userPass);
         buffer->append("@");
         buffer->append(host);
@@ -132,61 +128,29 @@ int SSHBrute(const char* host, int port, std::string *buffer, const char *banner
         strncpy(login, temp, ptr1 - temp);
         strcpy(pass, ptr1 + 1);
 
-		if (BALogSwitched) {
-			if (rowIndex == -1) {
-				rowIndex = nesca_3::addBARow(QString(host) + ":" + QString::number(port),
-					QString(login) + ":" + QString(pass),
-					QString::number((passCounter / (double)(MaxSSHPass)) * 100).mid(0, 4) + "%");
-			}
-			else {
-				stt->doEmitionChangeBARow(rowIndex, QString(login) + ":" + QString(pass),
-					QString::number((passCounter / (double)(MaxSSHPass)) * 100).mid(0, 4) + "%");
-			}
-		}
-		else { rowIndex = -1; }
+		rowIndex = Utils::addBARow(QString(host) + ":" + QString::number(port), QString(login) + ":" + QString(pass), QString::number((passCounter / (double)(MaxSSHPass)) * 100).mid(0, 4) + "%", rowIndex);
 		++passCounter;
 
         res = check_ssh_pass(rowIndex, login, pass, temp, host, port, buffer, banner);
-        //ZeroMemory(login, sizeof(login));
-        //ZeroMemory(pass, sizeof(pass));
-        //ZeroMemory(temp, sizeof(temp));
-		login[0] = 0;
-		pass[0] = 0;
-		temp[0] = 0;
 
         if(res == 0)
         {
 			if (i == 0) {
-				if (rowIndex == -1) {
-					nesca_3::addBARow(QString(host) + ":" + QString::number(port), "--", "FAILHIT");
-				}
-				else {
-					stt->doEmitionChangeBARow(rowIndex, "--", "FAILHIT");
-				}
+				rowIndex = Utils::addBARow(QString(host) + ":" + QString::number(port), "--", "FAILHIT", rowIndex);
 				return -2; //Failhit
 			}
             return 1;
         }
         else if(res == -2)
 		{
-			if (rowIndex == -1) {
-				nesca_3::addBARow(QString(host) + ":" + QString::number(port), "--", "FAIL");
-			}
-			else {
-				stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
-			}
+			rowIndex = Utils::addBARow(QString(host) + ":" + QString::number(port), "--", "FAIL", rowIndex);
             return -2;
         };
 
         Sleep(500);
 	};
 
-	if (rowIndex == -1) {
-		nesca_3::addBARow(QString(host) + ":" + QString::number(port), "--", "FAIL");
-	}
-	else {
-		stt->doEmitionChangeBARow(rowIndex, "--", "FAIL");
-	}
+	rowIndex = Utils::addBARow(QString(host) + ":" + QString::number(port), "--", "FAIL", rowIndex);
     return -1;
 }
 

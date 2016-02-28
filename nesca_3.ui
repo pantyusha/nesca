@@ -960,31 +960,10 @@ color: rgb(214, 214, 0);</string>
         <string>:Default ports</string>
        </property>
       </widget>
-      <widget class="QGraphicsView" name="pbgv">
-       <property name="geometry">
-        <rect>
-         <x>440</x>
-         <y>20</y>
-         <width>26</width>
-         <height>102</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color:rgb(38, 38, 38);
-border: 1px solid rgb(227, 227, 227);
-border-radius: 3px;</string>
-       </property>
-       <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
-       </property>
-       <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
-       </property>
-      </widget>
      </widget>
      <widget class="QWidget" name="tab">
       <attribute name="title">
-       <string>NS-Track</string>
+       <string>Options</string>
       </attribute>
       <widget class="QCheckBox" name="trackerOnOff">
        <property name="geometry">
@@ -1011,7 +990,7 @@ border-radius: 3px;</string>
         <string>Send results to public NescaDatabase</string>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineTrackerScr">
@@ -1213,7 +1192,7 @@ border-radius: 3px;</string>
         <string notr="true">color: rgb(116, 116, 116);background-color: rgb(56, 56, 56);border:none;</string>
        </property>
        <property name="text">
-        <string>2000</string>
+        <string>2</string>
        </property>
        <property name="maxLength">
         <number>5</number>
@@ -3250,10 +3229,39 @@ p, li { white-space: pre-wrap; }
      <string>:Jobs</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="edit_filter_button">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>50</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Small Fonts</family>
+      <pointsize>7</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Edit negatives.txt</string>
+    </property>
+    <property name="whatsThis">
+     <string>IP range distribution</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(216, 216, 216);background-color: rgba(2, 2, 2, 0);border: 1px solid rgba(255, 255, 255, 40);</string>
+    </property>
+    <property name="text">
+     <string>:Edit filter</string>
+    </property>
+   </widget>
    <zorder>widgetJOB</zorder>
    <zorder>widget</zorder>
    <zorder>DataflowModeBut</zorder>
    <zorder>JobModeBut</zorder>
+   <zorder>edit_filter_button</zorder>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

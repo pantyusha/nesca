@@ -248,21 +248,28 @@ bool isNegative(const std::string *buff, const char *ip, int port, const char *c
 		}
 	}
 
-	std::size_t ptr1 = buff->find("\r\n\r\n");
-	if (ptr1 != -1) {
-		int sz = buff->size();
-		int nSz = buff->substr(ptr1, sz).size() - 4;
-		if (nSz < 100) {
-			if (gNegDebugMode)
-			{
-				QTextCodec *nCodec = QTextCodec::codecForName("Windows-1251");
-				stt->doEmitionDebugFoundData("[<a href=\"" + QString(ip) +
-					"/\"><font color=\"#0084ff\">" + QString(ip) +
-					"</font></a>]\tNegative hit: Size:" + QString::number(nSz));
-			}
-			return true;
-		}
-	}
+	//if (buff->size() < 200) {
+	//	if (buff->find("rtsp") == -1) {
+	//		std::size_t ptr1 = buff->find("\r\n\r\n");
+	//		if (ptr1 != -1) {
+	//			int sz = buff->size();
+	//			int nSz = buff->substr(ptr1, sz).size() - 4;
+	//			if (nSz < 100) {
+	//				if (gNegDebugMode)
+	//				{
+	//					QTextCodec *nCodec = QTextCodec::codecForName("Windows-1251");
+	//					stt->doEmitionDebugFoundData("[<a href=\"" + QString(ip) +
+	//						"/\"><font color=\"#0084ff\">" + QString(ip) +
+	//						"</font></a>]\tNegative hit: Size:" + QString::number(nSz));
+	//				}
+
+	//				++filtered;
+	//				return true;
+	//			}
+	//		}
+	//	}
+	//}
+
 	return false;
 }
 int globalSearchPrnt(const std::string *buff)
@@ -391,7 +398,7 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
     if(Utils::ustrstr(buffcpy, "hikvision-webs") != -1
 		|| (
 		(Utils::ustrstr(buffcpy, "hikvision digital") != -1 || Utils::ustrstr(buffcpy, "doc/page/login.asp") != -1)
-		&& Utils::ustrstr(buffcpy, "dvrdvs-webs") != -1 || Utils::ustrstr(buffcpy, "app-webs") != -1)
+		&& Utils::ustrstr(buffcpy, "dvrdvs-webs") != -1 || Utils::ustrstr(buffcpy, "app-webs") != -1 || Utils::ustrstr(buffcpy, "DNVRS-Webs") != -1)
 		|| 
 		(Utils::ustrstr(buffcpy, "lapassword") != -1 
 		&& Utils::ustrstr(buffcpy, "lausername") != -1 
@@ -463,10 +470,12 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 		&& Utils::ustrstr(buffcpy, "login_chk_usr_pwd") != -1
 		)																				return 57; //Network video client (http://203.190.113.54:60001/)
 	if (Utils::ustrstr(buffcpy, "QlikView") != -1)										return 58; //QLikView (http://203.96.113.183/qlikview/login.htm)
-	if (Utils::ustrstr(buffcpy, "RTSP/1.0") != -1)										return 59; //RTSP (http://121.72.55.19:554/ Hisilicon Ipcam)
+	if (Utils::ustrstr(buffcpy, "RTSP/1.") != -1)										return 59; //RTSP (http://121.72.55.19:554/ Hisilicon Ipcam)
 	if (Utils::ustrstr(buffcpy, "ACTi Corporation") != -1)								return 60; //ACTi (http://87.197.30.20/cgi-bin/videoconfiguration.cgi)
 	if (Utils::ustrstr(buffcpy, "airos_logo") != -1)									return 61; //AirOS (http://103.5.73.114/login.cgi?uri=/)
-
+	if (Utils::ustrstr(buffcpy, "NetSuveillanceWebCookie") != -1 && 
+		Utils::ustrstr(buffcpy, "resizeL") != -1)										return 62; //XMSECU (http://121.72.179.76/Login.htm)
+	
 	//if (Utils::ustrstr(buffcpy, "ShareCenter") != -1)									return 58; //ShareCenter (http://49.50.207.6/)
 
 	if (Utils::ustrstr(buffcpy, "nas - ") != -1
@@ -597,12 +606,12 @@ int __checkFileExistence(int flag)
 {
 	char fileName[64] = {0};
 
-	if (flag == -22) sprintf(fileName, "./result_files-%s/" TYPE5 ".html", Utils::getStartDate().c_str());
-	else if (flag == 0 || flag == 15 || flag == -10) sprintf(fileName, "./result_files-%s/" TYPE1 ".html", Utils::getStartDate().c_str());
-	else if (flag == 3) sprintf(fileName, "./result_files-%s/" TYPE2 ".html", Utils::getStartDate().c_str());
-	else if (flag == 16) sprintf(fileName, "./result_files-%s/" TYPE4 ".html", Utils::getStartDate().c_str());
+	if (flag == -22)									sprintf(fileName, "./" DIR_NAME "%s_%s/" TYPE5 ".html", Utils::getStartDate().c_str(), Utils::getCurrentTarget().c_str());
+	else if (flag == 0 || flag == 15 || flag == -10)	sprintf(fileName, "./" DIR_NAME "%s_%s/" TYPE1 ".html", Utils::getStartDate().c_str(), Utils::getCurrentTarget().c_str());
+	else if (flag == 3)									sprintf(fileName, "./" DIR_NAME "%s_%s/" TYPE2 ".html", Utils::getStartDate().c_str(), Utils::getCurrentTarget().c_str());
+	else if (flag == 16)								sprintf(fileName, "./" DIR_NAME "%s_%s/" TYPE4 ".html", Utils::getStartDate().c_str(), Utils::getCurrentTarget().c_str());
 	else if(flag >= 17 || flag == 11 || flag == 12 
-		|| flag == 13 || flag == 14 || flag == 1) sprintf(fileName, "./result_files-%s/" TYPE3 ".html", Utils::getStartDate().c_str());
+		|| flag == 13 || flag == 14 || flag == 1)		sprintf(fileName, "./" DIR_NAME "%s_%s/" TYPE3 ".html", Utils::getStartDate().c_str(), Utils::getCurrentTarget().c_str());
 
 	FILE *f = fopen(fileName, "r");
 	if(f == NULL) return true;
@@ -620,43 +629,38 @@ bool ftsBA = true;
 std::atomic<bool> fOpened(false);
 void fputsf(char *text, int flag)
 {
-    FILE *file = NULL;
-
 	char fileName[256] = { 0 };
 
 	if(flag == 0 || flag == 15 || flag == -10) 
 	{
-		if (ftsCameras) ftsCameras = __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/" TYPE1 ".html", Utils::getStartDate().c_str());
-		file = fopen(fileName, "a");
+		if (ftsCameras) ftsCameras		= __checkFileExistence(flag);
+		sprintf(fileName, "./" DIR_NAME "%s_%s/" TYPE1 ".html", Utils::getStartDate().c_str(), Utils::getCurrentTarget().c_str());
 	}
 	else if(flag == 1) 
 	{
 		if(ftsOther) ftsOther			= __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/" TYPE2 ".html", Utils::getStartDate().c_str());
-		file = fopen(fileName, "a");
+		sprintf(fileName, "./" DIR_NAME "%s_%s/" TYPE2 ".html", Utils::getStartDate().c_str(), Utils::getCurrentTarget().c_str());
 	}
 	else if(flag == -22) 
 	{
 		if(ftsSSH) ftsSSH				= __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/" TYPE5 ".html", Utils::getStartDate().c_str());
-		file = fopen(fileName, "a");
+		sprintf(fileName, "./" DIR_NAME "%s_%s/" TYPE5 ".html", Utils::getStartDate().c_str(), Utils::getCurrentTarget().c_str());
 	}
 	else if(flag == 3) 
 	{
 		if(ftsFTP) ftsFTP				= __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/" TYPE4 ".html", Utils::getStartDate().c_str());
-		file = fopen(fileName, "a");
+		sprintf(fileName, "./" DIR_NAME "%s_%s/" TYPE4 ".html", Utils::getStartDate().c_str(), Utils::getCurrentTarget().c_str());
 	}
 	else if(flag >= 17 || flag == 11 || flag == 12 
 		|| flag == 13 || flag == 14 || flag == 2
 		) 
 	{
 		if(ftsBA) ftsBA					= __checkFileExistence(flag);
-		sprintf(fileName, "./result_files-%s/" TYPE3 ".html", Utils::getStartDate().c_str());
-		file = fopen(fileName, "a");
+		sprintf(fileName, "./" DIR_NAME "%s_%s/" TYPE3 ".html", Utils::getStartDate().c_str(), Utils::getCurrentTarget().c_str());
 	}
 	else stt->doEmitionRedFoundData("Unknown flag [FLAG: " + QString::number(flag) + "]");
+
+	FILE *file = fopen(fileName, "a");
 
 	if(file != NULL)
 	{
@@ -874,7 +878,7 @@ void _specFillerCustom(const char *ip, int port, const char *finalstr, const cha
 
 	if (strlen(login) > 0 || strlen(pass) > 0)
 	{
-		sprintf(log, "<font color=orangered>%s</font>:<span id=\"hostSpan\"><a href=\"%s\"><font color=darkcyan>%s (%s:%s)</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+		sprintf(log, "<font color=orangered>%s</font>: <span id=\"hostSpan\"><a href=\"%s\"><font color=darkcyan>%s (%s:%s)</font></a></span> T: <font color=GoldenRod>%s</font>\n",
 			classString, ip, ip, login, pass, finalstr);
 	}
 
@@ -911,20 +915,20 @@ void _specFillerBA(const char *ip, int port, const char *finalstr, const char *l
 	if (strlen(login) > 0 || strlen(pass) > 0)
     {
 		if (8 == offset) {
-			sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"https://%s:%s@%s\"><font color=floralwhite>%s:%s@%s</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+			sprintf(log, "[BA]: <span id=\"hostSpan\"><a href=\"https://%s:%s@%s\"><font color=floralwhite>%s:%s@%s</font></a></span> T: <font color=GoldenRod>%s</font>\n",
 				login, pass, ip + offset, login, pass, ip + offset, finalstr);
 		}
 		else {
-			sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"http://%s:%s@%s\"><font color=floralwhite>%s:%s@%s</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+			sprintf(log, "[BA]: <span id=\"hostSpan\"><a href=\"http://%s:%s@%s\"><font color=floralwhite>%s:%s@%s</font></a></span> T: <font color=GoldenRod>%s</font>\n",
 				login, pass, ip + offset, login, pass, ip + offset, finalstr);
 		}
     } else {
 		if (8 == offset) {
-			sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"https://%s\"><font color=floralwhite>%s</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+			sprintf(log, "[BA]: <span id=\"hostSpan\"><a href=\"https://%s\"><font color=floralwhite>%s</font></a></span> T: <font color=GoldenRod>%s</font>\n",
 				ip + offset, ip + offset, finalstr);
 		}
 		else {
-			sprintf(log, "[BA]:<span id=\"hostSpan\"><a href=\"http://%s\"><font color=floralwhite>%s</font></a></span> T: <font color=GoldenRod>%s</font>\n",
+			sprintf(log, "[BA]: <span id=\"hostSpan\"><a href=\"http://%s\"><font color=floralwhite>%s</font></a></span> T: <font color=GoldenRod>%s</font>\n",
 				ip + offset, ip + offset, finalstr);
 		}
     }
@@ -942,15 +946,15 @@ void _specFillerRSTP(const char *ip, int port, const char *finalstr, const char 
 
 	if (strlen(login) > 0 || strlen(pass) > 0)
 	{
-			sprintf(log, "[RSTP]:<span id=\"hostSpan\"><font color=\"#FF69B4\">%s:%d (%s:%s)</font></span> T: <font color=#F0E68C>%s</font>\n",
-				ip, port, login, pass, finalstr);
+			sprintf(log, "[RSTP]: <span id=\"hostSpan\"><a href=\"%s11\"><font color=\"#736AFF\">%s11 (%s:%s)</font></a></span> T: <font color=#F0E68C>%s</font>\n",
+				ip, ip, login, pass, finalstr);
 	}
 	else {
-			sprintf(log, "[RSTP]:<span id=\"hostSpan\"><font color=\"#FF69B4\">%s:%d</font></span> T: <font color=#F0E68C>%s</font>\n",
-				ip, port, finalstr);
+			sprintf(log, "[RSTP]: <span id=\"hostSpan\"><a href=\"%s11\"><font color=\"#736AFF\">%s11</font></a></span> T: <font color=#F0E68C>%s</font>\n",
+				ip, ip, finalstr);
 	}
 
-	stt->doEmitionFoundDataCustom(QString::fromLocal8Bit(log), "FF69B4");
+	stt->doEmitionFoundDataCustom(QString::fromLocal8Bit(log), "3090C7");
 
 	fputsf(log, flag);
 }
@@ -1384,10 +1388,12 @@ int _specRTSPBrute(const char *ip, int port,
 		return -1;
 	}
 
-	if (strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0)
+	if (strstr(lps.login, "UNKNOWN") == NULL)
 	{
-		_specFillerRSTP(ip, port, finalstr, lps.login, lps.pass, flag);
-		fillGlobalLogData(ip, port, std::to_string(size).c_str(), finalstr, lps.login, lps.pass, "", cp, "RTSP");
+		char title[512] = { 0 };
+		sprintf(title, "%s %s", lps.other, finalstr);
+		_specFillerRSTP(ip, port, title, lps.login, lps.pass, flag);
+		//fillGlobalLogData(ip, port, std::to_string(size).c_str(), finalstr, lps.login, lps.pass, "", cp, "RTSP");
 	};
 }
 
@@ -2677,7 +2683,7 @@ std::string equivRedirectHandler(std::string *buff, char* ip, int port, Lexems *
 
 		int portPos = location.find(":", 7);
 		if (-1 != portPos) {
-			int portPosEnd = location.find("/ \n>\"'", portPos);
+			int portPosEnd = location.find_first_of("/ \n>\"'", portPos);
 			if (-1 != portPosEnd) {
 				newPort = std::stoi(location.substr(portPos + 1, portPosEnd));
 				if (gDebugMode) {
@@ -2898,6 +2904,9 @@ std::string getHeader(const std::string *buffcpy, const int flag) {
 			return "[IOmega NAS]";
 		}
 	}
+	else if (STRSTR(buffcpy, "x-rtsp-tunnelled") != -1 || STRSTR(buffcpy, "rtsp://") != -1) {
+		return "[RTSP]";
+	}
 	else {
 		std::string tempBuff = buffcpy->c_str();
 		const std::string &result_ref = getTitle(tempBuff.c_str(), flag);
@@ -3013,7 +3022,7 @@ void parseFlag(int flag, char* ip, char *ipRaw, int port, std::string *buff, con
 				HikVis::hikCounter = 0;
 				HikVis::hikPart++;
 			}
-			sprintf(fileName, "./result_files-%s/hikkafile_%s_part_%d.csv", date, date, HikVis::hikPart);
+			sprintf(fileName, "./" DIR_NAME "%s_%s/hikkafile_%s_part_%d.csv", date, Utils::getCurrentTarget().c_str(), date, HikVis::hikPart);
 			FILE *f = fopen(fileName, "a");
 			if (f != NULL) {
 				char string[1024] = { 0 };
@@ -3047,8 +3056,8 @@ void parseFlag(int flag, char* ip, char *ipRaw, int port, std::string *buff, con
 				HikVis::rviCounter = 0;
 				HikVis::rviPart++;
 			}
-			sprintf(fileName, "./result_files-%s/rvifile_%s(%s)_part_%d.xml", 
-				date, date, Utils::getStartTime().c_str(), HikVis::rviPart);
+			sprintf(fileName, "./" DIR_NAME "%s_%s/rvifile_%s(%s)_part_%d.xml", 
+				date, Utils::getCurrentTarget().c_str(), date, Utils::getStartTime().c_str(), HikVis::rviPart);
 
 			char string[1024] = { 0 };
 			FILE *fc = fopen(fileName, "r");
@@ -3132,8 +3141,15 @@ void parseFlag(int flag, char* ip, char *ipRaw, int port, std::string *buff, con
 	}
 	else if (flag == 34) //Hikvision ip cam
 	{
-		if (_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "[DIGEST]", cp, size) == -1){
-			_specBrute(ip, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/HIK/userCheck", "[DIGEST]", cp, size);
+		char ipNew[256] = { 0 };
+		if (strstri(ip, "https://") != NULL) {
+			sprintf(ipNew, "https://%s", ipRaw);
+		}
+		else {
+			sprintf(ipNew, "http://%s", ipRaw);
+		}
+		if (_specBrute(ipNew, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/SelfExt/userCheck", "[DIGEST]", cp, size) == -1){
+			_specBrute(ipNew, port, "[Hikvision] IP Camera", flag, "/PSIA/Custom/HIK/userCheck", "[DIGEST]", cp, size);
 		}
 	}
 	else if (flag == 35) //EasyCam
@@ -3269,11 +3285,9 @@ void parseFlag(int flag, char* ip, char *ipRaw, int port, std::string *buff, con
 	}
 	else if (flag == 59) //RTSP
 	{
-		//char newIP[128] = {0};
-		//strcpy(newIP, "rtsp://");
-		//strncat(newIP, ipRaw, 96);
-		//strcat(newIP, "/");
-		_specRTSPBrute(ipRaw, port, header.c_str(), flag, "RTSP", cp, size);
+		char newIP[128] = {0};
+		sprintf(newIP, "rtsp://%s:%d/", ipRaw, port);
+		_specRTSPBrute(newIP, port, header.c_str(), flag, "RTSP", cp, size);
 	}
 	else if (flag == 60) //ACTi
 	{
@@ -3283,7 +3297,11 @@ void parseFlag(int flag, char* ip, char *ipRaw, int port, std::string *buff, con
 	{
 		_specWEBIPCAMBrute(ip, port, "[AirOS] WEB IP Camera", flag, "WEB Authorization", cp, size, "AirOS", &cookie);
 	}
-
+	else if (flag == 62) //XMSECU
+	{
+		_specWEBIPCAMBrute(ip, port, "[XMSECU] WEB IP Camera", flag, "WEB Authorization", cp, size, "XMSECU", &cookie);
+	}
+	
 	else if (flag == 20) //AXIS Camera
 	{
 		if (_specBrute(ip, port, "AXIS Camera", flag, "/mjpg/video.mjpg", "Basic Authorization", cp, size) == -1) {
@@ -3359,19 +3377,26 @@ std::string handleRedirects(std::string *buffcpy, char* ip, int port) {
 	counter.iterationCount = 0;
 	std::string location = std::string(ip);
 	const std::string &locationEquiv = equivRedirectHandler(buffcpy, ip, port, &counter);
-	location += locationEquiv;
+	if (locationEquiv.find("http") == 0) {
+		location = locationEquiv;
+	}
+	else {
+		location += locationEquiv;
+	}
 
 	counter.iterationCount = 0;
 	if (Utils::ustrstr((const std::string *) buffcpy, "<frameset ") == -1) {
 		const std::string &locationJS = jsRedirectHandler(buffcpy, ip, port, &counter);
-		if (Utils::ustrstr(location, "http") != -1) {
-			location = locationJS;
-		}
-		else {
-			location += locationJS;
+		if (locationJS.size() > 0) {
+			if (Utils::ustrstr(location, "http") != -1) {
+				location = locationJS;
+			}
+			else {
+				location += locationJS;
+			}
 		}
 	};
-
+	
 	return location;
 }
 int handleFramesets(std::string *buffcpyOrig, char* ip, char* ipRaw, int port, int flag, char *cp) {
@@ -3452,7 +3477,15 @@ int handleFramesets(std::string *buffcpyOrig, char* ip, char* ipRaw, int port, i
 			newPort = port;
 			int portPos = location.find(":", 8);
 			if (-1 != portPos) {
-				newPort = std::stoi(location.substr(portPos + 1));
+				int secPos = location.find("/", 8);
+				if (-1 != secPos) {
+					if (portPos < secPos) {
+						newPort = std::stoi(location.substr(portPos + 1, secPos - portPos - 1));
+					}
+				}
+				else {
+					newPort = std::stoi(location.substr(portPos + 1));
+				}
 			}
 			newIP = location;
 		}
@@ -3463,7 +3496,15 @@ int handleFramesets(std::string *buffcpyOrig, char* ip, char* ipRaw, int port, i
 			newPort = 443;
 			int portPos = location.find(":", 8);
 			if (-1 != portPos) {
-				newPort = std::stoi(location.substr(portPos + 1));
+				int secPos = location.find("/", 8);
+				if (-1 != secPos) {
+					if (portPos < secPos) {
+						newPort = std::stoi(location.substr(portPos + 1, secPos - portPos - 1));
+					}
+				}
+				else {
+					newPort = std::stoi(location.substr(portPos + 1));
+				}
 			}
 			newIP = location;
 		}
@@ -3471,7 +3512,7 @@ int handleFramesets(std::string *buffcpyOrig, char* ip, char* ipRaw, int port, i
 			newIP += location;
 		}
 	}
-	stt->doEmitionYellowFoundData("Location: " + QString(newIP.c_str()) + "; Port: " + QString::number(newPort));
+	//stt->doEmitionYellowFoundData("Location: " + QString(newIP.c_str()) + "; Port: " + QString::number(newPort));
 	parseFlag(flag, (char*)newIP.c_str(), ipRaw, newPort, buffcpyOrig, header, cp);
 	return flag;
 }

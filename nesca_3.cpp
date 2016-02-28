@@ -35,6 +35,7 @@
 #include <QLabel.h>
 #include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qheaderview.h>
+#include <qclipboard.h>
 
 
 NET_DVR_Init hik_init_ptr = NULL;
@@ -63,7 +64,7 @@ int globalPinger = 0;
 int nesca_3::savedTabIndex = 0;
 
 bool startFlag = false;
-bool trackerOK = true;
+bool trackerOK = false;
 char trcPort[32] = {0};
 char trcSrvPortLine[32] = {0};
 char trcProxy[128] = {0};
@@ -84,7 +85,6 @@ CheckKey_Th *chKTh = new CheckKey_Th();
 ActivityDrawerTh_HorNet *adtHN = new ActivityDrawerTh_HorNet();
 DrawerTh_VoiceScanner *vsTh = new DrawerTh_VoiceScanner();
 PieStat *psTh = new PieStat();
-ProgressbarDrawer *pbTh = new ProgressbarDrawer();
 
 bool MapWidgetOpened = false;
 bool globalScanFlag;
@@ -97,7 +97,6 @@ QGraphicsScene *sceneActivity;
 QGraphicsScene *sceneActivityGrid;
 QGraphicsScene *sceneTextPlacer;
 QGraphicsScene *sceneVoice;
-QGraphicsScene *pbScene;
 QGraphicsScene *jobRangeVisualScene;
 
 QString importFileName = "";
@@ -407,7 +406,6 @@ void setSceneArea()
 	sceneActivityGrid = new QGraphicsScene();
 	sceneTextPlacer = new QGraphicsScene();
 	sceneVoice = new QGraphicsScene();
-	pbScene = new QGraphicsScene();
 	jobRangeVisualScene = new QGraphicsScene();
 
 	ui->graphicLog->setScene(sceneGrid);
@@ -418,7 +416,6 @@ void setSceneArea()
 	ui->graphicActivityGrid->setScene(sceneActivityGrid);
 	ui->graphicTextPlacer->setScene(sceneTextPlacer);
 	ui->graphicsVoice->setScene(sceneVoice);
-	ui->pbgv->setScene(pbScene);
 	ui->jobRangeVisual->setScene(jobRangeVisualScene);
 	
 	ui->graphicLog->setSceneRect(0, 0, ui->graphicLog->width(), ui->graphicLog->height());
@@ -429,7 +426,6 @@ void setSceneArea()
 	ui->graphicActivityGrid->setSceneRect(0, 0, ui->graphicActivityGrid->width(), ui->graphicActivityGrid->height());
 	ui->graphicTextPlacer->setSceneRect(0, 0, ui->graphicTextPlacer->width(), ui->graphicTextPlacer->height());
 	ui->graphicsVoice->setSceneRect(0, 0, ui->graphicsVoice->width(), ui->graphicsVoice->height());
-	ui->pbgv->setSceneRect(0, 0, ui->pbgv->width(), ui->pbgv->height());
 	ui->jobRangeVisual->setSceneRect(0, 0, ui->jobRangeVisual->width(), ui->jobRangeVisual->height());
 
 
@@ -1407,11 +1403,13 @@ void nesca_3::switchToJobMode()
 	};
 }
 
-#include <qclipboard.h>
 void copyToClipboardLocation() {
 	ui->currentDirectoryLine->selectAll();
 	QClipboard *c = QApplication::clipboard();
-	c->setText(ui->currentDirectoryLine->text());
+	QString dir = ui->currentDirectoryLine->text();
+	c->setText(dir);
+
+	QDesktopServices::openUrl(QUrl::fromLocalFile(dir));
 }
 bool nesca_3::eventFilter(QObject* obj, QEvent *event)
 {
@@ -2061,60 +2059,6 @@ void nesca_3::slotRestoreDefPorts()
 	else if (ci == 2) ui->importPortLine->setText(PORTSET);
 }
 
-QGraphicsTextItem *textItem = NULL;
-QGraphicsRectItem* pbItem = NULL;
-QGraphicsRectItem* pbBlackRectItem = NULL;
-QPen pbPen(QColor(227, 227, 227, 150));
-QFont pbPointerFont;
-void nesca_3::slotPBUpdate()
-{
-	int val = this->perc;
-	if(textItem != NULL)
-	{
-		delete textItem;
-		textItem = NULL;
-	};
-	if(pbItem != NULL)
-	{
-		delete pbItem;
-		pbItem = NULL;
-	};
-	if(pbBlackRectItem != NULL)
-	{
-		delete pbBlackRectItem;
-		pbBlackRectItem = NULL;
-	};
-	pbScene->clear();
-	QLinearGradient grad1(0, 0, 0, 110);
-
-	if(val < 33) grad1.setColorAt(0.1, QColor(207, 0, 0));
-	else if( val < 66 ) grad1.setColorAt(0.1, QColor(247, 244, 0));
-	else if( val < 99 ) grad1.setColorAt(0.1, QColor(0, 207, 0));
-
-	QLinearGradient gradBlack(0, 0, 0, 110);
-	gradBlack.setColorAt(0.1, QColor(0, 0, 0));
-	pbBlackRectItem = new QGraphicsRectItem(0,0,5,99);
-	pbBlackRectItem->setBrush(gradBlack);
-	pbScene->addItem(pbBlackRectItem);
-
-	pbItem = new QGraphicsRectItem(0,0,5,val);
-	pbItem->setBrush(grad1);
-	pbScene->addItem(pbItem);
-	
-	textItem = pbScene->addText("- " + QString::number(val) + "%", pbPointerFont);
-	textItem->setX(2);
-	textItem->setY(val - 10);
-	textItem->setDefaultTextColor(QColor(255, 255, 255, 180));
-
-	pbScene->addLine(4, 11, 6, 11, pbPen);
-	pbScene->addLine(4, 22, 6, 22, pbPen);
-	pbScene->addLine(0, 33, 8, 33, pbPen);
-	pbScene->addLine(4, 44, 6, 44, pbPen);
-	pbScene->addLine(4, 55, 6, 55, pbPen);
-	pbScene->addLine(0, 66, 8, 66, pbPen);
-	pbScene->addLine(4, 77, 6, 77, pbPen);
-	pbScene->addLine(4, 88, 6, 88, pbPen);
-}
 void nesca_3::changeNSTrackLabel(bool status)
 {
 	if(status) ui->NSTrackStatusLabel->setStyleSheet("background-color: green; border: 1px solid white;");
@@ -2150,6 +2094,8 @@ void nesca_3::onLinkClicked(QUrl link)
 		pekoWidget->show();
 	}
 	else {
+		QClipboard *c = QApplication::clipboard();
+		c->setText(lnk);
 		QDesktopServices::openUrl(link);
 	}
 }
@@ -2217,11 +2163,11 @@ int nesca_3::addBARow(QString ip, QString loginPass, QString percentage) {
 			BAModel->item(index, 1)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
 			BAModel->item(index, 2)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
 		}
+
 		return index;
 	}
-	else {
-		return 0;
-	}
+	
+	return 0;
 }
 void nesca_3::slotChangeBARow(int rowIndex, QString loginPass, QString percentage) {
 	QModelIndex index = BAModel->index(rowIndex, 1, QModelIndex());
@@ -2230,29 +2176,51 @@ void nesca_3::slotChangeBARow(int rowIndex, QString loginPass, QString percentag
 	BAModel->setData(index, percentage);
 
 	if (percentage.compare("OK") == 0) {
-		BAModel->setData(BAModel->index(rowIndex, 0), QBrush(QColor(Qt::green).darker(160)), Qt::BackgroundRole);
-		BAModel->setData(BAModel->index(rowIndex, 1), QBrush(QColor(Qt::green).darker(160)), Qt::BackgroundRole);
-		BAModel->setData(BAModel->index(rowIndex, 2), QBrush(QColor(Qt::green).darker(160)), Qt::BackgroundRole);
+		QBrush qbRow = QBrush(QColor(Qt::green).darker(160));
+		QBrush qbText = QBrush(QColor(Qt::black).darker(160));
 
-		BAModel->item(rowIndex, 0)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
-		BAModel->item(rowIndex, 1)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
-		BAModel->item(rowIndex, 2)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
+		BAModel->setData(BAModel->index(rowIndex, 0), qbRow, Qt::BackgroundRole);
+		BAModel->setData(BAModel->index(rowIndex, 1), qbRow, Qt::BackgroundRole);
+		BAModel->setData(BAModel->index(rowIndex, 2), qbRow, Qt::BackgroundRole);
+
+		BAModel->item(rowIndex, 0)->setData(qbText, Qt::ForegroundRole);
+		BAModel->item(rowIndex, 1)->setData(qbText, Qt::ForegroundRole);
+		BAModel->item(rowIndex, 2)->setData(qbText, Qt::ForegroundRole);
 	}
 	else if (percentage.contains("FAIL") || percentage.contains("404")) {
-		BAModel->setData(BAModel->index(rowIndex, 0), QBrush(QColor(Qt::red).darker(160)), Qt::BackgroundRole);
-		BAModel->setData(BAModel->index(rowIndex, 1), QBrush(QColor(Qt::red).darker(160)), Qt::BackgroundRole);
-		BAModel->setData(BAModel->index(rowIndex, 2), QBrush(QColor(Qt::red).darker(160)), Qt::BackgroundRole);
+		QBrush qbRow = QBrush(QColor(Qt::red).darker(160));
+		QBrush qbText = QBrush(QColor(Qt::black).darker(160));
 
-		BAModel->item(rowIndex, 0)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
-		BAModel->item(rowIndex, 1)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
-		BAModel->item(rowIndex, 2)->setData(QBrush(QColor(Qt::black).darker(160)), Qt::ForegroundRole);
+		BAModel->setData(BAModel->index(rowIndex, 0), qbRow, Qt::BackgroundRole);
+		BAModel->setData(BAModel->index(rowIndex, 1), qbRow, Qt::BackgroundRole);
+		BAModel->setData(BAModel->index(rowIndex, 2), qbRow, Qt::BackgroundRole);
+
+		BAModel->item(rowIndex, 0)->setData(qbText, Qt::ForegroundRole);
+		BAModel->item(rowIndex, 1)->setData(qbText, Qt::ForegroundRole);
+		BAModel->item(rowIndex, 2)->setData(qbText, Qt::ForegroundRole);
 	}
+	else if (percentage.contains("TIMEOUT") || percentage.contains("404")) {
+		QBrush qbRow = QBrush(QColor(Qt::black).darker(160));
+		QBrush qbText = QBrush(QColor(Qt::white).darker(160));
+
+		BAModel->setData(BAModel->index(rowIndex, 0), qbRow, Qt::BackgroundRole);
+		BAModel->setData(BAModel->index(rowIndex, 1), qbRow, Qt::BackgroundRole);
+		BAModel->setData(BAModel->index(rowIndex, 2), qbRow, Qt::BackgroundRole);
+
+		BAModel->item(rowIndex, 0)->setData(qbText, Qt::ForegroundRole);
+		BAModel->item(rowIndex, 1)->setData(qbText, Qt::ForegroundRole);
+		BAModel->item(rowIndex, 2)->setData(qbText, Qt::ForegroundRole);
+	}
+}
+void nesca_3::slotEditFilter() {
+	QDesktopServices::openUrl(QUrl::fromLocalFile("file:///" + ui->currentDirectoryLine->text() + "\\pwd_lists\\negatives.txt"));
 }
 
 void nesca_3::ConnectEvrthng()
 {
+	connect(ui->edit_filter_button, SIGNAL(clicked()), this, SLOT(slotEditFilter()));
+
 	connect(stt, SIGNAL(signalBlockButton(bool)), this, SLOT(slotBlockButtons(bool)));
-	connect(pbTh, SIGNAL(upd()), this, SLOT(slotPBUpdate()));
 	connect ( ui->secretMessageBut_1, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
 	connect ( ui->secretMessageBut_2, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
 	connect ( ui->secretMessageBut_3, SIGNAL( clicked() ), this, SLOT( smReaction() ) );
@@ -3011,7 +2979,6 @@ void nesca_3::ImportScanSeq()
 		stt->start();
 
 		startFlag = true;
-		pbTh->start();
 		ui->importButton->setText("Stop");
 		ui->importButton->setStyleSheet(
 			" #importButton {"
@@ -3366,9 +3333,11 @@ nesca_3::nesca_3(bool isWM, QWidget *parent = 0) : QMainWindow(parent)
 	Utils::saveStartDate();
 	Utils::saveStartTime();
 
-	char buffer[MAX_PATH] = { 0 };
+	/*char buffer[MAX_PATH] = { 0 };
 	GetCurrentDir(buffer, MAX_PATH);
-	ui->currentDirectoryLine->setText(QString::fromLocal8Bit(string(buffer).c_str()));
+	ui->currentDirectoryLine->setText(QString::fromLocal8Bit(string(buffer).c_str()));*/
+	QString path = QDir::toNativeSeparators(QApplication::applicationDirPath());
+	ui->currentDirectoryLine->setText(path);
 	
 	BAModel = new QStandardItemModel();
 	ui->BATableView->setModel(BAModel);

@@ -562,6 +562,7 @@ int Connector::connectToPort(char* ip, int port)
 	else if (21 == port) {
 		//strcpy(tempIp, "ftp://");
 		sprintf(tempIp, "ftp://%s:%d", ip, port);
+		//sprintf(tempIp, "%s", ip);
 	}
 	/*else if (554 == port) {
 		sprintf(tempIp, "rtsp://%s:%d", ip, port);
@@ -574,6 +575,7 @@ int Connector::connectToPort(char* ip, int port)
 
 	if (port != 37777 && port != 8000 && port != 34567 && port != 9000){
 		if (port == 22) size = SSHAuth::SSHLobby(ip, port, &buffer);			//SSH
+		else if (21 == port) size = nConnect(ip, port, &buffer);
 		else size = nConnect(tempIp, port, &buffer);
 
 		if (size > 0)

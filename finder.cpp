@@ -2964,17 +2964,16 @@ void parseFlag(int flag, char* ip, char *ipRaw, int port, std::string *buff, con
 		{
 			++PieBA;
 
-			sprintf(log, "[FTP]:<font color=\"#0f62e2\">%s:%d</font>; Received: %d<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a>%s (F:%d)",
-				ip, port, size, lps.login, lps.pass, ip, lps.login, lps.pass, ip, ps.headr, ps.directoryCount);
-			sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> (F:%d)",
-				lps.login, lps.pass, ip, lps.login, lps.pass, ip, ps.directoryCount);
+			sprintf(log, "[FTP]:<font color=\"#0f62e2\">%s</font>; Received: %d<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a>%s (F:%d)",
+				ip, size, lps.login, lps.pass, ipRaw, lps.login, lps.pass, ipRaw, ps.headr, ps.directoryCount);
+			sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> (F:%d)",
+				lps.login, lps.pass, ipRaw, lps.login, lps.pass, ipRaw, ps.directoryCount);
 
 			fputsf(log, flag);
 
 			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "NULL", cp, "FTP");
 
 			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
-
 		}
 		else if (strstr(lps.other, "ROUTER") != NULL)
 		{
@@ -2998,6 +2997,8 @@ void parseFlag(int flag, char* ip, char *ipRaw, int port, std::string *buff, con
 
 			stt->doEmitionFoundData(QString::fromLocal8Bit(log));
 		};
+
+		return;
 	}
 
 	const std::string &cookieRef = Utils::getHeaderValue(buff, "Set-Cookie: ", "Cookie: ");

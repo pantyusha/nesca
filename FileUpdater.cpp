@@ -393,6 +393,7 @@ long getFileSize(const char *fileName) {
 }
 
 void updateList(const char *fileName, long *szPtr, void *funcPtr(void)) {
+	if (!globalScanFlag) return;
     long sz = getFileSize(fileName);
 
     if(sz != *szPtr) {
@@ -408,7 +409,7 @@ void updateList(const char *fileName, long *szPtr, void *funcPtr(void)) {
 void FileUpdater::updateLists() {
 	running = true;
     while(globalScanFlag) {
-        Sleep(1000);
+        Sleep(30000);
         if(!globalScanFlag) break;
         loadOnce();
     }

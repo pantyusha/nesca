@@ -2965,7 +2965,7 @@ void parseFlag(int flag, char* ip, char *ipRaw, int port, std::string *buff, con
 			{
 				++PieBA;
 
-				sprintf(log, "<div id=\"hostspan\"><font color=\"#0f62e2\">%s</font></div><div id=\"hostspan2\"> Size: %d</div><a href=\"ftp://%s:%s@%s/\"><div id=\"hostspan3\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a>%s (F:%d)</div>",
+				sprintf(log, "<div id=\"hostspan\"><font color=\"#0f62e2\">%s</font></div><div id=\"hostspan2\"> Size: %d</div><a href=\"ftp://%s:%s@%s/\"><div id=\"hostspan3\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a>%s </div>(F:%d)",
 					ip, size, lps.login, lps.pass, ipRaw, lps.login, lps.pass, ipRaw, ps.headr, ps.directoryCount);
 				sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> (F:%d)",
 					lps.login, lps.pass, ipRaw, lps.login, lps.pass, ipRaw, ps.directoryCount);

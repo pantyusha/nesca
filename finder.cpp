@@ -2960,43 +2960,45 @@ void parseFlag(int flag, char* ip, char *ipRaw, int port, std::string *buff, con
 
 		const lopaStr &lps = FTPA::FTPLobby(ip, port, &ps);
 
-		if (strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0)
-		{
-			++PieBA;
+		if (0 != ps.directoryCount) {
+			if (strstr(lps.login, "UNKNOWN") == NULL && strlen(lps.other) == 0)
+			{
+				++PieBA;
 
-			sprintf(log, "[FTP]:<font color=\"#0f62e2\">%s</font>; Received: %d<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a>%s (F:%d)",
-				ip, size, lps.login, lps.pass, ipRaw, lps.login, lps.pass, ipRaw, ps.headr, ps.directoryCount);
-			sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> (F:%d)",
-				lps.login, lps.pass, ipRaw, lps.login, lps.pass, ipRaw, ps.directoryCount);
+				sprintf(log, "<div id=\"hostspan\"><font color=\"#0f62e2\">%s</font></div><div id=\"hostspan2\"> Size: %d</div><a href=\"ftp://%s:%s@%s/\"><div id=\"hostspan3\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a>%s (F:%d)</div>",
+					ip, size, lps.login, lps.pass, ipRaw, lps.login, lps.pass, ipRaw, ps.headr, ps.directoryCount);
+				sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> (F:%d)",
+					lps.login, lps.pass, ipRaw, lps.login, lps.pass, ipRaw, ps.directoryCount);
 
-			fputsf(log, flag);
+				fputsf(log, flag);
 
-			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "NULL", cp, "FTP");
+				fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "NULL", cp, "FTP");
 
-			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
+				stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
+			}
+			else if (strstr(lps.other, "ROUTER") != NULL)
+			{
+				++PieBA;
+
+				sprintf(log, "<div id=\"hostspan\"><font color=\"#0f62e2\">%s:%d</font></div><div id=\"hostspan2\"> Size: %d</div><a href=\"ftp://%s:%s@%s/\"><div id=\"hostspan3\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></div></a> <font color=\"#43EC00\"><a href=\"%s\" style=\"color:#43EC00;\">[ROUTER]</a></font>%s",
+					ip, port, size, lps.login, lps.pass, ip, lps.login, lps.pass, ip, ip, ps.headr);
+				sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> <font color=\"#43EC00\"><a href=\"%s/\" style=\"color:#43EC00;\">[ROUTER]</a></font>",
+					lps.login, lps.pass, ip, lps.login, lps.pass, ip, ip);
+
+				fputsf(log, flag);
+
+				fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "Router FTP.", cp, "FTP");
+
+				stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
+			}
+			else if (strstr(lps.login, "Unknown protocol") != NULL)
+			{
+				strcat(log, "; [!] USER/PASS commands failed. Dunno what to do.");
+				fputsf(log, flag);
+
+				stt->doEmitionFoundData(QString::fromLocal8Bit(log));
+			};
 		}
-		else if (strstr(lps.other, "ROUTER") != NULL)
-		{
-			++PieBA;
-
-			sprintf(log, "[FTP]:<font color=\"#0f62e2\">%s:%d</font>; Received: %d<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> <font color=\"#43EC00\"><a href=\"%s\" style=\"color:#43EC00;\">[ROUTER]</a></font>%s",
-				ip, port, size, lps.login, lps.pass, ip, lps.login, lps.pass, ip, ip, ps.headr);
-			sprintf(logEmit, "[FTP]:<a href=\"ftp://%s:%s@%s/\"><span style=\"color: #ff6600;\">ftp://%s:%s@%s</span></a> <font color=\"#43EC00\"><a href=\"%s/\" style=\"color:#43EC00;\">[ROUTER]</a></font>",
-				lps.login, lps.pass, ip, lps.login, lps.pass, ip, ip);
-
-			fputsf(log, flag);
-
-			fillGlobalLogData(ip, port, std::to_string(size).c_str(), "[FTP service]", lps.login, lps.pass, "Router FTP.", cp, "FTP");
-
-			stt->doEmitionFoundData(QString::fromLocal8Bit(logEmit));
-		}
-		else if (strstr(lps.login, "Unknown protocol") != NULL)
-		{
-			strcat(log, "; [!] USER/PASS commands failed. Dunno what to do.");
-			fputsf(log, flag);
-
-			stt->doEmitionFoundData(QString::fromLocal8Bit(log));
-		};
 
 		return;
 	}

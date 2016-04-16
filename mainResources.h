@@ -106,7 +106,9 @@ typedef int					BOOL;
 #define NEGATIVE_FN PWD_LIST_FOLDER "negatives.txt"
 
 #define HTTP_FILE_STYLE "<style> #recvSpan{display: inline-block;width: 150px;} \
-	#hostSpan{display: inline-block;width: 200px;} \
+	#hostSpan{display: inline-block;width: 300px;} \
+	#hostSpan2{display: inline-block;width: 130px;} 	\
+	#hostSpan3{ display: inline-block; width: 210px; } \
 	body { background-color: #141414; font-family: monospace; font-size:95%;} \
 	#ipd{background:black;width:100%;white-space:nowrap;overflow-x:none;display:inline-block;} \
 	#ipd:hover{color: #909090;background:#202020;} \

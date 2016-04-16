@@ -45,10 +45,26 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 				return lps;
 			}
 			else if (res != -1) {
-				if (!globalScanFlag) return lps;
-                strcpy(lps.login, login);
-                strcpy(lps.pass, pass);
+				if (buffer.find("syslog") != -1 || buffer.find("CFG-PAGE") != -1) {
+					if (gNegDebugMode) {
+						stt->doEmitionDebugFoundData("Ignoring " + QString(ip) + " (syslog or CFG-PAGE)");
+					}
+					return lps;
+				}
 				ps->directoryCount = std::count(buffer.begin(), buffer.end(), '\n');
+
+				if (3 == ps->directoryCount) {
+					if (-1 != buffer.find("pub") || -1 != buffer.find("incoming")) {
+						if (gNegDebugMode) {
+							stt->doEmitionDebugFoundData("Ignoring " + QString(ip) + " (pub or incoming)");
+						}
+						return lps;
+					}
+				}
+
+				if (!globalScanFlag) return lps;
+				strcpy(lps.login, login);
+				strcpy(lps.pass, pass);
 
 				rowIndex = Utils::addBARow(QString(ip), QString(login) + ":" + QString(pass), "OK", rowIndex);
 				

@@ -1404,10 +1404,10 @@ void nesca_3::switchToJobMode()
 }
 
 void copyToClipboardLocation() {
-	ui->currentDirectoryLine->selectAll();
-	QClipboard *c = QApplication::clipboard();
+	//ui->currentDirectoryLine->selectAll();
+	//QClipboard *c = QApplication::clipboard();
 	QString dir = ui->currentDirectoryLine->text();
-	c->setText(dir);
+	//c->setText(dir);
 
 	QDesktopServices::openUrl(QUrl::fromLocalFile(dir));
 }

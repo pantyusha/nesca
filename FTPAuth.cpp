@@ -51,9 +51,17 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 					}
 					return lps;
 				}
+				int rootDir = std::count(buffer.begin(), buffer.end(), '.');
 				ps->directoryCount = std::count(buffer.begin(), buffer.end(), '\n');
 
-				if (3 == ps->directoryCount) {
+				if (3 == rootDir && 2 == ps->directoryCount) {
+					if (gNegDebugMode) {
+						stt->doEmitionDebugFoundData("Ignoring " + QString(ip) + " (empty)");
+					}
+					return lps;	
+				}
+
+				if (3 == ps->directoryCount || 1 == ps->directoryCount) {
 					if (-1 != buffer.find("pub") || -1 != buffer.find("incoming")) {
 						if (gNegDebugMode) {
 							stt->doEmitionDebugFoundData("Ignoring " + QString(ip) + " (pub or incoming)");

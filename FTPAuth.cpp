@@ -45,9 +45,12 @@ lopaStr FTPA::FTPBrute(const char *ip, const int port, PathStr *ps) {
 				return lps;
 			}
 			else if (res != -1) {
-				if (buffer.find("syslog") != -1 || buffer.find("CFG-PAGE") != -1) {
+				if (buffer.find("syslog") != -1 || buffer.find("CFG-PAGE") != -1
+					|| buffer.find("L3_default") != -1
+					|| buffer.find("avpport") != -1
+					) {
 					if (gNegDebugMode) {
-						stt->doEmitionDebugFoundData("Ignoring " + QString(ip) + " (syslog or CFG-PAGE)");
+						stt->doEmitionDebugFoundData("Ignoring " + QString(ip) + " (syslog or CFG-PAGE or L3_default or avpport)");
 					}
 					return lps;
 				}

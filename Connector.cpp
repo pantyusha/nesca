@@ -241,7 +241,7 @@ int pConnect(const char* ip, const int port, std::string *buffer,
 			if (res == 6) return -2;
 			else if (res != 13 &&
 				res != 67 &&
-				res != 52 &&
+				res != CURLE_GOT_NOTHING &&
 				res != 56 &&
 				res != 35 &&
 				res != 19 &&

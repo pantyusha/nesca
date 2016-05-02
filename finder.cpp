@@ -482,9 +482,9 @@ int sharedDetector(const char * ip, int port, const std::string *buffcpy, const 
 		&& Utils::ustrstr(buffcpy, "login.html?pg=index.html") != -1)					return 1; //https NAS (https://90.224.187.151/)
 
     if(((Utils::ustrstr(buffcpy, "220") != -1) && (port == 21)) ||
-        (Utils::ustrstr(buffcpy, "220 diskStation ftp server ready") != -1) ||
-        (Utils::ustrstr(buffcpy, "220 ftp server ready") != -1)
-        || Utils::ustrstr(buffcpy, "500 'get': command not understood") != -1
+        Utils::ustrstr(buffcpy, "220 diskStation ftp server ready") != -1 ||
+        Utils::ustrstr(buffcpy, "220 ftp server ready") != -1
+		|| Utils::ustrstr(buffcpy, "500 'get': command not understood") != -1
         )                                                                               return 3; // 3 - FTP
 
 	if (Utils::ustrstr(buffcpy, "camera") != -1 ||
@@ -2753,7 +2753,11 @@ std::string equivRedirectHandler(std::string *buff, char* ip, int port, Lexems *
 		buff->clear();
 		buff->assign(buffcpy);
 	}
-	
+
+	if (location.size() > 0 && location.at(0) != '/') {
+		location.insert(0, "/");
+	}
+
 	return location;
 }
 std::string getScriptField(std::string *buff) {
@@ -2892,6 +2896,9 @@ std::string jsRedirectHandler(std::string *buff, char* ip, int port, Lexems *cou
 std::string getHeader(const std::string *buffcpy, const int flag) {
 	if (STRSTR(buffcpy, "<frame name=\"mainframe\" src=\"main.html\"") != -1) {
 		return "[IPCam]";
+	}
+	else if (STRSTR(buffcpy, "CgiTagMenu?page=Top") != -1) {
+		return "[Panasonic IPCam]";
 	}
 	else if (STRSTR(buffcpy, "MOBOTIX AG") != -1) {
 		return "[Mobotic IPCam]";

@@ -914,9 +914,9 @@ void verboseProgress(unsigned long target) {
 	char targetNPers[128] = { 0 };
 	float percent = (gTargetsNumber != 0 ? (100 - target / (double)gTargetsNumber * 100) : 0);
 
-	sprintf(targetNPers, "%Lu (%.1f%%)", target, percent);
+	sprintf(targetNPers, "%lu (%.1f%%)", target, percent);
 
-	sprintf(metaTargets, "%Lu", target);
+	sprintf(metaTargets, "%lu", target);
 	sprintf(metaPercent, "%.1f",
 		percent);
 }
@@ -1136,12 +1136,13 @@ int _GetDNSFromMask(char *mask, char *saveMask, char *saveMaskEnder) {
 				strcpy(maskSaver, saveMask);
 				strcat(maskSaver, maskEntry);
 				chunk[1] = charAll[i];
-				strcat(maskSaver, chunk);
+				//strcat(maskSaver, chunk);
 				strcpy(maskRes, maskStart);
 				maskRes[startPosition] = charAll[i];
+				maskRes[startPosition + 1] = '\0';
 				strcat(maskRes, maskEnd);
 
-				if (_GetDNSFromMask(maskRes, maskSaver, maskEnd) == -1) return -1;
+				if (_GetDNSFromMask(maskRes, maskSaver, NULL) == -1) return -1;
 
 				maskSaver[0] = 0;
 				maskRes[0] = 0;
@@ -1277,7 +1278,7 @@ void MainStarter::startDNSScan(){
 	gTargetsNumber = gTargets;
 	stt->doEmitionYellowFoundData("Starting DNS-scan...");
 
-	int y = _GetDNSFromMask(dataEntry, "", dataEntry);
+	int y = _GetDNSFromMask(dataEntry, "", NULL);
 	if (y == -1)
 	{
 		stt->doEmitionRedFoundData("DNS-Mode error");

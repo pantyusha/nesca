@@ -1,0 +1,6 @@
+<Organization>
+	<Department name="root">
+		<Device title="187.58.192.141" ip="187.58.192.141" port="37777" user="admin" password="admin"/>
+		<Device title="217.115.209.34" ip="217.115.209.34" port="37777" user="admin" password="admin"/>
+	</Department>
+</Organization>

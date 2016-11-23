@@ -14,6 +14,14 @@
 #include "HikvisionLogin.h"
 #include "RTSP.h"
 
+extern "C"
+{
+	void _cdecl __vcrt_initialize_telemetry_provider() {}
+	void _cdecl __telemetry_main_invoke_trigger() {}
+	void _cdecl __telemetry_main_return_trigger() {}
+	void _cdecl __vcrt_uninitialize_telemetry_provider() {}
+};
+
 unsigned char tl(unsigned char d)
 {
 	if (d >= 192 && d <= 223)

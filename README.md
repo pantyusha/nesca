@@ -1,10 +1,19 @@
+Nesca
 ----
+Сканер сети. Легендарный. Твой.
 
+### История возникновения
 
-git clone https://github.com/cora32/nesca.git
+Был разработан нетсталкерской группой ISKOPASI как универсальный сканер для всего сущего^W Интернета, брута, отсева и собирания базы находочек. База находок ныне мертва, группа тоже.
 
+### Бинарники
 
+[Билд win32](https://mega.nz/#!yZV3UDpY!6D5k-Dd1amF0i_rzIhFM-WU7cdN3pxR2mwsYiIqedtU), пароль - 24D87-801
+
+### Сборка
+
+```
+git clone https://github.com/pantyusha/nesca.git
 qmake
-
-
 make
+```

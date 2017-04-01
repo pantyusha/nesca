@@ -1,3 +1,4 @@
+#pragma once
 #ifndef RTSPAUTH_H
 #define RTSPAUTH_H
 
@@ -6,7 +7,6 @@
 #include "externData.h"
 #include "mainResources.h"
 
-#pragma once
 class RTSP
 {
 private:

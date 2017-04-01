@@ -1,7 +1,7 @@
+#pragma once
 #ifndef ACTIVITYDRAWERTH_HORNET_H
 #define ACTIVITYDRAWERTH_HORNET_H
 
-#pragma once
 #include "STh.h"
 
 class ActivityDrawerTh_HorNet : public QThread

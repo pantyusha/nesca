@@ -25,4 +25,4 @@ public:
 	lopaStr RVILobby(const char *ip, const int port);
 };
 
-#endif // UTILS_H
+#endif // HIKVISIONLOGIN_H

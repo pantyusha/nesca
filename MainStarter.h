@@ -1,11 +1,21 @@
 #ifndef MAINSTARTER_H
 #define MAINSTARTER_H
 
+#include <ctime>
 #include <string>
+#include <qjsonobject.h>
+#include <qjsonvalue.h>
+#include <qjsonarray.h>
+#include <qjsondocument.h>
 #include "externData.h"
 #include "mainResources.h"
+#include "STh.h"
 #include "Threader.h"
 #include "FileUpdater.h"
+#include "Connector.h"
+#include "Utils.h"
+#include "IPRandomizer.h"
+#include "HikvisionLogin.h"
 
 class MainStarter {
 private: char dnsTarget[256];

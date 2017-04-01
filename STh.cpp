@@ -1,5 +1,5 @@
 #include "STh.h"
-#include "externData.h"
+#include "MainStarter.h"
 
 //BA TablelistView
 void STh::doEmitionChangeBARow(int index, QString loginPass, QString percentage)

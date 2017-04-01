@@ -1,7 +1,7 @@
+#pragma once
 #ifndef PIESTAT_H
 #define PIESTAT_H
 
-#pragma once
 #include "nesca_3.h"
 
 class PieStat : public QThread

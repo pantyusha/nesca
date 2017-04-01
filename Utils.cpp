@@ -26,7 +26,6 @@ std::string Utils::currentTarget;
 //	};
 //}
 
-
 std::string Utils::getHeaderValue(std::string *buff, const std::string headerValue, const std::string outputName) {
 	if (buff->size() > 0) {
 		int headerSize = headerValue.size();

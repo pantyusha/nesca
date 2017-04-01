@@ -1,6 +1,6 @@
 #include "Connector.h"
 #include "SSHAuth.h"
-#include "Filter.h"
+// #include "Filter.h" // Pantene: Где файл?
 
 //#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 //int _pingMyTarget(const char *ip)

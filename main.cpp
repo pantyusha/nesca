@@ -1,9 +1,10 @@
 #include "nesca_3.h"
 #include <QApplication>
 #include <qfontdatabase.h>
-#include <QMessageBox.h>
+#include <QMessageBox>
 #include <qpixmap.h>
 #include "Utils.h"
+#include "externData.h"
 
 int main(int argc, char *argv[])
 {

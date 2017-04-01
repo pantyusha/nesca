@@ -1,7 +1,7 @@
+#pragma once
 #ifndef VERCHECKERTHREAD_H
 #define VERCHECKERTHREAD_H
 
-#pragma once 
 #include "STh.h"
 
 class VerCheckerThread : public QThread

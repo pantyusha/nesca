@@ -1,14 +1,4 @@
-#include "STh.h"
 #include "MainStarter.h"
-#include "Connector.h"
-#include "Utils.h"
-#include <qjsonobject.h>
-#include <qjsonvalue.h>
-#include <qjsonarray.h>
-#include <qjsondocument.h>
-#include "IPRandomizer.h"
-#include "HikvisionLogin.h"
-#include <ctime>
 
 int gTimeOut = 3;
 int gPingTimeout = 1;
@@ -49,7 +39,6 @@ char metaETA[256]		= { 0 };
 char metaOffline[256]	= { 0 };
 
 bool saveBackup;
-
 
 void MainStarter::unBlockButtons(){
 	stt->doEmitionBlockButton(false);

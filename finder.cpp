@@ -1,4 +1,5 @@
-﻿#include "STh.h"
+﻿#include "HikvisionLogin.h"
+#include "STh.h"
 #include "mainResources.h"	
 #include "externFunctions.h"
 #include "externData.h"
@@ -11,8 +12,17 @@
 #include "FileUpdater.h"
 #include "IPCAuth.h"
 #include <qjsonobject.h>
-#include "HikvisionLogin.h"
 #include "RTSP.h"
+#include "MainStarter.h"
+
+#ifndef WIN32
+	#define _cdecl
+	#include <errno.h>
+	int GetLastError(){
+		return errno;
+	}
+#endif
+
 
 extern "C"
 {

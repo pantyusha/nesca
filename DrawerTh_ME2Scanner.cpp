@@ -2,6 +2,7 @@
 #include "STh.h"
 #include "externData.h"
 #include "WebformWorker.h"
+#include "MainStarter.h"
 
 QList<QGraphicsPathItem*> DrawerTh_ME2Scanner::itmList;
 QVector<QPointF> DrawerTh_ME2Scanner::polyVect;

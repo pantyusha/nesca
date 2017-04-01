@@ -14,7 +14,7 @@ void DrawerTh_HorNet::run()
 	{
 		if(widgetIsHidden == false && tray->isVisible() == false)
 		{
-			++factor > 9 ? factor = 0 : NULL;
+			if (++factor > 9) factor = 0;
 			dtHN->doEmitionDrawGrid();
 
 			for(int i = 0; i < gHeight; i += 10) 

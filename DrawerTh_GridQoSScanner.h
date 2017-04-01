@@ -1,7 +1,7 @@
+#pragma once
 #ifndef DRAWERTH_GRIDQOSSCANNER_H
 #define DRAWERTH_GRIDQOSSCANNER_H
 
-#pragma once
 #include "STh.h"
 
 class DrawerTh_GridQoSScanner : public QThread

@@ -13,7 +13,7 @@ int checkOutput(const string *buffer, const char *ip, const int port) {
 
 lopaStr RTSP::RTSPBrute(const char *ip, const int port) {
 
-	lopaStr lps = { "UNKNOWN", "", "[RTSP]" };
+	lopaStr lps = (lopaStr){ "UNKNOWN", "", "[RTSP]" };
 	string lpString;
 	int passCounter = 0;
 	int rowIndex = -1;
@@ -26,7 +26,7 @@ lopaStr RTSP::RTSPBrute(const char *ip, const int port) {
 	int res = con.checkIsDigestRTSP(ip, &buff);
 
 	if (2 == res) {
-		lps = { "", "", "" };
+		lps = (lopaStr){ "", "", "" };
 		rowIndex = Utils::addBARow(QString(ip), "Empty", "OK", rowIndex);
 
 		return lps;
@@ -105,7 +105,7 @@ lopaStr RTSP::RTSPLobby(const char *ip, const int port) {
 		return lps;
 	}
 	else {
-		lopaStr lps = { "UNKNOWN", "", "" };
+		lopaStr lps = (lopaStr){ "UNKNOWN", "", "" };
 		return lps;
 	}
 }

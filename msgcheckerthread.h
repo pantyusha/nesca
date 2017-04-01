@@ -1,7 +1,7 @@
+#pragma once
 #ifndef MSGCHECKERTHREAD_H
 #define MSGCHECKERTHREAD_H
 
-#pragma once 
 #include "nesca_3.h"
 
 class MSGCheckerThread : public QThread

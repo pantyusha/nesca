@@ -127,6 +127,10 @@ typedef int					BOOL;
 #define MAX_ADDR_LEN 128
 #endif
 
+#ifndef WIN32
+#define __stdcall
+#endif
+
 struct NET_DVR_DEVICEINFO_V30
 {
 	unsigned char sSerialNumber; //序列号
@@ -209,5 +213,4 @@ typedef int(__stdcall *NET_DVR_Login_V30)(const char * sDVRIP,
 extern NET_DVR_Init hik_init_ptr;
 extern NET_DVR_Cleanup hik_cleanup_ptr;
 extern NET_DVR_Login_V30 hik_login_ptr;
-
 

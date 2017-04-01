@@ -1,7 +1,7 @@
+#pragma once
 #ifndef PROGRESSBARDRAWER_H
 #define PROGRESSBARDRAWER_H
 
-#pragma once
 #include "nesca_3.h"
 
 class ProgressbarDrawer : public QThread
@@ -14,6 +14,6 @@ public:
 protected:
 	void run();
 };
-//extern ProgressbarDrawer *pbTh;
+extern ProgressbarDrawer *pbTh;
 
 #endif // PROGRESSBARDRAWER_H

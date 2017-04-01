@@ -55,13 +55,13 @@ int recvWT(
 	FD_SET(socket, &ReadSet);
 	Time.tv_sec = Timeout;
 	Time.tv_usec = 0;
-	*bTimedOut = FALSE;
+	*bTimedOut = false;
 	n = select(socket + 1, &ReadSet, NULL, NULL, &Time);
 	if (n > 0) { /* got some data */
 		return recv(socket, Buffer, Len, 0);
 	}
 	if (n == 0) { /* timeout */
-		*bTimedOut = TRUE;
+		*bTimedOut = true;
 	}
 	return(n); /* trouble */
 }

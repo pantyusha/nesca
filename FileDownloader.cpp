@@ -1,4 +1,5 @@
 #include "FileDownloader.h"
+#include "mainResources.h"
 #include "fstream"
 #include <algorithm>
 

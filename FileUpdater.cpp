@@ -2,6 +2,7 @@
 #include "externFunctions.h"
 #include "STh.h"
 #include "mainResources.h"
+#include "MainStarter.h"
 
 char **loginLst, **passLst;
 char **wfLoginLst, **wfPassLst;

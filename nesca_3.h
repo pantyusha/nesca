@@ -15,11 +15,14 @@
 #include <QtGui/qevent.h>
 #include <qthread.h>
 #include <qtextcodec.h>
-#include <libssh/libssh.h>
+#if defined(WIN32)
+	#include <libssh/libssh.h>
+#endif
 
-#include <QStringListModel.h>
-#include <QStandardItemModel.h>
-#include <QList.h>
+
+#include <QStringListModel>
+#include <QStandardItemModel>
+#include <QList>
 #include <ui_nesca_3.h>
 
 extern Ui::nesca_3Class *ui;
@@ -47,7 +50,7 @@ public:
 //	void ChangeLabelIPS_Value(QString str);
 //	void newListItem(QString str);
 	static int addBARow(QString ip, QString loginPass, QString percentage);
-	bool nesca_3::etEventFilter(QObject* object, QEvent* event);
+	bool etEventFilter(QObject* object, QEvent* event);
 public:
     static int perc;
 	static int savedTabIndex;

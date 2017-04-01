@@ -220,8 +220,8 @@ lopaStr IPC::IPCBrute(const char *ip, int port, char *SPEC, const std::string *c
 			}
 			else if (strcmp(SPEC, "JUAN") == 0)
 			{
-				std::string &encodedLogin = urlEncode(std::string(login));
-				std::string &encodedPass = urlEncode(std::string(pass));
+				std::string encodedLogin = urlEncode(std::string(login));
+				std::string encodedPass = urlEncode(std::string(pass));
 				sprintf(request, "%s/cgi-bin/gw.cgi?xml=%%3Cjuan%%20ver=%%22%%22%%20squ=%%22%%22%%20dir=%%22%%22%%3E%%3Cenvload%%20type=%%220%%22%%20usr=%%22%s%%22%%20pwd=%%22%s%%22/%%3E%%3C/juan%%3E&_=1450923182693",
 					ip, encodedLogin.c_str(), encodedPass.c_str());
 			}

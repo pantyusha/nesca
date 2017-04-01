@@ -1,3 +1,4 @@
+#pragma once
 #ifndef BASICAUTH_H
 #define BASICAUTH_H
 

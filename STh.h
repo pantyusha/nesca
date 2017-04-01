@@ -1,10 +1,11 @@
+#pragma once
 #ifndef STH_H
 #define STH_H
 
-#pragma once
 #include "nesca_3.h"
 #include "externFunctions.h"
 #include "MainStarter.h"
+#include "externData.h"
 
 extern int tMax;
 

@@ -26,7 +26,6 @@ result_files/*
 *.bmp
 *.bk
 
-
 tags.txt
 lisca.cpp
 main - копия.cpp
@@ -41,3 +40,5 @@ moc_*
 *~
 *.user
 Makefile
+tmp/*
+qrc_nesca_3.cpp

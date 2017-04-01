@@ -1,5 +1,5 @@
-﻿#include <QFileDialog>
-#include "nesca_3.h"
+﻿#include "nesca_3.h"
+#include <QFileDialog>
 #include "CheckKey_Th.h"
 #include "DrawerTh_QoSScanner.h"
 #include "STh.h"
@@ -16,27 +16,30 @@
 #include <qmessagebox.h>
 #include "progressbardrawer.h"
 #include "FileDownloader.h"
-#include "HikvisionLogin.h"
 #include <QCryptographicHash>
 #include <algorithm>
 #include <sstream>
 #include <iostream>
 #include <iterator>
 #include <iomanip>
-#include <IPTypes.h>
-#include <intrin.h>
+
+#if defined(WIN32)
+	#include <sys/types.h>
+	#include <intrin.h>
+#endif
+
+#include <MainStarter.h>
 #include <string>
 #include <sstream>
 #include <iomanip>
 #include <QtGui/qvalidator.h>
 #include <QtWidgets/qtextbrowser.h>
 #include "Utils.h"
-#include <QPushButton.h>
-#include <QLabel.h>
+#include <QPushButton>
+#include <QLabel>
 #include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qheaderview.h>
 #include <qclipboard.h>
-
 
 NET_DVR_Init hik_init_ptr = NULL;
 NET_DVR_Cleanup hik_cleanup_ptr = NULL;

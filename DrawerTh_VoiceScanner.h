@@ -1,7 +1,7 @@
+#pragma once
 #ifndef DRAWERTH_VOICESCANNER_H
 #define DRAWERTH_VOICESCANNER_H
 
-#pragma once
 #include "nesca_3.h"
 
 class DrawerTh_VoiceScanner : public QThread

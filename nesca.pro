@@ -9,14 +9,15 @@ QT       += core gui multimedia
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
-QMAKE_CFLAGS += -Wno-write-strings
-QMAKE_CXXFLAGS += -Wno-write-strings
+QMAKE_CFLAGS += -Wno-write-strings 
+QMAKE_CXXFLAGS += -Wno-write-strings -Wno-narrowing -fpermissive
 
 TARGET = nesca
 TEMPLATE = app
-INCLUDEPATH += /opt/Qt5.3.2/5.3/gcc_64/include/QtWidgets/
+#INCLUDEPATH += /opt/Qt5.3.2/5.3/gcc_64/include/QtWidgets/
 SOURCES +=\
         main.cpp \
+    nesca_3.cpp \
     ActivityDrawerTh_HorNet.cpp \
     base64.cpp \
     CheckKey_Th.cpp \
@@ -26,7 +27,6 @@ SOURCES +=\
     DrawerTh_QoSScanner.cpp \
     DrawerTh_VoiceScanner.cpp \
     msgcheckerthread.cpp \
-    nesca_3.cpp \
     piestat.cpp \
     progressbardrawer.cpp \
     STh.cpp \
@@ -42,10 +42,15 @@ SOURCES +=\
     SSHAuth.cpp \
     FileUpdater.cpp \
     FileDownloader.cpp \
+    MainStarter.cpp \
+    IPRandomizer.cpp \
+    HikvisionLogin.cpp \
+    RTSP.cpp \
     IPCAuth.cpp
 
 
-HEADERS  += ActivityDrawerTh_HorNet.h \
+HEADERS  += nesca_3.h \
+    ActivityDrawerTh_HorNet.h \
     base64.h \
     CheckKey_Th.h \
     DrawerTh_GridQoSScanner.h \
@@ -57,7 +62,6 @@ HEADERS  += ActivityDrawerTh_HorNet.h \
     externFunctions.h \
     mainResources.h \
     msgcheckerthread.h \
-    nesca_3.h \
     piestat.h \
     progressbardrawer.h \
     resource.h \
@@ -73,6 +77,10 @@ HEADERS  += ActivityDrawerTh_HorNet.h \
     SSHAuth.h \
     FileUpdater.h \
     FileDownloader.h \
+    MainStarter.h \
+    IPRandomizer.h \
+    HikvisionLogin.h \
+    RTSP.h \
     IPCAuth.h
 
 FORMS    += nesca_3.ui

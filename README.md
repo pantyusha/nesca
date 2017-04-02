@@ -33,3 +33,15 @@ git clone https://github.com/pantyusha/nesca.git
 qmake
 make
 ```
+
+### Сборка с помощью Docker
+
+Можно сбилдить с помощью контейнера на основе Ubuntu 14.04, достаточно одной команды в директории с репозиторием:
+```
+docker build .
+```
+
+Для запуска Nesca прямо из контейнера выполнить:
+```
+docker run -i -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix <IMAGE ID>
+```
